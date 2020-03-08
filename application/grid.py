@@ -8,7 +8,8 @@ class Grid(object):
 
     def __init__(self, rows=5, cols=5):
         # https://snakify.org/en/lessons/two_dimensional_lists_arrays/
-        self._grid = [[0] * rows for i in range(cols)]
+        value = "/"
+        self._grid = [[value] * rows for i in range(cols)]
         # https://www.geeksforgeeks.org/python-using-2d-arrays-lists-the-right-way/
         # self._grid = [[0 for i in range(cols)] for j in range(rows)]
         self._dirty = False

@@ -79,8 +79,7 @@ class MainWindow(Gtk.Window):
 
         # the ASCII grid
 
-        self.grid = Grid(40, 75)
-        # print(self.grid)
+        self.grid = Grid(75, 40)
 
         fixed = builder.get_object("viewport1")
 
