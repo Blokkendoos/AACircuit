@@ -11,9 +11,8 @@ from gi.repository import Gtk, Gdk, GdkPixbuf  # noqa: E402
 
 SIZE = 30
 FONTSIZE = 12
-LINE_HEIGHT = 13
-GRIDSIZE_W = 7.0
-GRIDSIZE_H = 16  # >= LINE_HEIGHT
+GRIDSIZE_W = 7
+GRIDSIZE_H = 16
 
 
 class GridCanvas(Gtk.Frame):
@@ -106,13 +105,8 @@ class GridCanvas(Gtk.Frame):
         ctx.set_tolerance(0.1)
         ctx.set_line_join(cairo.LINE_JOIN_ROUND)
 
-        # TODO krijg font (integer) width voor elkaar!
-        ctx.select_font_face("monospace", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
-        te = ctx.text_extents("A")
-        print("te w:{0} h:{1}".format(te.width, te.height))
-
         x_max = self.surface.get_width()
-        x_incr = te.width
+        x_incr = GRIDSIZE_W
 
         y_max = self.surface.get_height()
         y_incr = GRIDSIZE_H
@@ -144,59 +138,25 @@ class GridCanvas(Gtk.Frame):
         if self._grid is None:
             return
 
-        ctx.set_source_rgb(0.5, 0.5, 0.5)
+        ctx.set_source_rgb(0.1, 0.1, 0.1)
         ctx.set_line_width(0.5)
         ctx.set_tolerance(0.1)
         ctx.set_line_join(cairo.LINE_JOIN_ROUND)
 
         ctx.select_font_face("monospace", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
 
-        # http://shallowsky.com/blog/programming/styling-gtk3-with-css-python.html
-        # https://stackoverflow.com/questions/10149330/force-non-monospace-font-into-fixed-width-using-css
-        # https://stackoverflow.com/questions/27664937/gtk-cssprovider-load-from-data-typeerror-item-0-must-be-number-not-str
-        css = '''
-         .monospace .char {
-            font-size: 15px;
-        }'''
-        # css = '''* { background-color: red; }'''
-        style_provider = Gtk.CssProvider()
-        style_provider.load_from_data(bytes(css.encode()))
-        Gtk.StyleContext.add_provider_for_screen(
-            Gdk.Screen.get_default(), style_provider,
-            Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
-        )
-
-        # https://www.programcreek.com/python/example/42787/cairo.FontOptions
-        # fo = cairo.FontOptions()
-        # fo.set_hint_metrics(cairo.HINT_METRICS_ON)  # integer values
-        # ctx.set_font_options(fo)
-        # ctx.set_font_size(FONTSIZE)
-
-        # te = ctx.text_extents("A")
-        # print("te xb:{0} yb:{1}".format(te.x_bearing, te.y_bearing))
-        # print("te w:{0} h:{1}".format(te.width, te.height))
-        # print("te xa:{0} ya:{1}".format(te.x_advance, te.y_advance))
-
-        # https://pycairo.readthedocs.io/en/latest/reference/text.html
-        # gl = []
-        # gl.append(cairo.Glyph(40, 0, 0))
-        # te = ctx.glyph_extents(gl)
-        # print("te xb:{0} yb:{1}".format(te.x_bearing, te.y_bearing))
-        # print("te w:{0} h:{1}".format(te.width, te.height))
-        # print("te xa:{0} ya:{1}".format(te.x_advance, te.y_advance))
-
         ctx.save()
 
-        pad = LINE_HEIGHT - GRIDSIZE_H
-        x = 0
         y = GRIDSIZE_H
-
         for r in self._grid.grid:
-            ctx.new_path()
-            ctx.move_to(x, y + pad)
-            # txt = cairo.text_path(ctx, str(r))
-            ctx.show_text(str(r))
-            ctx.stroke()
+            x = 0
+            for c in r:
+                # ctx.new_path()
+                ctx.move_to(x, y)
+                # txt = cairo.text_path(ctx, str(r))
+                ctx.show_text(str(c))
+                # ctx.stroke()
+                x += GRIDSIZE_W
 
             y += GRIDSIZE_H
             if y >= self.surface.get_height():
