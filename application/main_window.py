@@ -79,12 +79,13 @@ class MainWindow(Gtk.Window):
 
         # the ASCII grid
 
-        self.grid = Grid(40, 80)
+        self.grid = Grid(40, 75)
         # print(self.grid)
 
         fixed = builder.get_object("viewport1")
 
         grid_canvas = GridCanvas()
+        grid_canvas.grid = self.grid
         self._grid_canvas = grid_canvas
 
         fixed.add(grid_canvas)

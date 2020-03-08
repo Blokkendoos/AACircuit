@@ -80,6 +80,7 @@ class GridCanvas(Gtk.Frame):
 
     def do_drawing(self, ctx):
         self.draw_lines(ctx)
+        self.draw_content(ctx)
         # self.draw_radial_gradient_rect(ctx)
 
     def draw_radial_gradient_rect(self, ctx):
@@ -95,6 +96,7 @@ class GridCanvas(Gtk.Frame):
         ctx.fill()
 
     def draw_lines(self, ctx):
+
         ctx.set_source_rgb(0.75, 0.75, 0.75)
         ctx.set_line_width(0.5)
         ctx.set_tolerance(0.1)
@@ -122,4 +124,32 @@ class GridCanvas(Gtk.Frame):
         ctx.restore()
 
     def draw_content(self, ctx):
-        Pass
+
+        if self._grid is None:
+            return
+
+        ctx.set_source_rgb(0.5, 0.5, 0.5)
+        ctx.set_line_width(0.5)
+        ctx.set_tolerance(0.1)
+        ctx.set_line_join(cairo.LINE_JOIN_ROUND)
+
+        ctx.select_font_face("Courier", cairo.FONT_SLANT_NORMAL,
+                            cairo.FONT_WEIGHT_NORMAL)
+        ctx.set_font_size(13)
+
+        ctx.save()
+
+        x = 0
+        y = 0
+        for r in self._grid.grid:
+            ctx.new_path()
+            ctx.move_to(x, y)
+            # txt = cairo.text_path(ctx, str(r))
+            ctx.show_text(str(r))
+            ctx.stroke()
+
+            y += 13
+            if y >= self.surface.get_height():
+                break
+
+        ctx.restore()
