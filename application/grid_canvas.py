@@ -10,6 +10,10 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GdkPixbuf  # noqa: E402
 
 SIZE = 30
+FONTSIZE = 12
+LINE_HEIGHT = 13
+GRIDSIZE_W = 10
+GRIDSIZE_H = 16  # >= LINE_HEIGHT
 
 
 class GridCanvas(Gtk.Frame):
@@ -108,14 +112,14 @@ class GridCanvas(Gtk.Frame):
         y = self.surface.get_height()
 
         # horizontal lines
-        for y in range(0, y, 10):
+        for y in range(0, y, GRIDSIZE_H):
             ctx.new_path()
             ctx.move_to(0, y)
             ctx.line_to(x, y)
             ctx.stroke()
 
         # vertical lines
-        for x in range(0, x, 10):
+        for x in range(0, x, GRIDSIZE_W):
             ctx.new_path()
             ctx.move_to(x, 0)
             ctx.line_to(x, y)
@@ -135,20 +139,27 @@ class GridCanvas(Gtk.Frame):
 
         ctx.select_font_face("Courier", cairo.FONT_SLANT_NORMAL,
                             cairo.FONT_WEIGHT_NORMAL)
-        ctx.set_font_size(13)
+        ctx.set_font_size(FONTSIZE)
+
+        # te = ctx.text_extents("A")
+        # print("te xb:{0} yb:{1}".format(te.x_bearing, te.y_bearing))
+        # print("te w:{0} h:{1}".format(te.width, te.height))
+        # print("te xa:{0} ya:{1}".format(te.x_advance, te.y_advance))
 
         ctx.save()
 
+        pad = LINE_HEIGHT - GRIDSIZE_H
         x = 0
-        y = 0
+        y = GRIDSIZE_H
+
         for r in self._grid.grid:
             ctx.new_path()
-            ctx.move_to(x, y)
+            ctx.move_to(x, y + pad)
             # txt = cairo.text_path(ctx, str(r))
             ctx.show_text(str(r))
             ctx.stroke()
 
-            y += 13
+            y += GRIDSIZE_H
             if y >= self.surface.get_height():
                 break
 
