@@ -9,13 +9,14 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GdkPixbuf  # noqa: E402
 
-SIZE = 30
-FONTSIZE = 12
-GRIDSIZE_W = 7
-GRIDSIZE_H = 16
-
 
 class GridCanvas(Gtk.Frame):
+
+    SIZE = 30
+    FONTSIZE = 12
+    GRIDSIZE_W = 7
+    GRIDSIZE_H = 16
+
     # https://athenajc.gitbooks.io/python-gtk-3-api/content/gtk-group/gtkdrawingarea.html
 
     def __init__(self, grid=None):
@@ -62,7 +63,7 @@ class GridCanvas(Gtk.Frame):
 
     def set_symbol(self):
         self.symbol = [
-            [" ", "|", " "],
+            [" ", "/", " "],
             [".", "+", "."],
             ["|", " ", "|"],
             ["|", " ", "|"],
@@ -116,15 +117,15 @@ class GridCanvas(Gtk.Frame):
         ctx.set_line_join(cairo.LINE_JOIN_ROUND)
 
         x_max = self.surface.get_width()
-        x_incr = GRIDSIZE_W
+        x_incr = self.GRIDSIZE_W
 
         y_max = self.surface.get_height()
-        y_incr = GRIDSIZE_H
+        y_incr = self.GRIDSIZE_H
 
         ctx.save()
 
         # horizontal lines
-        y = GRIDSIZE_H
+        y = self.GRIDSIZE_H
         while y <= y_max:
             ctx.new_path()
             ctx.move_to(0, y)
@@ -157,20 +158,19 @@ class GridCanvas(Gtk.Frame):
 
         ctx.save()
 
-        y = GRIDSIZE_H
+        y = self.GRIDSIZE_H
         for r in self._grid.grid:
             x = 0
             for c in r:
                 ctx.move_to(x, y)
                 ctx.show_text(str(c))
-                x += GRIDSIZE_W
+                x += self.GRIDSIZE_W
 
-            y += GRIDSIZE_H
+            y += self.GRIDSIZE_H
             if y >= self.surface.get_height():
                 break
 
         ctx.restore()
-
 
     def draw_symbol(self):
 
@@ -188,16 +188,22 @@ class GridCanvas(Gtk.Frame):
         ctx.save()
 
         x_start, y = self._pos
+
+        # snap to grid
+        x_start -= x_start % self.GRIDSIZE_W
+        y -= y % self.GRIDSIZE_H
+        # print('sym: ', x_start, ' ', y)
+
         for r in self.symbol:
             x = x_start
             for c in r:
                 ctx.move_to(x, y)
                 ctx.show_text(str(c))
-                x += GRIDSIZE_W
+                x += self.GRIDSIZE_W
                 if x >= self.surface.get_width():
                     break
 
-            y += GRIDSIZE_H
+            y += self.GRIDSIZE_H
             if y >= self.surface.get_height():
                 break
 
@@ -211,5 +217,5 @@ class GridCanvas(Gtk.Frame):
     def on_hover(self, widget, event):
         # print(event.x, ' ', event.y)
         # self._pos = (event.x, event.y)
-        #self.draw_symbol(pos)
+        # self.draw_symbol(pos)
         None
