@@ -212,3 +212,4 @@ class GridCanvas(Gtk.Frame):
         # print(event.x, ' ', event.y)
         # self._pos = (event.x, event.y)
         #self.draw_symbol(pos)
+        None
