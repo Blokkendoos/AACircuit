@@ -12,7 +12,7 @@ from application.grid_canvas import GridCanvas
 
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk  # noqa: E402
+from gi.repository import Gtk, Gdk  # noqa: E402
 from gi.repository import GLib  # noqa: E402
 
 
@@ -90,7 +90,25 @@ class MainWindow(Gtk.Window):
         fixed.add(grid_canvas)
 
     def _on_toggled_cursor(self, button, data=None):
+
         if button.get_active():
+
+            # https://askubuntu.com/questions/138336/how-to-change-the-cursor-to-hourglass-in-a-python-gtk3-application
+            # cursor = Gdk.Cursor.new(Gdk.CursorType.WATCH)
+
+            name = button.get_name()
+
+            # https://developer.gnome.org/gdk3/stable/gdk3-Cursors.html#gdk-cursor-new-from-name
+            if name == "btn_cur1":
+                cursor = Gdk.Cursor.new(Gdk.CursorType.LEFT_PTR)
+            elif name == "btn_cur2":
+                cursor = Gdk.Cursor.new(Gdk.CursorType.CROSSHAIR)
+            elif name == "btn_cur3":
+                cursor = Gdk.Cursor.new(Gdk.CursorType.WATCH)
+            elif name == "btn_cur4":
+                cursor = Gdk.Cursor.new(Gdk.CursorType.CROSSHAIR)
+            self.get_root_window().set_cursor(cursor)
+
             # disable the other cursor buttons
             for btn in self.btn_cur:
                 if btn.get_name() != button.get_name():
