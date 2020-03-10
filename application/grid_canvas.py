@@ -29,15 +29,28 @@ class GridCanvas(Gtk.Frame):
 
         self.surface = None
 
-        self.area = Gtk.DrawingArea()
-        self.add(self.area)
+        overlay = Gtk.Overlay()
+        self.add(overlay)
+
+        self.drawing_area = Gtk.DrawingArea()
+        overlay.add_overlay(self.drawing_area)
 
         self._grid = grid
 
+        self.set_symbol()
+        self._pos = None
+
         # connect signals
 
-        self.area.connect("draw", self.on_draw)
-        self.area.connect('configure-event', self.on_configure)
+        self.drawing_area.connect("draw", self.on_draw)
+        self.drawing_area.connect('configure-event', self.on_configure)
+
+        # https://www.programcreek.com/python/example/84675/gi.repository.Gtk.DrawingArea
+        self.drawing_area.add_events(Gdk.EventMask.BUTTON_PRESS_MASK)
+        self.drawing_area.connect('button_press_event', self.on_button_press)
+
+        self.drawing_area.add_events(Gdk.EventMask.POINTER_MOTION_MASK)
+        self.drawing_area.connect('motion-notify-event', self.on_hover)
 
     @property
     def grid(self):
@@ -47,7 +60,17 @@ class GridCanvas(Gtk.Frame):
     def grid(self, grid):
         self._grid = grid
 
+    def set_symbol(self):
+        self.symbol = [
+            [" ", "|", " "],
+            [".", "+", "."],
+            ["|", " ", "|"],
+            ["|", " ", "|"],
+            [".", "+", "."],
+            [" ", "|", " "]]
+
     def init_surface(self, area):
+        """Initialize Cairo surface"""
         # destroy previous buffer
         if self.surface is not None:
             self.surface.finish()
@@ -55,11 +78,10 @@ class GridCanvas(Gtk.Frame):
 
         # create a new buffer
         self.surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, area.get_allocated_width(), area.get_allocated_height())
-        w = area.get_allocated_width()
 
     def redraw(self):
         """if we receive a draw event redraw our grid"""
-        self.init_surface(self.area)
+        self.init_surface(self.drawing_area)
         context = cairo.Context(self.surface)
         # context.scale(self.surface.get_width(), self.surface.get_height())
         # context.scale(self.surface.get_width() / 4, self.surface.get_height() / 4)
@@ -67,6 +89,7 @@ class GridCanvas(Gtk.Frame):
         # h = self.surface.get_height()
         # print("Context w:{0} h:{1}".format(w, h))
         self.do_drawing(context)
+        self.draw_symbol()
         self.surface.flush()
 
     def on_configure(self, area, event, data=None):
@@ -84,19 +107,6 @@ class GridCanvas(Gtk.Frame):
     def do_drawing(self, ctx):
         self.draw_lines(ctx)
         self.draw_content(ctx)
-        # self.draw_radial_gradient_rect(ctx)
-
-    def draw_radial_gradient_rect(self, ctx):
-        x0, y0 = 0.3, 0.3
-        x1, y1 = 0.5, 0.5
-        r0 = 0
-        r1 = 1
-        pattern = cairo.RadialGradient(x0, y0, r0, x1, y1, r1)
-        pattern.add_color_stop_rgba(0, 1, 1, 0.5, 1)
-        pattern.add_color_stop_rgba(1, 0.2, 0.4, 0.1, 1)
-        ctx.rectangle(0, 0, 1, 1)
-        ctx.set_source(pattern)
-        ctx.fill()
 
     def draw_lines(self, ctx):
 
@@ -139,9 +149,9 @@ class GridCanvas(Gtk.Frame):
             return
 
         ctx.set_source_rgb(0.1, 0.1, 0.1)
-        ctx.set_line_width(0.5)
-        ctx.set_tolerance(0.1)
-        ctx.set_line_join(cairo.LINE_JOIN_ROUND)
+        # ctx.set_line_width(0.5)
+        # ctx.set_tolerance(0.1)
+        # ctx.set_line_join(cairo.LINE_JOIN_ROUND)
 
         ctx.select_font_face("monospace", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
 
@@ -151,11 +161,8 @@ class GridCanvas(Gtk.Frame):
         for r in self._grid.grid:
             x = 0
             for c in r:
-                # ctx.new_path()
                 ctx.move_to(x, y)
-                # txt = cairo.text_path(ctx, str(r))
                 ctx.show_text(str(c))
-                # ctx.stroke()
                 x += GRIDSIZE_W
 
             y += GRIDSIZE_H
@@ -163,3 +170,45 @@ class GridCanvas(Gtk.Frame):
                 break
 
         ctx.restore()
+
+
+    def draw_symbol(self):
+
+        if self.symbol is None or self._pos is None:
+            return
+
+        ctx = cairo.Context(self.surface)
+        ctx.set_source_rgb(0.1, 0.1, 0.5)
+        # ctx.set_line_width(0.5)
+        # ctx.set_tolerance(0.1)
+        # ctx.set_line_join(cairo.LINE_JOIN_ROUND)
+
+        ctx.select_font_face("monospace", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+
+        ctx.save()
+
+        x_start, y = self._pos
+        for r in self.symbol:
+            x = x_start
+            for c in r:
+                ctx.move_to(x, y)
+                ctx.show_text(str(c))
+                x += GRIDSIZE_W
+                if x >= self.surface.get_width():
+                    break
+
+            y += GRIDSIZE_H
+            if y >= self.surface.get_height():
+                break
+
+        ctx.restore()
+
+    def on_button_press(self, widget, event):
+        print(event.x, ' ', event.y)
+        self._pos = (event.x, event.y)
+        # self.draw_symbol(pos)
+
+    def on_hover(self, widget, event):
+        # print(event.x, ' ', event.y)
+        # self._pos = (event.x, event.y)
+        #self.draw_symbol(pos)

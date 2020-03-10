@@ -50,12 +50,12 @@
   <object class="GtkImage" id="image18">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">bitmaps/autoline.png</property>
+    <property name="pixbuf">bitmaps/autoline.bmp</property>
   </object>
   <object class="GtkImage" id="image19">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">buttons/dline.png</property>
+    <property name="pixbuf">buttons/dline.bmp</property>
   </object>
   <object class="GtkImage" id="image2">
     <property name="visible">True</property>
