@@ -95,7 +95,7 @@ class MainWindow(Gtk.Window):
 
     def _init_cursors(self):
         self._cursor = []
-        for i in range(1, 4):
+        for i in range(1, 5):
             self._cursor.append(GdkPixbuf.Pixbuf.new_from_file("buttons/c{0}.png".format(i)))
 
     def _on_toggled_cursor(self, button, data=None):
@@ -120,45 +120,8 @@ class MainWindow(Gtk.Window):
         Gtk.main_quit()
 
     def custom_cursor(self, btn):
-        # https://askubuntu.com/questions/138336/how-to-change-the-cursor-to-hourglass-in-a-python-gtk3-application
-        # cursor = Gdk.Cursor.new(Gdk.CursorType.WATCH)
-
-        # https://developer.gnome.org/gdk3/stable/gdk3-Cursors.html#gdk-cursor-new-from-name
-        if btn == 1:
-            cursor = Gdk.Cursor.new(Gdk.CursorType.LEFT_PTR)
-        elif btn == 2:
-            cursor = Gdk.Cursor.new(Gdk.CursorType.CROSSHAIR)
-        elif btn == 3:
-            cursor = Gdk.Cursor.new(Gdk.CursorType.WATCH)
-        elif btn == 4:
-            cursor = Gdk.Cursor.new(Gdk.CursorType.CROSSHAIR)
+        display = self.get_root_window().get_display()
+        pb = self._cursor[btn - 1]
+        cursor = Gdk.Cursor.new_from_pixbuf(display, pb, 0, 0)
         self.get_root_window().set_cursor(cursor)
-
-    def custom_cursor_XXX(self, btn):
-        # display = self.get_screen().get_display()
-        # pb = GdkPixbuf.Pixbuf.new(GdkPixbuf.Colorspace.RGB, False, 8, 100, 100)
-        # cursor = Gdk.Cursor.new_from_pixbuf(display, pb, 100, 100)
-        # pb = GdkPixbuf.Pixbuf.new(GdkPixbuf.Colorspace.RGB, False, 8, 100, 100)
-        # self.get_root_window().set_cursor(cursor)
-
-        # https: // stackoverflow.com / questions / 55283386 / noisy - cairo - created - custom - cursor - in -gtk3
-        display = self.get_screen().get_display()
-        # pb = GdkPixbuf.Pixbuf.new(GdkPixbuf.Colorspace.RGB, True, 8, 2 * radius, 2 * radius)
-        pb = GdkPixbuf.Pixbuf.new_from_file("buttons/c{0}.bmp".format(btn))
-        surface = Gdk.cairo_surface_create_from_pixbuf(pb, 0, None)
-
-        # context = cairo.Context(surface)
-        cursor = Gdk.Cursor.new_from_pixbuf(display, pb, 16, 16)
-        self._grid_canvas.drawing_area.get_screen().get_root_window().set_cursor(cursor)
-
-    def custom_cursor_YYY(self, radius):
-        display = self.get_screen().get_display()
-        pb = GdkPixbuf.Pixbuf.new(GdkPixbuf.Colorspace.RGB, True, 8, 2 * radius, 2 * radius)
-        surface = Gdk.cairo_surface_create_from_pixbuf(pb, 0, None)
-        context = cairo.Context(surface)
-        context.arc(radius, radius, radius, 0, 2 * np.pi)
-        context.set_source_rgba(0, 0, 0, 1)
-        context.stroke()
-        pbdrawn = Gdk.pixbuf_get_from_surface(surface, 0, 0, surface.get_width(), surface.get_height())
-        cursor = Gdk.Cursor.new_from_pixbuf(display, pbdrawn, radius, radius)
-        self.darea.get_screen().get_root_window().set_cursor(cursor)
+        # self._grid_canvas.drawing_area.get_screen().get_root_window().set_cursor(cursor)
