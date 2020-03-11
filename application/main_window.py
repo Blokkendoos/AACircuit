@@ -5,7 +5,6 @@ AACircuit
 
 import os
 import sys
-import cairo
 
 from application.component_library import ComponentLibrary
 from application.grid import Grid
@@ -123,5 +122,8 @@ class MainWindow(Gtk.Window):
         display = self.get_root_window().get_display()
         pb = self._cursor[btn - 1]
         cursor = Gdk.Cursor.new_from_pixbuf(display, pb, 0, 0)
-        self.get_root_window().set_cursor(cursor)
-        # self._grid_canvas.drawing_area.get_screen().get_root_window().set_cursor(cursor)
+        # self.get_root_window().set_cursor(cursor)
+        widget = self._grid_canvas.drawing_area
+        # widget.set_sensitive(False)
+        # cursor = Gdk.Cursor(Gdk.CursorType.WATCH)
+        widget.get_window().set_cursor(cursor)
