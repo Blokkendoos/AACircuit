@@ -142,6 +142,37 @@
     <property name="can_focus">False</property>
     <property name="pixbuf">bitmaps/delete.bmp</property>
   </object>
+  <object class="GtkImage" id="image5">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="pixbuf">buttons/c4.bmp</property>
+  </object>
+  <object class="GtkImage" id="image6">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="pixbuf">buttons/c4.bmp</property>
+  </object>
+  <object class="GtkImage" id="image7">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="pixbuf">buttons/c3.bmp</property>
+  </object>
+  <object class="GtkImage" id="image8">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="pixbuf">buttons/c2.bmp</property>
+  </object>
+  <object class="GtkImage" id="image9">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="pixbuf">buttons/c1.bmp</property>
+  </object>
+  <object class="GtkListStore" id="liststore1">
+    <columns>
+      <!-- column-name description -->
+      <column type="gchararray"/>
+    </columns>
+  </object>
   <object class="MainWindow" id="window1">
     <property name="can_focus">False</property>
     <property name="border_width">2</property>
@@ -1080,7 +1111,11 @@
                     <property name="can_focus">True</property>
                     <property name="hscrollbar_policy">never</property>
                     <child>
-                      <placeholder/>
+                      <object class="GtkTreeView" id="treeview1">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="model">liststore1</property>
+                      </object>
                     </child>
                   </object>
                   <packing>
@@ -1117,35 +1152,5 @@
         </child>
       </object>
     </child>
-  </object>
-  <object class="GtkImage" id="image4">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="pixbuf">./buttons/c4.bmp</property>
-  </object>
-  <object class="GtkImage" id="image5">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="pixbuf">buttons/c4.bmp</property>
-  </object>
-  <object class="GtkImage" id="image6">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="pixbuf">buttons/c4.bmp</property>
-  </object>
-  <object class="GtkImage" id="image7">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="pixbuf">buttons/c3.bmp</property>
-  </object>
-  <object class="GtkImage" id="image8">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="pixbuf">buttons/c2.bmp</property>
-  </object>
-  <object class="GtkImage" id="image9">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="pixbuf">buttons/c1.bmp</property>
   </object>
 </interface>

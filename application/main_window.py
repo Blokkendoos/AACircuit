@@ -15,6 +15,16 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk  # noqa: E402
 # from gi.repository import GLib  # noqa: E402
 from gi.repository import GdkPixbuf  # noqa: E402
+from gi.repository import Pango  # noqa: E402
+
+columns = ["Description"]
+
+phonebook = [["R-Widerstand"],
+             ["Kondensator"],
+             ["Transformator"],
+             ["Diode"],
+             ["Transistor"],
+             ["LED"]]
 
 
 class MainWindow(Gtk.Window):
@@ -62,7 +72,8 @@ class MainWindow(Gtk.Window):
 
         self.btn_cur[0].set_active(True)
 
-        self._init_cursors()
+        self.init_cursors()
+        self.init_list(builder)
 
         # connect signals
 
@@ -70,10 +81,10 @@ class MainWindow(Gtk.Window):
         self.connect('destroy', lambda w: Gtk.main_quit())
 
         for btn in self.btn_cur:
-            btn.connect("toggled", self._on_toggled_cursor)
+            btn.connect("toggled", self.on_toggled_cursor)
 
         btn_close = builder.get_object("imagemenuitem5")
-        btn_close.connect("activate", self._on_close_clicked)
+        btn_close.connect("activate", self.on_close_clicked)
 
         # component libraries
 
@@ -88,16 +99,53 @@ class MainWindow(Gtk.Window):
 
         grid_canvas = GridCanvas()
         grid_canvas.grid = self.grid
-        self._grid_canvas = grid_canvas
+        self.grid_canvas = grid_canvas
 
         fixed.add(grid_canvas)
 
-    def _init_cursors(self):
-        self._cursor = []
+    def init_cursors(self):
+        self.cursor = []
         for i in range(1, 5):
-            self._cursor.append(GdkPixbuf.Pixbuf.new_from_file("buttons/c{0}.png".format(i)))
+            self.cursor.append(GdkPixbuf.Pixbuf.new_from_file("buttons/c{0}.png".format(i)))
 
-    def _on_toggled_cursor(self, button, data=None):
+    def init_list(self, builder):
+        scrolled_window = builder.get_object("scrolledwindow1")
+        scrolled_window.set_size_request(200, 100)
+        scrolled_window.set_border_width(10)
+        # scrolled_window.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+
+        listmodel = builder.get_object("liststore1")
+        for i in range(len(phonebook)):
+            listmodel.append(phonebook[i])
+
+        view = builder.get_object("treeview1")
+
+        # when a row is selected
+        view.get_selection().connect("changed", self.on_changed)
+
+        # the label we use to show the selection
+        self.label = Gtk.Label()
+        self.label.set_text("")
+
+        for i, column in enumerate(columns):
+            # cellrenderer to render the text
+            cell = Gtk.CellRendererText()
+            # the column is created
+            col = Gtk.TreeViewColumn(column, cell, text=i)
+            # and it is appended to the treeview
+            view.append_column(col)
+
+    def on_changed(self, selection):
+        # get the model and the iterator that points at the data in the model
+        (model, iter) = selection.get_selected()
+        # set the label to a new value depending on the selection
+        # self.label.set_text("\n %s %s %s" %
+        #                     (model[iter][0], model[iter][1], model[iter][2]))
+        self.label.set_text("\n %s" % model[iter][0])
+
+        return True
+
+    def on_toggled_cursor(self, button):
 
         if button.get_active():
 
@@ -111,19 +159,19 @@ class MainWindow(Gtk.Window):
                     # print("Button: %s" % btn.get_name())
                     btn.set_active(False)
 
-    def _on_open_clicked(self, button):
+    def on_open_clicked(self, button):
         print("\"Open\" button was clicked")
 
-    def _on_close_clicked(self, button):
+    def on_close_clicked(self, button):
         print("Closing application")
         Gtk.main_quit()
 
     def custom_cursor(self, btn):
         display = self.get_root_window().get_display()
-        pb = self._cursor[btn - 1]
+        pb = self.cursor[btn - 1]
         cursor = Gdk.Cursor.new_from_pixbuf(display, pb, 0, 0)
         # self.get_root_window().set_cursor(cursor)
-        widget = self._grid_canvas.drawing_area
+        widget = self.grid_canvas.drawing_area
         # widget.set_sensitive(False)
         # cursor = Gdk.Cursor(Gdk.CursorType.WATCH)
         widget.get_window().set_cursor(cursor)
