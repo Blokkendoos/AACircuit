@@ -6,9 +6,9 @@ AACircuit
 import os
 import sys
 
-from application.component_library import ComponentLibrary
 from application.grid import Grid
 from application.grid_canvas import GridCanvas
+from application.component_library import ComponentLibrary
 
 import gi
 gi.require_version('Gtk', '3.0')
@@ -18,14 +18,6 @@ from gi.repository import GdkPixbuf  # noqa: E402
 from gi.repository import Pango  # noqa: E402
 
 columns = ["Description"]
-
-phonebook = [["R-Widerstand"],
-             ["Kondensator"],
-             ["Transformator"],
-             ["Diode"],
-             ["Transistor"],
-             ["LED"]]
-
 
 class MainWindow(Gtk.Window):
     __gtype_name__ = "MainWindow"
@@ -73,7 +65,6 @@ class MainWindow(Gtk.Window):
         self.btn_cur[0].set_active(True)
 
         self.init_cursors()
-        self.init_list(builder)
 
         # connect signals
 
@@ -88,8 +79,10 @@ class MainWindow(Gtk.Window):
 
         # component libraries
 
-        self.lib = ComponentLibrary()
-        print("Number of component libraries loaded: {0}".format(self.lib.nr_libraries()))
+        self.components = ComponentLibrary()
+        print("{0} libraries loaded, total number of components: {1}".format(self.components.nr_libraries(), self.components.nr_components()))
+
+        self.init_components(builder)
 
         # the ASCII grid
 
@@ -108,15 +101,15 @@ class MainWindow(Gtk.Window):
         for i in range(1, 5):
             self.cursor.append(GdkPixbuf.Pixbuf.new_from_file("buttons/c{0}.png".format(i)))
 
-    def init_list(self, builder):
+    def init_components(self, builder):
         scrolled_window = builder.get_object("scrolledwindow1")
         scrolled_window.set_size_request(200, 100)
         scrolled_window.set_border_width(10)
         # scrolled_window.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
 
         listmodel = builder.get_object("liststore1")
-        for i in range(len(phonebook)):
-            listmodel.append(phonebook[i])
+        for key in self.components.get_dict():
+            listmodel.append((key,))
 
         view = builder.get_object("treeview1")
 
@@ -124,8 +117,8 @@ class MainWindow(Gtk.Window):
         view.get_selection().connect("changed", self.on_changed)
 
         # the label we use to show the selection
-        self.label = Gtk.Label()
-        self.label.set_text("")
+        self.component_label = Gtk.Label()
+        self.component_label.set_text("")
 
         for i, column in enumerate(columns):
             # cellrenderer to render the text
@@ -138,10 +131,13 @@ class MainWindow(Gtk.Window):
     def on_changed(self, selection):
         # get the model and the iterator that points at the data in the model
         (model, iter) = selection.get_selected()
+
         # set the label to a new value depending on the selection
-        # self.label.set_text("\n %s %s %s" %
-        #                     (model[iter][0], model[iter][1], model[iter][2]))
-        self.label.set_text("\n %s" % model[iter][0])
+        label = model[iter][0]
+        self.component_label.set_text("\n %s" % label)
+
+        # get the default grid for the symbol that represents this component
+        self.grid_canvas.set_symbol(self.components.get_grid(label))
 
         return True
 
