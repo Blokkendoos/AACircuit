@@ -5,6 +5,8 @@ AACircuit
 
 import cairo
 
+from application.symbol_canvas import SymbolCanvas
+
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk  # noqa: E402
@@ -38,7 +40,7 @@ class GridCanvas(Gtk.Frame):
 
         self._grid = grid
 
-        self.set_symbol()
+        self._symbol_canvas = SymbolCanvas()
         self._pos = None
 
         # connect signals
@@ -61,18 +63,8 @@ class GridCanvas(Gtk.Frame):
     def grid(self, grid):
         self._grid = grid
 
-    def set_symbol(self, value=None):
-        if value is None:
-            # default grid (Resistor)
-            self._symbol_grid = [
-                [" ", "|", " "],
-                [".", "+", "."],
-                ["|", " ", "|"],
-                ["|", " ", "|"],
-                [".", "+", "."],
-                [" ", "|", " "]]
-        else:
-            self._symbol_grid = value
+    def set_symbol(self, grid):
+        self._symbol_canvas.grid = grid
 
     def init_surface(self, area):
         """Initialize Cairo surface"""
@@ -102,7 +94,7 @@ class GridCanvas(Gtk.Frame):
     def do_drawing(self, ctx):
         self.draw_lines(ctx)
         self.draw_content(ctx)
-        self.draw_symbol(ctx)
+        self._symbol_canvas.draw(ctx, self._pos)
 
     def draw_lines(self, ctx):
 
@@ -160,39 +152,6 @@ class GridCanvas(Gtk.Frame):
             y += self.GRIDSIZE_H
             if y >= self.surface.get_height():
                 break
-
-        # ctx.restore()
-
-    def draw_symbol(self, ctx):
-
-        if self._symbol_grid is None or self._pos is None:
-            return
-
-        # ctx.save()
-
-        ctx.set_source_rgb(1, 0, 0)
-        ctx.select_font_face("monospace", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
-
-        x_start, y = self._pos
-
-        # snap to grid
-        x_start -= x_start % self.GRIDSIZE_W
-        y -= y % self.GRIDSIZE_H
-
-        for r in self._symbol_grid:
-            x = x_start
-            for c in r:
-                ctx.move_to(x, y)
-                ctx.show_text(str(c))
-                x += self.GRIDSIZE_W
-                if x >= self.surface.get_width():
-                    break
-
-            y += self.GRIDSIZE_H
-            if y >= self.surface.get_height():
-                break
-
-        self._pos = None
 
         # ctx.restore()
 
