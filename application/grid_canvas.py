@@ -61,14 +61,18 @@ class GridCanvas(Gtk.Frame):
     def grid(self, grid):
         self._grid = grid
 
-    def set_symbol(self):
-        self.symbol = [
-            [" ", "/", " "],
-            [".", "+", "."],
-            ["|", " ", "|"],
-            ["|", " ", "|"],
-            [".", "+", "."],
-            [" ", "|", " "]]
+    def set_symbol(self, value=None):
+        if value is None:
+            # default grid (Resistor)
+            self._symbol_grid = [
+                [" ", "|", " "],
+                [".", "+", "."],
+                ["|", " ", "|"],
+                ["|", " ", "|"],
+                [".", "+", "."],
+                [" ", "|", " "]]
+        else:
+            self._symbol_grid = value
 
     def init_surface(self, area):
         """Initialize Cairo surface"""
@@ -83,11 +87,6 @@ class GridCanvas(Gtk.Frame):
     def on_configure(self, area, event, data=None):
         self.init_surface(self.drawing_area)
         context = cairo.Context(self.surface)
-        # context.scale(self.surface.get_width(), self.surface.get_height())
-        # context.scale(self.surface.get_width() / 4, self.surface.get_height() / 4)
-        # w = self.surface.get_width()
-        # h = self.surface.get_height()
-        # print("Context w:{0} h:{1}".format(w, h))
         self.do_drawing(context)
         self.surface.flush()
         return False
@@ -148,10 +147,6 @@ class GridCanvas(Gtk.Frame):
         # ctx.save()
 
         ctx.set_source_rgb(0.1, 0.1, 0.1)
-        # ctx.set_line_width(0.5)
-        # ctx.set_tolerance(0.1)
-        # ctx.set_line_join(cairo.LINE_JOIN_ROUND)
-
         ctx.select_font_face("monospace", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
 
         y = self.GRIDSIZE_H
@@ -170,7 +165,7 @@ class GridCanvas(Gtk.Frame):
 
     def draw_symbol(self, ctx):
 
-        if self.symbol is None or self._pos is None:
+        if self._symbol_grid is None or self._pos is None:
             return
 
         # ctx.save()
@@ -184,7 +179,7 @@ class GridCanvas(Gtk.Frame):
         x_start -= x_start % self.GRIDSIZE_W
         y -= y % self.GRIDSIZE_H
 
-        for r in self.symbol:
+        for r in self._symbol_grid:
             x = x_start
             for c in r:
                 ctx.move_to(x, y)
@@ -209,4 +204,3 @@ class GridCanvas(Gtk.Frame):
     def on_hover(self, widget, event):
         self._pos = (event.x, event.y)
         widget.queue_resize()
-        # None
