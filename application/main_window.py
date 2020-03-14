@@ -8,6 +8,7 @@ import sys
 
 from application.grid import Grid
 from application.grid_canvas import GridCanvas
+from application.component_canvas import ComponentCanvas
 from application.component_library import ComponentLibrary
 
 import gi
@@ -18,6 +19,7 @@ from gi.repository import GdkPixbuf  # noqa: E402
 from gi.repository import Pango  # noqa: E402
 
 columns = ["Description"]
+
 
 class MainWindow(Gtk.Window):
     __gtype_name__ = "MainWindow"
@@ -47,15 +49,16 @@ class MainWindow(Gtk.Window):
         Treat this as the __init__() method.
         Arguments pass in must be passed from __new__().
         """
+        self.builder = builder
         self.set_default_size(640, 480)
 
         # Add any other initialization here
 
         self.btn_cur = [
-            builder.get_object("btn_cur1"),
-            builder.get_object("btn_cur2"),
-            builder.get_object("btn_cur3"),
-            builder.get_object("btn_cur4")]
+            self.builder.get_object("btn_cur1"),
+            self.builder.get_object("btn_cur2"),
+            self.builder.get_object("btn_cur3"),
+            self.builder.get_object("btn_cur4")]
 
         self.btn_cur[0].set_name("btn_cur1")
         self.btn_cur[1].set_name("btn_cur2")
@@ -65,81 +68,36 @@ class MainWindow(Gtk.Window):
         self.btn_cur[0].set_active(True)
 
         self.init_cursors()
+        self.grid = Grid(75, 40)
+        self.init_grid()
+        self.init_components()
 
         # connect signals
 
-        builder.connect_signals(self)
+        self.builder.connect_signals(self)
         self.connect('destroy', lambda w: Gtk.main_quit())
 
         for btn in self.btn_cur:
             btn.connect("toggled", self.on_toggled_cursor)
 
-        btn_close = builder.get_object("imagemenuitem5")
+        btn_close = self.builder.get_object("imagemenuitem5")
         btn_close.connect("activate", self.on_close_clicked)
 
-        # component libraries
+    def init_components(self):
+        component_canvas = ComponentCanvas(self.builder)
 
-        self.components = ComponentLibrary()
-        print("{0} libraries loaded, total number of components: {1}".format(self.components.nr_libraries(), self.components.nr_components()))
+    def init_grid(self):
+        fixed = self.builder.get_object("viewport1")
 
-        self.init_components(builder)
+        self.grid_canvas = GridCanvas(self.builder)
+        self.grid_canvas.grid = self.grid
 
-        # the ASCII grid
-
-        self.grid = Grid(75, 40)
-
-        fixed = builder.get_object("viewport1")
-
-        grid_canvas = GridCanvas()
-        grid_canvas.grid = self.grid
-        self.grid_canvas = grid_canvas
-
-        fixed.add(grid_canvas)
+        fixed.add(self.grid_canvas)
 
     def init_cursors(self):
         self.cursor = []
         for i in range(1, 5):
             self.cursor.append(GdkPixbuf.Pixbuf.new_from_file("buttons/c{0}.png".format(i)))
-
-    def init_components(self, builder):
-        scrolled_window = builder.get_object("scrolledwindow1")
-        scrolled_window.set_size_request(200, 100)
-        scrolled_window.set_border_width(10)
-        # scrolled_window.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
-
-        listmodel = builder.get_object("liststore1")
-        for key in self.components.get_dict():
-            listmodel.append((key,))
-
-        view = builder.get_object("treeview1")
-
-        # when a row is selected
-        view.get_selection().connect("changed", self.on_changed)
-
-        # the label we use to show the selection
-        self.component_label = Gtk.Label()
-        self.component_label.set_text("")
-
-        for i, column in enumerate(columns):
-            # cellrenderer to render the text
-            cell = Gtk.CellRendererText()
-            # the column is created
-            col = Gtk.TreeViewColumn(column, cell, text=i)
-            # and it is appended to the treeview
-            view.append_column(col)
-
-    def on_changed(self, selection):
-        # get the model and the iterator that points at the data in the model
-        (model, iter) = selection.get_selected()
-
-        # set the label to a new value depending on the selection
-        label = model[iter][0]
-        self.component_label.set_text("\n %s" % label)
-
-        # get the default grid for the symbol that represents this component
-        self.grid_canvas.set_symbol(self.components.get_grid(label))
-
-        return True
 
     def on_toggled_cursor(self, button):
 

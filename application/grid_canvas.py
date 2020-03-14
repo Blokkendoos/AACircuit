@@ -4,7 +4,7 @@ AACircuit
 """
 
 import cairo
-
+from pubsub import pub
 from application.symbol_canvas import SymbolCanvas
 
 import gi
@@ -54,6 +54,10 @@ class GridCanvas(Gtk.Frame):
 
         self.drawing_area.add_events(Gdk.EventMask.POINTER_MOTION_MASK)
         self.drawing_area.connect('motion-notify-event', self.on_hover)
+
+        # subscriptions
+
+        pub.subscribe(self.set_symbol, 'SYMBOL_SELECTED')
 
     @property
     def grid(self):
