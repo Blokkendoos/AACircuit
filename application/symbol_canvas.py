@@ -53,11 +53,6 @@ class SymbolCanvas(object):
         ctx.select_font_face("monospace", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
 
         x_start, y = pos
-
-        # snap to grid
-        x_start -= x_start % self.GRIDSIZE_W
-        y -= y % self.GRIDSIZE_H
-
         for r in self._grid:
             x = x_start
             for c in r:

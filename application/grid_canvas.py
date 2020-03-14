@@ -153,10 +153,39 @@ class GridCanvas(Gtk.Frame):
         # ctx.restore()
 
     def on_button_press(self, widget, event):
-        print(event.x, ' ', event.y)
-        self._pos = (event.x, event.y)
-        widget.queue_resize()
+
+        # print("{0}, {1} button: {2}".format(event.x, event.y, event.button))
+        pos = (event.x, event.y)
+        self.snap_to_grid(pos)
+
+        # https://stackoverflow.com/questions/6616270/right-click-menu-context-menu-using-pygtk
+        button = event.button
+        if button == 1:
+            # left button
+            pub.sendMessage('PASTE_SYMBOL', pos=self.get_grid_xy())
+            widget.queue_resize()
+        elif button == 3:
+            # right button
+            pub.sendMessage('ROTATE_SYMBOL')
+            widget.queue_resize()
+        else:
+            None
 
     def on_hover(self, widget, event):
-        self._pos = (event.x, event.y)
+        pos = (event.x, event.y)
+        self.snap_to_grid(pos)
         widget.queue_resize()
+
+    def snap_to_grid(self, pos):
+        """Align position to (the canvas) grid."""
+        (x, y) = pos
+        x -= x % self.GRIDSIZE_W
+        y -= y % self.GRIDSIZE_H
+        self._pos = (int(x), int(y))
+
+    def get_grid_xy(self):
+        """Map the canvas position to grid coordinates."""
+        (x, y) = self._pos
+        x /= self.GRIDSIZE_W
+        y /= self.GRIDSIZE_H
+        return (int(x), int(y))

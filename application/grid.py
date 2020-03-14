@@ -63,6 +63,13 @@ class Grid(object):
     def set_cell(self, row, col, value):
         self._grid[row][col] = value
 
+    def pos_to_rc(self, pos, rect):
+        """Convert position and rect to colum and row start/end values."""
+        c_start, r_start = pos
+        c_end, r_end = tuple(map(lambda i, j : i + j, pos, rect))  # noqa: E203
+        # print("col_start:{0} _end:{1}  row_start:{2} _end:{3}".format(c_start, r_start, c_end, r_end))
+        return (c_start, r_start, c_end, r_end)
+
     def rect(self, pos, rect):
         """
         Return the content of the given rectangle.
@@ -71,8 +78,7 @@ class Grid(object):
         """
         content = []
 
-        r_start, c_start = pos
-        r_end, c_end = tuple(map(lambda i, j : i + j, pos, rect))  # noqa: E203
+        c_start, r_start, c_end, r_end = self.pos_to_rc(pos, rect)
 
         # truncate
         if r_end >= self.nr_rows:
@@ -93,8 +99,7 @@ class Grid(object):
         :param rect: tuple (width, height)
         """
 
-        r_start, c_start = pos
-        r_end, c_end = tuple(map(lambda i, j : i + j, pos, rect))  # noqa: E203
+        c_start, r_start, c_end, r_end = self.pos_to_rc(pos, rect)
 
         # truncate
         if r_end >= self.nr_rows:
@@ -115,11 +120,12 @@ class Grid(object):
         if len(content) == 0:
             return
 
-        width = len(content[0])
-        rect = (len(content), len(content[0]))
+        print("paste col:{0} row:{1}".format(pos[0], pos[1]))
 
-        r_start, c_start = pos
-        r_end, c_end = tuple(map(lambda i, j : i + j, pos, rect))  # noqa: E203
+        width = len(content[0])
+        rect = (width, len(content))
+
+        c_start, r_start, c_end, r_end = self.pos_to_rc(pos, rect)
 
         # truncate
         if r_end >= self.nr_rows:
