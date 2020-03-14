@@ -3,11 +3,8 @@ AACircuit
 2020-03-02 JvO
 """
 
+from pubsub import pub
 import cairo
-
-# import gi
-# gi.require_version('Gtk', '3.0')
-# from gi.repository import Gtk, Gdk  # noqa: E402
 
 
 class SymbolCanvas(object):
@@ -22,12 +19,9 @@ class SymbolCanvas(object):
     def __init__(self, grid=None):
         self._grid = grid
 
-    @property
-    def grid(self):
-        return self._grid
+        pub.subscribe(self.set_grid, 'SYMBOL_SELECTED')
 
-    @grid.setter
-    def grid(self, grid):
+    def set_grid(self, grid):
         """
         The symbol grid.
         :param grid: a 2D array of ASCII chars
