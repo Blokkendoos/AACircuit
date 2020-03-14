@@ -19,6 +19,8 @@ class SymbolCanvas(object):
     def __init__(self):
         self._grid = None
 
+        # subscriptions
+
         pub.subscribe(self.set_grid, 'SYMBOL_SELECTED')
 
     def set_grid(self, grid):

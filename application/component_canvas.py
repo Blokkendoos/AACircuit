@@ -40,6 +40,8 @@ class ComponentCanvas():
             # and it is appended to the treeview
             view.append_column(col)
 
+        # subscriptions
+
         pub.subscribe(self.set_components, 'ALL_COMPONENTS')
 
     def set_components(self, list):

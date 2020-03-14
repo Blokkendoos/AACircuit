@@ -14,6 +14,8 @@ class Controller(object):
 
     def __init__(self):
 
+        # setup MVC
+
         self.grid = Grid(75, 40)  # the ASCII grid
 
         self.gui = MainWindow()
@@ -22,9 +24,14 @@ class Controller(object):
         all_components = [key for key in self.components.get_dict()]
         print("{0} libraries loaded, total number of components: {1}".format(self.components.nr_libraries(),
                                                                              self.components.nr_components()))
+
+        # messages
+
         pub.sendMessage('ALL_COMPONENTS', list=all_components)
 
         pub.sendMessage('GRID', grid=self.grid)
+
+        # subscriptions
 
         pub.subscribe(self.on_component_changed, 'COMPONENT_CHANGED')
 
