@@ -188,4 +188,6 @@ class GridCanvas(Gtk.Frame):
         (x, y) = self._pos
         x /= self.GRIDSIZE_W
         y /= self.GRIDSIZE_H
+        if y > 0:
+            y -= 1
         return (int(x), int(y))
