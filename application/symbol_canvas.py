@@ -16,8 +16,8 @@ class SymbolCanvas(object):
 
     # https://athenajc.gitbooks.io/python-gtk-3-api/content/gtk-group/gtkdrawingarea.html
 
-    def __init__(self, grid=None):
-        self._grid = grid
+    def __init__(self):
+        self._grid = None
 
         pub.subscribe(self.set_grid, 'SYMBOL_SELECTED')
 
