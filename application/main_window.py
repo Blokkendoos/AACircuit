@@ -6,17 +6,13 @@ AACircuit
 import os
 import sys
 
-from application.grid import Grid
 from application.grid_canvas import GridCanvas
 from application.component_canvas import ComponentCanvas
-from application.component_library import ComponentLibrary
 
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk  # noqa: E402
-# from gi.repository import GLib  # noqa: E402
 from gi.repository import GdkPixbuf  # noqa: E402
-from gi.repository import Pango  # noqa: E402
 
 columns = ["Description"]
 
@@ -67,9 +63,8 @@ class MainWindow(Gtk.Window):
 
         self.btn_cur[0].set_active(True)
 
-        self.init_cursors()
-        self.grid = Grid(75, 40)
         self.init_grid()
+        self.init_cursors()
         self.init_components()
 
         # connect signals
@@ -84,14 +79,11 @@ class MainWindow(Gtk.Window):
         btn_close.connect("activate", self.on_close_clicked)
 
     def init_components(self):
-        component_canvas = ComponentCanvas(self.builder)
+        component_canvas = ComponentCanvas(self.builder)  # noqa F841
 
     def init_grid(self):
         fixed = self.builder.get_object("viewport1")
-
-        self.grid_canvas = GridCanvas(self.builder)
-        self.grid_canvas.grid = self.grid
-
+        self.grid_canvas = GridCanvas()
         fixed.add(self.grid_canvas)
 
     def init_cursors(self):

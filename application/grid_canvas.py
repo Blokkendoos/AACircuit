@@ -5,6 +5,7 @@ AACircuit
 
 import cairo
 from pubsub import pub
+
 from application.symbol_canvas import SymbolCanvas
 
 import gi
@@ -21,7 +22,7 @@ class GridCanvas(Gtk.Frame):
 
     # https://athenajc.gitbooks.io/python-gtk-3-api/content/gtk-group/gtkdrawingarea.html
 
-    def __init__(self, grid=None):
+    def __init__(self):
 
         super().__init__()
 
@@ -38,7 +39,7 @@ class GridCanvas(Gtk.Frame):
         self.drawing_area = Gtk.DrawingArea()
         overlay.add_overlay(self.drawing_area)
 
-        self._grid = grid
+        self._grid = None
 
         self._symbol_canvas = SymbolCanvas()
         self._pos = None
@@ -57,18 +58,10 @@ class GridCanvas(Gtk.Frame):
 
         # subscriptions
 
-        pub.subscribe(self.set_symbol, 'SYMBOL_SELECTED')
+        pub.subscribe(self.set_grid, 'GRID')
 
-    @property
-    def grid(self):
-        return self._grid
-
-    @grid.setter
-    def grid(self, grid):
+    def set_grid(self, grid):
         self._grid = grid
-
-    def set_symbol(self, grid):
-        self._symbol_canvas.grid = grid
 
     def init_surface(self, area):
         """Initialize Cairo surface"""

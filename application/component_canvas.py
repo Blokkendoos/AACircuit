@@ -4,16 +4,15 @@ AACircuit
 """
 
 from pubsub import pub
-from application.component_library import ComponentLibrary
 
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk  # noqa: E402
 
-columns = ["Description"]
-
 
 class ComponentCanvas():
+
+    columns = ["Description"]
 
     def __init__(self, builder):
 
@@ -33,7 +32,7 @@ class ComponentCanvas():
         # self.component_label = Gtk.Label()
         # self.component_label.set_text("")
 
-        for i, column in enumerate(columns):
+        for i, column in enumerate(self.columns):
             # cellrenderer to render the text
             cell = Gtk.CellRendererText()
             # the column is created
