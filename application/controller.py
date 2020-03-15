@@ -34,9 +34,13 @@ class Controller(object):
         pub.subscribe(self.on_component_changed, 'COMPONENT_CHANGED')
         pub.subscribe(self.on_rotate_symbol, 'ROTATE_SYMBOL')
         pub.subscribe(self.on_paste_symbol, 'PASTE_SYMBOL')
+        pub.subscribe(self.on_undo, 'UNDO')
 
     def show_all(self):
         self.gui.show_all()
+
+    def on_undo(self):
+        self.grid.undo()
 
     def on_component_changed(self, label):
         grid = self.components.get_grid(label)
@@ -49,4 +53,3 @@ class Controller(object):
     def on_paste_symbol(self, pos):
         symbol_grid = self.components.get_grid_current()
         self.grid.fill_rect(pos, symbol_grid)
-

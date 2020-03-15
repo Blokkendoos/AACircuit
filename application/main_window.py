@@ -76,8 +76,11 @@ class MainWindow(Gtk.Window):
         for btn in self.btn_cur:
             btn.connect("toggled", self.on_toggled_cursor)
 
-        btn_close = self.builder.get_object("imagemenuitem5")
-        btn_close.connect("activate", self.on_close_clicked)
+        menu_close = self.builder.get_object("imagemenuitem5")
+        menu_close.connect("activate", self.on_close_clicked)
+
+        menu_undo = self.builder.get_object("undo")
+        menu_undo.connect("activate", self.on_undo)
 
         self.init_char_buttons()
 
@@ -117,6 +120,9 @@ class MainWindow(Gtk.Window):
     def on_char_button_clicked(self, button):
         char = button.get_label()
         pub.sendMessage('COMPONENT_CHANGED', label=char)
+
+    def on_undo(self, button):
+        pub.sendMessage('UNDO')
 
     def on_open_clicked(self, button):
         print("\"Open\" button was clicked")

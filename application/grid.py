@@ -3,6 +3,8 @@ AACircuit
 2020-03-02 JvO
 """
 
+import pickle
+
 
 class Grid(object):
 
@@ -14,6 +16,8 @@ class Grid(object):
 
         # https://snakify.org/en/lessons/two_dimensional_lists_arrays/
         self._grid = [[self.DEFAULT_VALUE] * rows for i in range(cols)]
+
+        self._undo_stack = []
 
         # https://www.geeksforgeeks.org/python-using-2d-arrays-lists-the-right-way/
         # self._grid = [[0 for i in range(cols)] for j in range(rows)]
@@ -27,6 +31,17 @@ class Grid(object):
             str += "{0}\n".format(r)
 
         return str
+
+    # PRIVATE
+
+    def _save_grid(self):
+        """Use (Pickle) serialization to implement a simple, and rude, undo functionality."""
+        self._undo_stack.append(pickle.dumps(self._grid))
+
+    def _restore_grid(self, str):
+        self._grid = pickle.loads(str)
+
+    # PUBLIC
 
     @property
     def grid(self):
@@ -56,6 +71,10 @@ class Grid(object):
         for r in self._grid:
             column.append(r[col])
         return column
+
+    def undo(self):
+        if len(self._undo_stack) > 0:
+            self._restore_grid(self._undo_stack.pop())
 
     def cell(self, row, col):
         return self._grid[row][col]
@@ -99,6 +118,8 @@ class Grid(object):
         :param rect: tuple (width, height)
         """
 
+        self._save_grid()
+
         c_start, r_start, c_end, r_end = self.pos_to_rc(pos, rect)
 
         # truncate
@@ -111,6 +132,8 @@ class Grid(object):
             for c in range(c_start, c_end):
                 self._grid[r][c] = self.EMPTY
 
+        self._dirty = True
+
     def fill_rect(self, pos, content):
         """
         Fill a rectangle.
@@ -120,7 +143,7 @@ class Grid(object):
         if len(content) == 0:
             return
 
-        print("paste col:{0} row:{1}".format(pos[0], pos[1]))
+        self._save_grid()
 
         width = len(content[0])
         rect = (width, len(content))
@@ -139,8 +162,12 @@ class Grid(object):
             self._grid[r][c_start:c_end] = content[i][:width]
             i += 1
 
+        self._dirty = True
+
     def remove_row(self, row):
         # assert row >= 0 and row < len(self._grid)
+
+        self._save_grid()
 
         del self._grid[row]
         self._dirty = True
@@ -148,18 +175,26 @@ class Grid(object):
     def remove_col(self, col):
         # assert col >= 0 and col < len(self._grid[0])
 
+        self._save_grid()
+
         for r in self._grid:
             del r[col]
 
         self._dirty = True
 
     def insert_row(self, row):
+        self._save_grid()
+
         self._grid.insert(row, [self.NEW_VALUE] * self.nr_cols)
+
         self._dirty = True
 
     def insert_col(self, col):
+        self._save_grid()
+
         for r in self._grid:
             r.insert(col, self.NEW_VALUE)
+
         self._dirty = True
 
 
