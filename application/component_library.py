@@ -62,7 +62,7 @@ class ComponentLibrary(object):
         self.key = key
 
         if len(key) == 1:
-            return [[key],]
+            return [[key]]
         else:
             return self._dict[key]["grid"][self.ORIENTATION[dir]]
 

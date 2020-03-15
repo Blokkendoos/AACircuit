@@ -8,7 +8,7 @@ import pickle
 
 class Grid(object):
 
-    DEFAULT_VALUE = "/"  # default cell-value
+    DEFAULT_VALUE = " "  # default cell-value
     NEW_VALUE = "x"  # value for inserted cell
     EMPTY = " "  # empty cell-value
 
@@ -159,7 +159,13 @@ class Grid(object):
 
         i = 0
         for r in range(r_start, r_end):
-            self._grid[r][c_start:c_end] = content[i][:width]
+            # crude OR (sybol grid OR grid) by ignoring space char
+            # self._grid[r][c_start:c_end] = content[i][:width]
+            j = 0
+            for c in range(c_start, c_end):
+                if content[i][j] != " ":
+                    self._grid[r][c] = content[i][j]
+                j += 1
             i += 1
 
         self._dirty = True
