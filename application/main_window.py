@@ -64,6 +64,11 @@ class MainWindow(Gtk.Window):
 
         self.btn_cur[0].set_active(True)
 
+        self.btn_stretch1 = self.builder.get_object("button36")
+        self.btn_stretch3 = self.builder.get_object("button37")
+        self.btn_stretch2 = self.builder.get_object("button38")
+        self.btn_stretch4 = self.builder.get_object("button39")
+
         self.init_grid()
         self.init_cursors()
         self.init_components()
@@ -83,6 +88,9 @@ class MainWindow(Gtk.Window):
         menu_undo.connect("activate", self.on_undo)
 
         self.init_char_buttons()
+
+        self.btn_stretch1.connect("pressed", self.on_selecting_col)
+        self.btn_stretch3.connect("pressed", self.on_selecting_row)
 
     def init_components(self):
         component_canvas = ComponentCanvas(self.builder)  # noqa F841
@@ -130,6 +138,12 @@ class MainWindow(Gtk.Window):
     def on_close_clicked(self, button):
         print("Closing application")
         Gtk.main_quit()
+
+    def on_selecting_col(self, button):
+        pub.sendMessage('SELECTING_COL')
+
+    def on_selecting_row(self, button):
+        pub.sendMessage('SELECTING_ROW')
 
     def custom_cursor(self, btn):
         display = self.get_root_window().get_display()

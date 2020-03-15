@@ -35,12 +35,20 @@ class Controller(object):
         pub.subscribe(self.on_rotate_symbol, 'ROTATE_SYMBOL')
         pub.subscribe(self.on_paste_symbol, 'PASTE_SYMBOL')
         pub.subscribe(self.on_undo, 'UNDO')
+        pub.subscribe(self.on_insert_col, 'INSERT_COL')
+        pub.subscribe(self.on_insert_row, 'INSERT_ROW')
 
     def show_all(self):
         self.gui.show_all()
 
     def on_undo(self):
         self.grid.undo()
+
+    def on_insert_col(self, col):
+        self.grid.insert_col(col)
+
+    def on_insert_row(self, row):
+        self.grid.insert_row(row)
 
     def on_component_changed(self, label):
         grid = self.components.get_grid(label)

@@ -20,6 +20,12 @@ class GridCanvas(Gtk.Frame):
     GRIDSIZE_W = 7
     GRIDSIZE_H = 16
 
+    IDLE = 0
+    SELECTING = 1
+    SELECTED = 2
+    COL = 'col'
+    ROW = 'row'
+
     # https://athenajc.gitbooks.io/python-gtk-3-api/content/gtk-group/gtkdrawingarea.html
 
     def __init__(self):
@@ -44,6 +50,11 @@ class GridCanvas(Gtk.Frame):
         self._symbol_canvas = SymbolCanvas()
         self._pos = None
 
+        # active row/column selection
+        self._selection_state = self.IDLE
+        self._selection = None
+        self._cr_selected = None
+
         # connect signals
 
         self.drawing_area.connect("draw", self.on_draw)
@@ -59,6 +70,8 @@ class GridCanvas(Gtk.Frame):
         # subscriptions
 
         pub.subscribe(self.set_grid, 'GRID')
+        pub.subscribe(self.on_selecting_row, 'SELECTING_ROW')
+        pub.subscribe(self.on_selecting_col, 'SELECTING_COL')
 
     def set_grid(self, grid):
         self._grid = grid
@@ -72,6 +85,11 @@ class GridCanvas(Gtk.Frame):
 
         # create a new buffer
         self.surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, area.get_allocated_width(), area.get_allocated_height())
+
+    def max_pos(self):
+        x_max = self.surface.get_width()
+        y_max = self.surface.get_height()
+        return (x_max, y_max)
 
     def on_configure(self, area, event, data=None):
         self.init_surface(self.drawing_area)
@@ -91,7 +109,16 @@ class GridCanvas(Gtk.Frame):
     def do_drawing(self, ctx):
         self.draw_lines(ctx)
         self.draw_content(ctx)
+        self.draw_selection(ctx)
         self._symbol_canvas.draw(ctx, self._pos)
+
+    def on_selecting_row(self):
+        self._selection_state = self.SELECTING
+        self._selection = self.ROW
+
+    def on_selecting_col(self):
+        self._selection_state = self.SELECTING
+        self._selection = self.COL
 
     def draw_lines(self, ctx):
 
@@ -102,10 +129,8 @@ class GridCanvas(Gtk.Frame):
         ctx.set_tolerance(0.1)
         ctx.set_line_join(cairo.LINE_JOIN_ROUND)
 
-        x_max = self.surface.get_width()
+        x_max, y_max = self.max_pos()
         x_incr = self.GRIDSIZE_W
-
-        y_max = self.surface.get_height()
         y_incr = self.GRIDSIZE_H
 
         # horizontal lines
@@ -127,6 +152,44 @@ class GridCanvas(Gtk.Frame):
             x += x_incr
 
         # ctx.restore()
+
+    def draw_selection(self, ctx):
+
+        ctx.set_source_rgb(0.5, 0.5, 0.75)
+        ctx.set_line_width(0.5)
+        ctx.set_tolerance(0.1)
+        ctx.set_line_join(cairo.LINE_JOIN_ROUND)
+
+        x_max, y_max = self.max_pos()
+
+        if self._selection_state == self.SELECTING:
+            x, y = self._pos
+
+        elif self._selection_state == self.SELECTED and self._selection == self.COL:
+            x = self._cr_selected
+            y = 0
+
+        elif self._selection_state == self.SELECTED and self._selection == self.ROW:
+            x = 0
+            y = self._cr_selected
+
+        if self._selection == self.COL and self._selection_state != self.IDLE:
+            # highlight the selected column
+            ctx.new_path()
+            ctx.move_to(x, 0)
+            ctx.line_to(x, y_max)
+            ctx.move_to(x + self.GRIDSIZE_W, 0)
+            ctx.line_to(x + self.GRIDSIZE_W, y_max)
+            ctx.stroke()
+
+        elif self._selection == self.ROW and self._selection_state != self.IDLE:
+            # highlight the selected row
+            ctx.new_path()
+            ctx.move_to(0, y)
+            ctx.line_to(x_max, y)
+            ctx.move_to(0, y + self.GRIDSIZE_H)
+            ctx.line_to(x_max, y + self.GRIDSIZE_H)
+            ctx.stroke()
 
     def draw_content(self, ctx):
 
@@ -154,24 +217,37 @@ class GridCanvas(Gtk.Frame):
 
     def on_button_press(self, widget, event):
 
-        # print("{0}, {1} button: {2}".format(event.x, event.y, event.button))
         pos = (event.x, event.y)
         self.snap_to_grid(pos)
 
-        # https://stackoverflow.com/questions/6616270/right-click-menu-context-menu-using-pygtk
-        button = event.button
-        if button == 1:
-            # left button
-            pub.sendMessage('PASTE_SYMBOL', pos=self.get_grid_xy())
-            widget.queue_resize()
-        elif button == 3:
-            # right button
-            pub.sendMessage('ROTATE_SYMBOL')
-            widget.queue_resize()
+        if self._selection_state == self.SELECTING and self._selection == self.ROW:
+            self._selection_state = self.IDLE
+            row = self.get_grid_xy()[1]
+            pub.sendMessage('INSERT_ROW', row=row)
+
+        elif self._selection_state == self.SELECTING and self._selection == self.COL:
+            self._selection_state = self.IDLE
+            col = self.get_grid_xy()[0]
+            pub.sendMessage('INSERT_COL', col=col)
+
         else:
-            None
+            # https://stackoverflow.com/questions/6616270/right-click-menu-context-menu-using-pygtk
+            button = event.button
+            if button == 1:
+                # left button
+                pub.sendMessage('PASTE_SYMBOL', pos=self.get_grid_xy())
+            elif button == 3:
+                # right button
+                pub.sendMessage('ROTATE_SYMBOL')
+            else:
+                None
+
+        # widget.queue_draw()
+        widget.queue_resize()
+
 
     def on_hover(self, widget, event):
+        # print("col:{0} row:{1}".format(self._selecting_col, self._selecting_row))
         pos = (event.x, event.y)
         self.snap_to_grid(pos)
         widget.queue_resize()
