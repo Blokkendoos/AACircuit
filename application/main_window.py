@@ -5,6 +5,7 @@ AACircuit
 
 import os
 import sys
+from pubsub import pub
 
 from application.grid_canvas import GridCanvas
 from application.component_canvas import ComponentCanvas
@@ -78,6 +79,8 @@ class MainWindow(Gtk.Window):
         btn_close = self.builder.get_object("imagemenuitem5")
         btn_close.connect("activate", self.on_close_clicked)
 
+        self.init_char_buttons()
+
     def init_components(self):
         component_canvas = ComponentCanvas(self.builder)  # noqa F841
 
@@ -90,6 +93,12 @@ class MainWindow(Gtk.Window):
         self.cursor = []
         for i in range(1, 5):
             self.cursor.append(GdkPixbuf.Pixbuf.new_from_file("buttons/c{0}.png".format(i)))
+
+    def init_char_buttons(self):
+        container = self.builder.get_object("table4")
+        children = container.get_children()
+        for element in children:
+            element.connect("pressed", self.on_char_button_clicked)
 
     def on_toggled_cursor(self, button):
 
@@ -104,6 +113,10 @@ class MainWindow(Gtk.Window):
                 if btn.get_name() != button.get_name():
                     # print("Button: %s" % btn.get_name())
                     btn.set_active(False)
+
+    def on_char_button_clicked(self, button):
+        char = button.get_label()
+        pub.sendMessage('COMPONENT_CHANGED', label=char)
 
     def on_open_clicked(self, button):
         print("\"Open\" button was clicked")

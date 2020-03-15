@@ -60,7 +60,11 @@ class ComponentLibrary(object):
         """
         self.dir = dir
         self.key = key
-        return self._dict[key]["grid"][self.ORIENTATION[dir]]
+
+        if len(key) == 1:
+            return [[key],]
+        else:
+            return self._dict[key]["grid"][self.ORIENTATION[dir]]
 
     def nr_components(self):
         return len(self._dict)
