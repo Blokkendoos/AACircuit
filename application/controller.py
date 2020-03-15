@@ -32,7 +32,7 @@ class Controller(object):
         # subscriptions
 
         pub.subscribe(self.on_component_changed, 'COMPONENT_CHANGED')
-        pub.subscribe(self.on_component_rotated, 'ROTATE_SYMBOL')
+        pub.subscribe(self.on_rotate_symbol, 'ROTATE_SYMBOL')
         pub.subscribe(self.on_paste_symbol, 'PASTE_SYMBOL')
 
     def show_all(self):
@@ -42,7 +42,7 @@ class Controller(object):
         grid = self.components.get_grid(label)
         pub.sendMessage('SYMBOL_SELECTED', grid=grid)
 
-    def on_component_rotated(self):
+    def on_rotate_symbol(self):
         grid = self.components.get_grid_next()
         pub.sendMessage('SYMBOL_SELECTED', grid=grid)
 

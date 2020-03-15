@@ -51,10 +51,7 @@ class ComponentCanvas():
     def on_changed(self, selection):
         # get the model and the iterator that points at the data in the model
         (model, iter) = selection.get_selected()
-
-        # set the label to a new value depending on the selection
         label = model[iter][0]
-        # self.component_label.set_text("\n %s" % label)
 
         # get the default grid for the symbol that represents this component
         pub.sendMessage('COMPONENT_CHANGED', label=label)
