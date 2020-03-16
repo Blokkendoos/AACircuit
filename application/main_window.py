@@ -58,17 +58,12 @@ class MainWindow(Gtk.Window):
             self.builder.get_object("btn_cur3"),
             self.builder.get_object("btn_cur4")]
 
-        self.btn_cur[0].set_name("btn_cur1")
-        self.btn_cur[1].set_name("btn_cur2")
-        self.btn_cur[2].set_name("btn_cur3")
-        self.btn_cur[3].set_name("btn_cur4")
-
         self.btn_cur[0].set_active(True)
 
-        self.btn_stretch1 = self.builder.get_object("button36")
-        self.btn_stretch3 = self.builder.get_object("button37")
-        self.btn_stretch2 = self.builder.get_object("button38")
-        self.btn_stretch4 = self.builder.get_object("button39")
+        self.btn_stretch1 = self.builder.get_object("stretch1")
+        self.btn_stretch3 = self.builder.get_object("stretch3")
+        self.btn_stretch2 = self.builder.get_object("stretch2")
+        self.btn_stretch4 = self.builder.get_object("stretch4")
 
         self.init_grid()
         self.init_cursors()
@@ -109,7 +104,7 @@ class MainWindow(Gtk.Window):
             self.cursor.append(GdkPixbuf.Pixbuf.new_from_file("buttons/c{0}.png".format(i)))
 
     def init_char_buttons(self):
-        container = self.builder.get_object("table4")
+        container = self.builder.get_object("char_table")
         children = container.get_children()
         for element in children:
             element.connect("pressed", self.on_char_button_clicked)
@@ -118,13 +113,13 @@ class MainWindow(Gtk.Window):
 
         if button.get_active():
 
-            name = button.get_name()
+            name = Gtk.Buildable.get_name(button)
             btn = int(name[-1])
             self.custom_cursor(btn)
 
             # disable the other cursor buttons
             for btn in self.btn_cur:
-                if btn.get_name() != button.get_name():
+                if Gtk.Buildable.get_name(btn) != Gtk.Buildable.get_name(button):
                     # print("Button: %s" % btn.get_name())
                     btn.set_active(False)
 
@@ -143,7 +138,8 @@ class MainWindow(Gtk.Window):
         Gtk.main_quit()
 
     def on_selecting_col(self, button):
-        name = button.get_name()
+        # https://stackoverflow.com/questions/3489520/python-gtk-widget-name
+        name = Gtk.Buildable.get_name(button)
         if name == 'stretch1':
             action = INSERT
         else:
@@ -151,7 +147,7 @@ class MainWindow(Gtk.Window):
         pub.sendMessage('SELECTING_COL', action=action)
 
     def on_selecting_row(self, button):
-        name = button.get_name()
+        name = Gtk.Buildable.get_name(button)
         if name == 'stretch3':
             action = INSERT
         else:
