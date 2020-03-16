@@ -3,16 +3,12 @@ AACircuit
 2020-03-02 JvO
 """
 
+from application import GRIDSIZE_W, GRIDSIZE_H
 from pubsub import pub
 import cairo
 
 
 class SymbolCanvas(object):
-
-    SIZE = 30
-    FONTSIZE = 12
-    GRIDSIZE_W = 7
-    GRIDSIZE_H = 16
 
     # https://athenajc.gitbooks.io/python-gtk-3-api/content/gtk-group/gtkdrawingarea.html
 
@@ -58,11 +54,11 @@ class SymbolCanvas(object):
             for c in r:
                 ctx.move_to(x, y)
                 ctx.show_text(str(c))
-                x += self.GRIDSIZE_W
+                x += GRIDSIZE_W
                 if x >= surface.get_width():
                     break
 
-            y += self.GRIDSIZE_H
+            y += GRIDSIZE_H
             if y >= surface.get_height():
                 break
 

@@ -37,6 +37,8 @@ class Controller(object):
         pub.subscribe(self.on_undo, 'UNDO')
         pub.subscribe(self.on_insert_col, 'INSERT_COL')
         pub.subscribe(self.on_insert_row, 'INSERT_ROW')
+        pub.subscribe(self.on_remove_col, 'REMOVE_COL')
+        pub.subscribe(self.on_remove_row, 'REMOVE_ROW')
 
     def show_all(self):
         self.gui.show_all()
@@ -49,6 +51,12 @@ class Controller(object):
 
     def on_insert_row(self, row):
         self.grid.insert_row(row)
+
+    def on_remove_col(self, col):
+        self.grid.remove_col(col)
+
+    def on_remove_row(self, row):
+        self.grid.remove_row(row)
 
     def on_component_changed(self, label):
         grid = self.components.get_grid(label)

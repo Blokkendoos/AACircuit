@@ -7,6 +7,7 @@ import os
 import sys
 from pubsub import pub
 
+from application import INSERT, REMOVE
 from application.grid_canvas import GridCanvas
 from application.component_canvas import ComponentCanvas
 
@@ -90,7 +91,9 @@ class MainWindow(Gtk.Window):
         self.init_char_buttons()
 
         self.btn_stretch1.connect("pressed", self.on_selecting_col)
+        self.btn_stretch2.connect("pressed", self.on_selecting_col)
         self.btn_stretch3.connect("pressed", self.on_selecting_row)
+        self.btn_stretch4.connect("pressed", self.on_selecting_row)
 
     def init_components(self):
         component_canvas = ComponentCanvas(self.builder)  # noqa F841
@@ -140,10 +143,20 @@ class MainWindow(Gtk.Window):
         Gtk.main_quit()
 
     def on_selecting_col(self, button):
-        pub.sendMessage('SELECTING_COL')
+        name = button.get_name()
+        if name == 'stretch1':
+            action = INSERT
+        else:
+            action = REMOVE
+        pub.sendMessage('SELECTING_COL', action=action)
 
     def on_selecting_row(self, button):
-        pub.sendMessage('SELECTING_ROW')
+        name = button.get_name()
+        if name == 'stretch3':
+            action = INSERT
+        else:
+            action = REMOVE
+        pub.sendMessage('SELECTING_ROW', action=action)
 
     def custom_cursor(self, btn):
         display = self.get_root_window().get_display()

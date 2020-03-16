@@ -6,6 +6,9 @@ AACircuit
 import cairo
 from pubsub import pub
 
+from application import GRIDSIZE_W, GRIDSIZE_H
+from application import INSERT, REMOVE
+from application import IDLE, SELECTING, SELECTED, COL, ROW
 from application.symbol_canvas import SymbolCanvas
 
 import gi
@@ -14,17 +17,6 @@ from gi.repository import Gtk, Gdk  # noqa: E402
 
 
 class GridCanvas(Gtk.Frame):
-
-    SIZE = 30
-    FONTSIZE = 12
-    GRIDSIZE_W = 7
-    GRIDSIZE_H = 16
-
-    IDLE = 0
-    SELECTING = 1
-    SELECTED = 2
-    COL = 'col'
-    ROW = 'row'
 
     # https://athenajc.gitbooks.io/python-gtk-3-api/content/gtk-group/gtkdrawingarea.html
 
@@ -51,7 +43,8 @@ class GridCanvas(Gtk.Frame):
         self._pos = None
 
         # active row/column selection
-        self._selection_state = self.IDLE
+        self._selection_state = IDLE
+        self._selection_action = None
         self._selection = None
         self._cr_selected = None
 
@@ -112,13 +105,15 @@ class GridCanvas(Gtk.Frame):
         self.draw_selection(ctx)
         self._symbol_canvas.draw(ctx, self._pos)
 
-    def on_selecting_row(self):
-        self._selection_state = self.SELECTING
-        self._selection = self.ROW
+    def on_selecting_row(self, action):
+        self._selection_state = SELECTING
+        self._selection_action = action
+        self._selection = ROW
 
-    def on_selecting_col(self):
-        self._selection_state = self.SELECTING
-        self._selection = self.COL
+    def on_selecting_col(self, action):
+        self._selection_state = SELECTING
+        self._selection_action = action
+        self._selection = COL
 
     def draw_lines(self, ctx):
 
@@ -130,11 +125,11 @@ class GridCanvas(Gtk.Frame):
         ctx.set_line_join(cairo.LINE_JOIN_ROUND)
 
         x_max, y_max = self.max_pos()
-        x_incr = self.GRIDSIZE_W
-        y_incr = self.GRIDSIZE_H
+        x_incr = GRIDSIZE_W
+        y_incr = GRIDSIZE_H
 
         # horizontal lines
-        y = self.GRIDSIZE_H
+        y = GRIDSIZE_H
         while y <= y_max:
             ctx.new_path()
             ctx.move_to(0, y)
@@ -162,33 +157,33 @@ class GridCanvas(Gtk.Frame):
 
         x_max, y_max = self.max_pos()
 
-        if self._selection_state == self.SELECTING:
+        if self._selection_state == SELECTING:
             x, y = self._pos
 
-        elif self._selection_state == self.SELECTED and self._selection == self.COL:
+        elif self._selection_state == SELECTED and self._selection == COL:
             x = self._cr_selected
             y = 0
 
-        elif self._selection_state == self.SELECTED and self._selection == self.ROW:
+        elif self._selection_state == SELECTED and self._selection == ROW:
             x = 0
             y = self._cr_selected
 
-        if self._selection == self.COL and self._selection_state != self.IDLE:
+        if self._selection == COL and self._selection_state != IDLE:
             # highlight the selected column
             ctx.new_path()
             ctx.move_to(x, 0)
             ctx.line_to(x, y_max)
-            ctx.move_to(x + self.GRIDSIZE_W, 0)
-            ctx.line_to(x + self.GRIDSIZE_W, y_max)
+            ctx.move_to(x + GRIDSIZE_W, 0)
+            ctx.line_to(x + GRIDSIZE_W, y_max)
             ctx.stroke()
 
-        elif self._selection == self.ROW and self._selection_state != self.IDLE:
+        elif self._selection == ROW and self._selection_state != IDLE:
             # highlight the selected row
             ctx.new_path()
             ctx.move_to(0, y)
             ctx.line_to(x_max, y)
-            ctx.move_to(0, y + self.GRIDSIZE_H)
-            ctx.line_to(x_max, y + self.GRIDSIZE_H)
+            ctx.move_to(0, y + GRIDSIZE_H)
+            ctx.line_to(x_max, y + GRIDSIZE_H)
             ctx.stroke()
 
     def draw_content(self, ctx):
@@ -201,15 +196,15 @@ class GridCanvas(Gtk.Frame):
         ctx.set_source_rgb(0.1, 0.1, 0.1)
         ctx.select_font_face("monospace", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
 
-        y = self.GRIDSIZE_H
+        y = GRIDSIZE_H
         for r in self._grid.grid:
             x = 0
             for c in r:
                 ctx.move_to(x, y)
                 ctx.show_text(str(c))
-                x += self.GRIDSIZE_W
+                x += GRIDSIZE_W
 
-            y += self.GRIDSIZE_H
+            y += GRIDSIZE_H
             if y >= self.surface.get_height():
                 break
 
@@ -220,15 +215,21 @@ class GridCanvas(Gtk.Frame):
         pos = (event.x, event.y)
         self.snap_to_grid(pos)
 
-        if self._selection_state == self.SELECTING and self._selection == self.ROW:
-            self._selection_state = self.IDLE
+        if self._selection_state == SELECTING and self._selection == ROW:
+            self._selection_state = IDLE
             row = self.get_grid_xy()[1]
-            pub.sendMessage('INSERT_ROW', row=row)
+            if self._selection_action == INSERT:
+                pub.sendMessage('INSERT_ROW', row=row)
+            else:
+                pub.sendMessage('REMOVE_ROW', row=row)
 
-        elif self._selection_state == self.SELECTING and self._selection == self.COL:
-            self._selection_state = self.IDLE
+        elif self._selection_state == SELECTING and self._selection == COL:
+            self._selection_state = IDLE
             col = self.get_grid_xy()[0]
-            pub.sendMessage('INSERT_COL', col=col)
+            if self._selection_action == INSERT:
+                pub.sendMessage('INSERT_COL', col=col)
+            else:
+                pub.sendMessage('REMOVE_COL', col=col)
 
         else:
             # https://stackoverflow.com/questions/6616270/right-click-menu-context-menu-using-pygtk
@@ -255,15 +256,15 @@ class GridCanvas(Gtk.Frame):
     def snap_to_grid(self, pos):
         """Align position to (the canvas) grid."""
         (x, y) = pos
-        x -= x % self.GRIDSIZE_W
-        y -= y % self.GRIDSIZE_H
+        x -= x % GRIDSIZE_W
+        y -= y % GRIDSIZE_H
         self._pos = (int(x), int(y))
 
     def get_grid_xy(self):
         """Map the canvas position to grid coordinates."""
         (x, y) = self._pos
-        x /= self.GRIDSIZE_W
-        y /= self.GRIDSIZE_H
+        x /= GRIDSIZE_W
+        y /= GRIDSIZE_H
         if y > 0:
             y -= 1
         return (int(x), int(y))
