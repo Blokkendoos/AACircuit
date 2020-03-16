@@ -68,6 +68,7 @@ class GridCanvas(Gtk.Frame):
 
     def set_grid(self, grid):
         self._grid = grid
+        self.drawing_area.queue_resize()
 
     def init_surface(self, area):
         """Initialize Cairo surface"""
@@ -136,8 +137,6 @@ class GridCanvas(Gtk.Frame):
 
     def draw_lines(self, ctx):
 
-        # ctx.save()
-
         ctx.set_source_rgb(0.75, 0.75, 0.75)
         ctx.set_line_width(0.5)
         ctx.set_tolerance(0.1)
@@ -164,8 +163,6 @@ class GridCanvas(Gtk.Frame):
             ctx.line_to(x, y_max)
             ctx.stroke()
             x += x_incr
-
-        # ctx.restore()
 
     def draw_selection(self, ctx):
 
@@ -210,8 +207,6 @@ class GridCanvas(Gtk.Frame):
         if self._grid is None:
             return
 
-        # ctx.save()
-
         ctx.set_source_rgb(0.1, 0.1, 0.1)
         ctx.select_font_face("monospace", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
 
@@ -226,8 +221,6 @@ class GridCanvas(Gtk.Frame):
             y += GRIDSIZE_H
             if y >= self.surface.get_height():
                 break
-
-        # ctx.restore()
 
     def on_button_press(self, widget, event):
 
@@ -262,7 +255,6 @@ class GridCanvas(Gtk.Frame):
             else:
                 None
 
-        # widget.queue_draw()
         widget.queue_resize()
 
     def on_hover(self, widget, event):

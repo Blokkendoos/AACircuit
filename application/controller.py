@@ -45,6 +45,7 @@ class Controller(object):
 
     def on_undo(self):
         self.grid.undo()
+        pub.sendMessage('GRID', grid=self.grid)
 
     def on_insert_col(self, col):
         self.grid.insert_col(col)
