@@ -4,6 +4,7 @@ AACircuit
 """
 
 import pickle
+import xerox
 
 
 class Grid(object):
@@ -34,11 +35,11 @@ class Grid(object):
 
     # PRIVATE
 
-    def _save_grid(self):
-        """Use (Pickle) serialization to implement a simple, and rude, undo functionality."""
+    def _push_grid(self):
+        """Use (Pickle) serialization to implement a simple undo functionality."""
         self._undo_stack.append(pickle.dumps(self._grid))
 
-    def _restore_grid(self, str):
+    def _pop_grid(self, str):
         self._grid = pickle.loads(str)
 
     # PUBLIC
@@ -74,7 +75,61 @@ class Grid(object):
 
     def undo(self):
         if len(self._undo_stack) > 0:
-            self._restore_grid(self._undo_stack.pop())
+            self._pop_grid(self._undo_stack.pop())
+
+    # clipboard
+
+    def copy_to_clipboard(self):
+        """
+        Copy the content of the grid to the clipboard.
+        The rows are copied as ASCII lines, terminated by CR
+        """
+        content = ""
+
+        for r in self._grid:
+            line = ""
+            for c in r:
+                line += c
+            content += (line + "\n")
+
+        xerox.copy(content)
+
+    def paste_from_clipboard(self):
+        """
+        Copy the content of the grid to the clipboard.
+        The rows are copied as ASCII lines, terminated by CR
+        """
+
+        self._push_grid()
+
+        grid = []
+        first_line = True
+        content = xerox.paste().splitlines()
+        for line in content:
+            dict = []
+            for char in line:
+                dict.append(char)
+
+            # the first line determines the number of columns in the new grid
+            if first_line:
+                first_line = False
+                row_length = len(dict)
+            elif len(dict) < row_length:
+                for i in range(len(dict), row_length):
+                    dict.append(" ")
+            elif len(dict) < row_length:
+                dict = dict[:row_length]
+
+            grid.append(dict)
+
+        self._grid = grid
+
+        self._dirty = True
+
+    def load_and_paste_from_clipboard(self):
+        None
+
+    # grid manipulation
 
     def cell(self, row, col):
         return self._grid[row][col]
@@ -118,7 +173,7 @@ class Grid(object):
         :param rect: tuple (width, height)
         """
 
-        self._save_grid()
+        self._push_grid()
 
         c_start, r_start, c_end, r_end = self.pos_to_rc(pos, rect)
 
@@ -143,7 +198,7 @@ class Grid(object):
         if len(content) == 0:
             return
 
-        self._save_grid()
+        self._push_grid()
 
         width = len(content[0])
         rect = (width, len(content))
@@ -173,7 +228,7 @@ class Grid(object):
     def remove_row(self, row):
         # assert row >= 0 and row < len(self._grid)
 
-        self._save_grid()
+        self._push_grid()
 
         del self._grid[row]
         self._dirty = True
@@ -181,7 +236,7 @@ class Grid(object):
     def remove_col(self, col):
         # assert col >= 0 and col < len(self._grid[0])
 
-        self._save_grid()
+        self._push_grid()
 
         for r in self._grid:
             del r[col]
@@ -189,14 +244,14 @@ class Grid(object):
         self._dirty = True
 
     def insert_row(self, row):
-        self._save_grid()
+        self._push_grid()
 
         self._grid.insert(row, [self.NEW_VALUE] * self.nr_cols)
 
         self._dirty = True
 
     def insert_col(self, col):
-        self._save_grid()
+        self._push_grid()
 
         for r in self._grid:
             r.insert(col, self.NEW_VALUE)

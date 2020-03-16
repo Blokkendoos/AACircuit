@@ -35,10 +35,17 @@ class Controller(object):
         pub.subscribe(self.on_rotate_symbol, 'ROTATE_SYMBOL')
         pub.subscribe(self.on_paste_symbol, 'PASTE_SYMBOL')
         pub.subscribe(self.on_undo, 'UNDO')
+
+        # insert/remove rows or columns
         pub.subscribe(self.on_insert_col, 'INSERT_COL')
         pub.subscribe(self.on_insert_row, 'INSERT_ROW')
         pub.subscribe(self.on_remove_col, 'REMOVE_COL')
         pub.subscribe(self.on_remove_row, 'REMOVE_ROW')
+
+        # clipboard
+        pub.subscribe(self.on_copy, 'COPY_TO_CLIPBOARD')
+        pub.subscribe(self.on_paste, 'PASTE_FROM_CLIPBOARD')
+        pub.subscribe(self.on_load, 'LOAD_AND_PASTE_FROM_CLIPBOARD')
 
     def show_all(self):
         self.gui.show_all()
@@ -46,6 +53,8 @@ class Controller(object):
     def on_undo(self):
         self.grid.undo()
         pub.sendMessage('GRID', grid=self.grid)
+
+    # grid manipulation
 
     def on_insert_col(self, col):
         self.grid.insert_col(col)
@@ -70,3 +79,16 @@ class Controller(object):
     def on_paste_symbol(self, pos):
         symbol_grid = self.components.get_grid_current()
         self.grid.fill_rect(pos, symbol_grid)
+
+    # clipboard
+
+    def on_copy(self):
+        self.grid.copy_to_clipboard()
+
+    def on_paste(self):
+        self.grid.paste_from_clipboard()
+        pub.sendMessage('GRID', grid=self.grid)
+
+    def on_load(self):
+        self.grid.load_and_paste_from_clipboard()
+        pub.sendMessage('GRID', grid=self.grid)

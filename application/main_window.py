@@ -69,10 +69,17 @@ class MainWindow(Gtk.Window):
 
         self.btn_cur[0].set_active(True)
 
+        # insert/remove rows or columns
         self.btn_stretch1 = self.builder.get_object("stretch1")
         self.btn_stretch3 = self.builder.get_object("stretch3")
         self.btn_stretch2 = self.builder.get_object("stretch2")
         self.btn_stretch4 = self.builder.get_object("stretch4")
+
+        # clipboard
+        self.btn_clipboard = [
+            self.builder.get_object("copy_to_clipboard"),
+            self.builder.get_object("paste_from_clipboard"),
+            self.builder.get_object("load_and_paste_from_clipboard")]
 
         self.init_grid()
         self.init_cursors()
@@ -94,10 +101,15 @@ class MainWindow(Gtk.Window):
 
         self.init_char_buttons()
 
+        # invert/remove rows or columns
         self.btn_stretch1.connect("pressed", self.on_selecting_col)
         self.btn_stretch2.connect("pressed", self.on_selecting_col)
         self.btn_stretch3.connect("pressed", self.on_selecting_row)
         self.btn_stretch4.connect("pressed", self.on_selecting_row)
+
+        # clipboard
+        for btn in self.btn_clipboard:
+            btn.connect("pressed", self.on_clipboard)
 
     def init_components(self):
         component_canvas = ComponentCanvas(self.builder)  # noqa F841
@@ -162,6 +174,10 @@ class MainWindow(Gtk.Window):
         else:
             action = REMOVE
         pub.sendMessage('SELECTING_ROW', action=action)
+
+    def on_clipboard(self, button):
+        name = Gtk.Buildable.get_name(button)
+        pub.sendMessage(name.upper())
 
     def custom_cursor(self, btn):
         display = self.get_root_window().get_display()
