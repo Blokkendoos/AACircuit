@@ -84,6 +84,11 @@ class GridCanvas(Gtk.Frame):
         y_max = self.surface.get_height()
         return (x_max, y_max)
 
+    def max_pos_grid(self):
+        x_max = self._grid.nr_cols * GRIDSIZE_W
+        y_max = self._grid.nr_rows * GRIDSIZE_H
+        return (x_max, y_max)
+
     def on_configure(self, area, event, data=None):
         self.init_surface(self.drawing_area)
         context = cairo.Context(self.surface)
@@ -100,6 +105,7 @@ class GridCanvas(Gtk.Frame):
         return False
 
     def do_drawing(self, ctx):
+        self.draw_background(ctx)
         self.draw_lines(ctx)
         self.draw_content(ctx)
         self.draw_selection(ctx)
@@ -114,6 +120,19 @@ class GridCanvas(Gtk.Frame):
         self._selection_state = SELECTING
         self._selection_action = action
         self._selection = COL
+
+    def draw_background(self, ctx):
+        """Draw a background with the size of the grid."""
+        ctx.set_source_rgb(0.95, 0.95, 0.85)
+        ctx.set_line_width(0.5)
+        ctx.set_tolerance(0.1)
+        ctx.set_line_join(cairo.LINE_JOIN_ROUND)
+
+        x_max, y_max = self.max_pos_grid()
+
+        ctx.new_path()
+        ctx.rectangle(0, 0, x_max, y_max)
+        ctx.fill()
 
     def draw_lines(self, ctx):
 
@@ -246,7 +265,6 @@ class GridCanvas(Gtk.Frame):
         # widget.queue_draw()
         widget.queue_resize()
 
-
     def on_hover(self, widget, event):
         # print("col:{0} row:{1}".format(self._selecting_col, self._selecting_row))
         pos = (event.x, event.y)
@@ -265,6 +283,4 @@ class GridCanvas(Gtk.Frame):
         (x, y) = self._pos
         x /= GRIDSIZE_W
         y /= GRIDSIZE_H
-        if y > 0:
-            y -= 1
         return (int(x), int(y))
