@@ -52,6 +52,15 @@ class MainWindow(Gtk.Window):
 
         # Add any other initialization here
 
+        # https://stackoverflow.com/questions/14983385/why-css-style-dont-work-on-gtkbutton
+        cssProvider = Gtk.CssProvider()
+        cssProvider.load_from_path('style.css')
+        screen = Gdk.Screen.get_default()
+        styleContext = Gtk.StyleContext()
+        # With the others GTK_STYLE_PROVIDER_PRIORITY values get the same result
+        styleContext.add_provider_for_screen(screen, cssProvider,
+                                             Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+
         self.btn_cur = [
             self.builder.get_object("btn_cur1"),
             self.builder.get_object("btn_cur2"),
@@ -106,8 +115,8 @@ class MainWindow(Gtk.Window):
     def init_char_buttons(self):
         container = self.builder.get_object("char_table")
         children = container.get_children()
-        for element in children:
-            element.connect("pressed", self.on_char_button_clicked)
+        for btn in children:
+            btn.connect("pressed", self.on_char_button_clicked)
 
     def on_toggled_cursor(self, button):
 

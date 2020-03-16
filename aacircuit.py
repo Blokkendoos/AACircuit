@@ -1,6 +1,10 @@
 """
 AACircuit.py
 2020-03-02 JvO
+
+usage: python3.7 aacircuit.py
+For debugging the Gtk (style) UI: export GTK_DEBUG=interactive; python3.7 aacircuit.py
+
 """
 
 from application.controller import Controller
