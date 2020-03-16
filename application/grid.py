@@ -92,6 +92,8 @@ class Grid(object):
                 line += c
             content += (line + "\n")
 
+        content += "(created by AACircuit.py © 2020 JvO)"
+
         xerox.copy(content)
 
     def paste_from_clipboard(self):
