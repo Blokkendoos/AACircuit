@@ -31,11 +31,12 @@ class GridCanvas(Gtk.Frame):
 
         self.surface = None
 
-        overlay = Gtk.Overlay()
-        self.add(overlay)
+        # overlay = Gtk.Overlay()
+        # self.add(overlay)
 
-        self.drawing_area = Gtk.DrawingArea()
-        overlay.add_overlay(self.drawing_area)
+        self._drawing_area = Gtk.DrawingArea()
+        # overlay.add_overlay(self._drawing_area)
+        self.add(self._drawing_area)
 
         self._grid = None
 
