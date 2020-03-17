@@ -62,10 +62,10 @@ class MainWindow(Gtk.Window):
                                              Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
         self.btn_cur = [
-            self.builder.get_object("btn_cur1"),
-            self.builder.get_object("btn_cur2"),
-            self.builder.get_object("btn_cur3"),
-            self.builder.get_object("btn_cur4")]
+            self.builder.get_object("cursor1"),
+            self.builder.get_object("cursor2"),
+            self.builder.get_object("cursor3"),
+            self.builder.get_object("cursor4")]
 
         self.btn_cur[0].set_active(True)
 
@@ -97,7 +97,7 @@ class MainWindow(Gtk.Window):
         for btn in self.btn_cur:
             btn.connect("toggled", self.on_toggled_cursor)
 
-        menu_close = self.builder.get_object("imagemenuitem5")
+        menu_close = self.builder.get_object("quit")
         menu_close.connect("activate", self.on_close_clicked)
 
         menu_undo = self.builder.get_object("undo")
