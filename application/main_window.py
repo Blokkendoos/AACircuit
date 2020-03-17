@@ -197,7 +197,7 @@ class MainWindow(Gtk.Window):
         pb = self.cursor[btn - 1]
         cursor = Gdk.Cursor.new_from_pixbuf(display, pb, 0, 0)
         # self.get_root_window().set_cursor(cursor)
-        widget = self.grid_canvas.drawing_area
+        widget = self.grid_canvas._drawing_area
         # widget.set_sensitive(False)
         # cursor = Gdk.Cursor(Gdk.CursorType.WATCH)
         widget.get_window().set_cursor(cursor)
