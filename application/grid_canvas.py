@@ -8,12 +8,54 @@ from pubsub import pub
 
 from application import GRIDSIZE_W, GRIDSIZE_H
 from application import INSERT, REMOVE
-from application import IDLE, SELECTING, SELECTED, COL, ROW, RECT
+from application import IDLE, SELECTING, SELECTED, COL, ROW, RECT, DRAG
 from application.symbol_canvas import SymbolCanvas
 
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk  # noqa: E402
+
+
+class Pos(object):
+    """A position on the grid (canvas)."""
+
+    def __init__(self, x, y):
+        self._x = int(x)
+        self._y = int(y)
+
+    def __add__(self, other):
+        x = self._x + other.x
+        y = self._y + other.y
+        return Pos(x, y)
+
+    def __str__(self):
+        return "x:{0} y:{1}".format(self._x, self._y)
+
+    @property
+    def x(self):
+        return self._x
+
+    @property
+    def y(self):
+        return self._y
+
+    def snap_to_grid(self):
+        """Set position to the the nearest (canvas) grid coordinate."""
+        (x, y) = (self._x, self._y)
+        x -= x % GRIDSIZE_W
+        y -= y % GRIDSIZE_H
+        self._x = int(x)
+        self._y = int(y)
+        return Pos(self._x, self._y)
+
+    def map_to_grid(self):
+        """Map a canvas position to grid coordinates."""
+        (x, y) = (self._x, self._y)
+        x /= GRIDSIZE_W
+        y /= GRIDSIZE_H
+        self._x = int(x)
+        self._y = int(y)
+        return Pos(self._x, self._y)
 
 
 class GridCanvas(Gtk.Frame):
@@ -30,18 +72,13 @@ class GridCanvas(Gtk.Frame):
         self.set_size_request(700, 700)
 
         self.surface = None
-
-        # overlay = Gtk.Overlay()
-        # self.add(overlay)
+        self._grid = None
+        self._pos = None
 
         self._drawing_area = Gtk.DrawingArea()
-        # overlay.add_overlay(self._drawing_area)
         self.add(self._drawing_area)
 
-        self._grid = None
-
         self._symbol_canvas = SymbolCanvas()
-        self._pos = None
 
         # active row/column selection
         self._selection_state = IDLE
@@ -53,15 +90,17 @@ class GridCanvas(Gtk.Frame):
         self._drawing_area.connect('configure-event', self.on_configure)
 
         # https://www.programcreek.com/python/example/84675/gi.repository.Gtk.DrawingArea
-        self._drawing_area.add_events(Gdk.EventMask.BUTTON_PRESS_MASK)
-        self._drawing_area.connect('button_press_event', self.on_button_press)
+        # self._drawing_area.add_events(Gdk.EventMask.BUTTON_PRESS_MASK)
+        # self._drawing_area.connect('button_press_event', self.on_button_press)
+
+        self._gesture_drag = Gtk.GestureDrag.new(self._drawing_area)
+        # self._gesture_drag.new(self)
+        self._gesture_drag.connect('drag-begin', self.on_drag_begin)
+        self._gesture_drag.connect('drag-end', self.on_drag_end)
+        self._gesture_drag.connect('drag-update', self.on_drag_update)
 
         self._drawing_area.add_events(Gdk.EventMask.POINTER_MOTION_MASK)
         self._drawing_area.connect('motion-notify-event', self.on_hover)
-
-        self._gesture_drag = Gtk.GestureDrag()
-        self._gesture_drag.connect('drag-begin', self.on_drag_begin)
-        self._gesture_drag.connect('drag-end', self.on_drag_end)
 
         # subscriptions
 
@@ -183,7 +222,7 @@ class GridCanvas(Gtk.Frame):
         x_max, y_max = self.max_pos()
 
         if self._selection_state == SELECTING:
-            x, y = self._pos
+            x, y = (self._pos.x, self._pos.y)
 
         elif self._selection_state == SELECTED and self._selection == COL:
             x = self._cr_selected
@@ -211,6 +250,14 @@ class GridCanvas(Gtk.Frame):
             ctx.line_to(x_max, y + GRIDSIZE_H)
             ctx.stroke()
 
+        elif self._selection == RECT and self._selection_state == DRAG:
+            # draw the selection rectangle
+            ctx.new_path()
+            x, y = self._drag_ul
+            w, h = self._drag_br - self._drag_ul
+            ctx.rectangle(x, y, w, h)
+            ctx.stroke()
+
     def draw_content(self, ctx):
 
         if self._grid is None:
@@ -233,9 +280,9 @@ class GridCanvas(Gtk.Frame):
 
     def on_button_press(self, widget, event):
 
-        pos = (event.x, event.y)
-        self.snap_to_grid(pos)
-        pub.sendMessage('POINTER_MOVED', pos=self.get_grid_xy())
+        pos = Pos(event.x, event.y)
+        pos.snap_to_grid()
+        pub.sendMessage('POINTER_MOVED', pos=pos.map_to_grid())
 
         if self._selection_state == SELECTING and self._selection == ROW:
             row = self.get_grid_xy()[1]
@@ -252,40 +299,54 @@ class GridCanvas(Gtk.Frame):
                 pub.sendMessage('REMOVE_COL', col=col)
 
         elif self._selection_state == SELECTING and self._selection == RECT:
-            rect_ul = self.get_grid_xy()
+            # rect_ul = self.get_grid_xy()
             # TODO dragging start/end position
+            None
 
         else:
-                # https://stackoverflow.com/questions/6616270/right-click-menu-context-menu-using-pygtk
-                button = event.button
-                if button == 1:
-                    # left button
-                    pub.sendMessage('PASTE_SYMBOL', pos=self.get_grid_xy())
-                elif button == 3:
-                    # right button
-                    pub.sendMessage('ROTATE_SYMBOL')
-                else:
-                    None
+            # https://stackoverflow.com/questions/6616270/right-click-menu-context-menu-using-pygtk
+            button = event.button
+            if button == 1:
+                # left button
+                pub.sendMessage('PASTE_SYMBOL', pos=self._pos.map_to_grid())
+            elif button == 3:
+                # right button
+                pub.sendMessage('ROTATE_SYMBOL')
+            else:
+                None
 
         widget.queue_resize()
+
+    def on_drag_begin(self, widget, x_start, y_start):
+        print("DRAG Begin")
+        pos = Pos(x_start, y_start)
+        self._drag_startpos = pos.map_to_grid()
+        # print("drag startpos:", self._drag_startpos)
+        self._selection_action = DRAG
+        pub.sendMessage('POINTER_MOVED', pos=self._drag_startpos)
+
+    def on_drag_end(self, widget, x_offset, y_offset):
+        print("DRAG End")
+        pos = self._pos
+        offset = Pos(x_offset, y_offset)
+        pos += offset
+        self._drag_endpos = pos.snap_to_grid()
+
+    def on_drag_update(self, widget, x_offset, y_offset):
+        print("/")
+        pos = self._pos
+        offset = Pos(x_offset, y_offset)
+        pos += offset
+        pos.snap_to_grid()
+        pos.map_to_grid()
+        self._drag_currentpos = pos
+        # pub.sendMessage('POINTER_MOVED', pos=self._drag_currentpos)
 
     def on_hover(self, widget, event):
         # print("col:{0} row:{1}".format(self._selecting_col, self._selecting_row))
-        pos = (event.x, event.y)
-        self.snap_to_grid(pos)
-        pub.sendMessage('POINTER_MOVED', pos=self.get_grid_xy())
+        print(".")
+        pos = Pos(event.x, event.y)
+        pos.snap_to_grid()
+        self._pos = pos
+        pub.sendMessage('POINTER_MOVED', pos=self._pos)
         widget.queue_resize()
-
-    def snap_to_grid(self, pos):
-        """Align position to (the canvas) grid."""
-        (x, y) = pos
-        x -= x % GRIDSIZE_W
-        y -= y % GRIDSIZE_H
-        self._pos = (int(x), int(y))
-
-    def get_grid_xy(self):
-        """Map the canvas position to grid coordinates."""
-        (x, y) = self._pos
-        x /= GRIDSIZE_W
-        y /= GRIDSIZE_H
-        return (int(x), int(y))

@@ -4,6 +4,7 @@ AACircuit
 """
 
 from application import GRIDSIZE_W, GRIDSIZE_H
+# from application.grid_canvas import Pos
 from pubsub import pub
 import cairo
 
@@ -48,7 +49,7 @@ class SymbolCanvas(object):
         ctx.set_source_rgb(1, 0, 0)
         ctx.select_font_face("monospace", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
 
-        x_start, y = pos
+        x_start, y = pos.x, pos.y
         for r in self._grid:
             x = x_start
             for c in r:

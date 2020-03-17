@@ -14,6 +14,7 @@ INSERT = 'insert'
 IDLE = 0
 SELECTING = 1
 SELECTED = 2
+DRAG = 3
 COL = 'col'
 ROW = 'row'
 RECT = 'rect'

@@ -7,8 +7,8 @@ import os
 import sys
 from pubsub import pub
 
-from application import INSERT, REMOVE, RECT
-from application.grid_canvas import GridCanvas
+from application import INSERT, REMOVE, IDLE
+from application.grid_canvas import GridCanvas, Pos
 from application.component_canvas import ComponentCanvas
 
 import gi
@@ -137,8 +137,8 @@ class MainWindow(Gtk.Window):
 
     def on_pointer_moved(self, pos):
         # grid indexing starts at zero, show +1
-        self.label_xpos.set_text(format(pos[0] + 1))
-        self.label_ypos.set_text(format(pos[1] + 1))
+        self.label_xpos.set_text(format(pos.x + 1))
+        self.label_ypos.set_text(format(pos.y + 1))
 
     def on_toggled_cursor(self, button):
 
@@ -169,7 +169,7 @@ class MainWindow(Gtk.Window):
         Gtk.main_quit()
 
     def on_select_rect(self, button):
-        pub.sendMessage('SELECT_RECT', action=RECT)
+        pub.sendMessage('SELECT_RECT', action=IDLE)
 
     def on_selecting_col(self, button):
         # https://stackoverflow.com/questions/3489520/python-gtk-widget-name
