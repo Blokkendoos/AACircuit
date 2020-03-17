@@ -69,6 +69,10 @@ class MainWindow(Gtk.Window):
 
         self.btn_cur[0].set_active(True)
 
+        # statusbar
+        self.label_xpos = self.builder.get_object("x_pos")
+        self.label_ypos = self.builder.get_object("y_pos")
+
         # insert/remove rows or columns
         self.btn_stretch1 = self.builder.get_object("stretch1")
         self.btn_stretch3 = self.builder.get_object("stretch3")
@@ -111,6 +115,9 @@ class MainWindow(Gtk.Window):
         for btn in self.btn_clipboard:
             btn.connect("pressed", self.on_clipboard)
 
+        # subscriptions
+        pub.subscribe(self.on_pointer_moved, 'POINTER_MOVED')
+
     def init_components(self):
         component_canvas = ComponentCanvas(self.builder)  # noqa F841
 
@@ -129,6 +136,10 @@ class MainWindow(Gtk.Window):
         children = container.get_children()
         for btn in children:
             btn.connect("pressed", self.on_char_button_clicked)
+
+    def on_pointer_moved(self, pos):
+        self.label_xpos.set_text("x:{0}".format(pos[0]))
+        self.label_ypos.set_text("y:{0}".format(pos[1]))
 
     def on_toggled_cursor(self, button):
 
