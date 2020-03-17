@@ -16,7 +16,7 @@ class Controller(object):
 
         # setup MVC
 
-        self.grid = Grid(75, 40)  # the ASCII grid
+        self.grid = Grid(72, 36)  # the ASCII grid
 
         self.gui = MainWindow()
 
