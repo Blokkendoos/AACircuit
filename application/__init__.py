@@ -16,3 +16,4 @@ SELECTING = 1
 SELECTED = 2
 COL = 'col'
 ROW = 'row'
+RECT = 'rect'
