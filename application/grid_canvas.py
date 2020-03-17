@@ -49,17 +49,19 @@ class GridCanvas(Gtk.Frame):
         self._selection = None
         self._cr_selected = None
 
-        # connect signals
-
-        self.drawing_area.connect("draw", self.on_draw)
-        self.drawing_area.connect('configure-event', self.on_configure)
+        self._drawing_area.connect("draw", self.on_draw)
+        self._drawing_area.connect('configure-event', self.on_configure)
 
         # https://www.programcreek.com/python/example/84675/gi.repository.Gtk.DrawingArea
-        self.drawing_area.add_events(Gdk.EventMask.BUTTON_PRESS_MASK)
-        self.drawing_area.connect('button_press_event', self.on_button_press)
+        self._drawing_area.add_events(Gdk.EventMask.BUTTON_PRESS_MASK)
+        self._drawing_area.connect('button_press_event', self.on_button_press)
 
-        self.drawing_area.add_events(Gdk.EventMask.POINTER_MOTION_MASK)
-        self.drawing_area.connect('motion-notify-event', self.on_hover)
+        self._drawing_area.add_events(Gdk.EventMask.POINTER_MOTION_MASK)
+        self._drawing_area.connect('motion-notify-event', self.on_hover)
+
+        self._gesture_drag = Gtk.GestureDrag()
+        self._gesture_drag.connect('drag-begin', self.on_drag_begin)
+        self._gesture_drag.connect('drag-end', self.on_drag_end)
 
         # subscriptions
 
@@ -70,7 +72,7 @@ class GridCanvas(Gtk.Frame):
 
     def set_grid(self, grid):
         self._grid = grid
-        self.drawing_area.queue_resize()
+        self._drawing_area.queue_resize()
 
     def init_surface(self, area):
         """Initialize Cairo surface"""
@@ -93,7 +95,7 @@ class GridCanvas(Gtk.Frame):
         return (x_max, y_max)
 
     def on_configure(self, area, event, data=None):
-        self.init_surface(self.drawing_area)
+        self.init_surface(self._drawing_area)
         context = cairo.Context(self.surface)
         self.do_drawing(context)
         self.surface.flush()
