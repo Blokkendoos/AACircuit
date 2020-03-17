@@ -7,7 +7,7 @@ import os
 import sys
 from pubsub import pub
 
-from application import INSERT, REMOVE
+from application import INSERT, REMOVE, RECT
 from application.grid_canvas import GridCanvas
 from application.component_canvas import ComponentCanvas
 
@@ -61,6 +61,20 @@ class MainWindow(Gtk.Window):
         styleContext.add_provider_for_screen(screen, cssProvider,
                                              Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
+        # statusbar
+        self.label_xpos = self.builder.get_object("x_pos")
+        self.label_ypos = self.builder.get_object("y_pos")
+
+        self.builder.connect_signals(self)
+
+        self.connect('destroy', lambda w: Gtk.main_quit())
+        menu_close = self.builder.get_object("quit")
+        menu_close.connect("activate", self.on_close_clicked)
+
+        menu_undo = self.builder.get_object("undo")
+        menu_undo.connect("activate", self.on_undo)
+
+        # char buttons
         self.btn_cur = [
             self.builder.get_object("cursor1"),
             self.builder.get_object("cursor2"),
@@ -69,9 +83,8 @@ class MainWindow(Gtk.Window):
 
         self.btn_cur[0].set_active(True)
 
-        # statusbar
-        self.label_xpos = self.builder.get_object("x_pos")
-        self.label_ypos = self.builder.get_object("y_pos")
+        for btn in self.btn_cur:
+            btn.connect("toggled", self.on_toggled_cursor)
 
         # insert/remove rows or columns
         self.btn_stretch1 = self.builder.get_object("stretch1")
@@ -79,41 +92,26 @@ class MainWindow(Gtk.Window):
         self.btn_stretch2 = self.builder.get_object("stretch2")
         self.btn_stretch4 = self.builder.get_object("stretch4")
 
-        # clipboard
-        self.btn_clipboard = [
-            self.builder.get_object("copy_to_clipboard"),
-            self.builder.get_object("paste_from_clipboard"),
-            self.builder.get_object("load_and_paste_from_clipboard")]
-
-        self.init_grid()
-        self.init_cursors()
-        self.init_components()
-
-        # connect signals
-
-        self.builder.connect_signals(self)
-        self.connect('destroy', lambda w: Gtk.main_quit())
-
-        for btn in self.btn_cur:
-            btn.connect("toggled", self.on_toggled_cursor)
-
-        menu_close = self.builder.get_object("quit")
-        menu_close.connect("activate", self.on_close_clicked)
-
-        menu_undo = self.builder.get_object("undo")
-        menu_undo.connect("activate", self.on_undo)
-
-        self.init_char_buttons()
-
-        # invert/remove rows or columns
         self.btn_stretch1.connect("pressed", self.on_selecting_col)
         self.btn_stretch2.connect("pressed", self.on_selecting_col)
         self.btn_stretch3.connect("pressed", self.on_selecting_row)
         self.btn_stretch4.connect("pressed", self.on_selecting_row)
 
+        self.btn_select = self.builder.get_object("select_rect")
+        self.btn_select.connect("pressed", self.on_select_rect)
+
         # clipboard
+        self.btn_clipboard = [
+            self.builder.get_object("copy_to_clipboard"),
+            self.builder.get_object("paste_from_clipboard"),
+            self.builder.get_object("load_and_paste_from_clipboard")]
         for btn in self.btn_clipboard:
             btn.connect("pressed", self.on_clipboard)
+
+        self.init_grid()
+        self.init_cursors()
+        self.init_components()
+        self.init_char_buttons()
 
         # subscriptions
         pub.subscribe(self.on_pointer_moved, 'POINTER_MOVED')
@@ -169,6 +167,9 @@ class MainWindow(Gtk.Window):
     def on_close_clicked(self, button):
         print("Closing application")
         Gtk.main_quit()
+
+    def on_select_rect(self, button):
+        pub.sendMessage('SELECT_RECT', action=RECT)
 
     def on_selecting_col(self, button):
         # https://stackoverflow.com/questions/3489520/python-gtk-widget-name

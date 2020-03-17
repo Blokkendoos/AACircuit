@@ -8,7 +8,7 @@ from pubsub import pub
 
 from application import GRIDSIZE_W, GRIDSIZE_H
 from application import INSERT, REMOVE
-from application import IDLE, SELECTING, SELECTED, COL, ROW
+from application import IDLE, SELECTING, SELECTED, COL, ROW, RECT
 from application.symbol_canvas import SymbolCanvas
 
 import gi
@@ -63,6 +63,7 @@ class GridCanvas(Gtk.Frame):
         # subscriptions
 
         pub.subscribe(self.set_grid, 'GRID')
+        pub.subscribe(self.on_select_rect, 'SELECT_RECT')
         pub.subscribe(self.on_selecting_row, 'SELECTING_ROW')
         pub.subscribe(self.on_selecting_col, 'SELECTING_COL')
 
@@ -111,6 +112,11 @@ class GridCanvas(Gtk.Frame):
         self.draw_content(ctx)
         self.draw_selection(ctx)
         self._symbol_canvas.draw(ctx, self._pos)
+
+    def on_select_rect(self, action):
+        self._selection_state = SELECTING
+        self._selection_action = action
+        self._selection = RECT
 
     def on_selecting_row(self, action):
         self._selection_state = SELECTING
@@ -229,7 +235,6 @@ class GridCanvas(Gtk.Frame):
         pub.sendMessage('POINTER_MOVED', pos=self.get_grid_xy())
 
         if self._selection_state == SELECTING and self._selection == ROW:
-            self._selection_state = IDLE
             row = self.get_grid_xy()[1]
             if self._selection_action == INSERT:
                 pub.sendMessage('INSERT_ROW', row=row)
@@ -237,24 +242,27 @@ class GridCanvas(Gtk.Frame):
                 pub.sendMessage('REMOVE_ROW', row=row)
 
         elif self._selection_state == SELECTING and self._selection == COL:
-            self._selection_state = IDLE
             col = self.get_grid_xy()[0]
             if self._selection_action == INSERT:
                 pub.sendMessage('INSERT_COL', col=col)
             else:
                 pub.sendMessage('REMOVE_COL', col=col)
 
+        elif self._selection_state == SELECTING and self._selection == RECT:
+            rect_ul = self.get_grid_xy()
+            # TODO dragging start/end position
+
         else:
-            # https://stackoverflow.com/questions/6616270/right-click-menu-context-menu-using-pygtk
-            button = event.button
-            if button == 1:
-                # left button
-                pub.sendMessage('PASTE_SYMBOL', pos=self.get_grid_xy())
-            elif button == 3:
-                # right button
-                pub.sendMessage('ROTATE_SYMBOL')
-            else:
-                None
+                # https://stackoverflow.com/questions/6616270/right-click-menu-context-menu-using-pygtk
+                button = event.button
+                if button == 1:
+                    # left button
+                    pub.sendMessage('PASTE_SYMBOL', pos=self.get_grid_xy())
+                elif button == 3:
+                    # right button
+                    pub.sendMessage('ROTATE_SYMBOL')
+                else:
+                    None
 
         widget.queue_resize()
 
