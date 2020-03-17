@@ -138,8 +138,9 @@ class MainWindow(Gtk.Window):
             btn.connect("pressed", self.on_char_button_clicked)
 
     def on_pointer_moved(self, pos):
-        self.label_xpos.set_text("x:{0}".format(pos[0]))
-        self.label_ypos.set_text("y:{0}".format(pos[1]))
+        # grid indexing starts at zero, show +1
+        self.label_xpos.set_text(format(pos[0] + 1))
+        self.label_ypos.set_text(format(pos[1] + 1))
 
     def on_toggled_cursor(self, button):
 

@@ -226,7 +226,7 @@ class GridCanvas(Gtk.Frame):
 
         pos = (event.x, event.y)
         self.snap_to_grid(pos)
-        pub.sendMessage('POINTER_MOVED', pos=self._pos)
+        pub.sendMessage('POINTER_MOVED', pos=self.get_grid_xy())
 
         if self._selection_state == SELECTING and self._selection == ROW:
             self._selection_state = IDLE
@@ -262,7 +262,7 @@ class GridCanvas(Gtk.Frame):
         # print("col:{0} row:{1}".format(self._selecting_col, self._selecting_row))
         pos = (event.x, event.y)
         self.snap_to_grid(pos)
-        pub.sendMessage('POINTER_MOVED', pos=self._pos)
+        pub.sendMessage('POINTER_MOVED', pos=self.get_grid_xy())
         widget.queue_resize()
 
     def snap_to_grid(self, pos):
