@@ -204,10 +204,10 @@ class MainWindow(Gtk.Window):
 
     def custom_cursor(self, btn):
         display = self.get_root_window().get_display()
+
         pb = self.cursor[btn - 1]
-        cursor = Gdk.Cursor.new_from_pixbuf(display, pb, 0, 0)
-        # self.get_root_window().set_cursor(cursor)
+        # the cursor hot-spot is at the center of the (16x16) cursor image
+        cursor = Gdk.Cursor.new_from_pixbuf(display, pb, 8, 15)
+
         widget = self.grid_canvas._drawing_area
-        # widget.set_sensitive(False)
-        # cursor = Gdk.Cursor(Gdk.CursorType.WATCH)
         widget.get_window().set_cursor(cursor)
