@@ -315,7 +315,7 @@ class GridCanvas(Gtk.Frame):
             button = event.button
             if button == 1:
                 # left button
-                pos = self._pos
+                pos = self._pos + Pos(0, -1)
                 pub.sendMessage('PASTE_SYMBOL', pos=pos.grid())
             elif button == 3:
                 # right button
