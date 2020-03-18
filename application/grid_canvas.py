@@ -8,7 +8,7 @@ from pubsub import pub
 
 from application import GRIDSIZE_W, GRIDSIZE_H
 from application import INSERT
-from application import IDLE, SELECTING, SELECTED, COL, ROW, RECT, DRAG
+from application import IDLE, SELECTING, SELECTED, COMPONENT, COL, ROW, RECT, DRAG
 from application.symbol_canvas import SymbolCanvas
 
 import gi
@@ -107,6 +107,7 @@ class GridCanvas(Gtk.Frame):
         # subscriptions
 
         pub.subscribe(self.set_grid, 'GRID')
+        pub.subscribe(self.on_symbol_selected, 'SYMBOL_SELECTED')
         pub.subscribe(self.on_select_rect, 'SELECT_RECT')
         pub.subscribe(self.on_selecting_row, 'SELECTING_ROW')
         pub.subscribe(self.on_selecting_col, 'SELECTING_COL')
@@ -156,6 +157,11 @@ class GridCanvas(Gtk.Frame):
         self.draw_content(ctx)
         self.draw_selection(ctx)
         self._symbol_canvas.draw(ctx, self._pos)
+
+    def on_symbol_selected(self, grid):
+        self._selection_state = SELECTING
+        # self._selection_action = action
+        self._selection = COMPONENT
 
     def on_select_rect(self, action):
         self._selection_state = SELECTING

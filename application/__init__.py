@@ -15,6 +15,7 @@ IDLE = 0
 SELECTING = 1
 SELECTED = 2
 DRAG = 3
+COMPONENT = 'component'
 COL = 'col'
 ROW = 'row'
 RECT = 'rect'
