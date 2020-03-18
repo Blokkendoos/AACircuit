@@ -38,15 +38,11 @@ class ComponentLibrary(object):
         return self._dict
 
     def get_grid_current(self):
-        """
-        return the grid for the current symbol.
-        """
+        """Return the grid for the current symbol."""
         return self.get_grid(self.key, self.dir)
 
     def get_grid_next(self):
-        """
-        return the grid with clockwise next orientation for the current symbol.
-        """
+        """Return the grid with clockwise next orientation for the current symbol."""
         self.dir += 1
         self.dir %= 4
         return self.get_grid(self.key, self.dir)
@@ -57,6 +53,7 @@ class ComponentLibrary(object):
 
         :param key: the component name
         :param dir: direction of the grid (0=North, 1=East, 2=South, 3=West)
+        :returns the symbol grid
         """
         self.dir = dir
         self.key = key
