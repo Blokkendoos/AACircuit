@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from application.grid_canvas import Pos
 from application.grid import Grid
 
