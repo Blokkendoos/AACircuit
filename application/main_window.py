@@ -54,7 +54,7 @@ class MainWindow(Gtk.Window):
 
         # https://stackoverflow.com/questions/14983385/why-css-style-dont-work-on-gtkbutton
         cssProvider = Gtk.CssProvider()
-        cssProvider.load_from_path('style.css')
+        cssProvider.load_from_path('application/style.css')
         screen = Gdk.Screen.get_default()
         styleContext = Gtk.StyleContext()
         # With the others GTK_STYLE_PROVIDER_PRIORITY values get the same result
@@ -136,7 +136,7 @@ class MainWindow(Gtk.Window):
     def init_cursors(self):
         self.cursor = []
         for i in range(1, 5):
-            self.cursor.append(GdkPixbuf.Pixbuf.new_from_file("buttons/c{0}.png".format(i)))
+            self.cursor.append(GdkPixbuf.Pixbuf.new_from_file("application/buttons/c{0}.png".format(i)))
 
     def init_char_buttons(self):
         container = self.builder.get_object("char_table")
