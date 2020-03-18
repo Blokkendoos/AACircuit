@@ -1,3 +1,5 @@
+# -*- coding: UTF-8 -*-
+
 """
 AACircuit
 2020-03-02 JvO
@@ -10,18 +12,12 @@ import xerox
 class Grid(object):
 
     DEFAULT_VALUE = " "  # default cell-value
-    NEW_VALUE = "x"  # value for inserted cell
+    NEW_VALUE = " "  # value for inserted cell
     EMPTY = " "  # empty cell-value
 
     def __init__(self, rows=5, cols=5):
-
         self._undo_stack = []
-
-        # https://www.geeksforgeeks.org/python-using-2d-arrays-lists-the-right-way/
-        # self._grid = [[0 for i in range(cols)] for j in range(rows)]
-        # https://snakify.org/en/lessons/two_dimensional_lists_arrays/
         self._grid = [[self.DEFAULT_VALUE] * rows for i in range(cols)]
-
         # set to True when the grid has been changed
         self._dirty = False
 
@@ -30,7 +26,6 @@ class Grid(object):
         str += "dirty: {0}\n".format(self.dirty)
         for r in self._grid:
             str += "{0}\n".format(r)
-
         return str
 
     # PRIVATE
@@ -233,34 +228,24 @@ class Grid(object):
 
     def remove_row(self, row):
         # assert row >= 0 and row < len(self._grid)
-
         self._push_grid()
-
         del self._grid[row]
         self._dirty = True
 
     def remove_col(self, col):
         # assert col >= 0 and col < len(self._grid[0])
-
         self._push_grid()
-
         for r in self._grid:
             del r[col]
-
         self._dirty = True
 
     def insert_row(self, row):
         self._push_grid()
-
         self._grid.insert(row, [self.NEW_VALUE] * self.nr_cols)
-
         self._dirty = True
 
     def insert_col(self, col):
         self._push_grid()
-
         for r in self._grid:
             r.insert(col, self.NEW_VALUE)
-
         self._dirty = True
-
