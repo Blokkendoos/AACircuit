@@ -33,6 +33,7 @@ class Controller(object):
 
         pub.subscribe(self.on_component_changed, 'COMPONENT_CHANGED')
         pub.subscribe(self.on_rotate_symbol, 'ROTATE_SYMBOL')
+        pub.subscribe(self.on_mirror_symbol, 'MIRROR_SYMBOL')
         pub.subscribe(self.on_paste_symbol, 'PASTE_SYMBOL')
         pub.subscribe(self.on_undo, 'UNDO')
 
@@ -74,6 +75,10 @@ class Controller(object):
 
     def on_rotate_symbol(self):
         grid = self.components.get_grid_next()
+        pub.sendMessage('SYMBOL_SELECTED', grid=grid)
+
+    def on_mirror_symbol(self):
+        grid = self.components.get_grid_mirror()
         pub.sendMessage('SYMBOL_SELECTED', grid=grid)
 
     def on_paste_symbol(self, pos):

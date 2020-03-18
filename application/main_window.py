@@ -86,6 +86,15 @@ class MainWindow(Gtk.Window):
         for btn in self.btn_cur:
             btn.connect("toggled", self.on_toggled_cursor)
 
+        # manipulate symbol
+        self.btn_rotate = self.builder.get_object("rotate")
+        self.btn_rotate.connect("pressed", self.on_rotate)
+        self.btn_rotate.set_tooltip_text("rotate the symbol clockwise")
+
+        self.btn_mirror = self.builder.get_object("mirror")
+        self.btn_mirror.connect("pressed", self.on_mirror)
+        self.btn_mirror.set_tooltip_text("mirror the symbol vertically")
+
         # insert/remove rows or columns
         self.btn_stretch1 = self.builder.get_object("stretch1")
         self.btn_stretch3 = self.builder.get_object("stretch3")
@@ -149,6 +158,12 @@ class MainWindow(Gtk.Window):
         # grid indexing starts at zero, show +1
         self.label_xpos.set_text(format(pos.x + 1))
         self.label_ypos.set_text(format(pos.y + 1))
+
+    def on_rotate(self, button):
+        pub.sendMessage('ROTATE_SYMBOL')
+
+    def on_mirror(self, button):
+        pub.sendMessage('MIRROR_SYMBOL')
 
     def on_toggled_cursor(self, button):
 

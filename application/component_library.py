@@ -32,6 +32,7 @@ class ComponentLibrary(object):
                 print("Failed to load component library {0} due to I/O error {1}: {2}".format(lib, e.errno, e.strerror))
                 sys.exit(1)
 
+        self._grid = None
         self.orientation = 0
 
     def get_dict(self):
@@ -39,13 +40,30 @@ class ComponentLibrary(object):
 
     def get_grid_current(self):
         """Return the grid for the current symbol."""
-        return self.get_grid(self.key, self.dir)
+        # self._grid = self.get_grid(self.key, self.dir)
+        return self._grid
 
     def get_grid_next(self):
         """Return the grid with clockwise next orientation for the current symbol."""
         self.dir += 1
         self.dir %= 4
-        return self.get_grid(self.key, self.dir)
+        self._grid = self.get_grid(self.key, self.dir)
+        return self._grid
+
+    def get_grid_mirror(self):
+        """Return the current symbol (grid) vertically mirrored."""
+
+        grid = []
+
+        for r, row in enumerate(self.get_grid_current()):
+            rev = []
+            for c in reversed(row):
+                rev.append(c)
+            grid.append(rev)
+
+        self._grid = grid
+
+        return self._grid
 
     def get_grid(self, key, dir=0):
         """
@@ -59,9 +77,11 @@ class ComponentLibrary(object):
         self.key = key
 
         if len(key) == 1:
-            return [[key]]
+            self._grid = [[key]]
         else:
-            return self._dict[key]["grid"][self.ORIENTATION[dir]]
+            self._grid = self._dict[key]["grid"][self.ORIENTATION[dir]]
+
+        return self._grid
 
     def nr_components(self):
         return len(self._dict)
