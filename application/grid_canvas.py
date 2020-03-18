@@ -116,7 +116,7 @@ class GridCanvas(Gtk.Frame):
         self._drawing_area.queue_resize()
 
     def init_surface(self, area):
-        """Initialize Cairo surface"""
+        """Initialize Cairo surface."""
         # destroy previous buffer
         if self.surface is not None:
             self.surface.finish()
@@ -299,10 +299,9 @@ class GridCanvas(Gtk.Frame):
             else:
                 pub.sendMessage('REMOVE_COL', col=col)
 
-        elif self._selection_state == SELECTING and self._selection == RECT:
-            # rect_ul = self.get_grid_xy()
+        # elif self._selection_state == SELECTING and self._selection == RECT:
             # TODO dragging start/end position
-            None
+            # rect_ul = self.grid().xy
 
         else:
             # https://stackoverflow.com/questions/6616270/right-click-menu-context-menu-using-pygtk

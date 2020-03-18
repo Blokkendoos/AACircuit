@@ -15,9 +15,6 @@ class SymbolCanvas(object):
 
     def __init__(self):
         self._grid = None
-
-        # subscriptions
-
         pub.subscribe(self.set_grid, 'SYMBOL_SELECTED')
 
     def set_grid(self, grid):
@@ -42,8 +39,6 @@ class SymbolCanvas(object):
         if self._grid is None or pos is None:
             return
 
-        # ctx.save()
-
         surface = ctx.get_target()
 
         ctx.set_source_rgb(1, 0, 0)
@@ -62,7 +57,3 @@ class SymbolCanvas(object):
             y += GRIDSIZE_H
             if y >= surface.get_height():
                 break
-
-        self._pos = None
-
-        # ctx.restore()
