@@ -8,7 +8,8 @@ from pubsub import pub
 
 from application import GRIDSIZE_W, GRIDSIZE_H
 from application import INSERT
-from application import IDLE, SELECTING, SELECTED, COMPONENT, COL, ROW, RECT, DRAG
+from application import IDLE, SELECTING, SELECTED, DRAG
+from application import COMPONENT, COL, ROW, RECT
 from application.symbol_canvas import SymbolCanvas
 
 import gi
@@ -152,15 +153,17 @@ class GridCanvas(Gtk.Frame):
         return False
 
     def do_drawing(self, ctx):
+        """Draw the ASCII grid."""
         self.draw_background(ctx)
         self.draw_lines(ctx)
         self.draw_content(ctx)
         self.draw_selection(ctx)
-        self._symbol_canvas.draw(ctx, self._pos)
+        if self._selection == COMPONENT: # and self._selection_state == SELECTED:
+            self._symbol_canvas.draw(ctx, self._pos)
 
     def on_symbol_selected(self, grid):
-        self._selection_state = SELECTING
-        # self._selection_action = action
+        self._selection_state = SELECTED
+        self._selection_action = INSERT
         self._selection = COMPONENT
 
     def on_select_rect(self, action):
@@ -240,7 +243,7 @@ class GridCanvas(Gtk.Frame):
             x = 0
             y = self._cr_selected
 
-        if self._selection == COL and self._selection_state != IDLE:
+        if self._selection == COL and self._selection_state == SELECTING:
             # highlight the selected column
             ctx.new_path()
             ctx.move_to(x, 0)
@@ -249,7 +252,7 @@ class GridCanvas(Gtk.Frame):
             ctx.line_to(x + GRIDSIZE_W, y_max)
             ctx.stroke()
 
-        elif self._selection == ROW and self._selection_state != IDLE:
+        elif self._selection == ROW and self._selection_state == SELECTING:
             # highlight the selected row
             ctx.new_path()
             ctx.move_to(0, y)
@@ -291,6 +294,8 @@ class GridCanvas(Gtk.Frame):
         pos = Pos(event.x, event.y)
         pub.sendMessage('POINTER_MOVED', pos=pos.grid())
 
+        # print("state:{0} selection:{1}".format(self._selection_state, self._selection))
+
         if self._selection_state == SELECTING and self._selection == ROW:
             row = pos.grid().y
             if self._selection_action == INSERT:
@@ -305,11 +310,7 @@ class GridCanvas(Gtk.Frame):
             else:
                 pub.sendMessage('REMOVE_COL', col=col)
 
-        # elif self._selection_state == SELECTING and self._selection == RECT:
-            # TODO dragging start/end position
-            # rect_ul = self.grid().xy
-
-        else:
+        elif self._selection_state == SELECTED and self._selection == COMPONENT:
             # https://stackoverflow.com/questions/6616270/right-click-menu-context-menu-using-pygtk
             button = event.button
             if button == 1:
