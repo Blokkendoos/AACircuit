@@ -97,6 +97,11 @@ class MainWindow(Gtk.Window):
         self.btn_stretch3.connect("pressed", self.on_selecting_row)
         self.btn_stretch4.connect("pressed", self.on_selecting_row)
 
+        self.btn_stretch1.set_tooltip_text("insert rows")
+        self.btn_stretch3.set_tooltip_text("insert columns")
+        self.btn_stretch2.set_tooltip_text("remove rows")
+        self.btn_stretch4.set_tooltip_text("remove columns")
+
         self.btn_select = self.builder.get_object("select_rect")
         self.btn_select.connect("pressed", self.on_select_rect)
 
@@ -107,6 +112,10 @@ class MainWindow(Gtk.Window):
             self.builder.get_object("load_and_paste_from_clipboard")]
         for btn in self.btn_clipboard:
             btn.connect("pressed", self.on_clipboard)
+
+        self.btn_clipboard[0].set_tooltip_text("copy grid to clipboard")
+        self.btn_clipboard[1].set_tooltip_text("paste grid from clipboard")
+        self.btn_clipboard[2].set_tooltip_text("load file and paste into grid")
 
         self.init_grid()
         self.init_cursors()
