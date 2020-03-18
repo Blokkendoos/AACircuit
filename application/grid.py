@@ -15,17 +15,17 @@ class Grid(object):
 
     def __init__(self, rows=5, cols=5):
 
-        # https://snakify.org/en/lessons/two_dimensional_lists_arrays/
-        self._grid = [[self.DEFAULT_VALUE] * rows for i in range(cols)]
-
         self._undo_stack = []
 
         # https://www.geeksforgeeks.org/python-using-2d-arrays-lists-the-right-way/
         # self._grid = [[0 for i in range(cols)] for j in range(rows)]
+        # https://snakify.org/en/lessons/two_dimensional_lists_arrays/
+        self._grid = [[self.DEFAULT_VALUE] * rows for i in range(cols)]
+
+        # set to True when the grid has been changed
         self._dirty = False
 
     def __str__(self):
-
         str = "number of rows: {0} columns: {1} ".format(self.nr_rows, self.nr_cols)
         str += "dirty: {0}\n".format(self.dirty)
         for r in self._grid:
@@ -140,17 +140,21 @@ class Grid(object):
         self._grid[row][col] = value
 
     def pos_to_rc(self, pos, rect):
-        """Convert position and rect to colum and row start/end values."""
-        c_start, r_start = pos
-        c_end, r_end = tuple(map(lambda i, j : i + j, pos, rect))  # noqa: E203
-        # print("col_start:{0} _end:{1}  row_start:{2} _end:{3}".format(c_start, r_start, c_end, r_end))
+        """Convert (canvas) position and rect to colum and row start/end values.
+        :param pos:  canvas position (Pos) of the upper left corner (row, column) of the rectangle
+        :param rect: tuple (width, height)
+        :returns the start and end column and row
+        """
+        c_start, r_start = pos.xy
+        c_end, r_end = tuple(map(lambda i, j : i + j, pos.xy, rect))  # noqa: E203
         return (c_start, r_start, c_end, r_end)
 
     def rect(self, pos, rect):
         """
         Return the content of the given rectangle.
-        :param pos: rectangle upper left corner (row, column) tuple
+        :param pos:  canvas position (Pos) of the upper left corner (row, column) of the rectangle
         :param rect: tuple (width, height)
+        :returns the content of the given rectangle
         """
         content = []
 
@@ -260,66 +264,3 @@ class Grid(object):
 
         self._dirty = True
 
-
-if __name__ == "__main__":
-
-    g = Grid()
-    i = 0
-    for r in range(g.nr_rows):
-        for c in range(g.nr_cols):
-            g.set_cell(r, c, i)
-            i += 1
-
-    print(g)
-
-    print("RECT (1,1): {0}".format(g.rect((1, 1), (2, 2))))
-    print("RECT (4,4): {0}".format(g.rect((4, 4), (4, 4))))
-
-    c = [["A", "B"], ["C", "D"]]
-    g.fill_rect((0, 0), c)
-    print(g)
-
-    g.fill_rect((3, 3), c)
-    print(g)
-
-    g.erase_rect((1, 1), (2, 2))
-    print(g)
-
-    # exit(0)
-
-    g.dirty = False
-    print("removed row 2:")
-    g.remove_row(2)
-    print(g)
-
-    g.dirty = False
-    print("insert row 2:")
-    g.insert_row(2)
-    print(g)
-
-    g.dirty = False
-    print("removed column 2:")
-    g.remove_col(2)
-    print(g)
-
-    g.dirty = False
-    print("insert column 2:")
-    g.insert_col(2)
-    print(g)
-
-    g.dirty = False
-    print("removed column 0:")
-    g.remove_col(0)
-    print(g)
-
-    g.dirty = False
-    print("removed column 2:")
-    g.remove_col(2)
-    print(g)
-
-    g.dirty = False
-    print("unchanged:")
-    print(g)
-
-    print("row 2: {0}".format(g.row(2)))
-    print("col 2: {0}".format(g.col(2)))
