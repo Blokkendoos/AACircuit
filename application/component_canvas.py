@@ -16,9 +16,9 @@ class ComponentCanvas():
 
     def __init__(self, builder):
 
-        scrolled_window = builder.get_object("scrolledwindow1")
-        scrolled_window.set_size_request(200, 100)
-        scrolled_window.set_border_width(10)
+        scrolled_window = builder.get_object("component_window")
+        # scrolled_window.set_size_request(200, 100)
+        scrolled_window.set_border_width(2)
         # scrolled_window.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
 
         self.listmodel = builder.get_object("liststore1")

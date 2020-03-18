@@ -129,7 +129,7 @@ class MainWindow(Gtk.Window):
         component_canvas = ComponentCanvas(self.builder)  # noqa F841
 
     def init_grid(self):
-        fixed = self.builder.get_object("viewport1")
+        fixed = self.builder.get_object("grid_viewport")
         self.grid_canvas = GridCanvas()
         fixed.add(self.grid_canvas)
 

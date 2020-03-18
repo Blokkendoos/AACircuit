@@ -73,7 +73,7 @@ class GridCanvas(Gtk.Frame):
         self.set_border_width(0)
 
         # https://stackoverflow.com/questions/11546395/how-to-put-gtk-drawingarea-into-gtk-layout
-        self.set_size_request(700, 700)
+        self.set_size_request(480, 640)
 
         self.surface = None
         self._grid = None
