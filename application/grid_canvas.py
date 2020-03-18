@@ -7,7 +7,7 @@ import cairo
 from pubsub import pub
 
 from application import GRIDSIZE_W, GRIDSIZE_H
-from application import INSERT, REMOVE
+from application import INSERT
 from application import IDLE, SELECTING, SELECTED, COL, ROW, RECT, DRAG
 from application.symbol_canvas import SymbolCanvas
 
@@ -19,9 +19,11 @@ from gi.repository import Gtk, Gdk  # noqa: E402
 class Pos(object):
     """A position on the grid (canvas)."""
 
-    def __init__(self, x, y):
+    def __init__(self, x, y, snap=True):
         self._x = int(x)
         self._y = int(y)
+        if snap:
+            self._snap_to_grid()
 
     def __add__(self, other):
         x = self._x + other.x
@@ -31,6 +33,14 @@ class Pos(object):
     def __str__(self):
         return "x:{0} y:{1}".format(self._x, self._y)
 
+    def _snap_to_grid(self):
+        """Set position to the nearest (canvas) grid coordinate."""
+        (x, y) = (self._x, self._y)
+        x -= x % GRIDSIZE_W
+        y -= y % GRIDSIZE_H
+        self._x = int(x)
+        self._y = int(y)
+
     @property
     def x(self):
         return self._x
@@ -39,23 +49,16 @@ class Pos(object):
     def y(self):
         return self._y
 
-    def snap_to_grid(self):
-        """Set position to the the nearest (canvas) grid coordinate."""
-        (x, y) = (self._x, self._y)
-        x -= x % GRIDSIZE_W
-        y -= y % GRIDSIZE_H
-        self._x = int(x)
-        self._y = int(y)
-        return Pos(self._x, self._y)
+    @property
+    def xy(self):
+        return (self._x, self._y)
 
-    def map_to_grid(self):
+    def grid(self):
         """Map a canvas position to grid coordinates."""
         (x, y) = (self._x, self._y)
         x /= GRIDSIZE_W
         y /= GRIDSIZE_H
-        self._x = int(x)
-        self._y = int(y)
-        return Pos(self._x, self._y)
+        return Pos(x, y, False)
 
 
 class GridCanvas(Gtk.Frame):
@@ -90,14 +93,13 @@ class GridCanvas(Gtk.Frame):
         self._drawing_area.connect('configure-event', self.on_configure)
 
         # https://www.programcreek.com/python/example/84675/gi.repository.Gtk.DrawingArea
-        # self._drawing_area.add_events(Gdk.EventMask.BUTTON_PRESS_MASK)
-        # self._drawing_area.connect('button_press_event', self.on_button_press)
+        self._drawing_area.add_events(Gdk.EventMask.BUTTON_PRESS_MASK)
+        self._drawing_area.connect('button_press_event', self.on_button_press)
 
-        self._gesture_drag = Gtk.GestureDrag.new(self._drawing_area)
-        # self._gesture_drag.new(self)
-        self._gesture_drag.connect('drag-begin', self.on_drag_begin)
-        self._gesture_drag.connect('drag-end', self.on_drag_end)
-        self._gesture_drag.connect('drag-update', self.on_drag_update)
+        # self._gesture_drag = Gtk.GestureDrag.new(self._drawing_area)
+        # self._gesture_drag.connect('drag-begin', self.on_drag_begin)
+        # self._gesture_drag.connect('drag-end', self.on_drag_end)
+        # self._gesture_drag.connect('drag-update', self.on_drag_update)
 
         self._drawing_area.add_events(Gdk.EventMask.POINTER_MOTION_MASK)
         self._drawing_area.connect('motion-notify-event', self.on_hover)
@@ -281,18 +283,17 @@ class GridCanvas(Gtk.Frame):
     def on_button_press(self, widget, event):
 
         pos = Pos(event.x, event.y)
-        pos.snap_to_grid()
-        pub.sendMessage('POINTER_MOVED', pos=pos.map_to_grid())
+        pub.sendMessage('POINTER_MOVED', pos=pos.grid())
 
         if self._selection_state == SELECTING and self._selection == ROW:
-            row = self.get_grid_xy()[1]
+            row = pos.grid().y
             if self._selection_action == INSERT:
                 pub.sendMessage('INSERT_ROW', row=row)
             else:
                 pub.sendMessage('REMOVE_ROW', row=row)
 
         elif self._selection_state == SELECTING and self._selection == COL:
-            col = self.get_grid_xy()[0]
+            col = pos.grid().x
             if self._selection_action == INSERT:
                 pub.sendMessage('INSERT_COL', col=col)
             else:
@@ -308,7 +309,8 @@ class GridCanvas(Gtk.Frame):
             button = event.button
             if button == 1:
                 # left button
-                pub.sendMessage('PASTE_SYMBOL', pos=self._pos.map_to_grid())
+                pos = self._pos
+                pub.sendMessage('PASTE_SYMBOL', pos=pos.grid())
             elif button == 3:
                 # right button
                 pub.sendMessage('ROTATE_SYMBOL')
@@ -319,34 +321,25 @@ class GridCanvas(Gtk.Frame):
 
     def on_drag_begin(self, widget, x_start, y_start):
         print("DRAG Begin")
-        pos = Pos(x_start, y_start)
-        self._drag_startpos = pos.map_to_grid()
+        self._drag_startpos = Pos(x_start, y_start)
         # print("drag startpos:", self._drag_startpos)
         self._selection_action = DRAG
-        pub.sendMessage('POINTER_MOVED', pos=self._drag_startpos)
+        pub.sendMessage('POINTER_MOVED', pos=self._drag_startpos.grid())
 
     def on_drag_end(self, widget, x_offset, y_offset):
         print("DRAG End")
-        pos = self._pos
         offset = Pos(x_offset, y_offset)
-        pos += offset
-        self._drag_endpos = pos.snap_to_grid()
+        self._drag_endpos = self._pos + offset
 
     def on_drag_update(self, widget, x_offset, y_offset):
-        print("/")
-        pos = self._pos
+        # print("/")
         offset = Pos(x_offset, y_offset)
-        pos += offset
-        pos.snap_to_grid()
-        pos.map_to_grid()
-        self._drag_currentpos = pos
-        # pub.sendMessage('POINTER_MOVED', pos=self._drag_currentpos)
+        self._drag_currentpos = self._pos + offset
+        # pub.sendMessage('POINTER_MOVED', pos=self._drag_currentpos.grid_xy())
 
     def on_hover(self, widget, event):
         # print("col:{0} row:{1}".format(self._selecting_col, self._selecting_row))
-        print(".")
-        pos = Pos(event.x, event.y)
-        pos.snap_to_grid()
-        self._pos = pos
-        pub.sendMessage('POINTER_MOVED', pos=self._pos)
+        # print(".")
+        self._pos = Pos(event.x, event.y)
+        pub.sendMessage('POINTER_MOVED', pos=self._pos.grid())
         widget.queue_resize()
