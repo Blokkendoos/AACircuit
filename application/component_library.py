@@ -33,6 +33,8 @@ class ComponentLibrary(object):
                 sys.exit(1)
 
         self._grid = None
+        self._key = None
+        self._dir = None
         self.orientation = 0
 
     def get_dict(self):
@@ -45,13 +47,19 @@ class ComponentLibrary(object):
 
     def get_grid_next(self):
         """Return the grid with clockwise next orientation for the current symbol."""
-        self.dir += 1
-        self.dir %= 4
-        self._grid = self.get_grid(self.key, self.dir)
+        if self._key is None:
+            return [[]]
+
+        self._dir += 1
+        self._dir %= 4
+        self._grid = self.get_grid(self._key, self._dir)
         return self._grid
 
     def get_grid_mirror(self):
         """Return the current symbol (grid) vertically mirrored."""
+
+        if self._grid is None:
+            return [[]]
 
         grid = []
 
@@ -73,8 +81,8 @@ class ComponentLibrary(object):
         :param dir: direction of the grid (0=North, 1=East, 2=South, 3=West)
         :returns the symbol grid
         """
-        self.dir = dir
-        self.key = key
+        self._dir = dir
+        self._key = key
 
         if len(key) == 1:
             self._grid = [[key]]
