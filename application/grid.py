@@ -77,7 +77,7 @@ class Grid(object):
     def copy_to_clipboard(self):
         """
         Copy the content of the grid to the clipboard.
-        The rows are copied as ASCII lines, terminated by CR
+        The rows are copied as ASCII lines, terminated by CR.
         """
         content = ""
 
@@ -93,8 +93,8 @@ class Grid(object):
 
     def paste_from_clipboard(self):
         """
-        Copy the content of the grid to the clipboard.
-        The rows are copied as ASCII lines, terminated by CR
+        Copy the content of the clipboard to the grid.
+        ASCII lines, terminated by CR, are interpreted as rows.
         """
 
         self._push_grid()
