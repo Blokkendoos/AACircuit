@@ -88,8 +88,6 @@ class Controller(object):
         pub.sendMessage('SYMBOL_SELECTED', symbol=self.symbol)
 
     def on_paste_symbol(self, pos):
-        # grid = self.components.get_grid_current()
-        # self.symbol = Symbol(grid)
         self.grid.fill_rect(pos, self.symbol.grid)
 
     # clipboard
