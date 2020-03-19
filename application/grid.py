@@ -144,6 +144,21 @@ class Grid(object):
         c_end, r_end = tuple(map(lambda i, j : i + j, pos.xy, rect))  # noqa: E203
         return (c_start, r_start, c_end, r_end)
 
+    def mirror(self):
+        """Return the grid vertically mirrored."""
+        if self._grid is None:
+            return [[]]
+
+        grid = []
+
+        for r, row in enumerate(self._grid):
+            rev = []
+            for c in reversed(row):
+                rev.append(c)
+            grid.append(rev)
+
+        return grid
+
     def rect(self, pos, rect):
         """
         Return the content of the given rectangle.

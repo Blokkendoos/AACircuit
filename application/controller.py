@@ -6,6 +6,7 @@ AACircuit.py
 from pubsub import pub
 
 from application.grid import Grid
+from application.symbol import Symbol
 from application.main_window import MainWindow
 from application.component_library import ComponentLibrary
 
@@ -21,6 +22,8 @@ class Controller(object):
         self.gui = MainWindow()
 
         self.components = ComponentLibrary()
+        self.symbol = Symbol()
+
         all_components = [key for key in self.components.get_dict()]
         print("{0} libraries loaded, total number of components: {1}".format(self.components.nr_libraries(),
                                                                              self.components.nr_components()))
@@ -71,19 +74,23 @@ class Controller(object):
 
     def on_component_changed(self, label):
         grid = self.components.get_grid(label)
-        pub.sendMessage('SYMBOL_SELECTED', grid=grid)
+        self.symbol = Symbol(grid)
+        pub.sendMessage('SYMBOL_SELECTED', symbol=self.symbol)
 
     def on_rotate_symbol(self):
         grid = self.components.get_grid_next()
-        pub.sendMessage('SYMBOL_SELECTED', grid=grid)
+        self.symbol = Symbol(grid)
+        pub.sendMessage('SYMBOL_SELECTED', symbol=self.symbol)
 
     def on_mirror_symbol(self):
-        grid = self.components.get_grid_mirror()
-        pub.sendMessage('SYMBOL_SELECTED', grid=grid)
+        grid = self.symbol.mirror()
+        self.symbol = Symbol(grid)
+        pub.sendMessage('SYMBOL_SELECTED', symbol=self.symbol)
 
     def on_paste_symbol(self, pos):
-        symbol_grid = self.components.get_grid_current()
-        self.grid.fill_rect(pos, symbol_grid)
+        grid = self.components.get_grid_current()
+        self.symbol = Symbol(grid)
+        self.grid.fill_rect(pos, self.symbol.grid)
 
     # clipboard
 

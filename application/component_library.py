@@ -55,24 +55,6 @@ class ComponentLibrary(object):
         self._grid = self.get_grid(self._key, self._dir)
         return self._grid
 
-    def get_grid_mirror(self):
-        """Return the current symbol (grid) vertically mirrored."""
-
-        if self._grid is None:
-            return [[]]
-
-        grid = []
-
-        for r, row in enumerate(self.get_grid_current()):
-            rev = []
-            for c in reversed(row):
-                rev.append(c)
-            grid.append(rev)
-
-        self._grid = grid
-
-        return self._grid
-
     def get_grid(self, key, dir=0):
         """
         return the grid for the symbol that represents the given component.
