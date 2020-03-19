@@ -8,8 +8,8 @@ import sys
 from pubsub import pub
 
 from application import INSERT, REMOVE, IDLE
-from application.grid_canvas import GridCanvas, Pos
-from application.component_canvas import ComponentCanvas
+from application.grid_view import GridView, Pos
+from application.component_view import ComponentView
 
 import gi
 gi.require_version('Gtk', '3.0')
@@ -135,11 +135,11 @@ class MainWindow(Gtk.Window):
         pub.subscribe(self.on_pointer_moved, 'POINTER_MOVED')
 
     def init_components(self):
-        component_canvas = ComponentCanvas(self.builder)  # noqa F841
+        component_canvas = ComponentView(self.builder)  # noqa F841
 
     def init_grid(self):
         fixed = self.builder.get_object("grid_viewport")
-        self.grid_canvas = GridCanvas()
+        self.grid_canvas = GridView()
         fixed.add(self.grid_canvas)
 
     def init_cursors(self):

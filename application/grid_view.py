@@ -62,7 +62,7 @@ class Pos(object):
         return Pos(x, y, False)
 
 
-class GridCanvas(Gtk.Frame):
+class GridView(Gtk.Frame):
 
     # https://athenajc.gitbooks.io/python-gtk-3-api/content/gtk-group/gtkdrawingarea.html
 
