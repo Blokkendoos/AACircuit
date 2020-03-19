@@ -227,17 +227,19 @@ class Grid(object):
         self._dirty = True
 
     def remove_row(self, row):
-        # assert row >= 0 and row < len(self._grid)
-        self._push_grid()
-        del self._grid[row]
-        self._dirty = True
+        # assert row >= 0 and row < self.nr_rows
+        if row >= 0 and row < self.nr_rows:
+            self._push_grid()
+            del self._grid[row]
+            self._dirty = True
 
     def remove_col(self, col):
-        # assert col >= 0 and col < len(self._grid[0])
-        self._push_grid()
-        for r in self._grid:
-            del r[col]
-        self._dirty = True
+        # assert col >= 0 and col < self.nr_cols
+        if col >= 0 and col < self.nr_cols:
+            self._push_grid()
+            for r in self._grid:
+                del r[col]
+            self._dirty = True
 
     def insert_row(self, row):
         self._push_grid()
