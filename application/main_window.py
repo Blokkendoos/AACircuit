@@ -8,7 +8,7 @@ import sys
 from pubsub import pub
 
 from application import INSERT, REMOVE, IDLE
-from application.grid_view import GridView, Pos
+from application.grid_view import GridView
 from application.component_view import ComponentView
 
 import gi
