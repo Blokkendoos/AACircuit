@@ -19,7 +19,7 @@ SELECTED = 2
 DRAG = 3
 
 # selected item
-COMPONENT = 'component'
+COMPONENT = 'comp'
 COL = 'col'
 ROW = 'row'
 RECT = 'rect'

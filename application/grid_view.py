@@ -10,7 +10,7 @@ from application import GRIDSIZE_W, GRIDSIZE_H
 from application import INSERT
 from application import IDLE, SELECTING, SELECTED, DRAG
 from application import COMPONENT, COL, ROW, RECT
-from application.symbol_canvas import SymbolCanvas
+from application.symbol_view import SymbolView
 
 import gi
 gi.require_version('Gtk', '3.0')
@@ -29,6 +29,11 @@ class Pos(object):
     def __add__(self, other):
         x = self._x + other.x
         y = self._y + other.y
+        return Pos(x, y)
+
+    def __sub__(self, other):
+        x = self._x - other.x
+        y = self._y - other.y
         return Pos(x, y)
 
     def __str__(self):
@@ -82,7 +87,7 @@ class GridView(Gtk.Frame):
         self._drawing_area = Gtk.DrawingArea()
         self.add(self._drawing_area)
 
-        self._symbol_canvas = SymbolCanvas()
+        self._symbol_view = SymbolView()
 
         # active row/column selection
         self._selection_state = IDLE
@@ -97,10 +102,10 @@ class GridView(Gtk.Frame):
         self._drawing_area.add_events(Gdk.EventMask.BUTTON_PRESS_MASK)
         self._drawing_area.connect('button_press_event', self.on_button_press)
 
-        # self._gesture_drag = Gtk.GestureDrag.new(self._drawing_area)
-        # self._gesture_drag.connect('drag-begin', self.on_drag_begin)
-        # self._gesture_drag.connect('drag-end', self.on_drag_end)
-        # self._gesture_drag.connect('drag-update', self.on_drag_update)
+        self._gesture_drag = Gtk.GestureDrag.new(self._drawing_area)
+        self._gesture_drag.connect('drag-begin', self.on_drag_begin)
+        self._gesture_drag.connect('drag-end', self.on_drag_end)
+        self._gesture_drag.connect('drag-update', self.on_drag_update)
 
         self._drawing_area.add_events(Gdk.EventMask.POINTER_MOTION_MASK)
         self._drawing_area.connect('motion-notify-event', self.on_hover)
@@ -158,16 +163,16 @@ class GridView(Gtk.Frame):
         self.draw_lines(ctx)
         self.draw_content(ctx)
         self.draw_selection(ctx)
-        if self._selection == COMPONENT: # and self._selection_state == SELECTED:
-            self._symbol_canvas.draw(ctx, self._pos)
+        if self._selection == COMPONENT:  # and self._selection_state == SELECTED:
+            self._symbol_view.draw(ctx, self._pos)
 
-    def on_symbol_selected(self, grid):
+    def on_symbol_selected(self, symbol):
         self._selection_state = SELECTED
         self._selection_action = INSERT
         self._selection = COMPONENT
 
     def on_select_rect(self, action):
-        self._selection_state = SELECTING
+        self._selection_state = IDLE
         self._selection_action = action
         self._selection = RECT
 
@@ -261,11 +266,19 @@ class GridView(Gtk.Frame):
             ctx.line_to(x_max, y + GRIDSIZE_H)
             ctx.stroke()
 
-        elif self._selection == RECT and self._selection_state == DRAG:
+        elif self._selection == RECT and self._selection_state == SELECTING:
             # draw the selection rectangle
             ctx.new_path()
-            x, y = self._drag_ul
-            w, h = self._drag_br - self._drag_ul
+            x, y = self._drag_startpos.xy
+            w, h = (self._drag_currentpos - self._drag_startpos).xy
+            ctx.rectangle(x, y, w, h)
+            ctx.stroke()
+
+        elif self._selection == RECT and self._selection_state == SELECTED:
+            # draw the selection rectangle
+            ctx.new_path()
+            x, y = self._drag_startpos.xy
+            w, h = (self._drag_endpos - self._drag_startpos).xy
             ctx.rectangle(x, y, w, h)
             ctx.stroke()
 
@@ -326,22 +339,25 @@ class GridView(Gtk.Frame):
         widget.queue_resize()
 
     def on_drag_begin(self, widget, x_start, y_start):
-        print("DRAG Begin")
-        self._drag_startpos = Pos(x_start, y_start)
-        # print("drag startpos:", self._drag_startpos)
-        self._selection_action = DRAG
-        pub.sendMessage('POINTER_MOVED', pos=self._drag_startpos.grid())
+        if self._selection_state == IDLE and self._selection == RECT:
+            # print("DRAG Begin")
+            self._drag_startpos = Pos(x_start, y_start)
+            self._selection_state = SELECTING
+            self._selection_action = DRAG
 
     def on_drag_end(self, widget, x_offset, y_offset):
-        print("DRAG End")
-        offset = Pos(x_offset, y_offset)
-        self._drag_endpos = self._pos + offset
+        if self._selection_state == SELECTING and self._selection == RECT:
+            # print("DRAG End")
+            offset = Pos(x_offset, y_offset)
+            self._drag_endpos = self._pos + offset
+            self._selection_state = SELECTED
 
     def on_drag_update(self, widget, x_offset, y_offset):
-        # print("/")
-        offset = Pos(x_offset, y_offset)
-        self._drag_currentpos = self._pos + offset
-        # pub.sendMessage('POINTER_MOVED', pos=self._drag_currentpos.grid_xy())
+        if self._selection_state == SELECTING and self._selection == RECT:
+            # print("/")
+            offset = Pos(x_offset, y_offset)
+            self._drag_currentpos = self._pos + offset
+            # pub.sendMessage('POINTER_MOVED', pos=self._drag_currentpos.grid_xy())
 
     def on_hover(self, widget, event):
         # print("col:{0} row:{1}".format(self._selecting_col, self._selecting_row))

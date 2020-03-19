@@ -4,35 +4,26 @@ AACircuit
 """
 
 from application import GRIDSIZE_W, GRIDSIZE_H
-# from application.grid_canvas import Pos
 from pubsub import pub
 import cairo
 
 
-class SymbolCanvas(object):
+class SymbolView(object):
 
     # https://athenajc.gitbooks.io/python-gtk-3-api/content/gtk-group/gtkdrawingarea.html
 
     def __init__(self):
+
         self._grid = None
+
         pub.subscribe(self.set_grid, 'SYMBOL_SELECTED')
 
-    def set_grid(self, grid):
+    def set_grid(self, symbol):
         """
         The symbol grid.
         :param grid: a 2D array of ASCII chars
         """
-        if grid is None:
-            # default grid (Resistor)
-            self._grid = [
-                [" ", "|", " "],
-                [".", "+", "."],
-                ["|", " ", "|"],
-                ["|", " ", "|"],
-                [".", "+", "."],
-                [" ", "|", " "]]
-        else:
-            self._grid = grid
+        self._grid = symbol.grid
 
     def draw(self, ctx, pos):
 
