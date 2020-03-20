@@ -101,16 +101,20 @@ class Controller(object):
     def on_cut(self, pos, rect):
         self.buffer = self.grid.rect(pos, rect)
         self.grid.erase_rect(pos, rect)
+        pub.sendMessage('NOTHING_SELECTED')
 
     def on_copy(self, pos, rect):
         self.buffer = self.grid.rect(pos, rect)
+        pub.sendMessage('NOTHING_SELECTED')
 
     def on_paste(self, pos, rect):
         if self.buffer is not None:
             self.grid.fill_rect(pos, self.buffer)
+        pub.sendMessage('NOTHING_SELECTED')
 
     def on_delete(self, pos, rect):
         self.grid.erase_rect(pos, rect)
+        pub.sendMessage('NOTHING_SELECTED')
 
     # clipboard
 

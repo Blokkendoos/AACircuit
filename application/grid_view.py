@@ -122,6 +122,7 @@ class GridView(Gtk.Frame):
         pub.subscribe(self.on_select_rect, 'SELECT_RECT')
         pub.subscribe(self.on_selecting_row, 'SELECTING_ROW')
         pub.subscribe(self.on_selecting_col, 'SELECTING_COL')
+        pub.subscribe(self.on_nothing_selected, 'NOTHING_SELECTED')
 
     def set_grid(self, grid):
         self._grid = grid
@@ -196,6 +197,12 @@ class GridView(Gtk.Frame):
         self.draw_selection(ctx)
         if self._selection == COMPONENT:  # and self._selection_state == SELECTED:
             self._symbol_view.draw(ctx, self._pos)
+
+    def on_nothing_selected(self):
+        self._selection_state = IDLE
+        self._selection_action = None
+        self._selection = None
+        self._drawing_area.queue_resize()
 
     def on_symbol_selected(self, symbol):
         self._selection_state = SELECTED
