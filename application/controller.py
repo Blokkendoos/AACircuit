@@ -104,8 +104,10 @@ class Controller(object):
         pub.sendMessage('NOTHING_SELECTED')
 
     def on_copy(self, pos, rect):
-        self.buffer = self.grid.rect(pos, rect)
-        pub.sendMessage('NOTHING_SELECTED')
+        grid = self.grid.rect(pos, rect)
+        self.buffer = grid
+        self.symbol = Symbol(grid)
+        pub.sendMessage('SYMBOL_SELECTED', symbol=self.symbol)
 
     def on_paste(self, pos, rect):
         if self.buffer is not None:
