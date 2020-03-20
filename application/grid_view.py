@@ -9,7 +9,7 @@ from pubsub import pub
 from application import GRIDSIZE_W, GRIDSIZE_H
 from application import INSERT
 from application import IDLE, SELECTING, SELECTED, DRAG
-from application import COMPONENT, COL, ROW, RECT
+from application import COMPONENT, COL, ROW, RECT, LINE
 from application.symbol_view import SymbolView
 
 import gi
@@ -124,6 +124,13 @@ class GridView(Gtk.Frame):
         pub.subscribe(self.on_selecting_col, 'SELECTING_COL')
         pub.subscribe(self.on_nothing_selected, 'NOTHING_SELECTED')
 
+        pub.subscribe(self.on_draw_line, 'DRAW_LINE')
+        pub.subscribe(self.on_draw_line, 'DRAW_LINE1')
+        pub.subscribe(self.on_draw_line, 'DRAW_LINE2')
+        pub.subscribe(self.on_draw_line, 'DRAW_LINE3')
+        pub.subscribe(self.on_draw_line, 'DRAW_LINE4')
+        pub.subscribe(self.on_draw_line, 'DRAW_RECT')
+
     def set_grid(self, grid):
         self._grid = grid
         self._drawing_area.queue_resize()
@@ -223,6 +230,11 @@ class GridView(Gtk.Frame):
         self._selection_state = SELECTING
         self._selection_action = action
         self._selection = COL
+
+    def on_draw_line(self):
+        self._selection_state = IDLE
+        self._selection_action = None
+        self._selection = LINE
 
     def draw_background(self, ctx):
         """Draw a background with the size of the grid."""
@@ -378,11 +390,13 @@ class GridView(Gtk.Frame):
 
     def on_drag_begin(self, widget, x_start, y_start):
         if self._selection_state == IDLE and self._selection == RECT:
-            # print("DRAG Begin")
             self._drag_startpos = Pos(x_start, y_start)
             self._drag_currentpos = self._drag_startpos
             self._selection_state = SELECTING
             self._selection_action = DRAG
+        elif self._selection_state == IDLE and self._selection == LINE:
+            self._selection_state = SELECTING
+            print("start drawing line")
 
     def on_drag_end(self, widget, x_offset, y_offset):
         if self._selection_state == SELECTING and self._selection == RECT:
@@ -390,11 +404,16 @@ class GridView(Gtk.Frame):
             offset = Pos(x_offset, y_offset)
             self._drag_endpos = self._pos + offset
             self._selection_state = SELECTED
+        elif self._selection_state == SELECTING and self._selection == LINE:
+            self._selection_state = SELECTED
+            print("end of line")
 
     def on_drag_update(self, widget, x_offset, y_offset):
         if self._selection_state == SELECTING and self._selection == RECT:
             offset = Pos(x_offset, y_offset)
             self._drag_currentpos = self._pos + offset
+        elif self._selection_state == SELECTING and self._selection == LINE:
+            None
 
     def on_hover(self, widget, event):
         self._pos = Pos(event.x, event.y)

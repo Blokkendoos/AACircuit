@@ -95,6 +95,33 @@ class MainWindow(Gtk.Window):
         self.btn_mirror.connect("pressed", self.on_mirror)
         self.btn_mirror.set_tooltip_text("mirror the symbol vertically")
 
+        # line drawing
+        self.btn_mag_line = self.builder.get_object("draw_mag_line")
+
+        self.btn_mag_line.connect("pressed", self.on_line)
+        self.btn_line = self.builder.get_object("draw_line")
+        self.btn_line1 = self.builder.get_object("draw_line1")
+        self.btn_line2 = self.builder.get_object("draw_line2")
+        self.btn_line3 = self.builder.get_object("draw_line3")
+        self.btn_line4 = self.builder.get_object("draw_line4")
+
+        self.btn_line.connect("pressed", self.on_line)
+        self.btn_line1.connect("pressed", self.on_line)
+        self.btn_line2.connect("pressed", self.on_line)
+        self.btn_line3.connect("pressed", self.on_line)
+        self.btn_line4.connect("pressed", self.on_line)
+
+        self.btn_mag_line.set_tooltip_text("MagLine")
+        self.btn_line.set_tooltip_text("free line")
+        self.btn_line1.set_tooltip_text("straight line")
+        self.btn_line2.set_tooltip_text("line with start and end point 'o'")
+        self.btn_line3.set_tooltip_text("line with start and end point '+'")
+        self.btn_line4.set_tooltip_text("line with end terminals")
+
+        self.btn_rect = self.builder.get_object("draw_rect")
+        self.btn_rect.connect("pressed", self.on_line)
+        self.btn_rect.set_tooltip_text("draw a rectangle")
+
         # insert/remove rows or columns
         self.btn_stretch1 = self.builder.get_object("stretch1")
         self.btn_stretch3 = self.builder.get_object("stretch3")
@@ -174,6 +201,11 @@ class MainWindow(Gtk.Window):
 
     def on_mirror(self, button):
         pub.sendMessage('MIRROR_SYMBOL')
+
+    def on_line(self, button):
+        name = Gtk.Buildable.get_name(button)
+        print("on_line: ", name)
+        pub.sendMessage(name.upper())
 
     def on_toggled_cursor(self, button):
 
