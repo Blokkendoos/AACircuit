@@ -432,9 +432,10 @@ class GridView(Gtk.Frame):
             self._drag_currentpos = self._drag_startpos + offset
 
             if self._selection == LINE:
+                # snap to either a horizontal or a vertical straight line
                 dx = abs(self._drag_currentpos.y - self._drag_startpos.y)
                 dy = abs(self._drag_currentpos.x - self._drag_startpos.x)
-                if  dx < dy:
+                if dx < dy:
                     self._selection_action = VERTICAL
                 else:
                     self._selection_action = HORIZONTAL
