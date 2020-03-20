@@ -23,6 +23,7 @@ class Controller(object):
 
         self.components = ComponentLibrary()
         self.symbol = Symbol()
+        self.buffer = None
 
         all_components = [key for key in self.components.get_dict()]
         print("{0} libraries loaded, total number of components: {1}".format(self.components.nr_libraries(),
@@ -98,17 +99,18 @@ class Controller(object):
     # cut and paste
 
     def on_cut(self, pos, rect):
-        # print("CUT pos:", pos, " w:", w, "h:", h)
+        self.buffer = self.grid.rect(pos, rect)
         self.grid.erase_rect(pos, rect)
 
-    def on_copy(self):
-        self.grid.copy_to_clipboard()
+    def on_copy(self, pos, rect):
+        self.buffer = self.grid.rect(pos, rect)
 
-    def on_paste(self):
-        self.grid.copy_to_clipboard()
+    def on_paste(self, pos, rect):
+        if self.buffer is not None:
+            self.grid.fill_rect(pos, self.buffer)
 
-    def on_delete(self):
-        self.grid.copy_to_clipboard()
+    def on_delete(self, pos, rect):
+        self.grid.erase_rect(pos, rect)
 
     # clipboard
 
