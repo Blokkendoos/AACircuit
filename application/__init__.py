@@ -11,6 +11,8 @@ GRIDSIZE_H = 16
 # selection action
 REMOVE = 'remove'
 INSERT = 'insert'
+HORIZONTAL = 'hor'
+VERTICAL = 'vert'
 
 # selection state
 IDLE = 0

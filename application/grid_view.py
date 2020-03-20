@@ -7,8 +7,8 @@ import cairo
 from pubsub import pub
 
 from application import GRIDSIZE_W, GRIDSIZE_H
-from application import INSERT
-from application import IDLE, SELECTING, SELECTED, DRAG
+from application import INSERT, REMOVE, HORIZONTAL, VERTICAL
+from application import IDLE, SELECTING, SELECTED
 from application import COMPONENT, COL, ROW, RECT, LINE
 from application.symbol_view import SymbolView
 
@@ -298,33 +298,55 @@ class GridView(Gtk.Frame):
             x = 0
             y = self._cr_selected
 
-        if self._selection == COL and self._selection_state == SELECTING:
-            # highlight the selected column
-            ctx.new_path()
-            ctx.move_to(x, 0)
-            ctx.line_to(x, y_max)
-            ctx.move_to(x + GRIDSIZE_W, 0)
-            ctx.line_to(x + GRIDSIZE_W, y_max)
-            ctx.stroke()
+        if self._selection_state == SELECTING:
+            if self._selection == COL:
+                # highlight the selected column
+                ctx.new_path()
+                ctx.move_to(x, 0)
+                ctx.line_to(x, y_max)
+                ctx.move_to(x + GRIDSIZE_W, 0)
+                ctx.line_to(x + GRIDSIZE_W, y_max)
+                ctx.stroke()
 
-        elif self._selection == ROW and self._selection_state == SELECTING:
-            # highlight the selected row
-            ctx.new_path()
-            ctx.move_to(0, y)
-            ctx.line_to(x_max, y)
-            ctx.move_to(0, y + GRIDSIZE_H)
-            ctx.line_to(x_max, y + GRIDSIZE_H)
-            ctx.stroke()
+            elif self._selection == ROW:
+                # highlight the selected row
+                ctx.new_path()
+                ctx.move_to(0, y)
+                ctx.line_to(x_max, y)
+                ctx.move_to(0, y + GRIDSIZE_H)
+                ctx.line_to(x_max, y + GRIDSIZE_H)
+                ctx.stroke()
 
-        elif self._selection == RECT and self._selection_state == SELECTING:
-            # draw the selection rectangle
-            ctx.new_path()
-            x, y = self._drag_startpos.xy
-            w, h = (self._drag_currentpos - self._drag_startpos).xy
-            ctx.rectangle(x, y, w, h)
-            ctx.stroke()
+            elif self._selection == RECT:
+                # draw the selection rectangle
+                ctx.new_path()
+                x, y = self._drag_startpos.xy
+                w, h = (self._drag_currentpos - self._drag_startpos).xy
+                ctx.rectangle(x, y, w, h)
+                ctx.stroke()
 
-        elif self._selection == RECT and self._selection_state == SELECTED:
+            elif self._selection == LINE:
+                # draw line
+                x_start, y_start = self._drag_startpos.xy
+                x_end, y_end = self._drag_currentpos.xy
+                if self._selection_action == VERTICAL:
+                    linechar = '-'
+                    y = y_start
+                    for x in range(x_start, x_end, GRIDSIZE_W):
+                        ctx.move_to(x, y)
+                        ctx.show_text(linechar)
+                        if x >= self.surface.get_width():
+                            break
+                else:
+                    linechar = '|'
+                    x = x_start
+                    for y in range(y_start, y_end, GRIDSIZE_H):
+                        ctx.move_to(x, y)
+                        ctx.show_text(linechar)
+                        if y >= self.surface.get_height():
+                            break
+
+        elif self._selection_state == SELECTED and self._selection == RECT:
             # draw the selection rectangle
             ctx.new_path()
             x, y = self._drag_startpos.xy
@@ -389,31 +411,33 @@ class GridView(Gtk.Frame):
         widget.queue_resize()
 
     def on_drag_begin(self, widget, x_start, y_start):
-        if self._selection_state == IDLE and self._selection == RECT:
+        if self._selection_state == IDLE and self._selection in (RECT, LINE):
             self._drag_startpos = Pos(x_start, y_start)
-            self._drag_currentpos = self._drag_startpos
+            self._drag_currentpos = Pos(x_start, y_start)
             self._selection_state = SELECTING
-            self._selection_action = DRAG
-        elif self._selection_state == IDLE and self._selection == LINE:
-            self._selection_state = SELECTING
-            print("start drawing line")
+            self._selection_action = None
 
     def on_drag_end(self, widget, x_offset, y_offset):
-        if self._selection_state == SELECTING and self._selection == RECT:
-            # print("DRAG End")
+
+        if self._selection_state == SELECTING and self._selection in (RECT, LINE):
             offset = Pos(x_offset, y_offset)
-            self._drag_endpos = self._pos + offset
+            self._drag_endpos = self._drag_startpos + offset
             self._selection_state = SELECTED
-        elif self._selection_state == SELECTING and self._selection == LINE:
-            self._selection_state = SELECTED
-            print("end of line")
 
     def on_drag_update(self, widget, x_offset, y_offset):
-        if self._selection_state == SELECTING and self._selection == RECT:
+
+        if self._selection_state == SELECTING and self._selection in (RECT, LINE):
+
             offset = Pos(x_offset, y_offset)
-            self._drag_currentpos = self._pos + offset
-        elif self._selection_state == SELECTING and self._selection == LINE:
-            None
+            self._drag_currentpos = self._drag_startpos + offset
+
+            if self._selection == LINE:
+                dx = abs(self._drag_currentpos.y - self._drag_startpos.y)
+                dy = abs(self._drag_currentpos.x - self._drag_startpos.x)
+                if  dx < dy:
+                    self._selection_action = VERTICAL
+                else:
+                    self._selection_action = HORIZONTAL
 
     def on_hover(self, widget, event):
         self._pos = Pos(event.x, event.y)
