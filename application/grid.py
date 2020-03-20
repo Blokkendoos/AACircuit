@@ -135,8 +135,8 @@ class Grid(object):
         self._grid[row][col] = value
 
     def pos_to_rc(self, pos, rect):
-        """Convert (canvas) position and rect to colum and row start/end values.
-        :param pos:  canvas position (Pos) of the upper left corner (row, column) of the rectangle
+        """Convert (x,y) position and rect to colum and row start/end values.
+        :param pos: position (Pos) of the upper left corner (row, column) of the rectangle
         :param rect: tuple (width, height)
         :returns the start and end column and row
         """

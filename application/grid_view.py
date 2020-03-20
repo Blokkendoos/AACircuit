@@ -59,8 +59,8 @@ class Pos(object):
     def xy(self):
         return (self._x, self._y)
 
-    def grid(self):
-        """Map a canvas position to grid coordinates."""
+    def grid_rc(self):
+        """Map canvas (x,y) position to grid (row,col) coordinates."""
         (x, y) = (self._x, self._y)
         x /= GRIDSIZE_W
         y /= GRIDSIZE_H
@@ -94,6 +94,11 @@ class GridView(Gtk.Frame):
         self._selection_action = None
         self._selection = None
         self._cr_selected = None
+
+        # selection rectangle
+        self._drag_startpos = None
+        self._drag_endpos = None
+        self._drag_currentpos = None
 
         self._drawing_area.connect("draw", self.on_draw)
         self._drawing_area.connect('configure-event', self.on_configure)
@@ -132,15 +137,41 @@ class GridView(Gtk.Frame):
         # create a new buffer
         self.surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, area.get_allocated_width(), area.get_allocated_height())
 
+    @property
     def max_pos(self):
         x_max = self.surface.get_width()
         y_max = self.surface.get_height()
-        return (x_max, y_max)
+        return x_max, y_max
 
+    @property
     def max_pos_grid(self):
         x_max = self._grid.nr_cols * GRIDSIZE_W
         y_max = self._grid.nr_rows * GRIDSIZE_H
-        return (x_max, y_max)
+        return x_max, y_max
+
+    @property
+    def drag_rect(self):
+        """Return the upper-left position and width and height of the selected rectangle."""
+        if self._drag_startpos.x <= self._drag_endpos.x:
+            x1 = self._drag_startpos.x
+            x2 = self._drag_endpos.x
+        else:
+            x1 = self._drag_endpos.x
+            x2 = self._drag_startpos.x
+
+        if self._drag_startpos.y <= self._drag_endpos.y:
+            y1 = self._drag_startpos.y
+            y2 = self._drag_endpos.y
+        else:
+            y1 = self._drag_endpos.y
+            y2 = self._drag_startpos.y
+
+        pos = Pos(x1, y1).grid_rc()
+        # width and height in grid (row, col) dimensions
+        w = int((x2 - x1) / GRIDSIZE_W)
+        h = int((y2 - y1) / GRIDSIZE_H)
+
+        return pos, w, h
 
     def on_configure(self, area, event, data=None):
         self.init_surface(self._drawing_area)
@@ -193,7 +224,7 @@ class GridView(Gtk.Frame):
         ctx.set_tolerance(0.1)
         ctx.set_line_join(cairo.LINE_JOIN_ROUND)
 
-        x_max, y_max = self.max_pos_grid()
+        x_max, y_max = self.max_pos_grid
 
         ctx.new_path()
         ctx.rectangle(0, 0, x_max, y_max)
@@ -206,7 +237,7 @@ class GridView(Gtk.Frame):
         ctx.set_tolerance(0.1)
         ctx.set_line_join(cairo.LINE_JOIN_ROUND)
 
-        x_max, y_max = self.max_pos()
+        x_max, y_max = self.max_pos
         x_incr = GRIDSIZE_W
         y_incr = GRIDSIZE_H
 
@@ -235,7 +266,7 @@ class GridView(Gtk.Frame):
         ctx.set_tolerance(0.1)
         ctx.set_line_join(cairo.LINE_JOIN_ROUND)
 
-        x_max, y_max = self.max_pos()
+        x_max, y_max = self.max_pos
 
         if self._selection_state == SELECTING:
             x, y = (self._pos.x, self._pos.y)
@@ -305,19 +336,19 @@ class GridView(Gtk.Frame):
     def on_button_press(self, widget, event):
 
         pos = Pos(event.x, event.y)
-        pub.sendMessage('POINTER_MOVED', pos=pos.grid())
+        pub.sendMessage('POINTER_MOVED', pos=pos.grid_rc())
 
         # print("state:{0} selection:{1}".format(self._selection_state, self._selection))
 
         if self._selection_state == SELECTING and self._selection == ROW:
-            row = pos.grid().y
+            row = pos.grid_rc().y
             if self._selection_action == INSERT:
                 pub.sendMessage('INSERT_ROW', row=row)
             else:
                 pub.sendMessage('REMOVE_ROW', row=row)
 
         elif self._selection_state == SELECTING and self._selection == COL:
-            col = pos.grid().x
+            col = pos.grid_rc().x
             if self._selection_action == INSERT:
                 pub.sendMessage('INSERT_COL', col=col)
             else:
@@ -329,7 +360,7 @@ class GridView(Gtk.Frame):
             if button == 1:
                 # left button
                 pos = self._pos + Pos(0, -1)
-                pub.sendMessage('PASTE_SYMBOL', pos=pos.grid())
+                pub.sendMessage('PASTE_SYMBOL', pos=pos.grid_rc())
             elif button == 3:
                 # right button
                 pub.sendMessage('ROTATE_SYMBOL')
@@ -342,6 +373,7 @@ class GridView(Gtk.Frame):
         if self._selection_state == IDLE and self._selection == RECT:
             # print("DRAG Begin")
             self._drag_startpos = Pos(x_start, y_start)
+            self._drag_currentpos = self._drag_startpos
             self._selection_state = SELECTING
             self._selection_action = DRAG
 
@@ -354,14 +386,11 @@ class GridView(Gtk.Frame):
 
     def on_drag_update(self, widget, x_offset, y_offset):
         if self._selection_state == SELECTING and self._selection == RECT:
-            # print("/")
             offset = Pos(x_offset, y_offset)
             self._drag_currentpos = self._pos + offset
-            # pub.sendMessage('POINTER_MOVED', pos=self._drag_currentpos.grid_xy())
 
     def on_hover(self, widget, event):
-        # print("col:{0} row:{1}".format(self._selecting_col, self._selecting_row))
-        # print(".")
         self._pos = Pos(event.x, event.y)
-        pub.sendMessage('POINTER_MOVED', pos=self._pos.grid())
+        pub.sendMessage('POINTER_MOVED', pos=self._pos.grid_rc())
+
         widget.queue_resize()

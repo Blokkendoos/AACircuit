@@ -126,6 +126,16 @@ class MainWindow(Gtk.Window):
         self.btn_clipboard[1].set_tooltip_text("paste grid from clipboard")
         self.btn_clipboard[2].set_tooltip_text("load file and paste into grid")
 
+        self.menu_copy = self.builder.get_object("copy")
+        self.menu_cut = self.builder.get_object("cut")
+        self.menu_paste = self.builder.get_object("paste")
+        self.menu_delete = self.builder.get_object("delete")
+
+        self.menu_copy.connect("activate", self.on_menu)
+        self.menu_cut.connect("activate", self.on_menu)
+        self.menu_paste.connect("activate", self.on_menu)
+        self.menu_delete.connect("activate", self.on_menu)
+
         self.init_grid()
         self.init_cursors()
         self.init_components()
@@ -139,8 +149,8 @@ class MainWindow(Gtk.Window):
 
     def init_grid(self):
         fixed = self.builder.get_object("grid_viewport")
-        self.grid_canvas = GridView()
-        fixed.add(self.grid_canvas)
+        self.grid_view = GridView()
+        fixed.add(self.grid_view)
 
     def init_cursors(self):
         self.cursor = []
@@ -217,6 +227,11 @@ class MainWindow(Gtk.Window):
         name = Gtk.Buildable.get_name(button)
         pub.sendMessage(name.upper())
 
+    def on_menu(self, item):
+        name = Gtk.Buildable.get_name(item)
+        pos, width, height = self.grid_view.drag_rect
+        pub.sendMessage(name.upper(), pos=pos, rect=(width, height))
+
     def custom_cursor(self, btn):
         display = self.get_root_window().get_display()
 
@@ -224,5 +239,5 @@ class MainWindow(Gtk.Window):
         # the cursor hot-spot is at the center of the (16x16) cursor image
         cursor = Gdk.Cursor.new_from_pixbuf(display, pb, 8, 15)
 
-        widget = self.grid_canvas._drawing_area
+        widget = self.grid_view._drawing_area
         widget.get_window().set_cursor(cursor)

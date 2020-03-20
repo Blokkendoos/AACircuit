@@ -47,9 +47,14 @@ class Controller(object):
         pub.subscribe(self.on_remove_row, 'REMOVE_ROW')
 
         # clipboard
-        pub.subscribe(self.on_copy, 'COPY_TO_CLIPBOARD')
-        pub.subscribe(self.on_paste, 'PASTE_FROM_CLIPBOARD')
-        pub.subscribe(self.on_load, 'LOAD_AND_PASTE_FROM_CLIPBOARD')
+        pub.subscribe(self.on_copy_to_clipboard, 'COPY_TO_CLIPBOARD')
+        pub.subscribe(self.on_paste_from_clipboard, 'PASTE_FROM_CLIPBOARD')
+        pub.subscribe(self.on_load_and_paste_from_clipboard, 'LOAD_AND_PASTE_FROM_CLIPBOARD')
+
+        pub.subscribe(self.on_cut, 'CUT')
+        pub.subscribe(self.on_copy, 'COPY')
+        pub.subscribe(self.on_paste, 'PASTE')
+        pub.subscribe(self.on_delete, 'DELETE')
 
     def show_all(self):
         self.gui.show_all()
@@ -90,15 +95,30 @@ class Controller(object):
     def on_paste_symbol(self, pos):
         self.grid.fill_rect(pos, self.symbol.grid)
 
-    # clipboard
+    # cut and paste
+
+    def on_cut(self, pos, rect):
+        # print("CUT pos:", pos, " w:", w, "h:", h)
+        self.grid.erase_rect(pos, rect)
 
     def on_copy(self):
         self.grid.copy_to_clipboard()
 
     def on_paste(self):
+        self.grid.copy_to_clipboard()
+
+    def on_delete(self):
+        self.grid.copy_to_clipboard()
+
+    # clipboard
+
+    def on_copy_to_clipboard(self):
+        self.grid.copy_to_clipboard()
+
+    def on_paste_from_clipboard(self):
         self.grid.paste_from_clipboard()
         pub.sendMessage('GRID', grid=self.grid)
 
-    def on_load(self):
+    def on_load_and_paste_from_clipboard(self):
         self.grid.load_and_paste_from_clipboard()
         pub.sendMessage('GRID', grid=self.grid)
