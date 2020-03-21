@@ -26,3 +26,11 @@ COL = 'col'
 ROW = 'row'
 RECT = 'rect'
 LINE = 'line'
+
+# lines
+LINE_HOR = '-'
+LINE_VERT = '|'
+TERMINAL1 = " "
+TERMINAL2 = 'o'
+TERMINAL3 = '+'
+TERMINAL4 = "'"

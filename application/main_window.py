@@ -204,8 +204,8 @@ class MainWindow(Gtk.Window):
 
     def on_line(self, button):
         name = Gtk.Buildable.get_name(button)
-        print("on_line: ", name)
-        pub.sendMessage(name.upper())
+        type = name[-1]
+        pub.sendMessage(name.upper(), type=type)
 
     def on_toggled_cursor(self, button):
 
@@ -260,6 +260,7 @@ class MainWindow(Gtk.Window):
         pub.sendMessage(name.upper())
 
     def on_menu(self, item):
+        # menu cut|copy|paste
         name = Gtk.Buildable.get_name(item)
         pos, width, height = self.grid_view.drag_rect
         pub.sendMessage(name.upper(), pos=pos, rect=(width, height))

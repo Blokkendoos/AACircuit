@@ -10,6 +10,7 @@ from application import GRIDSIZE_W, GRIDSIZE_H
 from application import INSERT, REMOVE, HORIZONTAL, VERTICAL
 from application import IDLE, SELECTING, SELECTED
 from application import COMPONENT, COL, ROW, RECT, LINE
+from application import LINE_HOR, LINE_VERT, TERMINAL1, TERMINAL2, TERMINAL3, TERMINAL4
 from application.symbol_view import SymbolView
 
 import gi
@@ -60,7 +61,7 @@ class Pos(object):
         return (self._x, self._y)
 
     def grid_rc(self):
-        """Map canvas (x,y) position to grid (row,col) coordinates."""
+        """Map canvas (x,y) position to grid (col,row) coordinates."""
         (x, y) = (self._x, self._y)
         x /= GRIDSIZE_W
         y /= GRIDSIZE_H
@@ -89,11 +90,11 @@ class GridView(Gtk.Frame):
 
         self._symbol_view = SymbolView()
 
-        # active row/column selection
+        # selection status
         self._selection_state = IDLE
         self._selection_action = None
         self._selection = None
-        self._cr_selected = None
+        self._selection_type = None
 
         # selection rectangle
         self._drag_startpos = None
@@ -129,7 +130,7 @@ class GridView(Gtk.Frame):
         pub.subscribe(self.on_draw_line, 'DRAW_LINE2')
         pub.subscribe(self.on_draw_line, 'DRAW_LINE3')
         pub.subscribe(self.on_draw_line, 'DRAW_LINE4')
-        pub.subscribe(self.on_draw_line, 'DRAW_RECT')
+        pub.subscribe(self.on_draw_line, 'DRAW_RECT')  # TODO on_draw_rect
 
     def set_grid(self, grid):
         self._grid = grid
@@ -174,8 +175,12 @@ class GridView(Gtk.Frame):
             y1 = self._drag_endpos.y
             y2 = self._drag_startpos.y
 
+        # TODO handle negative width/height in grid
+        # x1, y1 = self._drag_startpos.xy
+        # x2, y2 = self._drag_endpos.xy
+
         pos = Pos(x1, y1).grid_rc()
-        # width and height in grid (row, col) dimensions
+        # width and height in grid (col,row) dimensions
         w = int((x2 - x1) / GRIDSIZE_W)
         h = int((y2 - y1) / GRIDSIZE_H)
 
@@ -231,10 +236,21 @@ class GridView(Gtk.Frame):
         self._selection_action = action
         self._selection = COL
 
-    def on_draw_line(self):
+    def on_draw_line(self, type):
         self._selection_state = IDLE
         self._selection_action = None
         self._selection = LINE
+        self._selection_type = type
+        if type == '1':
+            self._line_terminal = TERMINAL1
+        elif type == '2':
+            self._line_terminal = TERMINAL2
+        elif type == '3':
+            self._line_terminal = TERMINAL3
+        elif type == '4':
+            self._line_terminal = TERMINAL4
+        else:
+            self._line_terminal = "?"
 
     def draw_background(self, ctx):
         """Draw a background with the size of the grid."""
@@ -290,14 +306,6 @@ class GridView(Gtk.Frame):
         if self._selection_state == SELECTING:
             x, y = (self._pos.x, self._pos.y)
 
-        elif self._selection_state == SELECTED and self._selection == COL:
-            x = self._cr_selected
-            y = 0
-
-        elif self._selection_state == SELECTED and self._selection == ROW:
-            x = 0
-            y = self._cr_selected
-
         if self._selection_state == SELECTING:
             if self._selection == COL:
                 # highlight the selected column
@@ -329,16 +337,17 @@ class GridView(Gtk.Frame):
                 # draw line
                 x_start, y_start = self._drag_startpos.xy
                 x_end, y_end = self._drag_currentpos.xy
-                if self._selection_action == VERTICAL:
-                    linechar = '-'
-                    y = y_start
+                if self._selection_action == HORIZONTAL:
+                    linechar = LINE_HOR
+                    y = y_start + GRIDSIZE_H
                     for x in range(x_start, x_end, GRIDSIZE_W):
                         ctx.move_to(x, y)
                         ctx.show_text(linechar)
                         if x >= self.surface.get_width():
                             break
                 else:
-                    linechar = '|'
+                    # vertical line
+                    linechar = LINE_VERT
                     x = x_start
                     for y in range(y_start, y_end, GRIDSIZE_H):
                         ctx.move_to(x, y)
@@ -420,9 +429,26 @@ class GridView(Gtk.Frame):
     def on_drag_end(self, widget, x_offset, y_offset):
 
         if self._selection_state == SELECTING and self._selection in (RECT, LINE):
+
             offset = Pos(x_offset, y_offset)
             self._drag_endpos = self._drag_startpos + offset
             self._selection_state = SELECTED
+
+            if self._selection == LINE:
+
+                # pos in grid (col, row) coordinates
+                pos = self._drag_startpos.grid_rc()
+                print("pos:", pos)
+                # pos = pos - Pos(0, 1)  # TODO row minus one?
+
+                # length in grid nr cols or rows
+                if self._selection_action == HORIZONTAL:
+                    length = int(x_offset / GRIDSIZE_W)
+                else:
+                    length = int(y_offset / GRIDSIZE_H)
+
+                # TODO line terminal-type
+                pub.sendMessage("PASTE_LINE", pos=pos, dir=self._selection_action, type=self._selection_type, length=length)
 
     def on_drag_update(self, widget, x_offset, y_offset):
 
@@ -436,9 +462,9 @@ class GridView(Gtk.Frame):
                 dx = abs(self._drag_currentpos.y - self._drag_startpos.y)
                 dy = abs(self._drag_currentpos.x - self._drag_startpos.x)
                 if dx < dy:
-                    self._selection_action = VERTICAL
-                else:
                     self._selection_action = HORIZONTAL
+                else:
+                    self._selection_action = VERTICAL
 
     def on_hover(self, widget, event):
         self._pos = Pos(event.x, event.y)

@@ -39,6 +39,7 @@ class Controller(object):
         pub.subscribe(self.on_rotate_symbol, 'ROTATE_SYMBOL')
         pub.subscribe(self.on_mirror_symbol, 'MIRROR_SYMBOL')
         pub.subscribe(self.on_paste_symbol, 'PASTE_SYMBOL')
+        pub.subscribe(self.on_paste_line, 'PASTE_LINE')
         pub.subscribe(self.on_undo, 'UNDO')
 
         # insert/remove rows or columns
@@ -78,6 +79,8 @@ class Controller(object):
     def on_remove_row(self, row):
         self.grid.remove_row(row)
 
+    # component symbol
+
     def on_component_changed(self, label):
         grid = self.components.get_grid(label)
         self.symbol = Symbol(grid)
@@ -95,6 +98,12 @@ class Controller(object):
 
     def on_paste_symbol(self, pos):
         self.grid.fill_rect(pos, self.symbol.grid)
+
+    # lines
+
+    def on_paste_line(self, pos, dir, type, length):
+        grid = self.symbol.line(dir, type, length)
+        self.grid.fill_rect(pos, grid)
 
     # cut and paste
 
