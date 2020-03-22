@@ -101,7 +101,6 @@ class GridView(Gtk.Frame):
         self._drag_endpos = None
         self._drag_currentpos = None
         self._drag_prevpos = []
-        self._drag_prevcnt = 0
 
         self._drawing_area.connect("draw", self.on_draw)
         self._drawing_area.connect('configure-event', self.on_configure)
@@ -305,6 +304,28 @@ class GridView(Gtk.Frame):
 
     def draw_selection(self, ctx):
 
+        def draw_hor_line():
+            linechar = LINE_HOR
+            y = y_start
+            step = GRIDSIZE_W * sign(x_end - x_start)
+            if abs(step) > 0:
+                for x in range(x_start, x_end, step):
+                    ctx.move_to(x, y)
+                    ctx.show_text(linechar)
+                    if x >= self.surface.get_width():
+                        break
+
+        def draw_vert_line():
+            linechar = LINE_VERT
+            x = x_start
+            step = GRIDSIZE_H * sign(y_end - y_start)
+            if abs(step) > 0:
+                for y in range(y_start, y_end, step):
+                    ctx.move_to(x, y)
+                    ctx.show_text(linechar)
+                    if y >= self.surface.get_height():
+                        break
+
         ctx.set_source_rgb(0.5, 0.5, 0.75)
         ctx.set_line_width(0.5)
         ctx.set_tolerance(0.1)
@@ -342,32 +363,20 @@ class GridView(Gtk.Frame):
                 ctx.rectangle(x, y, w, h)
                 ctx.stroke()
 
-            elif self._selection == LINE:
+            elif self._selection in (LINE, MAG_LINE):
 
                 # draw line
                 x_start, y_start = self._drag_startpos.xy
                 x_end, y_end = self._drag_currentpos.xy
 
-                if self._selection_action == HORIZONTAL:
-                    linechar = LINE_HOR
-                    y = y_start + GRIDSIZE_H
-                    step = GRIDSIZE_W * sign(x_end - x_start)
-                    for x in range(x_start, x_end, step):
-                        ctx.move_to(x, y)
-                        ctx.show_text(linechar)
-                        if x >= self.surface.get_width():
-                            break
+                x_end += GRIDSIZE_W
+                y_end += GRIDSIZE_H
+                y_start += GRIDSIZE_H
 
+                if self._selection_action == HORIZONTAL:
+                    draw_hor_line()
                 elif self._selection_action == VERTICAL:
-                    linechar = LINE_VERT
-                    x = x_start
-                    step =  GRIDSIZE_H * sign(y_end - y_start)
-                    if abs(step) > 0:
-                        for y in range(y_start, y_end, step):
-                            ctx.move_to(x, y)
-                            ctx.show_text(linechar)
-                            if y >= self.surface.get_height():
-                                break
+                    draw_vert_line()
 
         elif self._selection_state == SELECTED and self._selection == RECT:
             # draw the selection rectangle
@@ -457,7 +466,7 @@ class GridView(Gtk.Frame):
 
             if self._selection == LINE:
 
-                # pos in grid (col, row) coordinates
+                # pos to grid (col, row) coordinates
                 pos = self._drag_startpos.grid_rc()
 
                 # convert (canvas) length to grid dimension (nr cols or rows)
@@ -465,17 +474,18 @@ class GridView(Gtk.Frame):
                     length = int(x_offset / GRIDSIZE_W)
                     if sign(length) == -1:
                         pos = Pos(pos.x + length, pos.y)
-                        pos -= Pos(1, 0)  # compensation?
+                        # pos -= Pos(1, 0)  # hor. compensation?
                 else:
                     length = int(y_offset / GRIDSIZE_H)
                     if sign(length) == -1:
                         pos = Pos(pos.x, pos.y + length)
-                        pos -= Pos(0, 1)  # compensation?
+                        # pos -= Pos(0, 1)  # vert. compensation?
 
                 length = abs(length)
 
                 # TODO line terminal-type
                 pub.sendMessage("PASTE_LINE", pos=pos, dir=self._selection_action, type=self._selection_type, length=length)
+                self._drawing_area.queue_resize()
 
     def on_drag_update(self, widget, x_offset, y_offset):
 
@@ -527,9 +537,9 @@ class GridView(Gtk.Frame):
         else:
             dir = VERTICAL
 
+        # previous position keeps a list of the last n pointer locations
         self._drag_prevpos.append(Pos(x, y))
-        self._drag_prevcnt += 1
-        if self._drag_prevcnt > 4:
+        if len(self._drag_prevpos) > 5:
             self._drag_prevpos.pop(0)
         return dir
 

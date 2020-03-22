@@ -45,9 +45,11 @@ class Symbol(Grid):
             return term
 
         grid = []
+        length -= 1
 
         if dir == HORIZONTAL:
             linechar = LINE_HOR
+
             row = [terminal()]
             for i in range(length):
                 row.append(linechar)
