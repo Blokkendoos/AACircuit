@@ -5,11 +5,12 @@ AACircuit
 
 import cairo
 from pubsub import pub
+from numpy import sign
 
 from application import GRIDSIZE_W, GRIDSIZE_H
 from application import INSERT, REMOVE, HORIZONTAL, VERTICAL
 from application import IDLE, SELECTING, SELECTED
-from application import COMPONENT, COL, ROW, RECT, LINE
+from application import COMPONENT, COL, ROW, RECT, LINE, MAG_LINE
 from application import LINE_HOR, LINE_VERT, TERMINAL1, TERMINAL2, TERMINAL3, TERMINAL4
 from application.symbol_view import SymbolView
 
@@ -93,11 +94,14 @@ class GridView(Gtk.Frame):
         self._selection_action = None
         self._selection = None
         self._selection_type = None
+        self._selection_mag_line_split = None
 
         # selection rectangle
         self._drag_startpos = None
         self._drag_endpos = None
         self._drag_currentpos = None
+        self._drag_prevpos = []
+        self._drag_prevcnt = 0
 
         self._drawing_area.connect("draw", self.on_draw)
         self._drawing_area.connect('configure-event', self.on_configure)
@@ -123,6 +127,7 @@ class GridView(Gtk.Frame):
         pub.subscribe(self.on_selecting_col, 'SELECTING_COL')
         pub.subscribe(self.on_nothing_selected, 'NOTHING_SELECTED')
 
+        pub.subscribe(self.on_draw_mag_line, 'DRAW_MAG_LINE')
         pub.subscribe(self.on_draw_line, 'DRAW_LINE')
         pub.subscribe(self.on_draw_line, 'DRAW_LINE1')
         pub.subscribe(self.on_draw_line, 'DRAW_LINE2')
@@ -234,6 +239,11 @@ class GridView(Gtk.Frame):
         self._selection_action = action
         self._selection = COL
 
+    def on_draw_mag_line(self, type):
+        self._selection_state = IDLE
+        self._selection_action = None
+        self._selection = MAG_LINE
+
     def on_draw_line(self, type):
         self._selection_state = IDLE
         self._selection_action = None
@@ -248,6 +258,7 @@ class GridView(Gtk.Frame):
         elif type == '4':
             self._line_terminal = TERMINAL4
         else:
+            # TODO draw line https://pypi.org/project/bresenham/
             self._line_terminal = "?"
 
     def draw_background(self, ctx):
@@ -419,18 +430,24 @@ class GridView(Gtk.Frame):
         widget.queue_resize()
 
     def on_drag_begin(self, widget, x_start, y_start):
-        if self._selection_state == IDLE and self._selection in (RECT, LINE):
-            self._drag_startpos = Pos(x_start, y_start)
-            self._drag_currentpos = Pos(x_start, y_start)
+        if self._selection_state == IDLE and self._selection in (RECT, LINE, MAG_LINE):
+            pos = Pos(x_start, y_start)
+            pos.snap_to_grid()
+            self._drag_startpos = pos
+            self._drag_currentpos = pos
+            self._drag_prevpos.append(pos)
+
             self._selection_state = SELECTING
             self._selection_action = None
 
     def on_drag_end(self, widget, x_offset, y_offset):
 
-        if self._selection_state == SELECTING and self._selection in (RECT, LINE):
+        if self._selection_state == SELECTING and self._selection in (RECT, LINE, MAG_LINE):
 
             offset = Pos(x_offset, y_offset)
             self._drag_endpos = self._drag_startpos + offset
+            self._drag_endpos.snap_to_grid()
+
             self._selection_state = SELECTED
 
             if self._selection == LINE:
@@ -439,30 +456,75 @@ class GridView(Gtk.Frame):
                 pos = self._drag_startpos.grid_rc()
                 # pos = pos - Pos(0, 1)  # TODO row minus one?
 
-                # length in grid nr cols or rows
+                # convert (canvas) length to grid dimension (nr cols or rows)
                 if self._selection_action == HORIZONTAL:
                     length = int(x_offset / GRIDSIZE_W)
                 else:
                     length = int(y_offset / GRIDSIZE_H)
+
+                if sign(length) == -1:
+                    pos = Pos(pos.x + length, pos.y)
+
+                length = abs(length)
 
                 # TODO line terminal-type
                 pub.sendMessage("PASTE_LINE", pos=pos, dir=self._selection_action, type=self._selection_type, length=length)
 
     def on_drag_update(self, widget, x_offset, y_offset):
 
-        if self._selection_state == SELECTING and self._selection in (RECT, LINE):
+        if self._selection_state == SELECTING and self._selection in (RECT, LINE, MAG_LINE):
 
             offset = Pos(x_offset, y_offset)
-            self._drag_currentpos = self._drag_startpos + offset
+            self._drag_currentpos = (self._drag_startpos + offset)
+            self._drag_currentpos.snap_to_grid()
 
             if self._selection == LINE:
                 # snap to either a horizontal or a vertical straight line
-                dx = abs(self._drag_currentpos.y - self._drag_startpos.y)
-                dy = abs(self._drag_currentpos.x - self._drag_startpos.x)
-                if dx < dy:
-                    self._selection_action = HORIZONTAL
-                else:
-                    self._selection_action = VERTICAL
+                self._selection_action = self.pointer_dir()
+
+            if self._selection == MAG_LINE:
+                self._selection_action = self.pointer_dir()
+                # snap to either a horizontal or a vertical straight line
+                if self._selection_action != self.pointer_dir2():
+                    print("line break")
+
+    def pointer_dir(self):
+        """Return the pointer direction in relation to the start position."""
+        dx = abs(self._drag_currentpos.x - self._drag_startpos.x)
+        dy = abs(self._drag_currentpos.y - self._drag_startpos.y)
+        if dx > dy:
+            dir = HORIZONTAL
+        else:
+            dir = VERTICAL
+        return dir
+
+    def pointer_dir2(self):
+        """Return the pointer direction in relation to the previous position."""
+        (x, y) = self._drag_currentpos.xy
+
+        l = len(self._drag_prevpos)
+        assert l > 0
+
+        x_sum = 0
+        y_sum = 0
+        for pos in self._drag_prevpos:
+            x_sum += pos.x
+            y_sum += pos.y
+        x_avg = x_sum / l
+        y_avg = y_sum / l
+
+        dx = abs(x - x_avg)
+        dy = abs(y - y_avg)
+        if dx > dy:
+            dir = HORIZONTAL
+        else:
+            dir = VERTICAL
+
+        self._drag_prevpos.append(Pos(x, y))
+        self._drag_prevcnt += 1
+        if self._drag_prevcnt > 4:
+            self._drag_prevpos.pop(0)
+        return dir
 
     def on_hover(self, widget, event):
         self._pos = Pos(event.x, event.y)

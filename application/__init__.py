@@ -26,6 +26,7 @@ COL = 'col'
 ROW = 'row'
 RECT = 'rect'
 LINE = 'line'
+MAG_LINE = 'mag_line'
 
 # lines
 LINE_HOR = '-'

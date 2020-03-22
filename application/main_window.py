@@ -97,14 +97,13 @@ class MainWindow(Gtk.Window):
 
         # line drawing
         self.btn_mag_line = self.builder.get_object("draw_mag_line")
-
-        self.btn_mag_line.connect("pressed", self.on_line)
         self.btn_line = self.builder.get_object("draw_line")
         self.btn_line1 = self.builder.get_object("draw_line1")
         self.btn_line2 = self.builder.get_object("draw_line2")
         self.btn_line3 = self.builder.get_object("draw_line3")
         self.btn_line4 = self.builder.get_object("draw_line4")
 
+        self.btn_mag_line.connect("pressed", self.on_line)
         self.btn_line.connect("pressed", self.on_line)
         self.btn_line1.connect("pressed", self.on_line)
         self.btn_line2.connect("pressed", self.on_line)

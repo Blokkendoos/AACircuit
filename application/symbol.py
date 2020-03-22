@@ -34,7 +34,6 @@ class Symbol(Grid):
     def line(self, dir, type, length):
 
         def terminal():
-            print("type:", type)
             if type == '1':
                 term = TERMINAL1
             elif type == '2':
