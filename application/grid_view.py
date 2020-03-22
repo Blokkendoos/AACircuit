@@ -21,11 +21,9 @@ from gi.repository import Gtk, Gdk  # noqa: E402
 class Pos(object):
     """A position on the grid (canvas)."""
 
-    def __init__(self, x, y, snap=True):
+    def __init__(self, x, y):
         self._x = int(x)
         self._y = int(y)
-        if snap:
-            self._snap_to_grid()
 
     def __add__(self, other):
         x = self._x + other.x
@@ -40,14 +38,6 @@ class Pos(object):
     def __str__(self):
         return "x:{0} y:{1}".format(self._x, self._y)
 
-    def _snap_to_grid(self):
-        """Set position to the nearest (canvas) grid coordinate."""
-        (x, y) = (self._x, self._y)
-        x -= x % GRIDSIZE_W
-        y -= y % GRIDSIZE_H
-        self._x = int(x)
-        self._y = int(y)
-
     @property
     def x(self):
         return self._x
@@ -60,12 +50,20 @@ class Pos(object):
     def xy(self):
         return (self._x, self._y)
 
+    def snap_to_grid(self):
+        """Set position to the nearest (canvas) grid coordinate."""
+        (x, y) = (self._x, self._y)
+        x -= x % GRIDSIZE_W
+        y -= y % GRIDSIZE_H
+        self._x = int(x)
+        self._y = int(y)
+
     def grid_rc(self):
         """Map canvas (x,y) position to grid (col,row) coordinates."""
         (x, y) = (self._x, self._y)
         x /= GRIDSIZE_W
         y /= GRIDSIZE_H
-        return Pos(x, y, False)
+        return Pos(x, y)
 
 
 class GridView(Gtk.Frame):
@@ -386,6 +384,7 @@ class GridView(Gtk.Frame):
     def on_button_press(self, widget, event):
 
         pos = Pos(event.x, event.y)
+        pos.snap_to_grid()
         pub.sendMessage('POINTER_MOVED', pos=pos.grid_rc())
 
         # print("state:{0} selection:{1}".format(self._selection_state, self._selection))
@@ -438,7 +437,6 @@ class GridView(Gtk.Frame):
 
                 # pos in grid (col, row) coordinates
                 pos = self._drag_startpos.grid_rc()
-                print("pos:", pos)
                 # pos = pos - Pos(0, 1)  # TODO row minus one?
 
                 # length in grid nr cols or rows
@@ -468,6 +466,7 @@ class GridView(Gtk.Frame):
 
     def on_hover(self, widget, event):
         self._pos = Pos(event.x, event.y)
+        self._pos.snap_to_grid()
         pub.sendMessage('POINTER_MOVED', pos=self._pos.grid_rc())
 
         widget.queue_resize()
