@@ -343,26 +343,31 @@ class GridView(Gtk.Frame):
                 ctx.stroke()
 
             elif self._selection == LINE:
+
                 # draw line
                 x_start, y_start = self._drag_startpos.xy
                 x_end, y_end = self._drag_currentpos.xy
+
                 if self._selection_action == HORIZONTAL:
                     linechar = LINE_HOR
                     y = y_start + GRIDSIZE_H
-                    for x in range(x_start, x_end, GRIDSIZE_W):
+                    step = GRIDSIZE_W * sign(x_end - x_start)
+                    for x in range(x_start, x_end, step):
                         ctx.move_to(x, y)
                         ctx.show_text(linechar)
                         if x >= self.surface.get_width():
                             break
-                else:
-                    # vertical line
+
+                elif self._selection_action == VERTICAL:
                     linechar = LINE_VERT
                     x = x_start
-                    for y in range(y_start, y_end, GRIDSIZE_H):
-                        ctx.move_to(x, y)
-                        ctx.show_text(linechar)
-                        if y >= self.surface.get_height():
-                            break
+                    step =  GRIDSIZE_H * sign(y_end - y_start)
+                    if abs(step) > 0:
+                        for y in range(y_start, y_end, step):
+                            ctx.move_to(x, y)
+                            ctx.show_text(linechar)
+                            if y >= self.surface.get_height():
+                                break
 
         elif self._selection_state == SELECTED and self._selection == RECT:
             # draw the selection rectangle
@@ -454,16 +459,18 @@ class GridView(Gtk.Frame):
 
                 # pos in grid (col, row) coordinates
                 pos = self._drag_startpos.grid_rc()
-                # pos = pos - Pos(0, 1)  # TODO row minus one?
 
                 # convert (canvas) length to grid dimension (nr cols or rows)
                 if self._selection_action == HORIZONTAL:
                     length = int(x_offset / GRIDSIZE_W)
+                    if sign(length) == -1:
+                        pos = Pos(pos.x + length, pos.y)
+                        pos -= Pos(1, 0)  # compensation?
                 else:
                     length = int(y_offset / GRIDSIZE_H)
-
-                if sign(length) == -1:
-                    pos = Pos(pos.x + length, pos.y)
+                    if sign(length) == -1:
+                        pos = Pos(pos.x, pos.y + length)
+                        pos -= Pos(0, 1)  # compensation?
 
                 length = abs(length)
 
@@ -502,16 +509,16 @@ class GridView(Gtk.Frame):
         """Return the pointer direction in relation to the previous position."""
         (x, y) = self._drag_currentpos.xy
 
-        l = len(self._drag_prevpos)
-        assert l > 0
+        length = len(self._drag_prevpos)
+        assert length > 0
 
         x_sum = 0
         y_sum = 0
         for pos in self._drag_prevpos:
             x_sum += pos.x
             y_sum += pos.y
-        x_avg = x_sum / l
-        y_avg = y_sum / l
+        x_avg = x_sum / length
+        y_avg = y_sum / length
 
         dx = abs(x - x_avg)
         dy = abs(y - y_avg)
