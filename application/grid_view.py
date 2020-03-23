@@ -500,12 +500,18 @@ class GridView(Gtk.Frame):
                     self._drag_dir = self.pointer_dir()
 
                     if self._drag_dir != self.pointer_dir2():
+                        # drag direction differs from the magic-line direction
                         # print("line break, startpos:{0} drag_dir:{1}".format(pos, self._drag_dir))
                         self._ml_dir = self.pointer_dir2()
                         self._ml_startpos = pos
                         self._ml_currentpos = pos
                 else:
                     self._ml_currentpos = pos
+                    # reposition the magic line square
+                    if self._drag_dir == HORIZONTAL:
+                        self._drag_currentpos.x = pos.x
+                    else:
+                        self._drag_currentpos.y = pos.y
 
     def pointer_dir(self):
         """Return the pointer direction in relation to the start position."""
