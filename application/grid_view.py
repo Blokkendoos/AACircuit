@@ -13,7 +13,7 @@ from application import IDLE, SELECTING, SELECTED
 from application import COMPONENT, COL, ROW, RECT, LINE, MAG_LINE
 from application import LINE_HOR, LINE_VERT, TERMINAL1, TERMINAL2, TERMINAL3, TERMINAL4
 from application.symbol_view import SymbolView
-from application import Pos
+from application.pos import Pos
 
 import gi
 gi.require_version('Gtk', '3.0')
@@ -264,27 +264,82 @@ class GridView(Gtk.Frame):
 
     def draw_selection(self, ctx):
 
-        def draw_hor_line():
-            linechar = LINE_HOR
-            y = y_start
-            step = GRIDSIZE_W * sign(x_end - x_start)
-            if abs(step) > 0:
-                for x in range(x_start, x_end, step):
-                    ctx.move_to(x, y)
-                    ctx.show_text(linechar)
-                    if x >= self.surface.get_width():
-                        break
+        def select_column():
+            # highlight the selected column
+            ctx.new_path()
+            ctx.move_to(x, 0)
+            ctx.line_to(x, y_max)
+            ctx.move_to(x + GRIDSIZE_W, 0)
+            ctx.line_to(x + GRIDSIZE_W, y_max)
+            ctx.stroke()
 
-        def draw_vert_line():
-            linechar = LINE_VERT
-            x = x_start
-            step = GRIDSIZE_H * sign(y_end - y_start)
-            if abs(step) > 0:
-                for y in range(y_start, y_end, step):
-                    ctx.move_to(x, y)
-                    ctx.show_text(linechar)
-                    if y >= self.surface.get_height():
-                        break
+        def select_row():
+            # highlight the selected row
+            ctx.new_path()
+            ctx.move_to(0, y)
+            ctx.line_to(x_max, y)
+            ctx.move_to(0, y + GRIDSIZE_H)
+            ctx.line_to(x_max, y + GRIDSIZE_H)
+            ctx.stroke()
+
+        def select_rectangle():
+            # draw the selection rectangle
+            ctx.new_path()
+            x, y = self._drag_startpos.xy
+            w, h = (self._drag_currentpos - self._drag_startpos).xy
+            ctx.rectangle(x, y, w, h)
+            ctx.stroke()
+
+        def select_line():
+
+            def draw_hor_line():
+                linechar = LINE_HOR
+                y = y_start
+                step = GRIDSIZE_W * sign(x_end - x_start)
+                if abs(step) > 0:
+                    for x in range(x_start, x_end, step):
+                        ctx.move_to(x, y)
+                        ctx.show_text(linechar)
+                        if x >= self.surface.get_width():
+                            break
+
+            def draw_vert_line():
+                linechar = LINE_VERT
+                x = x_start
+                step = GRIDSIZE_H * sign(y_end - y_start)
+                if abs(step) > 0:
+                    for y in range(y_start, y_end, step):
+                        ctx.move_to(x, y)
+                        ctx.show_text(linechar)
+                        if y >= self.surface.get_height():
+                            break
+
+            # draw line
+            x_start, y_start = self._drag_startpos.xy
+            x_end, y_end = self._drag_currentpos.xy
+
+            x_end += GRIDSIZE_W
+            y_end += GRIDSIZE_H
+            y_start += GRIDSIZE_H
+
+            if self._drag_dir == HORIZONTAL:
+                draw_hor_line()
+            elif self._drag_dir == VERTICAL:
+                draw_vert_line()
+
+            if self._ml_dir is not None:
+                # draw magic line
+                x_start, y_start = self._ml_startpos.xy
+                x_end, y_end = self._ml_currentpos.xy
+
+                x_end += GRIDSIZE_W
+                y_end += GRIDSIZE_H
+                y_start += GRIDSIZE_H
+
+                if self._ml_dir == HORIZONTAL:
+                    draw_hor_line()
+                elif self._ml_dir == VERTICAL:
+                    draw_vert_line()
 
         ctx.set_source_rgb(0.5, 0.5, 0.75)
         ctx.set_line_width(0.5)
@@ -294,63 +349,17 @@ class GridView(Gtk.Frame):
         x_max, y_max = self.max_pos
 
         if self._selection_state == SELECTING:
-            x, y = (self._pos.x, self._pos.y)
 
-        if self._selection_state == SELECTING:
+            x, y = self._pos.xy
+
             if self._selection == COL:
-                # highlight the selected column
-                ctx.new_path()
-                ctx.move_to(x, 0)
-                ctx.line_to(x, y_max)
-                ctx.move_to(x + GRIDSIZE_W, 0)
-                ctx.line_to(x + GRIDSIZE_W, y_max)
-                ctx.stroke()
-
+                select_column()
             elif self._selection == ROW:
-                # highlight the selected row
-                ctx.new_path()
-                ctx.move_to(0, y)
-                ctx.line_to(x_max, y)
-                ctx.move_to(0, y + GRIDSIZE_H)
-                ctx.line_to(x_max, y + GRIDSIZE_H)
-                ctx.stroke()
-
+                select_row()
             elif self._selection == RECT:
-                # draw the selection rectangle
-                ctx.new_path()
-                x, y = self._drag_startpos.xy
-                w, h = (self._drag_currentpos - self._drag_startpos).xy
-                ctx.rectangle(x, y, w, h)
-                ctx.stroke()
-
+                select_rectangle()
             elif self._selection in (LINE, MAG_LINE):
-
-                # draw line
-                x_start, y_start = self._drag_startpos.xy
-                x_end, y_end = self._drag_currentpos.xy
-
-                x_end += GRIDSIZE_W
-                y_end += GRIDSIZE_H
-                y_start += GRIDSIZE_H
-
-                if self._drag_dir == HORIZONTAL:
-                    draw_hor_line()
-                elif self._drag_dir == VERTICAL:
-                    draw_vert_line()
-
-                if self._ml_dir is not None:
-                    # draw line
-                    x_start, y_start = self._ml_startpos.xy
-                    x_end, y_end = self._ml_currentpos.xy
-
-                    x_end += GRIDSIZE_W
-                    y_end += GRIDSIZE_H
-                    y_start += GRIDSIZE_H
-
-                    if self._ml_dir == HORIZONTAL:
-                        draw_hor_line()
-                    elif self._ml_dir == VERTICAL:
-                        draw_vert_line()
+                select_line()
 
         elif self._selection_state == SELECTED and self._selection == RECT:
             # draw the selection rectangle
@@ -476,16 +485,21 @@ class GridView(Gtk.Frame):
             pos = (self._drag_startpos + offset)
             pos.snap_to_grid()
 
-            self._drag_currentpos = pos
+            if self._selection == RECT:
+                self._drag_currentpos = pos
 
-            if self._selection == LINE:
+            elif self._selection == LINE:
+                self._drag_currentpos = pos
                 # snap to either a horizontal or a vertical straight line
                 self._drag_dir = self.pointer_dir()
 
-            if self._selection == MAG_LINE:
-                self._drag_dir = self.pointer_dir()
+            elif self._selection == MAG_LINE:
+
                 # snap to either a horizontal or a vertical straight line
                 if self._ml_dir is None:
+                    self._drag_currentpos = pos
+                    self._drag_dir = self.pointer_dir()
+
                     if self._drag_dir != self.pointer_dir2():
                         # print("line break, startpos:{0} drag_dir:{1}".format(pos, self._drag_dir))
                         self._ml_dir = self.pointer_dir2()
