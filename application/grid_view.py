@@ -96,11 +96,19 @@ class GridView(Gtk.Frame):
         self._selection_type = None
         self._selection_mag_line_split = None
 
-        # selection rectangle
+        # selection position
+        self._drag_dir = None
         self._drag_startpos = None
         self._drag_endpos = None
         self._drag_currentpos = None
         self._drag_prevpos = []
+
+        # magic line
+        self._ml_dir = None
+        self._ml_startpos = None
+        self._ml_endpos = None
+        self._ml_currentpos = None
+        self._ml_prevpos = []
 
         self._drawing_area.connect("draw", self.on_draw)
         self._drawing_area.connect('configure-event', self.on_configure)
@@ -214,7 +222,6 @@ class GridView(Gtk.Frame):
 
     def on_nothing_selected(self):
         self._selection_state = IDLE
-        self._selection_action = None
         self._selection = None
         self._drawing_area.queue_resize()
 
@@ -226,6 +233,7 @@ class GridView(Gtk.Frame):
     def on_select_rect(self, action):
         self._selection_state = IDLE
         self._selection_action = action
+        self._drag_dir = None
         self._selection = RECT
 
     def on_selecting_row(self, action):
@@ -240,12 +248,11 @@ class GridView(Gtk.Frame):
 
     def on_draw_mag_line(self, type):
         self._selection_state = IDLE
-        self._selection_action = None
+        self._ml_dir = None
         self._selection = MAG_LINE
 
     def on_draw_line(self, type):
         self._selection_state = IDLE
-        self._selection_action = None
         self._selection = LINE
         self._selection_type = type
         if type == '1':
@@ -373,10 +380,24 @@ class GridView(Gtk.Frame):
                 y_end += GRIDSIZE_H
                 y_start += GRIDSIZE_H
 
-                if self._selection_action == HORIZONTAL:
+                if self._drag_dir == HORIZONTAL:
                     draw_hor_line()
-                elif self._selection_action == VERTICAL:
+                elif self._drag_dir == VERTICAL:
                     draw_vert_line()
+
+                if self._ml_dir is not None:
+                    # draw line
+                    x_start, y_start = self._ml_startpos.xy
+                    x_end, y_end = self._ml_currentpos.xy
+
+                    x_end += GRIDSIZE_W
+                    y_end += GRIDSIZE_H
+                    y_start += GRIDSIZE_H
+
+                    if self._ml_dir == HORIZONTAL:
+                        draw_hor_line()
+                    elif self._ml_dir == VERTICAL:
+                        draw_vert_line()
 
         elif self._selection_state == SELECTED and self._selection == RECT:
             # draw the selection rectangle
@@ -444,15 +465,24 @@ class GridView(Gtk.Frame):
         widget.queue_resize()
 
     def on_drag_begin(self, widget, x_start, y_start):
+
         if self._selection_state == IDLE and self._selection in (RECT, LINE, MAG_LINE):
+
             pos = Pos(x_start, y_start)
             pos.snap_to_grid()
+
+            self._ml_dir = None
+            self._ml_startpos = None
+            self._ml_currentpos = None
+
+            self._drag_dir = None
             self._drag_startpos = pos
             self._drag_currentpos = pos
+
+            self._drag_prevpos = []
             self._drag_prevpos.append(pos)
 
             self._selection_state = SELECTING
-            self._selection_action = None
 
     def on_drag_end(self, widget, x_offset, y_offset):
 
@@ -470,21 +500,19 @@ class GridView(Gtk.Frame):
                 pos = self._drag_startpos.grid_rc()
 
                 # convert (canvas) length to grid dimension (nr cols or rows)
-                if self._selection_action == HORIZONTAL:
+                if self._drag_dir == HORIZONTAL:
                     length = int(x_offset / GRIDSIZE_W)
                     if sign(length) == -1:
                         pos = Pos(pos.x + length, pos.y)
-                        # pos -= Pos(1, 0)  # hor. compensation?
                 else:
                     length = int(y_offset / GRIDSIZE_H)
                     if sign(length) == -1:
                         pos = Pos(pos.x, pos.y + length)
-                        # pos -= Pos(0, 1)  # vert. compensation?
 
                 length = abs(length)
 
                 # TODO line terminal-type
-                pub.sendMessage("PASTE_LINE", pos=pos, dir=self._selection_action, type=self._selection_type, length=length)
+                pub.sendMessage("PASTE_LINE", pos=pos, dir=self._drag_dir, type=self._selection_type, length=length)
                 self._drawing_area.queue_resize()
 
     def on_drag_update(self, widget, x_offset, y_offset):
@@ -492,18 +520,26 @@ class GridView(Gtk.Frame):
         if self._selection_state == SELECTING and self._selection in (RECT, LINE, MAG_LINE):
 
             offset = Pos(x_offset, y_offset)
-            self._drag_currentpos = (self._drag_startpos + offset)
-            self._drag_currentpos.snap_to_grid()
+            pos = (self._drag_startpos + offset)
+            pos.snap_to_grid()
+
+            self._drag_currentpos = pos
 
             if self._selection == LINE:
                 # snap to either a horizontal or a vertical straight line
-                self._selection_action = self.pointer_dir()
+                self._drag_dir = self.pointer_dir()
 
             if self._selection == MAG_LINE:
-                self._selection_action = self.pointer_dir()
+                self._drag_dir = self.pointer_dir()
                 # snap to either a horizontal or a vertical straight line
-                if self._selection_action != self.pointer_dir2():
-                    print("line break")
+                if self._ml_dir is None:
+                    if self._drag_dir != self.pointer_dir2():
+                        # print("line break, startpos:{0} drag_dir:{1}".format(pos, self._drag_dir))
+                        self._ml_dir = self.pointer_dir2()
+                        self._ml_startpos = pos
+                        self._ml_currentpos = pos
+                else:
+                    self._ml_currentpos = pos
 
     def pointer_dir(self):
         """Return the pointer direction in relation to the start position."""
