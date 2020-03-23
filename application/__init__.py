@@ -5,7 +5,7 @@ AACircuit
 
 # grid
 FONTSIZE = 12
-GRIDSIZE_W = 7
+GRIDSIZE_W = 10
 GRIDSIZE_H = 16
 
 # selection action
