@@ -72,6 +72,12 @@ class Grid(object):
         if len(self._undo_stack) > 0:
             self._pop_grid(self._undo_stack.pop())
 
+    def to_str(self):
+        return pickle.dumps(self._grid)
+
+    def from_str(self, str):
+        self._grid = pickle.loads(str)
+
     # clipboard
 
     def copy_to_clipboard(self):

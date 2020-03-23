@@ -9,6 +9,7 @@ from application.grid import Grid
 from application.symbol import Symbol
 from application.main_window import MainWindow
 from application.component_library import ComponentLibrary
+from application.file import FileChooserWindow
 
 
 class Controller(object):
@@ -63,6 +64,10 @@ class Controller(object):
         pub.subscribe(self.on_paste, 'PASTE')
         pub.subscribe(self.on_delete, 'DELETE')
 
+        # open/save grid from/to file
+        pub.subscribe(self.on_grid_from_file, 'GRID_FROM_FILE')
+        pub.subscribe(self.on_grid_to_file, 'GRID_TO_FILE')
+
     def show_all(self):
         self.gui.show_all()
 
@@ -75,13 +80,35 @@ class Controller(object):
         print("Not yet implemented")
 
     def on_open(self):
-        print("Not yet implemented")
+        dialog = FileChooserWindow(open=True)
 
     def on_save(self):
-        print("Not yet implemented")
+        dialog = FileChooserWindow()
 
     def on_save_as(self):
-        print("Not yet implemented")
+        dialog = FileChooserWindow()
+
+    # Edit menu
+
+    def on_cut(self, pos, rect):
+        self.buffer = self.grid.rect(pos, rect)
+        self.grid.erase_rect(pos, rect)
+        pub.sendMessage('NOTHING_SELECTED')
+
+    def on_copy(self, pos, rect):
+        grid = self.grid.rect(pos, rect)
+        self.buffer = grid
+        self.symbol = Symbol(grid)
+        pub.sendMessage('SYMBOL_SELECTED', symbol=self.symbol)
+
+    def on_paste(self, pos, rect):
+        if self.buffer is not None:
+            self.grid.fill_rect(pos, self.buffer)
+        pub.sendMessage('NOTHING_SELECTED')
+
+    def on_delete(self, pos, rect):
+        self.grid.erase_rect(pos, rect)
+        pub.sendMessage('NOTHING_SELECTED')
 
     # grid manipulation
 
@@ -123,28 +150,6 @@ class Controller(object):
         grid = self.symbol.line(dir, type, length)
         self.grid.fill_rect(pos, grid)
 
-    # cut and paste
-
-    def on_cut(self, pos, rect):
-        self.buffer = self.grid.rect(pos, rect)
-        self.grid.erase_rect(pos, rect)
-        pub.sendMessage('NOTHING_SELECTED')
-
-    def on_copy(self, pos, rect):
-        grid = self.grid.rect(pos, rect)
-        self.buffer = grid
-        self.symbol = Symbol(grid)
-        pub.sendMessage('SYMBOL_SELECTED', symbol=self.symbol)
-
-    def on_paste(self, pos, rect):
-        if self.buffer is not None:
-            self.grid.fill_rect(pos, self.buffer)
-        pub.sendMessage('NOTHING_SELECTED')
-
-    def on_delete(self, pos, rect):
-        self.grid.erase_rect(pos, rect)
-        pub.sendMessage('NOTHING_SELECTED')
-
     # clipboard
 
     def on_copy_to_clipboard(self):
@@ -157,3 +162,30 @@ class Controller(object):
     def on_load_and_paste_from_clipboard(self):
         self.grid.load_and_paste_from_clipboard()
         pub.sendMessage('GRID', grid=self.grid)
+
+    # file open/save
+
+    def on_grid_to_file(self, filename):
+        try:
+            # open file in binary mode
+            fout = open(filename, 'wb')
+            str = self.grid.to_str()
+            fout.write(str)
+            fout.close()
+        except IOError:
+            print("Unable to open file for writing: %s" % filename)
+
+    def on_grid_from_file(self, filename):
+        print("From file")
+        try:
+            # open file in binary mode
+            file = open(filename, 'rb')
+            str = file.read()
+
+            self.grid.from_str(str)
+            pub.sendMessage('GRID', grid=self.grid)
+
+            file.close()
+
+        except IOError:
+            print("Unable to open file for reading: %s" % filename)
