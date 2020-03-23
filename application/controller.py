@@ -31,6 +31,7 @@ class Controller(object):
                                                                              self.components.nr_components()))
         # messages
 
+        all_components.sort()
         pub.sendMessage('ALL_COMPONENTS', list=all_components)
         pub.sendMessage('GRID', grid=self.grid)
 
@@ -176,7 +177,6 @@ class Controller(object):
             print("Unable to open file for writing: %s" % filename)
 
     def on_grid_from_file(self, filename):
-        print("From file")
         try:
             # open file in binary mode
             file = open(filename, 'rb')

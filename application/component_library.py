@@ -16,8 +16,9 @@ class ComponentLibrary(object):
     def __init__(self):
 
         self._libraries = []
-        for n in range(2):
-            self._libraries.append("component{0}.json".format(n + 1))
+        # for n in range(2):
+        #     self._libraries.append("component{0}.json".format(n + 1))
+        self._libraries.append("component_de.json")
 
         lib_path = os.path.dirname(__file__)
         print("Path: {0}".format(lib_path))
