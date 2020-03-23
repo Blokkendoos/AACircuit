@@ -7,7 +7,7 @@ from pubsub import pub
 
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk
+from gi.repository import Gtk  # noqa: E402
 
 
 class FileChooserWindow(Gtk.Window):
@@ -28,7 +28,7 @@ class FileChooserWindow(Gtk.Window):
     def on_file_clicked(self):
 
         if self.open:
-            option = Gtk.STOCK_OPTION
+            option = Gtk.STOCK_OPEN
         else:
             option = Gtk.STOCK_SAVE
 
@@ -58,15 +58,15 @@ class FileChooserWindow(Gtk.Window):
         dialog.destroy()
 
     def add_filters(self, dialog):
-        filter_text = Gtk.FileFilter()
-        filter_text.set_name("Text files")
-        filter_text.add_mime_type("text/plain")
-        dialog.add_filter(filter_text)
-
         filter_any = Gtk.FileFilter()
         filter_any.set_name("Any files")
         filter_any.add_pattern("*")
         dialog.add_filter(filter_any)
+
+        filter_text = Gtk.FileFilter()
+        filter_text.set_name("Text files")
+        filter_text.add_mime_type("text/plain")
+        dialog.add_filter(filter_text)
 
     def on_folder_clicked(self, widget):
         dialog = Gtk.FileChooserDialog("Please choose a folder", self,
