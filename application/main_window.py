@@ -70,13 +70,15 @@ class MainWindow(Gtk.Window):
         # file menu
         menu_new = self.builder.get_object("new_file")
         menu_open = self.builder.get_object("open_file")
-        menu_save = self.builder.get_object("save_file")
-        menu_save_as = self.builder.get_object("save_as_file")
+        self.menu_save = self.builder.get_object("save_file")
+        self.menu_save_as = self.builder.get_object("save_as_file")
 
         menu_new.connect("activate", self.on_menu_file)
         menu_open.connect("activate", self.on_menu_file)
-        menu_save.connect("activate", self.on_menu_file)
-        menu_save_as.connect("activate", self.on_menu_file)
+        self.menu_save.connect("activate", self.on_menu_file)
+        self.menu_save_as.connect("activate", self.on_menu_file)
+
+        self.menu_save.set_sensitive(False)
 
         self.connect('destroy', lambda w: Gtk.main_quit())
         menu_close = self.builder.get_object("quit")
@@ -238,9 +240,6 @@ class MainWindow(Gtk.Window):
     def on_undo(self, button):
         pub.sendMessage('UNDO')
 
-    def on_open_clicked(self, button):
-        print("\"Open\" button was clicked")
-
     def on_close_clicked(self, button):
         print("Closing application")
         Gtk.main_quit()
@@ -270,8 +269,12 @@ class MainWindow(Gtk.Window):
         pub.sendMessage(name.upper())
 
     def on_menu_file(self, item):
-        name = Gtk.Buildable.get_name(item)
-        pub.sendMessage(name.upper())
+        name = Gtk.Buildable.get_name(item).upper()
+
+        if name == 'OPEN_FILE':
+            self.menu_save.set_sensitive(True)
+
+        pub.sendMessage(name)
 
     def on_menu_edit(self, item):
         # menu cut|copy|paste

@@ -66,8 +66,8 @@ class Controller(object):
         pub.subscribe(self.on_delete, 'DELETE')
 
         # open/save grid from/to file
-        pub.subscribe(self.on_grid_from_file, 'GRID_FROM_FILE')
-        pub.subscribe(self.on_grid_to_file, 'GRID_TO_FILE')
+        pub.subscribe(self.on_read_from_file, 'READ_FROM_FILE')
+        pub.subscribe(self.on_write_to_file, 'WRITE_TO_FILE')
 
     def show_all(self):
         self.gui.show_all()
@@ -78,13 +78,15 @@ class Controller(object):
 
     # File menu
     def on_new(self):
-        print("Not yet implemented")
+        self.grid = Grid(72, 36)
+        pub.sendMessage('GRID', grid=self.grid)
 
     def on_open(self):
         dialog = FileChooserWindow(open=True)
 
     def on_save(self):
-        dialog = FileChooserWindow()
+        if self.filename is not None:
+            self.on_write_to_file(self.filename)
 
     def on_save_as(self):
         dialog = FileChooserWindow()
@@ -166,7 +168,7 @@ class Controller(object):
 
     # file open/save
 
-    def on_grid_to_file(self, filename):
+    def on_write_to_file(self, filename):
         try:
             # open file in binary mode
             fout = open(filename, 'wb')
@@ -176,7 +178,8 @@ class Controller(object):
         except IOError:
             print("Unable to open file for writing: %s" % filename)
 
-    def on_grid_from_file(self, filename):
+    def on_read_from_file(self, filename):
+        self.filename = filename
         try:
             # open file in binary mode
             file = open(filename, 'rb')

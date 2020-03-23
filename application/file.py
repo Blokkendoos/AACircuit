@@ -38,6 +38,7 @@ class FileChooserWindow(Gtk.Window):
                                         Gtk.ResponseType.CANCEL,
                                         option,
                                         Gtk.ResponseType.OK))
+        dialog.set_default_size(640, 480)
 
         self.add_filters(dialog)
 
@@ -48,9 +49,9 @@ class FileChooserWindow(Gtk.Window):
             print("File selected: " + filename)
 
             if self.open:
-                pub.sendMessage('GRID_FROM_FILE', filename=filename)
+                pub.sendMessage('READ_FROM_FILE', filename=filename)
             else:
-                pub.sendMessage('GRID_TO_FILE', filename=filename)
+                pub.sendMessage('WRITE_TO_FILE', filename=filename)
 
         elif response == Gtk.ResponseType.CANCEL:
             print("Cancel clicked")
@@ -71,9 +72,11 @@ class FileChooserWindow(Gtk.Window):
     def on_folder_clicked(self, widget):
         dialog = Gtk.FileChooserDialog("Please choose a folder", self,
                                        Gtk.FileChooserAction.SELECT_FOLDER,
-                                       (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
-                                        "Select", Gtk.ResponseType.OK))
-        dialog.set_default_size(800, 400)
+                                       (Gtk.STOCK_CANCEL,
+                                        Gtk.ResponseType.CANCEL,
+                                        "Select",
+                                        Gtk.ResponseType.OK))
+        dialog.set_default_size(640, 480)
 
         response = dialog.run()
         if response == Gtk.ResponseType.OK:
