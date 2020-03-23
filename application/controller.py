@@ -53,6 +53,11 @@ class Controller(object):
         pub.subscribe(self.on_paste_from_clipboard, 'PASTE_FROM_CLIPBOARD')
         pub.subscribe(self.on_load_and_paste_from_clipboard, 'LOAD_AND_PASTE_FROM_CLIPBOARD')
 
+        pub.subscribe(self.on_new, 'NEW_FILE')
+        pub.subscribe(self.on_open, 'OPEN_FILE')
+        pub.subscribe(self.on_save, 'SAVE_FILE')
+        pub.subscribe(self.on_save_as, 'SAVE_AS_FILE')
+
         pub.subscribe(self.on_cut, 'CUT')
         pub.subscribe(self.on_copy, 'COPY')
         pub.subscribe(self.on_paste, 'PASTE')
@@ -64,6 +69,19 @@ class Controller(object):
     def on_undo(self):
         self.grid.undo()
         pub.sendMessage('GRID', grid=self.grid)
+
+    # File menu
+    def on_new(self):
+        print("Not yet implemented")
+
+    def on_open(self):
+        print("Not yet implemented")
+
+    def on_save(self):
+        print("Not yet implemented")
+
+    def on_save_as(self):
+        print("Not yet implemented")
 
     # grid manipulation
 

@@ -67,11 +67,32 @@ class MainWindow(Gtk.Window):
 
         self.builder.connect_signals(self)
 
+        # file menu
+        menu_new = self.builder.get_object("new_file")
+        menu_open = self.builder.get_object("open_file")
+        menu_save = self.builder.get_object("save_file")
+        menu_save_as = self.builder.get_object("save_as_file")
+
+        menu_new.connect("activate", self.on_menu_file)
+        menu_open.connect("activate", self.on_menu_file)
+        menu_save.connect("activate", self.on_menu_file)
+        menu_save_as.connect("activate", self.on_menu_file)
+
         self.connect('destroy', lambda w: Gtk.main_quit())
         menu_close = self.builder.get_object("quit")
         menu_close.connect("activate", self.on_close_clicked)
 
+        # edit menu
+        menu_copy = self.builder.get_object("copy")
+        menu_cut = self.builder.get_object("cut")
+        menu_paste = self.builder.get_object("paste")
+        menu_delete = self.builder.get_object("delete")
         menu_undo = self.builder.get_object("undo")
+
+        menu_copy.connect("activate", self.on_menu_edit)
+        menu_cut.connect("activate", self.on_menu_edit)
+        menu_paste.connect("activate", self.on_menu_edit)
+        menu_delete.connect("activate", self.on_menu_edit)
         menu_undo.connect("activate", self.on_undo)
 
         # char buttons
@@ -151,16 +172,6 @@ class MainWindow(Gtk.Window):
         self.btn_clipboard[0].set_tooltip_text("copy grid to clipboard")
         self.btn_clipboard[1].set_tooltip_text("paste grid from clipboard")
         self.btn_clipboard[2].set_tooltip_text("load file and paste into grid")
-
-        self.menu_copy = self.builder.get_object("copy")
-        self.menu_cut = self.builder.get_object("cut")
-        self.menu_paste = self.builder.get_object("paste")
-        self.menu_delete = self.builder.get_object("delete")
-
-        self.menu_copy.connect("activate", self.on_menu)
-        self.menu_cut.connect("activate", self.on_menu)
-        self.menu_paste.connect("activate", self.on_menu)
-        self.menu_delete.connect("activate", self.on_menu)
 
         self.init_grid()
         self.init_cursors()
@@ -258,7 +269,11 @@ class MainWindow(Gtk.Window):
         name = Gtk.Buildable.get_name(button)
         pub.sendMessage(name.upper())
 
-    def on_menu(self, item):
+    def on_menu_file(self, item):
+        name = Gtk.Buildable.get_name(item)
+        pub.sendMessage(name.upper())
+
+    def on_menu_edit(self, item):
         # menu cut|copy|paste
         name = Gtk.Buildable.get_name(item)
         pos, width, height = self.grid_view.drag_rect

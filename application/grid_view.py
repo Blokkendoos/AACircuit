@@ -341,6 +341,7 @@ class GridView(Gtk.Frame):
                 elif self._ml_dir == VERTICAL:
                     draw_vert_line()
 
+        # draw selection
         ctx.set_source_rgb(0.5, 0.5, 0.75)
         ctx.set_line_width(0.5)
         ctx.set_tolerance(0.1)
@@ -394,8 +395,6 @@ class GridView(Gtk.Frame):
         pos = Pos(event.x, event.y)
         pos.snap_to_grid()
         pub.sendMessage('POINTER_MOVED', pos=pos.grid_rc())
-
-        # print("state:{0} selection:{1}".format(self._selection_state, self._selection))
 
         if self._selection_state == SELECTING and self._selection == ROW:
             row = pos.grid_rc().y
