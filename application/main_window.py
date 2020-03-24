@@ -7,7 +7,10 @@ import os
 import sys
 from pubsub import pub
 
-from application import _
+# from application import _
+import locale
+from locale import gettext as _
+
 from application import INSERT, REMOVE, IDLE
 from application.grid_view import GridView
 from application.component_view import ComponentView
@@ -30,8 +33,16 @@ class MainWindow(Gtk.Window):
         """
         app_path = os.path.dirname(__file__)
         try:
+
+            # https://askubuntu.com/questions/140552/how-to-make-glade-load-translations-from-opt
+            locale.bindtextdomain('aacircuit', 'locale/')
+            locale.textdomain('aacircuit')
+
             builder = Gtk.Builder()
+            # https://stackoverflow.com/questions/24320502/how-to-translate-pygtk-glade-gtk-builder-application
+            builder.set_translation_domain('aacircuit')
             builder.add_from_file(os.path.join(app_path, 'aacircuit.glade'))
+
         except IOError:
             print(_("Failed to load XML GUI file aacircuit.glade"))
             sys.exit(1)
