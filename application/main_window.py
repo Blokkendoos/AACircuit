@@ -181,7 +181,9 @@ class MainWindow(Gtk.Window):
         self.init_char_buttons()
 
         # subscriptions
+
         pub.subscribe(self.on_pointer_moved, 'POINTER_MOVED')
+        pub.subscribe(self.on_file_opened, 'FILE_OPENED')
 
     def init_components(self):
         component_canvas = ComponentView(self.builder)  # noqa F841
@@ -270,11 +272,11 @@ class MainWindow(Gtk.Window):
 
     def on_menu_file(self, item):
         name = Gtk.Buildable.get_name(item).upper()
-
-        if name == 'OPEN_FILE':
-            self.menu_save.set_sensitive(True)
-
         pub.sendMessage(name)
+
+    def on_file_opened(self):
+        # only when a file is opened, enable 'save' in the File menu
+        self.menu_save.set_sensitive(True)
 
     def on_menu_edit(self, item):
         # menu cut|copy|paste
