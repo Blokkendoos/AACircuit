@@ -13,7 +13,7 @@ try:
     local_lang = gettext.translation('aacircuit', localedir='locale', languages=[lang])
     local_lang.install()
     _ = local_lang.gettext
-except OSError:
+except Exception as e:
     _ = gettext.gettext
 
 # grid

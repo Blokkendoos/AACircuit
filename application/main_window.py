@@ -111,11 +111,11 @@ class MainWindow(Gtk.Window):
         # manipulate symbol
         self.btn_rotate = self.builder.get_object("rotate")
         self.btn_rotate.connect('pressed', self.on_rotate)
-        self.btn_rotate.set_tooltip_text('rotate the symbol clockwise')
+        self.btn_rotate.set_tooltip_text(_("rotate the symbol clockwise"))
 
         self.btn_mirror = self.builder.get_object('mirror')
         self.btn_mirror.connect('pressed', self.on_mirror)
-        self.btn_mirror.set_tooltip_text('mirror the symbol vertically')
+        self.btn_mirror.set_tooltip_text(_("mirror the symbol vertically"))
 
         # line drawing
         self.btn_mag_line = self.builder.get_object('draw_mag_line')
@@ -132,16 +132,16 @@ class MainWindow(Gtk.Window):
         self.btn_line3.connect('pressed', self.on_line)
         self.btn_line4.connect('pressed', self.on_line)
 
-        self.btn_mag_line.set_tooltip_text("MagLine")
-        self.btn_line.set_tooltip_text("free line")
-        self.btn_line1.set_tooltip_text("straight line")
-        self.btn_line2.set_tooltip_text("line with start and end point 'o'")
-        self.btn_line3.set_tooltip_text("line with start and end point '+'")
-        self.btn_line4.set_tooltip_text("line with end terminals")
+        self.btn_mag_line.set_tooltip_text(_("MagLine"))
+        self.btn_line.set_tooltip_text(_("free line"))
+        self.btn_line1.set_tooltip_text(_("straight line"))
+        self.btn_line2.set_tooltip_text(_("line with start and end point 'o'"))
+        self.btn_line3.set_tooltip_text(_("line with start and end point '+'"))
+        self.btn_line4.set_tooltip_text(_("line with end terminals"))
 
         self.btn_rect = self.builder.get_object('draw_rect')
         self.btn_rect.connect('pressed', self.on_line)
-        self.btn_rect.set_tooltip_text('draw a rectangle')
+        self.btn_rect.set_tooltip_text(_("draw a rectangle"))
 
         # insert/remove rows or columns
         self.btn_stretch1 = self.builder.get_object('stretch1')
@@ -154,10 +154,10 @@ class MainWindow(Gtk.Window):
         self.btn_stretch3.connect('pressed', self.on_selecting_row)
         self.btn_stretch4.connect('pressed', self.on_selecting_row)
 
-        self.btn_stretch1.set_tooltip_text("insert rows")
-        self.btn_stretch3.set_tooltip_text("insert columns")
-        self.btn_stretch2.set_tooltip_text("remove rows")
-        self.btn_stretch4.set_tooltip_text("remove columns")
+        self.btn_stretch1.set_tooltip_text(_("insert rows"))
+        self.btn_stretch3.set_tooltip_text(_("insert columns"))
+        self.btn_stretch2.set_tooltip_text(_("remove rows"))
+        self.btn_stretch4.set_tooltip_text(_("remove columns"))
 
         self.btn_select = self.builder.get_object("select_rect")
         self.btn_select.connect('pressed', self.on_select_rect)
@@ -170,9 +170,9 @@ class MainWindow(Gtk.Window):
         for btn in self.btn_clipboard:
             btn.connect('pressed', self.on_clipboard)
 
-        self.btn_clipboard[0].set_tooltip_text("copy grid to clipboard")
-        self.btn_clipboard[1].set_tooltip_text("paste grid from clipboard")
-        self.btn_clipboard[2].set_tooltip_text("load file and paste into grid")
+        self.btn_clipboard[0].set_tooltip_text(_("copy grid to clipboard"))
+        self.btn_clipboard[1].set_tooltip_text(_("paste grid from clipboard"))
+        self.btn_clipboard[2].set_tooltip_text(_("load file and paste into grid"))
 
         self.init_grid()
         self.init_cursors()
