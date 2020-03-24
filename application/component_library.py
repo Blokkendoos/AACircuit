@@ -7,6 +7,8 @@ component_library.py
 import os
 import sys
 import json
+import gettext
+_ = gettext.gettext
 
 
 class ComponentLibrary(object):
@@ -30,7 +32,7 @@ class ComponentLibrary(object):
                 self._dict.update(json.load(f))
                 f.close()
             except IOError as e:
-                print("Failed to load component library {0} due to I/O error {1}: {2}".format(lib, e.errno, e.strerror))
+                print(_("Failed to load component library {0} due to I/O error {1}: {2}").format(lib, e.errno, e.strerror))
                 sys.exit(1)
 
         self._grid = None
@@ -83,4 +85,4 @@ class ComponentLibrary(object):
 
 if __name__ == "__main__":
     lib = ComponentLibrary()
-    print("Number of libraries loaded: {0}".format(lib.nr_libraries()))
+    print(_("Number of libraries loaded: {0}").format(lib.nr_libraries()))

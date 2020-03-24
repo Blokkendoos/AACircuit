@@ -6,6 +6,7 @@ AACircuit
 import os
 import sys
 from pubsub import pub
+import gettext
 
 from application import INSERT, REMOVE, IDLE
 from application.grid_view import GridView
@@ -16,7 +17,7 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk  # noqa: E402
 from gi.repository import GdkPixbuf  # noqa: E402
 
-columns = ["Description"]
+_ = gettext.gettext
 
 
 class MainWindow(Gtk.Window):
@@ -34,7 +35,7 @@ class MainWindow(Gtk.Window):
             builder = Gtk.Builder()
             builder.add_from_file(os.path.join(app_path, "aacircuit.glade"))
         except IOError:
-            print("Failed to load XML GUI file aacircuit.glade")
+            print(_("Failed to load XML GUI file aacircuit.glade"))
             sys.exit(1)
 
         new_object = builder.get_object('window1')

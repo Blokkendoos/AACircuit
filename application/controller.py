@@ -4,12 +4,15 @@ AACircuit.py
 """
 
 from pubsub import pub
+import gettext
 
 from application.grid import Grid
 from application.symbol import Symbol
 from application.main_window import MainWindow
 from application.component_library import ComponentLibrary
 from application.file import FileChooserWindow
+
+_ = gettext.gettext
 
 
 class Controller(object):
@@ -27,8 +30,8 @@ class Controller(object):
         self.buffer = None
 
         all_components = [key for key in self.components.get_dict()]
-        print("{0} libraries loaded, total number of components: {1}".format(self.components.nr_libraries(),
-                                                                             self.components.nr_components()))
+        print(_("{0} libraries loaded, total number of components: {1}").format(self.components.nr_libraries(),
+                                                                                self.components.nr_components()))
         # messages
 
         all_components.sort()
@@ -176,7 +179,7 @@ class Controller(object):
             fout.write(str)
             fout.close()
         except IOError:
-            print("Unable to open file for writing: %s" % filename)
+            print(_("Unable to open file for writing: %s" % filename))
 
     def on_read_from_file(self, filename):
         self.filename = filename
@@ -187,8 +190,9 @@ class Controller(object):
 
             self.grid.from_str(str)
             pub.sendMessage('GRID', grid=self.grid)
+            pub.sendMessage('FILE_OPENED')
 
             file.close()
 
         except IOError:
-            print("Unable to open file for reading: %s" % filename)
+            print(_("Unable to open file for reading: %s" % filename))

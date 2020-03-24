@@ -7,6 +7,8 @@ AACircuit
 
 import pickle
 import xerox
+import gettext
+_ = gettext.gettext
 
 
 class Grid(object):
@@ -22,7 +24,7 @@ class Grid(object):
         self._dirty = False
 
     def __str__(self):
-        str = "number of rows: {0} columns: {1} ".format(self.nr_rows, self.nr_cols)
+        str = _("number of rows: {0} columns: {1}").format(self.nr_rows, self.nr_cols)
         str += "dirty: {0}\n".format(self.dirty)
         for r in self._grid:
             str += "{0}\n".format(r)

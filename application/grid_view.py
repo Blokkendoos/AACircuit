@@ -6,6 +6,7 @@ AACircuit
 import cairo
 from pubsub import pub
 from numpy import sign
+import gettext
 
 from application import GRIDSIZE_W, GRIDSIZE_H
 from application import INSERT, HORIZONTAL, VERTICAL
@@ -18,6 +19,8 @@ from application.pos import Pos
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk  # noqa: E402
+
+_ = gettext.gettext
 
 
 class GridView(Gtk.Frame):
@@ -161,7 +164,7 @@ class GridView(Gtk.Frame):
             context.set_source_surface(self.surface, 0.0, 0.0)
             context.paint()
         else:
-            print('Invalid surface')
+            print(_("Invalid surface"))
         return False
 
     def do_drawing(self, ctx):

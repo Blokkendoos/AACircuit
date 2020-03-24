@@ -4,10 +4,12 @@ AACircuit.py
 """
 
 from pubsub import pub
-
+import gettext
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk  # noqa: E402
+
+_ = gettext.gettext
 
 
 class FileChooserWindow(Gtk.Window):
@@ -17,9 +19,9 @@ class FileChooserWindow(Gtk.Window):
         self.open = open
 
         if self.open:
-            title = "Open file"
+            title = _("Open file")
         else:
-            title = "Save file"
+            title = _("Save file")
 
         Gtk.Window.__init__(self, title=title)
 
@@ -32,7 +34,7 @@ class FileChooserWindow(Gtk.Window):
         else:
             option = Gtk.STOCK_SAVE
 
-        dialog = Gtk.FileChooserDialog("Please choose a file", self,
+        dialog = Gtk.FileChooserDialog(_("Please choose a file"), self,
                                        Gtk.FileChooserAction.SAVE,
                                        (Gtk.STOCK_CANCEL,
                                         Gtk.ResponseType.CANCEL,
@@ -46,7 +48,7 @@ class FileChooserWindow(Gtk.Window):
 
         if response == Gtk.ResponseType.OK:
             filename = dialog.get_filename()
-            print("File selected: " + filename)
+            print(_("File selected: %s") % filename)
 
             if self.open:
                 pub.sendMessage('READ_FROM_FILE', filename=filename)
@@ -54,23 +56,23 @@ class FileChooserWindow(Gtk.Window):
                 pub.sendMessage('WRITE_TO_FILE', filename=filename)
 
         elif response == Gtk.ResponseType.CANCEL:
-            print("Cancel clicked")
+            print(_("Cancel clicked"))
 
         dialog.destroy()
 
     def add_filters(self, dialog):
         filter_any = Gtk.FileFilter()
-        filter_any.set_name("Any files")
+        filter_any.set_name(_("Any files"))
         filter_any.add_pattern("*")
         dialog.add_filter(filter_any)
 
         filter_text = Gtk.FileFilter()
-        filter_text.set_name("Text files")
+        filter_text.set_name(_("Text files"))
         filter_text.add_mime_type("text/plain")
         dialog.add_filter(filter_text)
 
     def on_folder_clicked(self, widget):
-        dialog = Gtk.FileChooserDialog("Please choose a folder", self,
+        dialog = Gtk.FileChooserDialog(_("Please choose a folder"), self,
                                        Gtk.FileChooserAction.SELECT_FOLDER,
                                        (Gtk.STOCK_CANCEL,
                                         Gtk.ResponseType.CANCEL,
@@ -80,9 +82,8 @@ class FileChooserWindow(Gtk.Window):
 
         response = dialog.run()
         if response == Gtk.ResponseType.OK:
-            print("Select clicked")
-            print("Folder selected: " + dialog.get_filename())
+            print(_("Folder selected: %s") % dialog.get_filename())
         elif response == Gtk.ResponseType.CANCEL:
-            print("Cancel clicked")
+            print(_("Cancel clicked"))
 
         dialog.destroy()
