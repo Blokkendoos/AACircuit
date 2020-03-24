@@ -1,7 +1,7 @@
-"""
+'''
 AACircuit
 2020-03-02 JvO
-"""
+'''
 
 from application.grid import Grid
 from application import HORIZONTAL
@@ -23,12 +23,12 @@ class Symbol(Grid):
     def default(self):
         # resistor symbol
         grid = [
-            [" ", "|", " "],
-            [".", "+", "."],
-            ["|", " ", "|"],
-            ["|", " ", "|"],
-            [".", "+", "."],
-            [" ", "|", " "]]
+            [' ', '|', ' '],
+            ['.', '+', '.'],
+            ['|', ' ', '|'],
+            ['|', ' ', '|'],
+            ['.', '+', '.'],
+            [' ', '|', ' ']]
         return grid
 
     def line(self, dir, type, length):

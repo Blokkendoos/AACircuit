@@ -13,14 +13,14 @@ _ = gettext.gettext
 
 class ComponentLibrary(object):
 
-    ORIENTATION = ("N", "E", "S", "W")
+    ORIENTATION = ('N', 'E', 'S', 'W')
 
     def __init__(self):
 
         self._libraries = []
         # for n in range(2):
         #     self._libraries.append("component{0}.json".format(n + 1))
-        self._libraries.append("component_de.json")
+        self._libraries.append('component_de.json')
 
         lib_path = os.path.dirname(__file__)
         print("Path: {0}".format(lib_path))
@@ -28,7 +28,7 @@ class ComponentLibrary(object):
         self._dict = {}
         for lib in self._libraries:
             try:
-                f = open(os.path.join(lib_path + "/components/", lib), "r")
+                f = open(os.path.join(lib_path + '/components/', lib), "r")
                 self._dict.update(json.load(f))
                 f.close()
             except IOError as e:
@@ -72,7 +72,7 @@ class ComponentLibrary(object):
         if len(key) == 1:
             self._grid = [[key]]
         else:
-            self._grid = self._dict[key]["grid"][self.ORIENTATION[dir]]
+            self._grid = self._dict[key]['grid'][self.ORIENTATION[dir]]
 
         return self._grid
 
@@ -83,6 +83,6 @@ class ComponentLibrary(object):
         return len(self._libraries)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     lib = ComponentLibrary()
     print(_("Number of libraries loaded: {0}").format(lib.nr_libraries()))

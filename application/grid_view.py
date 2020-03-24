@@ -66,7 +66,7 @@ class GridView(Gtk.Frame):
         self._ml_currentpos = None
         self._ml_prevpos = []
 
-        self._drawing_area.connect("draw", self.on_draw)
+        self._drawing_area.connect('draw', self.on_draw)
         self._drawing_area.connect('configure-event', self.on_configure)
 
         # https://www.programcreek.com/python/example/84675/gi.repository.Gtk.DrawingArea

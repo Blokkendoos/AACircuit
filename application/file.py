@@ -63,12 +63,12 @@ class FileChooserWindow(Gtk.Window):
     def add_filters(self, dialog):
         filter_any = Gtk.FileFilter()
         filter_any.set_name(_("Any files"))
-        filter_any.add_pattern("*")
+        filter_any.add_pattern('*')
         dialog.add_filter(filter_any)
 
         filter_text = Gtk.FileFilter()
         filter_text.set_name(_("Text files"))
-        filter_text.add_mime_type("text/plain")
+        filter_text.add_mime_type('text/plain')
         dialog.add_filter(filter_text)
 
     def on_folder_clicked(self, widget):
@@ -76,7 +76,7 @@ class FileChooserWindow(Gtk.Window):
                                        Gtk.FileChooserAction.SELECT_FOLDER,
                                        (Gtk.STOCK_CANCEL,
                                         Gtk.ResponseType.CANCEL,
-                                        "Select",
+                                        _("Select"),
                                         Gtk.ResponseType.OK))
         dialog.set_default_size(640, 480)
 

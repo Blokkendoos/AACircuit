@@ -21,7 +21,7 @@ _ = gettext.gettext
 
 
 class MainWindow(Gtk.Window):
-    __gtype_name__ = "MainWindow"
+    __gtype_name__ = 'MainWindow'
 
     def __new__(cls):
         """
@@ -33,7 +33,7 @@ class MainWindow(Gtk.Window):
         app_path = os.path.dirname(__file__)
         try:
             builder = Gtk.Builder()
-            builder.add_from_file(os.path.join(app_path, "aacircuit.glade"))
+            builder.add_from_file(os.path.join(app_path, 'aacircuit.glade'))
         except IOError:
             print(_("Failed to load XML GUI file aacircuit.glade"))
             sys.exit(1)
@@ -63,76 +63,76 @@ class MainWindow(Gtk.Window):
                                              Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
         # statusbar
-        self.label_xpos = self.builder.get_object("x_pos")
-        self.label_ypos = self.builder.get_object("y_pos")
+        self.label_xpos = self.builder.get_object('x_pos')
+        self.label_ypos = self.builder.get_object('y_pos')
 
         self.builder.connect_signals(self)
 
         # file menu
-        menu_new = self.builder.get_object("new_file")
-        menu_open = self.builder.get_object("open_file")
-        self.menu_save = self.builder.get_object("save_file")
-        self.menu_save_as = self.builder.get_object("save_as_file")
+        menu_new = self.builder.get_object('new_file')
+        menu_open = self.builder.get_object('open_file')
+        self.menu_save = self.builder.get_object('save_file')
+        self.menu_save_as = self.builder.get_object('save_as_file')
 
-        menu_new.connect("activate", self.on_menu_file)
-        menu_open.connect("activate", self.on_menu_file)
-        self.menu_save.connect("activate", self.on_menu_file)
-        self.menu_save_as.connect("activate", self.on_menu_file)
+        menu_new.connect('activate', self.on_menu_file)
+        menu_open.connect('activate', self.on_menu_file)
+        self.menu_save.connect('activate', self.on_menu_file)
+        self.menu_save_as.connect('activate', self.on_menu_file)
 
         self.menu_save.set_sensitive(False)
 
         self.connect('destroy', lambda w: Gtk.main_quit())
-        menu_close = self.builder.get_object("quit")
-        menu_close.connect("activate", self.on_close_clicked)
+        menu_close = self.builder.get_object('quit')
+        menu_close.connect('activate', self.on_close_clicked)
 
         # edit menu
-        menu_copy = self.builder.get_object("copy")
-        menu_cut = self.builder.get_object("cut")
-        menu_paste = self.builder.get_object("paste")
-        menu_delete = self.builder.get_object("delete")
-        menu_undo = self.builder.get_object("undo")
+        menu_copy = self.builder.get_object('copy')
+        menu_cut = self.builder.get_object('cut')
+        menu_paste = self.builder.get_object('paste')
+        menu_delete = self.builder.get_object('delete')
+        menu_undo = self.builder.get_object('undo')
 
-        menu_copy.connect("activate", self.on_menu_edit)
-        menu_cut.connect("activate", self.on_menu_edit)
-        menu_paste.connect("activate", self.on_menu_edit)
-        menu_delete.connect("activate", self.on_menu_edit)
-        menu_undo.connect("activate", self.on_undo)
+        menu_copy.connect('activate', self.on_menu_edit)
+        menu_cut.connect('activate', self.on_menu_edit)
+        menu_paste.connect('activate', self.on_menu_edit)
+        menu_delete.connect('activate', self.on_menu_edit)
+        menu_undo.connect('activate', self.on_undo)
 
         # char buttons
         self.btn_cur = [
-            self.builder.get_object("cursor1"),
-            self.builder.get_object("cursor2"),
-            self.builder.get_object("cursor3"),
-            self.builder.get_object("cursor4")]
+            self.builder.get_object('cursor1'),
+            self.builder.get_object('cursor2'),
+            self.builder.get_object('cursor3'),
+            self.builder.get_object('cursor4')]
 
         self.btn_cur[0].set_active(True)
 
         for btn in self.btn_cur:
-            btn.connect("toggled", self.on_toggled_cursor)
+            btn.connect('toggled', self.on_toggled_cursor)
 
         # manipulate symbol
         self.btn_rotate = self.builder.get_object("rotate")
-        self.btn_rotate.connect("pressed", self.on_rotate)
-        self.btn_rotate.set_tooltip_text("rotate the symbol clockwise")
+        self.btn_rotate.connect('pressed', self.on_rotate)
+        self.btn_rotate.set_tooltip_text('rotate the symbol clockwise')
 
-        self.btn_mirror = self.builder.get_object("mirror")
-        self.btn_mirror.connect("pressed", self.on_mirror)
-        self.btn_mirror.set_tooltip_text("mirror the symbol vertically")
+        self.btn_mirror = self.builder.get_object('mirror')
+        self.btn_mirror.connect('pressed', self.on_mirror)
+        self.btn_mirror.set_tooltip_text('mirror the symbol vertically')
 
         # line drawing
-        self.btn_mag_line = self.builder.get_object("draw_mag_line")
-        self.btn_line = self.builder.get_object("draw_line")
-        self.btn_line1 = self.builder.get_object("draw_line1")
-        self.btn_line2 = self.builder.get_object("draw_line2")
-        self.btn_line3 = self.builder.get_object("draw_line3")
-        self.btn_line4 = self.builder.get_object("draw_line4")
+        self.btn_mag_line = self.builder.get_object('draw_mag_line')
+        self.btn_line = self.builder.get_object('draw_line')
+        self.btn_line1 = self.builder.get_object('draw_line1')
+        self.btn_line2 = self.builder.get_object('draw_line2')
+        self.btn_line3 = self.builder.get_object('draw_line3')
+        self.btn_line4 = self.builder.get_object('draw_line4')
 
-        self.btn_mag_line.connect("pressed", self.on_line)
-        self.btn_line.connect("pressed", self.on_line)
-        self.btn_line1.connect("pressed", self.on_line)
-        self.btn_line2.connect("pressed", self.on_line)
-        self.btn_line3.connect("pressed", self.on_line)
-        self.btn_line4.connect("pressed", self.on_line)
+        self.btn_mag_line.connect('pressed', self.on_line)
+        self.btn_line.connect('pressed', self.on_line)
+        self.btn_line1.connect('pressed', self.on_line)
+        self.btn_line2.connect('pressed', self.on_line)
+        self.btn_line3.connect('pressed', self.on_line)
+        self.btn_line4.connect('pressed', self.on_line)
 
         self.btn_mag_line.set_tooltip_text("MagLine")
         self.btn_line.set_tooltip_text("free line")
@@ -141,20 +141,20 @@ class MainWindow(Gtk.Window):
         self.btn_line3.set_tooltip_text("line with start and end point '+'")
         self.btn_line4.set_tooltip_text("line with end terminals")
 
-        self.btn_rect = self.builder.get_object("draw_rect")
-        self.btn_rect.connect("pressed", self.on_line)
-        self.btn_rect.set_tooltip_text("draw a rectangle")
+        self.btn_rect = self.builder.get_object('draw_rect')
+        self.btn_rect.connect('pressed', self.on_line)
+        self.btn_rect.set_tooltip_text('draw a rectangle')
 
         # insert/remove rows or columns
-        self.btn_stretch1 = self.builder.get_object("stretch1")
-        self.btn_stretch3 = self.builder.get_object("stretch3")
-        self.btn_stretch2 = self.builder.get_object("stretch2")
-        self.btn_stretch4 = self.builder.get_object("stretch4")
+        self.btn_stretch1 = self.builder.get_object('stretch1')
+        self.btn_stretch3 = self.builder.get_object('stretch3')
+        self.btn_stretch2 = self.builder.get_object('stretch2')
+        self.btn_stretch4 = self.builder.get_object('stretch4')
 
-        self.btn_stretch1.connect("pressed", self.on_selecting_col)
-        self.btn_stretch2.connect("pressed", self.on_selecting_col)
-        self.btn_stretch3.connect("pressed", self.on_selecting_row)
-        self.btn_stretch4.connect("pressed", self.on_selecting_row)
+        self.btn_stretch1.connect('pressed', self.on_selecting_col)
+        self.btn_stretch2.connect('pressed', self.on_selecting_col)
+        self.btn_stretch3.connect('pressed', self.on_selecting_row)
+        self.btn_stretch4.connect('pressed', self.on_selecting_row)
 
         self.btn_stretch1.set_tooltip_text("insert rows")
         self.btn_stretch3.set_tooltip_text("insert columns")
@@ -162,15 +162,15 @@ class MainWindow(Gtk.Window):
         self.btn_stretch4.set_tooltip_text("remove columns")
 
         self.btn_select = self.builder.get_object("select_rect")
-        self.btn_select.connect("pressed", self.on_select_rect)
+        self.btn_select.connect('pressed', self.on_select_rect)
 
         # clipboard
         self.btn_clipboard = [
-            self.builder.get_object("copy_to_clipboard"),
-            self.builder.get_object("paste_from_clipboard"),
-            self.builder.get_object("load_and_paste_from_clipboard")]
+            self.builder.get_object('copy_to_clipboard'),
+            self.builder.get_object('paste_from_clipboard'),
+            self.builder.get_object('load_and_paste_from_clipboard')]
         for btn in self.btn_clipboard:
-            btn.connect("pressed", self.on_clipboard)
+            btn.connect('pressed', self.on_clipboard)
 
         self.btn_clipboard[0].set_tooltip_text("copy grid to clipboard")
         self.btn_clipboard[1].set_tooltip_text("paste grid from clipboard")
@@ -190,7 +190,7 @@ class MainWindow(Gtk.Window):
         component_canvas = ComponentView(self.builder)  # noqa F841
 
     def init_grid(self):
-        fixed = self.builder.get_object("grid_viewport")
+        fixed = self.builder.get_object('grid_viewport')
         self.grid_view = GridView()
         fixed.add(self.grid_view)
 
@@ -200,10 +200,10 @@ class MainWindow(Gtk.Window):
             self.cursor.append(GdkPixbuf.Pixbuf.new_from_file("application/buttons/c{0}.png".format(i)))
 
     def init_char_buttons(self):
-        container = self.builder.get_object("char_table")
+        container = self.builder.get_object('char_table')
         children = container.get_children()
         for btn in children:
-            btn.connect("pressed", self.on_char_button_clicked)
+            btn.connect('pressed', self.on_char_button_clicked)
 
     def on_pointer_moved(self, pos):
         """Update the pointer position in the statusbar"""
