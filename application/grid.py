@@ -7,8 +7,7 @@ AACircuit
 
 import pickle
 import xerox
-import gettext
-_ = gettext.gettext
+from application import _
 
 
 class Grid(object):

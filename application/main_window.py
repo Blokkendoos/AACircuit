@@ -6,8 +6,8 @@ AACircuit
 import os
 import sys
 from pubsub import pub
-import gettext
 
+from application import _
 from application import INSERT, REMOVE, IDLE
 from application.grid_view import GridView
 from application.component_view import ComponentView
@@ -16,8 +16,6 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk  # noqa: E402
 from gi.repository import GdkPixbuf  # noqa: E402
-
-_ = gettext.gettext
 
 
 class MainWindow(Gtk.Window):
@@ -244,7 +242,7 @@ class MainWindow(Gtk.Window):
         pub.sendMessage('UNDO')
 
     def on_close_clicked(self, button):
-        print("Closing application")
+        print(_("Closing application"))
         Gtk.main_quit()
 
     def on_select_rect(self, button):

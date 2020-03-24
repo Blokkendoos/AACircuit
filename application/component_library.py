@@ -7,8 +7,7 @@ component_library.py
 import os
 import sys
 import json
-import gettext
-_ = gettext.gettext
+from application import _
 
 
 class ComponentLibrary(object):

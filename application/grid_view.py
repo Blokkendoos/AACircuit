@@ -6,8 +6,8 @@ AACircuit
 import cairo
 from pubsub import pub
 from numpy import sign
-import gettext
 
+from application import _
 from application import GRIDSIZE_W, GRIDSIZE_H
 from application import INSERT, HORIZONTAL, VERTICAL
 from application import IDLE, SELECTING, SELECTED
@@ -19,8 +19,6 @@ from application.pos import Pos
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk  # noqa: E402
-
-_ = gettext.gettext
 
 
 class GridView(Gtk.Frame):

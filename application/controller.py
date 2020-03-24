@@ -4,15 +4,13 @@ AACircuit.py
 """
 
 from pubsub import pub
-import gettext
 
+from application import _
 from application.grid import Grid
 from application.symbol import Symbol
 from application.main_window import MainWindow
 from application.component_library import ComponentLibrary
 from application.file import FileChooserWindow
-
-_ = gettext.gettext
 
 
 class Controller(object):
@@ -30,8 +28,11 @@ class Controller(object):
         self.buffer = None
 
         all_components = [key for key in self.components.get_dict()]
-        print(_("{0} libraries loaded, total number of components: {1}").format(self.components.nr_libraries(),
-                                                                                self.components.nr_components()))
+        if self.components.nr_libraries() == 1:
+            print(_("One library loaded, total number of components: {0}").format(self.components.nr_components()))
+        else:
+            print(_("{0} libraries loaded, total number of components: {1}").format(self.components.nr_libraries(),
+                                                                                    self.components.nr_components()))
         # messages
 
         all_components.sort()

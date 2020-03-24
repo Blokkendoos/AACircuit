@@ -3,6 +3,19 @@ AACircuit
 2020-03-02 JvO
 """
 
+import gettext
+import locale
+
+# set local language, if supported
+try:
+    loc = locale.getdefaultlocale()
+    lang = loc[0]
+    local_lang = gettext.translation('aacircuit', localedir='locale', languages=[lang])
+    local_lang.install()
+    _ = local_lang.gettext
+except OSError:
+    _ = gettext.gettext
+
 # grid
 FONTSIZE = 12
 GRIDSIZE_W = 10
