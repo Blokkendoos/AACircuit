@@ -31,9 +31,6 @@ class GridView(Gtk.Frame):
 
         self.set_border_width(0)
 
-        # https://stackoverflow.com/questions/11546395/how-to-put-gtk-drawingarea-into-gtk-layout
-        self.set_size_request(640, 480)
-
         self.surface = None
         self._grid = None
         self._pos = None
@@ -98,7 +95,14 @@ class GridView(Gtk.Frame):
 
     def set_grid(self, grid):
         self._grid = grid
+        self.set_viewport_size()
         self._drawing_area.queue_resize()
+
+    def set_viewport_size(self):
+        # https://stackoverflow.com/questions/11546395/how-to-put-gtk-drawingarea-into-gtk-layout
+        width = self._grid.nr_cols * GRIDSIZE_W
+        height = self._grid.nr_rows * GRIDSIZE_H
+        self.set_size_request(width, height)
 
     def init_surface(self, area):
         """Initialize Cairo surface."""
@@ -173,6 +177,11 @@ class GridView(Gtk.Frame):
         self.draw_selection(ctx)
         if self._selection == COMPONENT:  # and self._selection_state == SELECTED:
             self._symbol_view.draw(ctx, self._pos)
+
+    def gridsize_changed(self, *args, **kwargs):
+        self.set_viewport_size()
+
+    # SELECTION
 
     def on_nothing_selected(self):
         self._selection_state = IDLE
@@ -404,12 +413,16 @@ class GridView(Gtk.Frame):
             else:
                 pub.sendMessage('REMOVE_ROW', row=row)
 
+            self.gridsize_changed()
+
         elif self._selection_state == SELECTING and self._selection == COL:
             col = pos.grid_rc().x
             if self._selection_action == INSERT:
                 pub.sendMessage('INSERT_COL', col=col)
             else:
                 pub.sendMessage('REMOVE_COL', col=col)
+
+            self.gridsize_changed()
 
         elif self._selection_state == SELECTED and self._selection == COMPONENT:
             # https://stackoverflow.com/questions/6616270/right-click-menu-context-menu-using-pygtk
