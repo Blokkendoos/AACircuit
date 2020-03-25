@@ -33,8 +33,10 @@ class MainWindow(Gtk.Window):
         """
         app_path = os.path.dirname(__file__)
         try:
-
             # https://askubuntu.com/questions/140552/how-to-make-glade-load-translations-from-opt
+            # For this particular case the locale module needs to be used instead of gettext.
+            # Python's gettext module is pure python, it doesn't actually set the text domain
+            # in a way that the C library can read, but locale does (by calling libc).
             locale.bindtextdomain('aacircuit', 'locale/')
             locale.textdomain('aacircuit')
 
