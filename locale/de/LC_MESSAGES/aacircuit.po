@@ -1,0 +1,234 @@
+# AACIRCUIT
+# Copyright (C) 2020 JvO
+# This file is distributed under the same license as the PACKAGE package.
+# Johan van Oostrum <EMAIL@ADDRESS>, 2020.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-03-24 12:49+0100\n"
+"PO-Revision-Date: 2020-03-25 11:00+0100\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.3\n"
+"Last-Translator: \n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: de\n"
+
+# GUI
+#: application/aacircuit.glade:198
+msgid "_File"
+msgstr "_Datei"
+
+#: application/aacircuit.glade:268
+msgid "_Edit"
+msgstr "_Bearbeiten"
+
+#: application/aacircuit.glade:331
+msgid "_View"
+msgstr "_Darstellung"
+
+#: application/aacircuit.glade:339
+msgid "_Help"
+msgstr "_Info"
+
+#: application/aacircuit.glade:642
+msgid "<b>Clipb.</b>"
+msgstr "Zwischenabl."
+
+#: application/aacircuit.glade:718
+msgid "<b>Erase</b>"
+msgstr "Radierer"
+
+#: application/aacircuit.glade:797
+msgid "<b>Curs.</b>"
+msgstr "Zeiger"
+
+# COMPONENT_LIBRARY
+#: application/component_library.py:35
+#, python-brace-format
+msgid "Failed to load component library {0} due to I/O error {1}: {2}"
+msgstr "Komponentbibliothek {0} nicht geladen wegen i/o-fehler {1}: {2}"
+
+#: application/component_library.py:88
+#, python-brace-format
+msgid "Number of libraries loaded: {0}"
+msgstr "Anzahl Bibliotheken geladen: {0}"
+
+# COMPONENT_VIEW
+#: application/component_view.py:17
+msgid "Description"
+msgstr "Umschreibung"
+
+# CONTROLLER
+#: application/controller.py:32
+#, python-brace-format
+msgid "One library loaded, total number of components: {0}"
+msgstr "Eine Bibliothek geladen, Total zahl der Symbolen: {0}"
+
+#: application/controller.py:34
+#, python-brace-format
+msgid "{0} libraries loaded, total number of components: {1}"
+msgstr "{0} Bibliotheke geladen, Total zahl der Symbole: {1}"
+
+#: application/controller.py:183
+#, python-format
+msgid "Unable to open file for writing: %s"
+msgstr "Datei %s läßt sich nicht öffnen zum schreiben"
+
+#: application/controller.py:199
+#, python-format
+msgid "Unable to open file for reading: %s"
+msgstr "Datei %s läßt sich nicht öffnen zum lesen"
+
+# FILE
+#: application/file.py:22
+msgid "Open file..."
+msgstr "Datei öffnen..."
+
+#: application/file.py:24
+msgid "Save file"
+msgstr "Datei speichern..."
+
+#: application/file.py:37
+msgid "Please choose a file"
+msgstr "Wähle eine Datei"
+
+#: application/file.py:51
+#, python-format
+msgid "File selected: %s"
+msgstr "Gewählte Datei: %s"
+
+#: application/file.py:59 application/file.py:87
+msgid "Cancel clicked"
+msgstr "Abgestürzt"
+
+#: application/file.py:65
+msgid "Any files"
+msgstr "Alle Dateien"
+
+#: application/file.py:70
+msgid "Text files"
+msgstr "Tekstdateien"
+
+#: application/file.py:75
+msgid "Please choose a folder"
+msgstr "Wähle ein Ordner"
+
+#: application/file.py:79
+msgid "Select"
+msgstr "Wähle"
+
+#: application/file.py:85
+#, python-format
+msgid "Folder selected: %s"
+msgstr "Gewählte Ordner: %s"
+
+# GRID_VIEW
+#: application/grid_view.py:167
+msgid "Invalid surface"
+msgstr "Ungültiges Kanvas"
+
+# GRID
+#: application/grid.py:27
+#, python-brace-format
+msgid "number of rows: {0} columns: {1}"
+msgstr "Reihen: {0} Kolumne: {1}"
+
+#: application/grid.py:98
+msgid "(created by AACircuit.py © 2020 JvO)"
+msgstr "(verfertigt mit AACircuit.py © 2020 JvO)"
+
+# MAIN_WINDOW
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:38
+msgid "Failed to load XML GUI file aacircuit.glade"
+msgstr "Der XML GUI aacircuit.glade könnte nicht geladen worden"
+
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:116
+msgid "rotate the symbol clockwise"
+msgstr "Symbol 90°rechts drehen"
+
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:120
+msgid "mirror the symbol vertically"
+msgstr "Symbol vertikal spiegeln"
+
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:137
+msgid "MagLine"
+msgstr "automatische Linie"
+
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:138
+msgid "free line"
+msgstr "freihe Linie"
+
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:139
+msgid "straight line"
+msgstr "gerade Linie"
+
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:140
+msgid "line with start and end point 'o'"
+msgstr "Linie mit Start/Endpunkt ‘o’"
+
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:141
+msgid "line with start and end point '+'"
+msgstr "Linie mit Start/Endpunkt ‘+’"
+
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:142
+msgid "line with end terminals"
+msgstr "Linie mit Abschluß"
+
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:146
+msgid "draw a rectangle"
+msgstr "Rechteck zeichnen"
+
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:159
+msgid "insert rows"
+msgstr "Zeile horizontal einfügen"
+
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:160
+msgid "insert columns"
+msgstr "Zeile vertikal einfügen"
+
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:161
+msgid "remove rows"
+msgstr "Zeile horizontal löschen"
+
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:162
+msgid "remove columns"
+msgstr "Zeile vertikal löschen"
+
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:175
+msgid "copy grid to clipboard"
+msgstr "kopiert die komplette Zeichnung in die Zwischenablage"
+
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:176
+msgid "paste grid from clipboard"
+msgstr "fügt den Inhalt der Zwischenablage ein"
+
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:177
+msgid "load file and paste into grid"
+msgstr "ASCII aus einer Datei laden und in die Zeichnung einfügen"
+
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:247
+msgid "Closing application"
+msgstr "Programma beenden"

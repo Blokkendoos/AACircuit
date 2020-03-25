@@ -1,0 +1,242 @@
+# AACIRCUIT
+# Copyright (C) 2020 JvO
+# This file is distributed under the same license as the PACKAGE package.
+# Johan van Oostrum <EMAIL@ADDRESS>, 2020.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-03-24 12:49+0100\n"
+"PO-Revision-Date: 2020-03-24 21:45+0100\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.3\n"
+"Last-Translator: \n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: nl\n"
+
+# GUI
+
+#: application/aacircuit.glade:198
+msgid "_File"
+msgstr "_Bestand"
+
+#: application/aacircuit.glade:268
+msgid "_Edit"
+msgstr "_Bewerken"
+
+#: application/aacircuit.glade:331
+msgid "_View"
+msgstr "_Beeld"
+
+#: application/aacircuit.glade:339
+msgid "_Help"
+msgstr "_Hulp"
+
+#: application/aacircuit.glade:642
+msgid "<b>Clipb.</b>"
+msgstr "Prikbord"
+
+#: application/aacircuit.glade:718
+msgid "<b>Erase</b>"
+msgstr "Gum"
+
+#: application/aacircuit.glade:797
+msgid "<b>Curs.</b>"
+msgstr "Muispijl"
+
+# COMPONENT_LIBRARY
+
+#: application/component_library.py:35
+#, python-brace-format
+msgid "Failed to load component library {0} due to I/O error {1}: {2}"
+msgstr "Kan de componentbibliotheek {0} niet laden als gevolg van i/o-fout {1}: {2}"
+
+#: application/component_library.py:88
+#, python-brace-format
+msgid "Number of libraries loaded: {0}"
+msgstr "Aantal geladen bibliotheken: {0}"
+
+# COMPONENT_VIEW
+
+#: application/component_view.py:17
+msgid "Description"
+msgstr "Omschrijving"
+
+# CONTROLLER
+
+#: application/controller.py:32
+#, python-brace-format
+msgid "One library loaded, total number of components: {0}"
+msgstr "Eén bibliotheek geladen, totaal aantal onderdelen: {0}"
+
+#: application/controller.py:34
+#, python-brace-format
+msgid "{0} libraries loaded, total number of components: {1}"
+msgstr "{0} geladen bibliotheken, totaal aantal onderdelen: {1}"
+
+#: application/controller.py:183
+#, python-format
+msgid "Unable to open file for writing: %s"
+msgstr "Kan bestand niet openen voor schrijven: %s"
+
+#: application/controller.py:199
+#, python-format
+msgid "Unable to open file for reading: %s"
+msgstr "Kan bestand niet openen om te lezen: %s"
+
+# FILE
+
+#: application/file.py:22
+msgid "Open file"
+msgstr "Bestand openen"
+
+#: application/file.py:24
+msgid "Save file"
+msgstr "Bestand opslaan"
+
+#: application/file.py:37
+msgid "Please choose a file"
+msgstr "Kies een bestand"
+
+#: application/file.py:51
+#, python-format
+msgid "File selected: %s"
+msgstr "Bestand geselecteerd: %s"
+
+#: application/file.py:59 application/file.py:87
+msgid "Cancel clicked"
+msgstr "Afgebroken"
+
+#: application/file.py:65
+msgid "Any files"
+msgstr "Alle bestanden"
+
+#: application/file.py:70
+msgid "Text files"
+msgstr "Tekstbestanden"
+
+#: application/file.py:75
+msgid "Please choose a folder"
+msgstr "Kies een map"
+
+#: application/file.py:79
+msgid "Select"
+msgstr "Selecteer"
+
+#: application/file.py:85
+#, python-format
+msgid "Folder selected: %s"
+msgstr "Geselecteerde map: %s"
+
+# GRID_VIEW
+
+#: application/grid_view.py:167
+msgid "Invalid surface"
+msgstr "Ongeldig canvas"
+
+# GRID
+
+#: application/grid.py:27
+#, python-brace-format
+msgid "number of rows: {0} columns: {1}"
+msgstr "aantal rijen: {0} kolommen: {1}"
+
+#: application/grid.py:98
+msgid "(created by AACircuit.py © 2020 JvO)"
+msgstr "(gemaakt met AACircuit.py © 2020 JvO)"
+
+# MAIN_WINDOW
+
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:38
+msgid "Failed to load XML GUI file aacircuit.glade"
+msgstr "De XML GUI aacircuit.glade kon niet worden geladen"
+
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:116
+msgid "rotate the symbol clockwise"
+msgstr "draai symbool met de klok mee"
+
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:120
+msgid "mirror the symbol vertically"
+msgstr "spiegel symbool verticaal"
+
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:137
+msgid "MagLine"
+msgstr "Automatische lijn"
+
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:138
+msgid "free line"
+msgstr "lijn in alle richtingen"
+
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:139
+msgid "straight line"
+msgstr "rechte lijn"
+
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:140
+msgid "line with start and end point 'o'"
+msgstr "lijn start en eindpunt ‘o’"
+
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:141
+msgid "line with start and end point '+'"
+msgstr "lijn start en eindpunt ‘+’"
+
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:142
+msgid "line with end terminals"
+msgstr "lijn met start en eindpunt"
+
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:146
+msgid "draw a rectangle"
+msgstr "teken een rechthoek"
+
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:159
+msgid "insert rows"
+msgstr "voeg rijen toe"
+
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:160
+msgid "insert columns"
+msgstr "voeg kolommen toe"
+
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:161
+msgid "remove rows"
+msgstr "verwijder rijen"
+
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:162
+msgid "remove columns"
+msgstr "verwijder kolommen"
+
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:175
+msgid "copy grid to clipboard"
+msgstr "kopieer het rooster naar het prikbord"
+
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:176
+msgid "paste grid from clipboard"
+msgstr "plak het rooster van het prikbord"
+
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:177
+msgid "load file and paste into grid"
+msgstr "plak rooster van bestand"
+
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:247
+msgid "Closing application"
+msgstr "Afsluiten programma"
