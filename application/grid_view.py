@@ -6,6 +6,7 @@ AACircuit
 import cairo
 from pubsub import pub
 from numpy import sign
+from bresenham import bresenham
 
 from application import _
 from application import GRIDSIZE_W, GRIDSIZE_H
@@ -86,7 +87,7 @@ class GridView(Gtk.Frame):
         pub.subscribe(self.on_nothing_selected, 'NOTHING_SELECTED')
 
         pub.subscribe(self.on_draw_mag_line, 'DRAW_MAG_LINE')
-        pub.subscribe(self.on_draw_line, 'DRAW_LINE')
+        pub.subscribe(self.on_draw_line, 'DRAW_LINE0')
         pub.subscribe(self.on_draw_line, 'DRAW_LINE1')
         pub.subscribe(self.on_draw_line, 'DRAW_LINE2')
         pub.subscribe(self.on_draw_line, 'DRAW_LINE3')
@@ -227,8 +228,7 @@ class GridView(Gtk.Frame):
         elif type == '4':
             self._line_terminal = TERMINAL4
         else:
-            # TODO draw line https://pypi.org/project/bresenham/
-            self._line_terminal = "?"
+            self._line_terminal = None
 
     def draw_background(self, ctx):
         """Draw a background with the size of the grid."""
@@ -324,6 +324,13 @@ class GridView(Gtk.Frame):
                         if y >= self.surface.get_height():
                             break
 
+            def draw_free_line():
+                linechar = LINE_HOR  # TODO
+                line = bresenham(x_start, y_start, x_end, y_end)
+                for pos in line:
+                    ctx.move_to(pos[0], pos[1])
+                    ctx.show_text(linechar)
+
             # draw line
             x_start, y_start = self._drag_startpos.xy
             x_end, y_end = self._drag_currentpos.xy
@@ -332,10 +339,13 @@ class GridView(Gtk.Frame):
             y_end += GRIDSIZE_H
             y_start += GRIDSIZE_H
 
-            if self._drag_dir == HORIZONTAL:
-                draw_hor_line()
-            elif self._drag_dir == VERTICAL:
-                draw_vert_line()
+            if self._selection_type == '0':
+                draw_free_line()
+            else:
+                if self._drag_dir == HORIZONTAL:
+                    draw_hor_line()
+                elif self._drag_dir == VERTICAL:
+                    draw_vert_line()
 
             if self._ml_dir is not None:
                 # draw magic line

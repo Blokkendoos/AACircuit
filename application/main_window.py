@@ -132,21 +132,21 @@ class MainWindow(Gtk.Window):
 
         # line drawing
         self.btn_mag_line = self.builder.get_object('draw_mag_line')
-        self.btn_line = self.builder.get_object('draw_line')
+        self.btn_line0 = self.builder.get_object('draw_line0')
         self.btn_line1 = self.builder.get_object('draw_line1')
         self.btn_line2 = self.builder.get_object('draw_line2')
         self.btn_line3 = self.builder.get_object('draw_line3')
         self.btn_line4 = self.builder.get_object('draw_line4')
 
         self.btn_mag_line.connect('pressed', self.on_line)
-        self.btn_line.connect('pressed', self.on_line)
+        self.btn_line0.connect('pressed', self.on_line)
         self.btn_line1.connect('pressed', self.on_line)
         self.btn_line2.connect('pressed', self.on_line)
         self.btn_line3.connect('pressed', self.on_line)
         self.btn_line4.connect('pressed', self.on_line)
 
         self.btn_mag_line.set_tooltip_text(_("MagLine"))
-        self.btn_line.set_tooltip_text(_("free line"))
+        self.btn_line0.set_tooltip_text(_("free line"))
         self.btn_line1.set_tooltip_text(_("straight line"))
         self.btn_line2.set_tooltip_text(_("line with start and end point 'o'"))
         self.btn_line3.set_tooltip_text(_("line with start and end point '+'"))

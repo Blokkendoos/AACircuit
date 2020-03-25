@@ -894,7 +894,7 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkButton" id="draw_line">
+                          <object class="GtkButton" id="draw_line0">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
