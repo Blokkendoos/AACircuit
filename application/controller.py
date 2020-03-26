@@ -86,14 +86,14 @@ class Controller(object):
         pub.sendMessage('GRID', grid=self.grid)
 
     def on_open(self):
-        dialog = FileChooserWindow(open=True)
+        dialog = FileChooserWindow(open=True)  # noqa: F841
 
     def on_save(self):
         if self.filename is not None:
             self.on_write_to_file(self.filename)
 
     def on_save_as(self):
-        dialog = FileChooserWindow()
+        dialog = FileChooserWindow()  # noqa: F841
 
     # Edit menu
 
