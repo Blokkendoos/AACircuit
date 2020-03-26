@@ -287,6 +287,12 @@ class GridView(Gtk.Frame):
             self._selection.endpos = self._drag_currentpos
             self._selection.maxpos = self.max_pos_grid
             self._selection.direction = self._drag_dir
+
+            if self._selection_item == MAG_LINE:
+                self._selection.ml_direction = self._ml_dir
+                self._selection.ml_startpos = self._ml_startpos
+                self._selection.ml_endpos = self._ml_currentpos
+
             self._selection.draw(ctx)
 
         elif self._selection_state == SELECTED and self._selection_item == RECT:

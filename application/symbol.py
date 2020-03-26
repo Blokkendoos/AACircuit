@@ -59,7 +59,13 @@ class Symbol(Grid):
             for i in range(length):
                 row.append(linechar)
                 linechar = LINE_HOR
-            row.append(terminal())
+
+            if terminal() is None:
+                linechar = LINE_HOR
+            else:
+                linechar = terminal()
+
+            row.append(linechar)
             grid.append(row)
         else:
             # vertical line
@@ -72,6 +78,12 @@ class Symbol(Grid):
             for i in range(length):
                 grid.append([linechar])
                 linechar = LINE_VERT
-            grid.append([terminal()])
+
+            if terminal() is None:
+                linechar = LINE_VERT
+            else:
+                linechar = terminal()
+
+            grid.append([linechar])
 
         return grid
