@@ -198,19 +198,20 @@ class GridView(Gtk.Frame):
     def on_select_rect(self, action):
         self._selection_state = IDLE
         self._selection_action = action
-        self._drag_dir = None
         self._selection_item = RECT
         self._selection = SelectionRect()
 
     def on_selecting_row(self, action):
         self._selection_state = SELECTING
         self._selection_action = action
+        self._drag_dir = None
         self._selection_item = ROW
         self._selection = SelectionRow()
 
     def on_selecting_col(self, action):
         self._selection_state = SELECTING
         self._selection_action = action
+        self._drag_dir = None
         self._selection_item = COL
         self._selection = SelectionCol()
 
@@ -273,17 +274,19 @@ class GridView(Gtk.Frame):
 
     def draw_selection(self, ctx):
 
-        # draw selection
         ctx.set_source_rgb(0.5, 0.5, 0.75)
         ctx.set_line_width(0.5)
         ctx.set_tolerance(0.1)
         ctx.set_line_join(cairo.LINE_JOIN_ROUND)
 
         if self._selection_state == SELECTING:
-            self._selection.startpos = self._drag_startpos
+            if self._selection_item in (ROW, COL):
+                self._selection.startpos = self._pos
+            else:
+                self._selection.startpos = self._drag_startpos
             self._selection.endpos = self._drag_currentpos
-            self._selection.direction = self._drag_dir
             self._selection.maxpos = self.max_pos_grid
+            self._selection.direction = self._drag_dir
             self._selection.draw(ctx)
 
         elif self._selection_state == SELECTED and self._selection_item == RECT:
