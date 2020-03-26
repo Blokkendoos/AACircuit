@@ -51,8 +51,8 @@ class Pos(object):
         (x, y) = (self._x, self._y)
         x -= x % GRIDSIZE_W
         y -= y % GRIDSIZE_H
-        self._x = int(x)
-        self._y = int(y)
+        self._x = round(x)
+        self._y = round(y)
 
     def grid_rc(self):
         """Map canvas (x,y) position to grid (col,row) coordinates."""

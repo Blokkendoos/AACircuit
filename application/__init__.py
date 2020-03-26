@@ -44,7 +44,7 @@ MAG_LINE = 'mag_line'
 # lines
 LINE_HOR = '-'
 LINE_VERT = '|'
-TERMINAL1 = " "
+TERMINAL1 = None
 TERMINAL2 = 'o'
 TERMINAL3 = '+'
 TERMINAL4 = "'"

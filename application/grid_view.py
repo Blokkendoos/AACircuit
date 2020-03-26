@@ -391,11 +391,12 @@ class GridView(Gtk.Frame):
 
                 # convert (canvas) length to grid dimension (nr cols or rows)
                 if self._drag_dir == HORIZONTAL:
-                    length = int(x_offset / GRIDSIZE_W)
+                    length = round(x_offset / GRIDSIZE_W)
                     if sign(length) == -1:
                         pos = Pos(pos.x + length, pos.y)
                 else:
-                    length = int(y_offset / GRIDSIZE_H)
+                    # vertical line
+                    length = round(y_offset / GRIDSIZE_H)
                     if sign(length) == -1:
                         pos = Pos(pos.x, pos.y + length)
 
@@ -410,7 +411,7 @@ class GridView(Gtk.Frame):
         if self._selection_state == SELECTING and self._selection_item in (RECT, LINE, MAG_LINE):
 
             offset = Pos(x_offset, y_offset)
-            pos = (self._drag_startpos + offset)
+            pos = self._drag_startpos + offset
             pos.snap_to_grid()
 
             if self._selection_item == RECT:
