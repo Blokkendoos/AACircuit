@@ -1,0 +1,15 @@
+/*!
+@mainpage AACircuit
+
+@author JvO (<A HREF="http://www.chaosgeordend.nl" TARGET="_top">www.chaosgeordend.nl</A>) \n
+Copyright (C) 2020 \n
+
+@section DownloadSourceCode Download
+Download AACircuit source code using following link: \n
+http://github.com/blokkendoos/AACircuit
+
+@section README README
+@verbinclude README.txt
+
+*/
+
