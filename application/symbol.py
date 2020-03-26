@@ -43,7 +43,7 @@ class Symbol(Grid):
             elif type == '4':
                 term = TERMINAL4
             else:
-                term = linechar
+                term = None
             return term
 
         grid = []
