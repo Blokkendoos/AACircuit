@@ -6,16 +6,15 @@ AACircuit
 import cairo
 from pubsub import pub
 from numpy import sign
-from bresenham import bresenham
 
 from application import _
 from application import GRIDSIZE_W, GRIDSIZE_H
 from application import INSERT, HORIZONTAL, VERTICAL
 from application import IDLE, SELECTING, SELECTED
 from application import COMPONENT, COL, ROW, RECT, LINE, MAG_LINE
-from application import LINE_HOR, LINE_VERT, TERMINAL1, TERMINAL2, TERMINAL3, TERMINAL4
 from application.symbol_view import SymbolView
 from application.pos import Pos
+from application.selection import SelectionLine, SelectionLineFree, SelectionMagicLine, SelectionCol, SelectionRow, SelectionRect
 
 import gi
 gi.require_version('Gtk', '3.0')
@@ -41,10 +40,12 @@ class GridView(Gtk.Frame):
 
         self._symbol_view = SymbolView()
 
+        self._selection = None
+
         # selection status
         self._selection_state = IDLE
         self._selection_action = None
-        self._selection = None
+        self._selection_item = None
         self._selection_type = None
         self._selection_mag_line_split = None
 
@@ -119,13 +120,13 @@ class GridView(Gtk.Frame):
     def max_pos(self):
         x_max = self.surface.get_width()
         y_max = self.surface.get_height()
-        return x_max, y_max
+        return Pos(x_max, y_max)
 
     @property
     def max_pos_grid(self):
         x_max = self._grid.nr_cols * GRIDSIZE_W
         y_max = self._grid.nr_rows * GRIDSIZE_H
-        return x_max, y_max
+        return Pos(x_max, y_max)
 
     @property
     def drag_rect(self):
@@ -173,10 +174,10 @@ class GridView(Gtk.Frame):
     def do_drawing(self, ctx):
         """Draw the ASCII grid."""
         self.draw_background(ctx)
-        self.draw_lines(ctx)
+        self.draw_gridlines(ctx)
         self.draw_content(ctx)
         self.draw_selection(ctx)
-        if self._selection == COMPONENT:  # and self._selection_state == SELECTED:
+        if self._selection_item == COMPONENT:  # and self._selection_state == SELECTED:
             self._symbol_view.draw(ctx, self._pos)
 
     def gridsize_changed(self, *args, **kwargs):
@@ -186,49 +187,47 @@ class GridView(Gtk.Frame):
 
     def on_nothing_selected(self):
         self._selection_state = IDLE
-        self._selection = None
+        self._selection_item = None
         self._drawing_area.queue_resize()
 
     def on_symbol_selected(self, symbol):
         self._selection_state = SELECTED
         self._selection_action = INSERT
-        self._selection = COMPONENT
+        self._selection_item = COMPONENT
 
     def on_select_rect(self, action):
         self._selection_state = IDLE
         self._selection_action = action
         self._drag_dir = None
-        self._selection = RECT
+        self._selection_item = RECT
+        self._selection = SelectionRect()
 
     def on_selecting_row(self, action):
         self._selection_state = SELECTING
         self._selection_action = action
-        self._selection = ROW
+        self._selection_item = ROW
+        self._selection = SelectionRow()
 
     def on_selecting_col(self, action):
         self._selection_state = SELECTING
         self._selection_action = action
-        self._selection = COL
+        self._selection_item = COL
+        self._selection = SelectionCol()
 
     def on_draw_mag_line(self, type):
         self._selection_state = IDLE
         self._ml_dir = None
-        self._selection = MAG_LINE
+        self._selection_item = MAG_LINE
+        self._selection = SelectionMagicLine()
 
     def on_draw_line(self, type):
         self._selection_state = IDLE
-        self._selection = LINE
+        self._selection_item = LINE
         self._selection_type = type
-        if type == '1':
-            self._line_terminal = TERMINAL1
-        elif type == '2':
-            self._line_terminal = TERMINAL2
-        elif type == '3':
-            self._line_terminal = TERMINAL3
-        elif type == '4':
-            self._line_terminal = TERMINAL4
+        if type == '0':
+            self._selection = SelectionLineFree()
         else:
-            self._line_terminal = None
+            self._selection = SelectionLine(type)
 
     def draw_background(self, ctx):
         """Draw a background with the size of the grid."""
@@ -237,20 +236,20 @@ class GridView(Gtk.Frame):
         ctx.set_tolerance(0.1)
         ctx.set_line_join(cairo.LINE_JOIN_ROUND)
 
-        x_max, y_max = self.max_pos_grid
+        x_max, y_max = self.max_pos_grid.xy
 
         ctx.new_path()
         ctx.rectangle(0, 0, x_max, y_max)
         ctx.fill()
 
-    def draw_lines(self, ctx):
+    def draw_gridlines(self, ctx):
 
         ctx.set_source_rgb(0.75, 0.75, 0.75)
         ctx.set_line_width(0.5)
         ctx.set_tolerance(0.1)
         ctx.set_line_join(cairo.LINE_JOIN_ROUND)
 
-        x_max, y_max = self.max_pos
+        x_max, y_max = self.max_pos.xy
         x_incr = GRIDSIZE_W
         y_incr = GRIDSIZE_H
 
@@ -274,121 +273,24 @@ class GridView(Gtk.Frame):
 
     def draw_selection(self, ctx):
 
-        def select_column():
-            # highlight the selected column
-            ctx.new_path()
-            ctx.move_to(x, 0)
-            ctx.line_to(x, y_max)
-            ctx.move_to(x + GRIDSIZE_W, 0)
-            ctx.line_to(x + GRIDSIZE_W, y_max)
-            ctx.stroke()
-
-        def select_row():
-            # highlight the selected row
-            ctx.new_path()
-            ctx.move_to(0, y)
-            ctx.line_to(x_max, y)
-            ctx.move_to(0, y + GRIDSIZE_H)
-            ctx.line_to(x_max, y + GRIDSIZE_H)
-            ctx.stroke()
-
-        def select_rectangle():
-            # draw the selection rectangle
-            ctx.new_path()
-            x, y = self._drag_startpos.xy
-            w, h = (self._drag_currentpos - self._drag_startpos).xy
-            ctx.rectangle(x, y, w, h)
-            ctx.stroke()
-
-        def select_line():
-
-            def draw_hor_line():
-                linechar = LINE_HOR
-                y = y_start
-                step = GRIDSIZE_W * sign(x_end - x_start)
-                if abs(step) > 0:
-                    for x in range(x_start, x_end, step):
-                        ctx.move_to(x, y)
-                        ctx.show_text(linechar)
-                        if x >= self.surface.get_width():
-                            break
-
-            def draw_vert_line():
-                linechar = LINE_VERT
-                x = x_start
-                step = GRIDSIZE_H * sign(y_end - y_start)
-                if abs(step) > 0:
-                    for y in range(y_start, y_end, step):
-                        ctx.move_to(x, y)
-                        ctx.show_text(linechar)
-                        if y >= self.surface.get_height():
-                            break
-
-            def draw_free_line():
-                linechar = LINE_HOR  # TODO
-                line = bresenham(x_start, y_start, x_end, y_end)
-                for pos in line:
-                    ctx.move_to(pos[0], pos[1])
-                    ctx.show_text(linechar)
-
-            # draw line
-            x_start, y_start = self._drag_startpos.xy
-            x_end, y_end = self._drag_currentpos.xy
-
-            x_end += GRIDSIZE_W
-            y_end += GRIDSIZE_H
-            y_start += GRIDSIZE_H
-
-            if self._selection_type == '0':
-                draw_free_line()
-            else:
-                if self._drag_dir == HORIZONTAL:
-                    draw_hor_line()
-                elif self._drag_dir == VERTICAL:
-                    draw_vert_line()
-
-            if self._ml_dir is not None:
-                # draw magic line
-                x_start, y_start = self._ml_startpos.xy
-                x_end, y_end = self._ml_currentpos.xy
-
-                x_end += GRIDSIZE_W
-                y_end += GRIDSIZE_H
-                y_start += GRIDSIZE_H
-
-                if self._ml_dir == HORIZONTAL:
-                    draw_hor_line()
-                elif self._ml_dir == VERTICAL:
-                    draw_vert_line()
-
         # draw selection
         ctx.set_source_rgb(0.5, 0.5, 0.75)
         ctx.set_line_width(0.5)
         ctx.set_tolerance(0.1)
         ctx.set_line_join(cairo.LINE_JOIN_ROUND)
 
-        x_max, y_max = self.max_pos
-
         if self._selection_state == SELECTING:
+            self._selection.startpos = self._drag_startpos
+            self._selection.endpos = self._drag_currentpos
+            self._selection.direction = self._drag_dir
+            self._selection.maxpos = self.max_pos_grid
+            self._selection.draw(ctx)
 
-            x, y = self._pos.xy
-
-            if self._selection == COL:
-                select_column()
-            elif self._selection == ROW:
-                select_row()
-            elif self._selection == RECT:
-                select_rectangle()
-            elif self._selection in (LINE, MAG_LINE):
-                select_line()
-
-        elif self._selection_state == SELECTED and self._selection == RECT:
+        elif self._selection_state == SELECTED and self._selection_item == RECT:
             # draw the selection rectangle
-            ctx.new_path()
-            x, y = self._drag_startpos.xy
-            w, h = (self._drag_endpos - self._drag_startpos).xy
-            ctx.rectangle(x, y, w, h)
-            ctx.stroke()
+            self._selection.startpos = self._drag_startpos
+            self._selection.endpos = self._drag_endpos
+            self._selection.draw(ctx)
 
     def draw_content(self, ctx):
 
@@ -416,7 +318,7 @@ class GridView(Gtk.Frame):
         pos.snap_to_grid()
         pub.sendMessage('POINTER_MOVED', pos=pos.grid_rc())
 
-        if self._selection_state == SELECTING and self._selection == ROW:
+        if self._selection_state == SELECTING and self._selection_item == ROW:
             row = pos.grid_rc().y
             if self._selection_action == INSERT:
                 pub.sendMessage('INSERT_ROW', row=row)
@@ -425,7 +327,7 @@ class GridView(Gtk.Frame):
 
             self.gridsize_changed()
 
-        elif self._selection_state == SELECTING and self._selection == COL:
+        elif self._selection_state == SELECTING and self._selection_item == COL:
             col = pos.grid_rc().x
             if self._selection_action == INSERT:
                 pub.sendMessage('INSERT_COL', col=col)
@@ -434,7 +336,7 @@ class GridView(Gtk.Frame):
 
             self.gridsize_changed()
 
-        elif self._selection_state == SELECTED and self._selection == COMPONENT:
+        elif self._selection_state == SELECTED and self._selection_item == COMPONENT:
             # https://stackoverflow.com/questions/6616270/right-click-menu-context-menu-using-pygtk
             button = event.button
             if button == 1:
@@ -451,7 +353,7 @@ class GridView(Gtk.Frame):
 
     def on_drag_begin(self, widget, x_start, y_start):
 
-        if self._selection_state == IDLE and self._selection in (RECT, LINE, MAG_LINE):
+        if self._selection_state == IDLE and self._selection_item in (RECT, LINE, MAG_LINE):
 
             pos = Pos(x_start, y_start)
             pos.snap_to_grid()
@@ -471,7 +373,7 @@ class GridView(Gtk.Frame):
 
     def on_drag_end(self, widget, x_offset, y_offset):
 
-        if self._selection_state == SELECTING and self._selection in (RECT, LINE, MAG_LINE):
+        if self._selection_state == SELECTING and self._selection_item in (RECT, LINE, MAG_LINE):
 
             offset = Pos(x_offset, y_offset)
             self._drag_endpos = self._drag_startpos + offset
@@ -479,7 +381,7 @@ class GridView(Gtk.Frame):
 
             self._selection_state = SELECTED
 
-            if self._selection == LINE:
+            if self._selection_item == LINE:
 
                 # pos to grid (col, row) coordinates
                 pos = self._drag_startpos.grid_rc()
@@ -502,21 +404,21 @@ class GridView(Gtk.Frame):
 
     def on_drag_update(self, widget, x_offset, y_offset):
 
-        if self._selection_state == SELECTING and self._selection in (RECT, LINE, MAG_LINE):
+        if self._selection_state == SELECTING and self._selection_item in (RECT, LINE, MAG_LINE):
 
             offset = Pos(x_offset, y_offset)
             pos = (self._drag_startpos + offset)
             pos.snap_to_grid()
 
-            if self._selection == RECT:
+            if self._selection_item == RECT:
                 self._drag_currentpos = pos
 
-            elif self._selection == LINE:
+            elif self._selection_item == LINE:
                 self._drag_currentpos = pos
                 # snap to either a horizontal or a vertical straight line
                 self._drag_dir = self.pointer_dir()
 
-            elif self._selection == MAG_LINE:
+            elif self._selection_item == MAG_LINE:
 
                 # snap to either a horizontal or a vertical straight line
                 if self._ml_dir is None:
