@@ -84,7 +84,7 @@ class SelectionLine(Selection):
 
     def __init__(self, type):
 
-        super(SelectionLine).__init__()
+        super(SelectionLine, self).__init__()
         self._dir = None
 
         if type == '1':
@@ -157,13 +157,13 @@ class SelectionLine(Selection):
 class SelectionMagicLine(SelectionLine):
 
     def __init__(self):
-        super(SelectionMagicLine).__init__()
+        super(SelectionMagicLine, self).__init__(type=None)
 
 
 class SelectionLineFree(Selection):
 
     def __init__(self):
-        super(SelectionLineFree).__init__()
+        super(SelectionLineFree, self).__init__()
 
     def draw(self, ctx):
         # linechar = "/"  # TODO
@@ -179,7 +179,7 @@ class SelectionLineFree(Selection):
 class SelectionRect(Selection):
 
     def __init__(self):
-        super(SelectionRect).__init__()
+        super(SelectionRect, self).__init__()
 
     def draw(self, ctx):
         ctx.new_path()
@@ -195,7 +195,7 @@ class SelectionRect(Selection):
 class SelectionCol(Selection):
 
     def __init__(self):
-        super(SelectionCol).__init__()
+        super(SelectionCol, self).__init__()
 
     def draw(self, ctx):
         # highlight the selected column
@@ -211,7 +211,7 @@ class SelectionCol(Selection):
 class SelectionRow(Selection):
 
     def __init__(self):
-        super(SelectionRow).__init__()
+        super(SelectionRow, self).__init__()
 
     def draw(self, ctx):
         # highlight the selected row
