@@ -33,7 +33,7 @@ class GridView(Gtk.Frame):
 
         self.surface = None
         self._grid = None
-        self._pos = None
+        self._hover_pos = None
 
         self._drawing_area = Gtk.DrawingArea()
         self.add(self._drawing_area)
@@ -178,7 +178,7 @@ class GridView(Gtk.Frame):
         self.draw_content(ctx)
         self.draw_selection(ctx)
         if self._selection_item == COMPONENT:  # and self._selection_state == SELECTED:
-            self._symbol_view.draw(ctx, self._pos)
+            self._symbol_view.draw(ctx, self._hover_pos)
 
     def gridsize_changed(self, *args, **kwargs):
         self.set_viewport_size()
@@ -281,7 +281,7 @@ class GridView(Gtk.Frame):
 
         if self._selection_state == SELECTING:
             if self._selection_item in (ROW, COL):
-                self._selection.startpos = self._pos
+                self._selection.startpos = self._hover_pos
             else:
                 self._selection.startpos = self._drag_startpos
             self._selection.endpos = self._drag_currentpos
@@ -344,7 +344,7 @@ class GridView(Gtk.Frame):
             button = event.button
             if button == 1:
                 # left button
-                pos = self._pos + Pos(0, -1)
+                pos = self._hover_pos + Pos(0, -1)
                 pub.sendMessage('PASTE_SYMBOL', pos=pos.grid_rc())
             elif button == 3:
                 # right button
@@ -482,8 +482,8 @@ class GridView(Gtk.Frame):
         return dir
 
     def on_hover(self, widget, event):
-        self._pos = Pos(event.x, event.y)
-        self._pos.snap_to_grid()
-        pub.sendMessage('POINTER_MOVED', pos=self._pos.grid_rc())
+        self._hover_pos = Pos(event.x, event.y)
+        self._hover_pos.snap_to_grid()
+        pub.sendMessage('POINTER_MOVED', pos=self._hover_pos.grid_rc())
 
         widget.queue_resize()
