@@ -158,11 +158,22 @@ class Grid(object):
             return [[]]
 
         grid = []
+        # mirror specific characters
+        switcher = {'/': '\\',
+                    '\\': '/',
+                    '<': '>',
+                    '>': '<',
+                    '(': ')',
+                    ')': '('
+                    }
 
         for r, row in enumerate(self._grid):
             rev = []
             for c in reversed(row):
-                rev.append(c)
+                try:
+                    rev.append(switcher[c])
+                except KeyError:
+                    rev.append(c)
             grid.append(rev)
 
         return grid
