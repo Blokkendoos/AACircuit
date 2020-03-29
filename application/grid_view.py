@@ -403,24 +403,19 @@ class GridView(Gtk.Frame):
 
             if self._selection_item == LINE:
 
-                # pos to grid (col, row) coordinates
-                pos = self._drag_startpos.grid_rc()
+                # TODO line terminal-type?
 
-                # convert (canvas) length to grid dimension (nr cols or rows)
-                if self._drag_dir == HORIZONTAL:
-                    length = round(x_offset / GRIDSIZE_W)
-                    if sign(length) == -1:
-                        pos = Pos(pos.x + length, pos.y)
+                # position to grid (col, row) coordinates
+                start = self._drag_startpos.grid_rc()
+                end = self._drag_endpos.grid_rc()
+                if start > end:
+                    endpos = start
+                    startpos = end
                 else:
-                    # vertical line
-                    length = round(y_offset / GRIDSIZE_H)
-                    if sign(length) == -1:
-                        pos = Pos(pos.x, pos.y + length)
+                    endpos = end
+                    startpos = start
 
-                length = abs(length)
-
-                # TODO line terminal-type
-                pub.sendMessage("PASTE_LINE", pos=pos, dir=self._drag_dir, type=self._selection_type, length=length)
+                pub.sendMessage("PASTE_LINE", startpos=startpos, endpos=endpos, dir=self._drag_dir, type=self._selection_type)
                 self._drawing_area.queue_resize()
 
     def on_drag_update(self, widget, x_offset, y_offset):

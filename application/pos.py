@@ -4,6 +4,7 @@ AACircuit
 """
 
 from application import GRIDSIZE_W, GRIDSIZE_H
+from math import sqrt
 
 
 class Pos(object):
@@ -30,13 +31,13 @@ class Pos(object):
             return False
 
     def __gt__(self, other):
-        if self._x > other.x and self._y > other.y:
+        if sqrt(self._x**2 + self._y**2) > sqrt(other._x**2 + other._y**2):
             return True
         else:
             return False
 
     def __lt__(self, other):
-        if self._x < other.x and self._y < other.y:
+        if sqrt(self._x**2 + self._y**2) < sqrt(other._x**2 + other._y**2):
             return True
         else:
             return False

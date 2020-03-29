@@ -90,7 +90,7 @@ class Symbol(Grid):
 
         self._grid[self.ORIENTATION[self._ori]] = grid
 
-    def line(self, dir, type, length):
+    def line(self, startpos, endpos, dir, type):
 
         def terminal():
             if type == '1':
@@ -115,6 +115,7 @@ class Symbol(Grid):
                 linechar = terminal()
 
             row = []
+            length = abs(endpos.x - startpos.x)
             for i in range(length):
                 row.append(linechar)
                 linechar = LINE_HOR
@@ -134,6 +135,7 @@ class Symbol(Grid):
             else:
                 linechar = terminal()
 
+            length = abs(endpos.y - startpos.y)
             for i in range(length):
                 grid.append([linechar])
                 linechar = LINE_VERT

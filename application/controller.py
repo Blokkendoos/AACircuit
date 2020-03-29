@@ -202,9 +202,9 @@ class Controller(object):
 
     # lines
 
-    def on_paste_line(self, pos, dir, type, length):
-        grid = self.symbol.line(dir, type, length)
-        self.grid.fill_rect(pos, grid)
+    def on_paste_line(self, startpos, endpos, dir, type):
+        grid = self.symbol.line(startpos, endpos, dir, type)
+        self.grid.fill_rect(startpos, grid)
 
     # clipboard
 
