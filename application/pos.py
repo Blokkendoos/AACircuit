@@ -96,7 +96,7 @@ class Pos(object):
         Check if this point lies within the given rect.
 
         :param rect: list with the upper left (Pos) and bottom right (Pos) coordinates of the rectangle
-        :returns True if the point lies within the rect, otherwise False
+        :return True if the point lies within the rect, otherwise False
         """
         (ul, br) = rect
         if (self._x >= ul.x and self._x <= br.x and  # noqa W503

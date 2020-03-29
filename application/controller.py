@@ -6,6 +6,8 @@ AACircuit.py
 from pubsub import pub
 
 from application import _
+from application import COMPONENT, COL, ROW, RECT, LINE, MAG_LINE
+from application import REMOVE, INSERT
 from application.grid import Grid
 from application.symbol import Symbol
 from application.main_window import MainWindow
@@ -27,6 +29,39 @@ class Controller(object):
         self.symbol = Symbol()
         self.buffer = None
 
+        # TODO list of commands
+        """
+        command ::= "comp:" <mirror> "," <id> "," <pos> "," <key>
+        command ::= <type> ":" <id> "," <pos> ["," <pos>]
+        command ::= <grid> "," <row> | <col>
+
+        mirror ::= "y" | "n"
+        type ::= "char" | "line" | "rect" | "text"
+        grid ::= "irow" | "icol" | "drow" | "dcol"
+
+        pos ::= "(" <x> "," <y> ")"
+        <id> ::= <integer>
+        <key> ::= <string>
+        <string> ::= '"' <alphanum>* '"'
+        <x> ::= <integer>
+        <y> ::= <integer>
+        <row> ::= <integer>
+        <col> ::= <integer>
+
+        Example:
+        comp:45,n,(10,15),"N-FET"
+        comp:46,n,(10,15),"P-FET"
+        line:10,(10,15),(10,20)
+        rect:47,(10,15),(15,20)
+        char:43,(10,15)
+        text:  + + tekst + +,(10,15)
+        text:tekst met komma,, in de tekst,(10,15)
+        irow:23
+        dcol:10
+        """
+
+        self.memo = []
+
         all_components = [key for key in self.components.get_dict()]
         if self.components.nr_libraries() == 1:
             print(_("One library loaded, total number of components: {0}").format(self.components.nr_components()))
@@ -41,6 +76,7 @@ class Controller(object):
 
         # subscriptions
 
+        pub.subscribe(self.on_character_changed, 'CHARACTER_CHANGED')
         pub.subscribe(self.on_component_changed, 'COMPONENT_CHANGED')
         pub.subscribe(self.on_rotate_symbol, 'ROTATE_SYMBOL')
         pub.subscribe(self.on_mirror_symbol, 'MIRROR_SYMBOL')
@@ -120,36 +156,47 @@ class Controller(object):
     # grid manipulation
 
     def on_insert_col(self, col):
+        str = "i{0}:{1}".format(COL, col)
+        self.memo.append(str.upper())
         self.grid.insert_col(col)
 
     def on_insert_row(self, row):
+        str = "i{0}:{1}".format(ROW, row)
+        self.memo.append(str.upper())
         self.grid.insert_row(row)
 
     def on_remove_col(self, col):
+        str = "d{0}:{1}".format(COL, col)
+        self.memo.append(str.upper())
         self.grid.remove_col(col)
 
     def on_remove_row(self, row):
+        str = "d{0}:{1}".format(ROW, row)
+        self.memo.append(str.upper())
         self.grid.remove_row(row)
 
-    # component symbol
+    # character/component symbol
+
+    def on_character_changed(self, label):
+        self.symbol = self.components.get_symbol(label)
+        pub.sendMessage('CHARACTER_SELECTED', symbol=self.symbol)
 
     def on_component_changed(self, label):
-        grid = self.components.get_grid(label)
-        self.symbol = Symbol(grid)
+        self.symbol = self.components.get_symbol(label)
         pub.sendMessage('SYMBOL_SELECTED', symbol=self.symbol)
 
     def on_rotate_symbol(self):
-        grid = self.components.get_grid_next()
-        self.symbol = Symbol(grid)
+        self.symbol.grid_next()
         pub.sendMessage('SYMBOL_SELECTED', symbol=self.symbol)
 
     def on_mirror_symbol(self):
-        grid = self.symbol.mirror()
-        self.symbol = Symbol(grid)
+        self.symbol.mirror()
         pub.sendMessage('SYMBOL_SELECTED', symbol=self.symbol)
 
     def on_paste_symbol(self, pos):
-        self.grid.fill_rect(pos, self.symbol.grid)
+        str = "{0}:{1}".format(COMPONENT, pos)
+        self.memo.append(str.upper())
+        self.grid.fill_rect(pos, self.symbol.grid())
 
     # lines
 
@@ -176,8 +223,16 @@ class Controller(object):
         try:
             # open file in binary mode
             fout = open(filename, 'wb')
+
             str = self.grid.to_str()
             fout.write(str)
+
+            str = "\n"
+            for line in self.memo:
+                print("memo:{0}".format(line))
+                str += line
+            fout.write(bytes(str, encoding='utf-8'))
+
             fout.close()
         except IOError:
             print(_("Unable to open file for writing: %s" % filename))

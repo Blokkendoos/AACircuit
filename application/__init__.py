@@ -35,11 +35,12 @@ DRAG = 3
 
 # selected item
 COMPONENT = 'comp'
+CHARACTER = 'char'
 COL = 'col'
 ROW = 'row'
 RECT = 'rect'
 LINE = 'line'
-MAG_LINE = 'mag_line'
+MAG_LINE = 'mline'
 
 # lines
 LINE_HOR = '-'

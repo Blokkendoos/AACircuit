@@ -109,7 +109,7 @@ class MainWindow(Gtk.Window):
         menu_delete.connect('activate', self.on_menu_edit)
         menu_undo.connect('activate', self.on_undo)
 
-        # char buttons
+        # cursor buttons
         self.btn_cur = [
             self.builder.get_object('cursor1'),
             self.builder.get_object('cursor2'),
@@ -249,7 +249,7 @@ class MainWindow(Gtk.Window):
 
     def on_char_button_clicked(self, button):
         char = button.get_label()
-        pub.sendMessage('COMPONENT_CHANGED', label=char)
+        pub.sendMessage('CHARACTER_CHANGED', label=char)
 
     def on_undo(self, button):
         pub.sendMessage('UNDO')

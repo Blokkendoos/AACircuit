@@ -11,7 +11,7 @@ from application import _
 from application import GRIDSIZE_W, GRIDSIZE_H
 from application import INSERT, HORIZONTAL, VERTICAL
 from application import IDLE, SELECTING, SELECTED
-from application import COMPONENT, COL, ROW, RECT, LINE, MAG_LINE
+from application import CHARACTER, COMPONENT, COL, ROW, RECT, LINE, MAG_LINE
 from application.symbol_view import SymbolView
 from application.pos import Pos
 from application.selection import SelectionLine, SelectionLineFree, SelectionMagicLine, SelectionCol, SelectionRow, SelectionRect
@@ -81,6 +81,7 @@ class GridView(Gtk.Frame):
         # subscriptions
 
         pub.subscribe(self.set_grid, 'GRID')
+        pub.subscribe(self.on_character_selected, 'CHARACTER_SELECTED')
         pub.subscribe(self.on_symbol_selected, 'SYMBOL_SELECTED')
         pub.subscribe(self.on_select_rect, 'SELECT_RECT')
         pub.subscribe(self.on_selecting_row, 'SELECTING_ROW')
@@ -177,7 +178,7 @@ class GridView(Gtk.Frame):
         self.draw_gridlines(ctx)
         self.draw_content(ctx)
         self.draw_selection(ctx)
-        if self._selection_item == COMPONENT:  # and self._selection_state == SELECTED:
+        if self._selection_item in (CHARACTER, COMPONENT):  # and self._selection_state == SELECTED:
             self._symbol_view.draw(ctx, self._hover_pos)
 
     def gridsize_changed(self, *args, **kwargs):
@@ -189,6 +190,11 @@ class GridView(Gtk.Frame):
         self._selection_state = IDLE
         self._selection_item = None
         self._drawing_area.queue_resize()
+
+    def on_character_selected(self, symbol):
+        self._selection_state = SELECTED
+        self._selection_action = INSERT
+        self._selection_item = CHARACTER
 
     def on_symbol_selected(self, symbol):
         self._selection_state = SELECTED
@@ -345,6 +351,14 @@ class GridView(Gtk.Frame):
 
             self.gridsize_changed()
 
+        elif self._selection_state == SELECTED and self._selection_item == CHARACTER:
+            # https://stackoverflow.com/questions/6616270/right-click-menu-context-menu-using-pygtk
+            button = event.button
+            if button == 1:
+                # left button
+                pos = self._hover_pos + Pos(0, -1)
+                pub.sendMessage('PASTE_SYMBOL', pos=pos.grid_rc())
+
         elif self._selection_state == SELECTED and self._selection_item == COMPONENT:
             # https://stackoverflow.com/questions/6616270/right-click-menu-context-menu-using-pygtk
             button = event.button
@@ -355,8 +369,6 @@ class GridView(Gtk.Frame):
             elif button == 3:
                 # right button
                 pub.sendMessage('ROTATE_SYMBOL')
-            else:
-                None
 
         widget.queue_resize()
 

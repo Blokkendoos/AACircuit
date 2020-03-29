@@ -17,13 +17,14 @@ class SymbolView(object):
         self._grid = None
 
         pub.subscribe(self.set_grid, 'SYMBOL_SELECTED')
+        pub.subscribe(self.set_grid, 'CHARACTER_SELECTED')
 
     def set_grid(self, symbol):
         """
         The symbol grid.
         :param grid: a 2D array of ASCII chars
         """
-        self._grid = symbol.grid
+        self._grid = symbol.grid()
 
     def draw(self, ctx, pos):
 

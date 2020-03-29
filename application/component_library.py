@@ -7,7 +7,9 @@ component_library.py
 import os
 import sys
 import json
+
 from application import _
+from application.symbol import Symbol
 
 
 class ComponentLibrary(object):
@@ -19,7 +21,7 @@ class ComponentLibrary(object):
         self._libraries = []
         # for n in range(2):
         #     self._libraries.append("component{0}.json".format(n + 1))
-        self._libraries.append('component_de.json')
+        self._libraries.append('component_en.json')
 
         lib_path = os.path.dirname(__file__)
         print("Path: {0}".format(lib_path))
@@ -34,46 +36,65 @@ class ComponentLibrary(object):
                 print(_("Failed to load component library {0} due to I/O error {1}: {2}").format(lib, e.errno, e.strerror))
                 sys.exit(1)
 
-        self._grid = None
         self._key = None
         self._dir = None
-        self.orientation = 0
 
     def get_dict(self):
         return self._dict
 
-    def get_grid_current(self):
-        """Return the grid for the current symbol."""
-        # self._grid = self.get_grid(self.key, self.dir)
-        return self._grid
+    def get_id(self, key):
+        """
+        return the symbol identifier for the given component name.
 
-    def get_grid_next(self):
-        """Return the grid with clockwise next orientation for the current symbol."""
-        if self._key is None:
-            return [[]]
+        :param key: the component name
+        :returns the symbol id
+        """
+        if len(key) == 1:
+            # single character id is its (decimal) ASCII value
+            id = ord(key)
+        else:
+            id = self._dict[key]['id']
 
-        self._dir += 1
-        self._dir %= 4
-        self._grid = self.get_grid(self._key, self._dir)
-        return self._grid
+        return id
 
-    def get_grid(self, key, dir=0):
+    def get_grid(self, key):
         """
         return the grid for the symbol that represents the given component.
 
         :param key: the component name
-        :param dir: direction of the grid (0=North, 1=East, 2=South, 3=West)
-        :returns the symbol grid
+        :return the symbol grid
         """
         self._dir = dir
         self._key = key
 
         if len(key) == 1:
-            self._grid = [[key]]
+            # the single character grid is simply the character itself
+            grid = [[key]]
         else:
-            self._grid = self._dict[key]['grid'][self.ORIENTATION[dir]]
+            grid = self._dict[key]['grid']
 
-        return self._grid
+        return grid
+
+    def get_symbol(self, key):
+        """
+        return the id and grid for the symbol that represents the given component.
+
+        :param key: the component name
+        :returns the symbol id and grid
+        """
+
+        if len(key) == 1:
+            # TODO separate the code for single chars?
+            # single character
+            grid = {"N": [[key]]}
+            id = ord(key)
+        else:
+            grid = self.get_grid(key)
+            id = self.get_id(key)
+
+        symbol = Symbol(id, grid)
+
+        return symbol
 
     def nr_components(self):
         return len(self._dict)
