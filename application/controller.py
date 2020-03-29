@@ -29,7 +29,7 @@ class Controller(object):
         self.symbol = Symbol()
         self.buffer = None
 
-        # TODO list of commands
+        # TODO commands memo
         """
         <comp_command> ::= "comp:" <id> "," <orientation> "," <pos> "," <mirrored> "," <key>
         <other_command> ::= <type> ":" <id> "," <pos> ["," <pos>]
@@ -60,8 +60,11 @@ class Controller(object):
         irow:23
         dcol:10
         """
-
         self.memo = []
+
+        # Object list
+        # [(position, object), ...]
+        self.objects = []
 
         all_components = [key for key in self.components.get_dict()]
         if self.components.nr_libraries() == 1:
@@ -84,6 +87,8 @@ class Controller(object):
         pub.subscribe(self.on_paste_symbol, 'PASTE_SYMBOL')
         pub.subscribe(self.on_paste_line, 'PASTE_LINE')
         pub.subscribe(self.on_undo, 'UNDO')
+
+        pub.subscribe(self.on_select_objects, 'SELECT_OBJECTS')
 
         # insert/remove rows or columns
         pub.subscribe(self.on_insert_col, 'INSERT_COL')
@@ -196,13 +201,20 @@ class Controller(object):
         pub.sendMessage('SYMBOL_SELECTED', symbol=self.symbol)
 
     def on_paste_symbol(self, pos):
-        str = "{0}:{1},{2}".format(COMPONENT, self.symbol.ori, pos)
+
+        str = "{0}:{1},{2},{3}".format(COMPONENT, self.symbol.id, self.symbol.ori, pos)
         self.memo.append(str.upper())
+
+        ref = (pos, self.symbol)
+        self.objects.append(ref)
+
         self.grid.fill_rect(pos, self.symbol.grid())
 
     # lines
 
     def on_paste_line(self, startpos, endpos, dir, type):
+        str = "{0}:{1},{2},{3}".format(LINE, type, startpos, endpos)
+        self.memo.append(str.upper())
         grid = self.symbol.line(startpos, endpos, dir, type)
         self.grid.fill_rect(startpos, grid)
 
@@ -218,6 +230,11 @@ class Controller(object):
     def on_load_and_paste_from_clipboard(self):
         self.grid.load_and_paste_from_clipboard()
         pub.sendMessage('GRID', grid=self.grid)
+
+    # other
+
+    def on_select_objects(self):
+        pub.sendMessage('SELECTING_OBJECTS', objects=self.objects)
 
     # file open/save
 

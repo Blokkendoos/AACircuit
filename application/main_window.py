@@ -172,8 +172,11 @@ class MainWindow(Gtk.Window):
         self.btn_stretch2.set_tooltip_text(_("remove rows"))
         self.btn_stretch4.set_tooltip_text(_("remove columns"))
 
-        self.btn_select = self.builder.get_object("select_rect")
-        self.btn_select.connect('pressed', self.on_select_rect)
+        self.btn_select_rect = self.builder.get_object("select_rect")
+        self.btn_select_rect.connect('pressed', self.on_select_rect)
+
+        self.btn_select_obj = self.builder.get_object("select_components")
+        self.btn_select_obj.connect('pressed', self.on_select_objects)
 
         # clipboard
         self.btn_clipboard = [
@@ -260,6 +263,9 @@ class MainWindow(Gtk.Window):
 
     def on_select_rect(self, button):
         pub.sendMessage('SELECT_RECT', action=IDLE)
+
+    def on_select_objects(self, button):
+        pub.sendMessage('SELECT_OBJECTS')
 
     def on_selecting_col(self, button):
         # https://stackoverflow.com/questions/3489520/python-gtk-widget-name

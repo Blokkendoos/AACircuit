@@ -34,6 +34,7 @@ SELECTED = 2
 DRAG = 3
 
 # selected item
+OBJECTS = 'objs'
 COMPONENT = 'comp'
 CHARACTER = 'char'
 COL = 'col'

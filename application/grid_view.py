@@ -5,13 +5,12 @@ AACircuit
 
 import cairo
 from pubsub import pub
-from numpy import sign
 
 from application import _
 from application import GRIDSIZE_W, GRIDSIZE_H
 from application import INSERT, HORIZONTAL, VERTICAL
 from application import IDLE, SELECTING, SELECTED
-from application import CHARACTER, COMPONENT, COL, ROW, RECT, LINE, MAG_LINE
+from application import CHARACTER, COMPONENT, LINE, MAG_LINE, OBJECTS, COL, ROW, RECT
 from application.symbol_view import SymbolView
 from application.pos import Pos
 from application.selection import SelectionLine, SelectionLineFree, SelectionMagicLine, SelectionCol, SelectionRow, SelectionRect
@@ -31,6 +30,7 @@ class GridView(Gtk.Frame):
 
         self.surface = None
         self._grid = None
+        self._objects = None
         self._hover_pos = None
 
         # https://athenajc.gitbooks.io/python-gtk-3-api/content/gtk-group/gtkdrawingarea.html
@@ -80,11 +80,15 @@ class GridView(Gtk.Frame):
         # subscriptions
 
         pub.subscribe(self.set_grid, 'GRID')
+
         pub.subscribe(self.on_character_selected, 'CHARACTER_SELECTED')
         pub.subscribe(self.on_symbol_selected, 'SYMBOL_SELECTED')
         pub.subscribe(self.on_select_rect, 'SELECT_RECT')
+
+        pub.subscribe(self.on_selecting_objects, 'SELECTING_OBJECTS')
         pub.subscribe(self.on_selecting_row, 'SELECTING_ROW')
         pub.subscribe(self.on_selecting_col, 'SELECTING_COL')
+
         pub.subscribe(self.on_nothing_selected, 'NOTHING_SELECTED')
 
         pub.subscribe(self.on_draw_mag_line, 'DRAW_MAG_LINE')
@@ -98,7 +102,7 @@ class GridView(Gtk.Frame):
     def set_grid(self, grid):
         self._grid = grid
         self.set_viewport_size()
-        self._drawing_area.queue_resize()
+        self.queue_resize()
 
     def set_viewport_size(self):
         # https://stackoverflow.com/questions/11546395/how-to-put-gtk-drawingarea-into-gtk-layout
@@ -188,7 +192,7 @@ class GridView(Gtk.Frame):
     def on_nothing_selected(self):
         self._selection_state = IDLE
         self._selection_item = None
-        self._drawing_area.queue_resize()
+        self.queue_resize()
 
     def on_character_selected(self, symbol):
         self._selection_state = SELECTED
@@ -205,6 +209,11 @@ class GridView(Gtk.Frame):
         self._selection_action = action
         self._selection_item = RECT
         self._selection = SelectionRect()
+
+    def on_selecting_objects(self, objects):
+        self._objects = objects
+        self._selection_state = SELECTING
+        self._selection_item = OBJECTS
 
     def on_selecting_row(self, action):
         self._selection_state = SELECTING
@@ -284,7 +293,11 @@ class GridView(Gtk.Frame):
         ctx.set_tolerance(0.1)
         ctx.set_line_join(cairo.LINE_JOIN_ROUND)
 
-        if self._selection_state == SELECTING:
+        if self._selection_state == SELECTING and self._selection_item == OBJECTS:
+            self.draw_selection_objects(ctx)
+
+        elif self._selection_state == SELECTING:
+
             if self._selection_item in (ROW, COL):
                 self._selection.startpos = self._hover_pos
             else:
@@ -305,6 +318,21 @@ class GridView(Gtk.Frame):
             self._selection.startpos = self._drag_startpos
             self._selection.endpos = self._drag_endpos
             self._selection.draw(ctx)
+
+    def draw_selection_objects(self, ctx):
+
+        for obj in self._objects:
+
+            ctx.set_source_rgb(0.5, 0.1, 0.1)
+            ctx.select_font_face("monospace", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+
+            grid_pos = obj[0]  # obj = (pos, objectref)
+            pos = grid_pos.view_xy()
+
+            ctx.move_to(pos.x, pos.y)
+            ctx.show_text('x')  # mark the upper-left corner with "x"
+
+        self.queue_draw()
 
     def draw_content(self, ctx):
 
@@ -416,7 +444,7 @@ class GridView(Gtk.Frame):
                     startpos = start
 
                 pub.sendMessage("PASTE_LINE", startpos=startpos, endpos=endpos, dir=self._drag_dir, type=self._selection_type)
-                self._drawing_area.queue_resize()
+                self.queue_resize()
 
     def on_drag_update(self, widget, x_offset, y_offset):
 

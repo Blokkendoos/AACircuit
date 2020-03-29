@@ -93,6 +93,13 @@ class Pos(object):
         y /= GRIDSIZE_H
         return Pos(x, y)
 
+    def view_xy(self):
+        """Map grid (col,row) coordinates to canvas (x,y) position."""
+        (x, y) = (self._x, self._y)
+        x *= GRIDSIZE_W
+        y *= GRIDSIZE_H
+        return Pos(x, y)
+
     def within_rect(self, rect):
         """
         Check if this point lies within the given rect.
