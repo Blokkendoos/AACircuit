@@ -23,8 +23,38 @@ class Pos(object):
         y = self._y - other.y
         return Pos(x, y)
 
+    def __eq__(self, other):
+        if self._x == other.x and self._y == other.y:
+            return True
+        else:
+            return False
+
+    def __gt__(self, other):
+        if self._x > other.x and self._y > other.y:
+            return True
+        else:
+            return False
+
+    def __lt__(self, other):
+        if self._x < other.x and self._y < other.y:
+            return True
+        else:
+            return False
+
+    def __ge__(self, other):
+        if self.__lt__(other):
+            return False
+        else:
+            return True
+
+    def __le__(self, other):
+        if self.__gt__(other):
+            return False
+        else:
+            return True
+
     def __str__(self):
-        return "x:{0} y:{1}".format(self._x, self._y)
+        return "({0},{1})".format(self._x, self._y)
 
     @property
     def x(self):
@@ -60,3 +90,17 @@ class Pos(object):
         x /= GRIDSIZE_W
         y /= GRIDSIZE_H
         return Pos(x, y)
+
+    def within_rect(self, rect):
+        """
+        Check if this point lies within the given rect.
+
+        :param rect: list with the upper left (Pos) and bottom right (Pos) coordinates of the rectangle
+        :returns True if the point lies within the rect, otherwise False
+        """
+        (ul, br) = rect
+        if (self._x >= ul.x and self._x <= br.x and  # noqa W503
+                self._y >= ul.y and self._y <= br.y):
+            return True
+        else:
+            return False
