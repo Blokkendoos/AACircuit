@@ -30,6 +30,10 @@ class Symbol(Grid):
         return self._id
 
     @property
+    def ori(self):
+        return self._ori
+
+    @property
     def default(self):
         # resistor symbol
         # FIXME default provides one ("N" orientation) grid only
@@ -58,6 +62,33 @@ class Symbol(Grid):
         self._ori += 1
         self._ori %= 4
         return self.grid(self._ori)
+
+    def mirror(self):
+        """Return the grid vertically mirrored."""
+        if self._grid is None:
+            return
+            # return [[]]
+
+        # mirror specific characters
+        switcher = {'/': '\\',
+                    '\\': '/',
+                    '<': '>',
+                    '>': '<',
+                    '(': ')',
+                    ')': '('
+                    }
+        grid = []
+
+        for r, row in enumerate(self._grid[self.ORIENTATION[self._ori]]):
+            rev = []
+            for c in reversed(row):
+                try:
+                    rev.append(switcher[c])
+                except KeyError:
+                    rev.append(c)
+            grid.append(rev)
+
+        self._grid[self.ORIENTATION[self._ori]] = grid
 
     def line(self, dir, type, length):
 
@@ -115,32 +146,3 @@ class Symbol(Grid):
             grid.append([linechar])
 
         return grid
-
-    def mirror(self):
-        """Return the grid vertically mirrored."""
-        if self._grid is None:
-            return
-            # return [[]]
-
-        # mirror specific characters
-        switcher = {'/': '\\',
-                    '\\': '/',
-                    '<': '>',
-                    '>': '<',
-                    '(': ')',
-                    ')': '('
-                    }
-        grid = []
-
-        for r, row in enumerate(self._grid[self.ORIENTATION[self._ori]]):
-            rev = []
-            for c in reversed(row):
-                try:
-                    rev.append(switcher[c])
-                except KeyError:
-                    rev.append(c)
-            grid.append(rev)
-
-        self._grid[self.ORIENTATION[self._ori]] = grid
-
-        # return self

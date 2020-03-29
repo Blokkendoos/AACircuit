@@ -23,8 +23,6 @@ from gi.repository import Gtk, Gdk  # noqa: E402
 
 class GridView(Gtk.Frame):
 
-    # https://athenajc.gitbooks.io/python-gtk-3-api/content/gtk-group/gtkdrawingarea.html
-
     def __init__(self):
 
         super().__init__()
@@ -35,6 +33,7 @@ class GridView(Gtk.Frame):
         self._grid = None
         self._hover_pos = None
 
+        # https://athenajc.gitbooks.io/python-gtk-3-api/content/gtk-group/gtkdrawingarea.html
         self._drawing_area = Gtk.DrawingArea()
         self.add(self._drawing_area)
 

@@ -10,8 +10,6 @@ import cairo
 
 class SymbolView(object):
 
-    # https://athenajc.gitbooks.io/python-gtk-3-api/content/gtk-group/gtkdrawingarea.html
-
     def __init__(self):
 
         self._grid = None

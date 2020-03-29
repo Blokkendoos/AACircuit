@@ -31,31 +31,32 @@ class Controller(object):
 
         # TODO list of commands
         """
-        command ::= "comp:" <mirror> "," <id> "," <pos> "," <key>
-        command ::= <type> ":" <id> "," <pos> ["," <pos>]
-        command ::= <grid> "," <row> | <col>
+        <comp_command> ::= "comp:" <id> "," <orientation> "," <pos> "," <mirrored> "," <key>
+        <other_command> ::= <type> ":" <id> "," <pos> ["," <pos>]
+        <grid_command> ::= <grid> "," <row> | <col>
 
-        mirror ::= "y" | "n"
-        type ::= "char" | "line" | "rect" | "text"
-        grid ::= "irow" | "icol" | "drow" | "dcol"
+        <orientation> ::= { 0..3 }
+        <mirrored> ::= "y" | "n"
+        <type> ::= "char" | "line" | "rect" | "text"
+        <grid> ::= "irow" | "icol" | "drow" | "dcol"
 
-        pos ::= "(" <x> "," <y> ")"
         <id> ::= <integer>
+        <pos> ::= <x> "," <y>
         <key> ::= <string>
         <string> ::= '"' <alphanum>* '"'
-        <x> ::= <integer>
-        <y> ::= <integer>
-        <row> ::= <integer>
-        <col> ::= <integer>
+        <x> ::= <integer>*
+        <y> ::= <integer>*
+        <row> ::= <integer>*
+        <col> ::= <integer>*
 
         Example:
-        comp:45,n,(10,15),"N-FET"
-        comp:46,n,(10,15),"P-FET"
-        line:10,(10,15),(10,20)
-        rect:47,(10,15),(15,20)
-        char:43,(10,15)
-        text:  + + tekst + +,(10,15)
-        text:tekst met komma,, in de tekst,(10,15)
+        comp:45,0,10,15,n,"N-FET"
+        comp:46,0,10,15,n, "P-FET"
+        line:10,10,15,10,20
+        rect:47,10,15,15,20
+        char:43,10,15
+        text:  + + tekst + +,10,15
+        text:tekst met komma,, in de tekst,10,15
         irow:23
         dcol:10
         """
@@ -117,6 +118,7 @@ class Controller(object):
         pub.sendMessage('GRID', grid=self.grid)
 
     # File menu
+
     def on_new(self):
         self.grid = Grid(72, 36)
         pub.sendMessage('GRID', grid=self.grid)
@@ -194,7 +196,7 @@ class Controller(object):
         pub.sendMessage('SYMBOL_SELECTED', symbol=self.symbol)
 
     def on_paste_symbol(self, pos):
-        str = "{0}:{1}".format(COMPONENT, pos)
+        str = "{0}:{1},{2}".format(COMPONENT, self.symbol.ori, pos)
         self.memo.append(str.upper())
         self.grid.fill_rect(pos, self.symbol.grid())
 

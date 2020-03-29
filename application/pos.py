@@ -54,7 +54,8 @@ class Pos(object):
             return True
 
     def __str__(self):
-        return "({0},{1})".format(self._x, self._y)
+        """Return coordinates as string: e.g.: "10,12"."""
+        return "{0},{1}".format(self._x, self._y)
 
     @property
     def x(self):
