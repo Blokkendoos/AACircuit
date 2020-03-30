@@ -64,8 +64,12 @@ class Controller(object):
         self.memo = []
 
         # Object list
-        # [(position, object), ...]
+        # [(position, object), ...] with position in row/column coordinates
         self.objects = []
+
+        # selected objects list
+        # [(relative_position, object), ...] with position relative to the selection rect (in row/column coordinates)
+        self.selected_objects = []
 
         all_components = [key for key in self.components.get_dict()]
         if self.components.nr_libraries() == 1:
@@ -86,6 +90,7 @@ class Controller(object):
         pub.subscribe(self.on_rotate_symbol, 'ROTATE_SYMBOL')
         pub.subscribe(self.on_mirror_symbol, 'MIRROR_SYMBOL')
         pub.subscribe(self.on_paste_symbol, 'PASTE_SYMBOL')
+        pub.subscribe(self.on_paste_objects, 'PASTE_OBJECTS')
         pub.subscribe(self.on_paste_line, 'PASTE_LINE')
         pub.subscribe(self.on_undo, 'UNDO')
 
@@ -141,19 +146,17 @@ class Controller(object):
 
     # Edit menu
 
+    # TODO cut|copy|paste and objects list maintenance, respectively remove from or add to the list
+    # TODO merge on_paste with the on_paste_objects method
+
     def on_cut(self, pos, rect):
         self.buffer = self.grid.rect(pos, rect)
         self.grid.erase_rect(pos, rect)
         pub.sendMessage('NOTHING_SELECTED')
 
     def on_copy(self, pos, rect):
-
         self.on_selection_changed(pos, rect)
-
-        grid = self.grid.rect(pos, rect)
-        self.buffer = grid
-        self.symbol = Symbol(grid)
-        pub.sendMessage('SYMBOL_SELECTED', symbol=self.symbol)
+        pub.sendMessage('OBJECTS_SELECTED', objects=self.selected_objects)
 
     def on_paste(self, pos, rect):
         if self.buffer is not None:
@@ -166,20 +169,22 @@ class Controller(object):
 
     def on_selection_changed(self, pos, rect=None):
 
-        ul = pos.grid_rc()
+        ul = pos
         # rect = (width,height) in row/col dimension
-        br = pos + Pos(rect[0], rect[1])
+        br = ul + Pos(rect[0], rect[1])
         rect = (ul, br)
 
-        # select any symbols having of which the upper-left corner is within the selection rectangle
+        # select symbols of which the upper-left corner is within the selection rectangle
         selected = []
         for obj in self.objects:
-            print("obj[0]", obj[0])
             if obj[0].in_rect(rect):
-                selected.append(obj)
+                pos = obj[0]
+                symbol = obj[1]
+                relative_pos = pos - ul
+                sel_obj = (relative_pos, symbol)
+                selected.append(sel_obj)
 
-        for obj in selected:
-            print("selected: ", obj[0])
+        self.selected_objects = selected
 
     # grid manipulation
 
@@ -230,6 +235,40 @@ class Controller(object):
         self.objects.append(ref)
 
         self.grid.fill_rect(pos, self.symbol.grid())
+
+    # multiple selection
+
+    def on_paste_objects(self, pos):
+
+        for obj in self.selected_objects:
+
+            relative_pos, symbol = obj
+            target_pos = pos + relative_pos
+
+            str = "{0}:{1},{2},{3}".format(COMPONENT, symbol.id, symbol.ori, target_pos)
+            self.memo.append(str)
+
+            ref = (target_pos, symbol)
+            self.objects.append(ref)
+
+            grid = symbol.grid()
+            self.grid.fill_rect(target_pos, grid)
+
+        pub.sendMessage('NOTHING_SELECTED')
+
+    def on_cut_objects(self, pos):
+
+        for obj in self.selected_objects:
+
+            # TODO remove symbol from the objects list
+
+            pos, symbol = obj
+
+            grid = symbol.grid()
+            dummy, rect = grid.rect()
+            self.grid.erase_rect(pos, rect)
+
+        pub.sendMessage('NOTHING_SELECTED')
 
     # lines
 

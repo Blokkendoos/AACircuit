@@ -83,6 +83,7 @@ class GridView(Gtk.Frame):
 
         pub.subscribe(self.on_character_selected, 'CHARACTER_SELECTED')
         pub.subscribe(self.on_symbol_selected, 'SYMBOL_SELECTED')
+        pub.subscribe(self.on_objects_selected, 'OBJECTS_SELECTED')
         pub.subscribe(self.on_select_rect, 'SELECT_RECT')
 
         pub.subscribe(self.on_selecting_objects, 'SELECTING_OBJECTS')
@@ -172,8 +173,6 @@ class GridView(Gtk.Frame):
         self.draw_gridlines(ctx)
         self.draw_content(ctx)
         self.draw_selection(ctx)
-        if self._selection_item in (CHARACTER, COMPONENT):  # and self._selection_state == SELECTED:
-            self._symbol_view.draw(ctx, self._hover_pos)
 
     def gridsize_changed(self, *args, **kwargs):
         self.set_viewport_size()
@@ -194,6 +193,12 @@ class GridView(Gtk.Frame):
         self._selection_state = SELECTED
         self._selection_action = INSERT
         self._selection_item = COMPONENT
+
+    def on_objects_selected(self, objects):
+        self._objects = objects
+        self._selection_state = SELECTED
+        self._selection_action = INSERT
+        self._selection_item = OBJECTS
 
     def on_select_rect(self, action):
         self._selection_state = IDLE
@@ -279,15 +284,20 @@ class GridView(Gtk.Frame):
 
     def draw_selection(self, ctx):
 
+        if self._selection_item in (CHARACTER, COMPONENT):  # and self._selection_state == SELECTED:
+            self._symbol_view.draw(ctx, self._hover_pos)
+            return
+
+        if self._selection_state == SELECTING and self._selection_item == OBJECTS:
+            self.draw_selected_objects(ctx)
+            return
+
         ctx.set_source_rgb(0.5, 0.5, 0.75)
         ctx.set_line_width(0.5)
         ctx.set_tolerance(0.1)
         ctx.set_line_join(cairo.LINE_JOIN_ROUND)
 
-        if self._selection_state == SELECTING and self._selection_item == OBJECTS:
-            self.draw_selection_objects(ctx)
-
-        elif self._selection_state == SELECTING:
+        if self._selection_state == SELECTING:
 
             if self._selection_item in (ROW, COL):
                 self._selection.startpos = self._hover_pos
@@ -310,18 +320,21 @@ class GridView(Gtk.Frame):
             self._selection.endpos = self._drag_endpos
             self._selection.draw(ctx)
 
-    def draw_selection_objects(self, ctx):
+        elif self._selection_state == SELECTED and self._selection_item == OBJECTS:
+            self.draw_selected_objects(ctx)
+
+    def draw_selected_objects(self, ctx):
 
         for obj in self._objects:
 
             ctx.set_source_rgb(1, 0, 0)
             ctx.select_font_face("monospace", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
 
-            grid_pos = obj[0]  # obj = (pos, objectref)
-            pos = grid_pos.view_xy()
-
+            grid_pos = obj[0]  # obj = (relative_pos, objectref)
+            viewpos = grid_pos + self._hover_pos.grid_rc()
+            pos = viewpos.view_xy()
             ctx.move_to(pos.x, pos.y)
-            ctx.show_text('x')  # mark the upper-left corner with "x"
+            ctx.show_text('X')  # mark the upper-left corner with "x"
 
         self.queue_draw()
 
@@ -387,6 +400,13 @@ class GridView(Gtk.Frame):
             elif button == 3:
                 # right button
                 pub.sendMessage('ROTATE_SYMBOL')
+
+        elif self._selection_state == SELECTED and self._selection_item == OBJECTS:
+            button = event.button
+            if button == 1:
+                # left button
+                pos = self._hover_pos + Pos(0, -1)
+                pub.sendMessage('PASTE_OBJECTS', pos=pos.grid_rc())
 
         widget.queue_resize()
 
