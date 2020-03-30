@@ -177,6 +177,7 @@ class MainWindow(Gtk.Window):
 
         self.btn_select_obj = self.builder.get_object("select_components")
         self.btn_select_obj.connect('pressed', self.on_select_objects)
+        self.btn_select_obj.set_tooltip_text(_("Move or delete symbol, shortcut: [DEL]"))
 
         # clipboard
         self.btn_clipboard = [
