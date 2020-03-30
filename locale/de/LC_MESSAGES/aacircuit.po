@@ -144,91 +144,95 @@ msgstr "(verfertigt mit AACircuit.py © 2020 JvO)"
 
 # MAIN_WINDOW
 #: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:38
+#: Python/aacircuit/application/main_window.py:49
 msgid "Failed to load XML GUI file aacircuit.glade"
 msgstr "Der XML GUI aacircuit.glade könnte nicht geladen worden"
 
 #: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:116
+#: Python/aacircuit/application/main_window.py:127
 msgid "rotate the symbol clockwise"
 msgstr "Symbol 90°rechts drehen"
 
 #: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:120
+#: Python/aacircuit/application/main_window.py:131
 msgid "mirror the symbol vertically"
 msgstr "Symbol vertikal spiegeln"
 
 #: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:137
+#: Python/aacircuit/application/main_window.py:148
 msgid "MagLine"
 msgstr "automatische Linie"
 
 #: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:138
+#: Python/aacircuit/application/main_window.py:149
 msgid "free line"
 msgstr "freihe Linie"
 
 #: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:139
+#: Python/aacircuit/application/main_window.py:150
 msgid "straight line"
 msgstr "gerade Linie"
 
 #: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:140
+#: Python/aacircuit/application/main_window.py:151
 msgid "line with start and end point 'o'"
 msgstr "Linie mit Start/Endpunkt ‘o’"
 
 #: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:141
+#: Python/aacircuit/application/main_window.py:152
 msgid "line with start and end point '+'"
 msgstr "Linie mit Start/Endpunkt ‘+’"
 
 #: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:142
+#: Python/aacircuit/application/main_window.py:153
 msgid "line with end terminals"
 msgstr "Linie mit Abschluß"
 
 #: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:146
+#: Python/aacircuit/application/main_window.py:157
 msgid "draw a rectangle"
 msgstr "Rechteck zeichnen"
 
 #: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:159
+#: Python/aacircuit/application/main_window.py:170
 msgid "insert rows"
 msgstr "Zeile horizontal einfügen"
 
 #: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:160
+#: Python/aacircuit/application/main_window.py:171
 msgid "insert columns"
 msgstr "Zeile vertikal einfügen"
 
 #: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:161
+#: Python/aacircuit/application/main_window.py:172
 msgid "remove rows"
 msgstr "Zeile horizontal löschen"
 
 #: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:162
+#: Python/aacircuit/application/main_window.py:173
 msgid "remove columns"
 msgstr "Zeile vertikal löschen"
 
+#: application/main_window.py:180
+msgid "Move or delete symbol, shortcut: [DEL]"
+msgstr "Symbol verschieben oder löschen, Tastaturkürzel: [DEL]"
+
 #: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:175
+#: Python/aacircuit/application/main_window.py:190
 msgid "copy grid to clipboard"
 msgstr "kopiert die komplette Zeichnung in die Zwischenablage"
 
 #: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:176
+#: Python/aacircuit/application/main_window.py:191
 msgid "paste grid from clipboard"
 msgstr "fügt den Inhalt der Zwischenablage ein"
 
 #: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:177
+#: Python/aacircuit/application/main_window.py:192
 msgid "load file and paste into grid"
 msgstr "ASCII aus einer Datei laden und in die Zeichnung einfügen"
 
 #: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:247
+#: Python/aacircuit/application/main_window.py:262
 msgid "Closing application"
 msgstr "Programma beenden"

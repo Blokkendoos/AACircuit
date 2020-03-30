@@ -152,91 +152,95 @@ msgstr "(gemaakt met AACircuit.py © 2020 JvO)"
 # MAIN_WINDOW
 
 #: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:38
+#: Python/aacircuit/application/main_window.py:49
 msgid "Failed to load XML GUI file aacircuit.glade"
 msgstr "De XML GUI aacircuit.glade kon niet worden geladen"
 
 #: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:116
+#: Python/aacircuit/application/main_window.py:127
 msgid "rotate the symbol clockwise"
 msgstr "draai symbool met de klok mee"
 
 #: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:120
+#: Python/aacircuit/application/main_window.py:131
 msgid "mirror the symbol vertically"
 msgstr "spiegel symbool verticaal"
 
 #: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:137
+#: Python/aacircuit/application/main_window.py:148
 msgid "MagLine"
 msgstr "Automatische lijn"
 
 #: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:138
+#: Python/aacircuit/application/main_window.py:149
 msgid "free line"
 msgstr "lijn in alle richtingen"
 
 #: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:139
+#: Python/aacircuit/application/main_window.py:150
 msgid "straight line"
 msgstr "rechte lijn"
 
 #: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:140
+#: Python/aacircuit/application/main_window.py:151
 msgid "line with start and end point 'o'"
 msgstr "lijn start en eindpunt ‘o’"
 
 #: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:141
+#: Python/aacircuit/application/main_window.py:152
 msgid "line with start and end point '+'"
 msgstr "lijn start en eindpunt ‘+’"
 
 #: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:142
+#: Python/aacircuit/application/main_window.py:153
 msgid "line with end terminals"
 msgstr "lijn met start en eindpunt"
 
 #: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:146
+#: Python/aacircuit/application/main_window.py:157
 msgid "draw a rectangle"
 msgstr "teken een rechthoek"
 
 #: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:159
+#: Python/aacircuit/application/main_window.py:170
 msgid "insert rows"
 msgstr "voeg rijen toe"
 
 #: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:160
+#: Python/aacircuit/application/main_window.py:171
 msgid "insert columns"
 msgstr "voeg kolommen toe"
 
 #: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:161
+#: Python/aacircuit/application/main_window.py:172
 msgid "remove rows"
 msgstr "verwijder rijen"
 
 #: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:162
+#: Python/aacircuit/application/main_window.py:173
 msgid "remove columns"
 msgstr "verwijder kolommen"
 
+#: application/main_window.py:180
+msgid "Move or delete symbol, shortcut: [DEL]"
+msgstr "Symbool verplaatsen of verwijderen, sneltoets: [DEL]"
+
 #: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:175
+#: Python/aacircuit/application/main_window.py:190
 msgid "copy grid to clipboard"
 msgstr "kopieer het rooster naar het prikbord"
 
 #: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:176
+#: Python/aacircuit/application/main_window.py:191
 msgid "paste grid from clipboard"
 msgstr "plak het rooster van het prikbord"
 
 #: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:177
+#: Python/aacircuit/application/main_window.py:192
 msgid "load file and paste into grid"
 msgstr "plak rooster van bestand"
 
 #: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:247
+#: Python/aacircuit/application/main_window.py:262
 msgid "Closing application"
 msgstr "Afsluiten programma"
