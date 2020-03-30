@@ -34,15 +34,13 @@ class Symbol(Grid):
 
     @property
     def default(self):
-        # resistor symbol
-        # FIXME default provides one ("N" orientation) grid only
+        # default provides one ("N" orientation) grid only
         grid = {'N': [
-            [' ', '|', ' '],
-            ['.', '+', '.'],
-            ['|', ' ', '|'],
-            ['|', ' ', '|'],
-            ['.', '+', '.'],
-            [' ', '|', ' ']]}
+            ' ___ ',
+            '|__ \\',
+            '  / /',
+            ' |_| ',
+            ' (_) ' ]}
         return grid
 
     def grid(self, ori=None):
