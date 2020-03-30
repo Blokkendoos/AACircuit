@@ -323,7 +323,7 @@ class GridView(Gtk.Frame):
 
         for obj in self._objects:
 
-            ctx.set_source_rgb(0.5, 0.1, 0.1)
+            ctx.set_source_rgb(1, 0, 0)
             ctx.select_font_face("monospace", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
 
             grid_pos = obj[0]  # obj = (pos, objectref)
