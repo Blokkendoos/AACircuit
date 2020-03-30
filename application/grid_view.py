@@ -136,29 +136,18 @@ class GridView(Gtk.Frame):
     def drag_rect(self):
         """Return the upper-left position and width and height of the selected rectangle."""
 
-        # FIXME use Pos logical operator "<" and ">"
-        if self._drag_startpos.x <= self._drag_endpos.x:
-            x1 = self._drag_startpos.x
-            x2 = self._drag_endpos.x
+        if self._drag_startpos <= self._drag_endpos:
+            start = self._drag_startpos
+            end = self._drag_endpos
         else:
-            x1 = self._drag_endpos.x
-            x2 = self._drag_startpos.x
+            start = self._drag_endpos
+            end = self._drag_startpos
 
-        if self._drag_startpos.y <= self._drag_endpos.y:
-            y1 = self._drag_startpos.y
-            y2 = self._drag_endpos.y
-        else:
-            y1 = self._drag_endpos.y
-            y2 = self._drag_startpos.y
+        pos = start.grid_rc()
 
-        # TODO handle negative width/height in grid
-        # x1, y1 = self._drag_startpos.xy
-        # x2, y2 = self._drag_endpos.xy
-
-        pos = Pos(x1, y1).grid_rc()
         # width and height in grid (col,row) dimensions
-        w = int((x2 - x1) / GRIDSIZE_W)
-        h = int((y2 - y1) / GRIDSIZE_H)
+        w = int((end.x - start.x) / GRIDSIZE_W)
+        h = int((end.y - start.y) / GRIDSIZE_H)
 
         return pos, w, h
 

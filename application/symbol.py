@@ -40,7 +40,7 @@ class Symbol(Grid):
             '|__ \\',
             '  / /',
             ' |_| ',
-            ' (_) ' ]}
+            ' (_) ']}
         return grid
 
     def grid(self, ori=None):

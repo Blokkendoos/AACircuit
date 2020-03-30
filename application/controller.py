@@ -168,7 +168,7 @@ class Controller(object):
 
         ul = pos.grid_rc()
         # rect = (width,height) in row/col dimension
-        br = pos + Pos(rect[0],rect[1])
+        br = pos + Pos(rect[0], rect[1])
         rect = (ul, br)
 
         # select any symbols having of which the upper-left corner is within the selection rectangle
