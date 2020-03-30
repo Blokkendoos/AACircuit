@@ -97,17 +97,23 @@ class MainWindow(Gtk.Window):
         menu_close.connect('activate', self.on_close_clicked)
 
         # edit menu
-        menu_copy = self.builder.get_object('copy')
-        menu_cut = self.builder.get_object('cut')
-        menu_paste = self.builder.get_object('paste')
-        menu_delete = self.builder.get_object('delete')
-        menu_undo = self.builder.get_object('undo')
+        self.menu_copy = self.builder.get_object('copy')
+        self.menu_cut = self.builder.get_object('cut')
+        self.menu_paste = self.builder.get_object('paste')
+        self.menu_delete = self.builder.get_object('delete')
+        self.menu_undo = self.builder.get_object('undo')
 
-        menu_copy.connect('activate', self.on_menu_edit)
-        menu_cut.connect('activate', self.on_menu_edit)
-        menu_paste.connect('activate', self.on_menu_edit)
-        menu_delete.connect('activate', self.on_menu_edit)
-        menu_undo.connect('activate', self.on_undo)
+        self.menu_copy.connect('activate', self.on_menu_edit)
+        self.menu_cut.connect('activate', self.on_menu_edit)
+        self.menu_paste.connect('activate', self.on_menu_edit)
+        self.menu_delete.connect('activate', self.on_menu_edit)
+        self.menu_undo.connect('activate', self.on_undo)
+
+        self.menu_copy.set_sensitive(False)
+        self.menu_cut.set_sensitive(False)
+        self.menu_paste.set_sensitive(False)
+        self.menu_delete.set_sensitive(False)
+        self.menu_undo.set_sensitive(False)
 
         # cursor buttons
         self.btn_cur = [
@@ -200,6 +206,8 @@ class MainWindow(Gtk.Window):
 
         pub.subscribe(self.on_pointer_moved, 'POINTER_MOVED')
         pub.subscribe(self.on_file_opened, 'FILE_OPENED')
+        pub.subscribe(self.on_selection_changed, 'SELECTION_CHANGED')
+        pub.subscribe(self.on_undo_changed, 'UNDO_CHANGED')
 
     def init_components(self):
         component_canvas = ComponentView(self.builder)  # noqa F841
@@ -302,6 +310,15 @@ class MainWindow(Gtk.Window):
         name = Gtk.Buildable.get_name(item)
         pos, width, height = self.grid_view.drag_rect
         pub.sendMessage(name.upper(), pos=pos, rect=(width, height))
+
+    def on_selection_changed(self, selected=False):
+        # enable the cut and copy menu only when one or more objects are selected
+        self.menu_copy.set_sensitive(selected)
+        self.menu_cut.set_sensitive(selected)
+
+    def on_undo_changed(self, undo=False):
+        # enable undo only if the undo-stack is not empty
+        self.menu_undo.set_sensitive(undo)
 
     def custom_cursor(self, btn):
         display = self.get_root_window().get_display()

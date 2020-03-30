@@ -135,6 +135,8 @@ class GridView(Gtk.Frame):
     @property
     def drag_rect(self):
         """Return the upper-left position and width and height of the selected rectangle."""
+
+        # FIXME use Pos logical operator "<" and ">"
         if self._drag_startpos.x <= self._drag_endpos.x:
             x1 = self._drag_startpos.x
             x2 = self._drag_endpos.x
@@ -428,6 +430,9 @@ class GridView(Gtk.Frame):
             self._drag_endpos.snap_to_grid()
 
             self._selection_state = SELECTED
+
+            if self._selection_item == RECT:
+                pub.sendMessage('SELECTION_CHANGED', selected=True)
 
             if self._selection_item == LINE:
 

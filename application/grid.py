@@ -7,6 +7,8 @@ AACircuit
 
 import pickle
 import xerox
+from pubsub import pub
+
 from application import _
 
 
@@ -34,6 +36,7 @@ class Grid(object):
     def _push_grid(self):
         """Use (Pickle) serialization to implement a simple undo functionality."""
         self._undo_stack.append(pickle.dumps(self._grid))
+        pub.sendMessage('UNDO_CHANGED', undo=True)
 
     def _pop_grid(self, str):
         self._grid = pickle.loads(str)
@@ -70,9 +73,11 @@ class Grid(object):
         return column
 
     def undo(self):
-        # TODO resize grid viewport if undo changes gridsize
+        # FIXME grid viewport is not resized when the gridsize has been changed (by this undo)
         if len(self._undo_stack) > 0:
             self._pop_grid(self._undo_stack.pop())
+        if len(self._undo_stack) == 0:
+            pub.sendMessage('UNDO_CHANGED', undo=False)
 
     def to_str(self):
         return pickle.dumps(self._grid)

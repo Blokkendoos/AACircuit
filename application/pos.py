@@ -100,7 +100,7 @@ class Pos(object):
         y *= GRIDSIZE_H
         return Pos(x, y)
 
-    def within_rect(self, rect):
+    def in_rect(self, rect):
         """
         Check if this point lies within the given rect.
 

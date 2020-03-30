@@ -9,6 +9,7 @@ from application import _
 from application import COMPONENT, COL, ROW, RECT, LINE, MAG_LINE
 from application import REMOVE, INSERT
 from application.grid import Grid
+from application.pos import Pos
 from application.symbol import Symbol, Line
 from application.main_window import MainWindow
 from application.component_library import ComponentLibrary
@@ -146,6 +147,9 @@ class Controller(object):
         pub.sendMessage('NOTHING_SELECTED')
 
     def on_copy(self, pos, rect):
+
+        self.on_selection_changed(pos, rect)
+
         grid = self.grid.rect(pos, rect)
         self.buffer = grid
         self.symbol = Symbol(grid)
@@ -159,6 +163,23 @@ class Controller(object):
     def on_delete(self, pos, rect):
         self.grid.erase_rect(pos, rect)
         pub.sendMessage('NOTHING_SELECTED')
+
+    def on_selection_changed(self, pos, rect=None):
+
+        ul = pos.grid_rc()
+        # rect = (width,height) in row/col dimension
+        br = pos + Pos(rect[0],rect[1])
+        rect = (ul, br)
+
+        # select any symbols having of which the upper-left corner is within the selection rectangle
+        selected = []
+        for obj in self.objects:
+            print("obj[0]", obj[0])
+            if obj[0].in_rect(rect):
+                selected.append(obj)
+
+        for obj in selected:
+            print("selected: ", obj[0])
 
     # grid manipulation
 
