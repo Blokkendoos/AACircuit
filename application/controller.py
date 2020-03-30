@@ -9,7 +9,7 @@ from application import _
 from application import COMPONENT, COL, ROW, RECT, LINE, MAG_LINE
 from application import REMOVE, INSERT
 from application.grid import Grid
-from application.symbol import Symbol
+from application.symbol import Symbol, Line
 from application.main_window import MainWindow
 from application.component_library import ComponentLibrary
 from application.file import FileChooserWindow
@@ -50,15 +50,15 @@ class Controller(object):
         <col> ::= <integer>*
 
         Example:
-        comp:45,0,10,15,n,"N-FET"
-        comp:46,0,10,15,n, "P-FET"
-        line:10,10,15,10,20
-        rect:47,10,15,15,20
-        char:43,10,15
-        text:  + + tekst + +,10,15
-        text:tekst met komma,, in de tekst,10,15
-        irow:23
-        dcol:10
+        COMP:45,0,10,15,N,"N-FET"
+        COMP:46,0,10,15,N, "P-FET"
+        LINE:10,10,15,10,20
+        RECT:47,10,15,15,20
+        CHAR:43,10,15
+        TEXT:  + + Tekst + +,10,15
+        TEXT:Tekst met komma,, in de tekst,10,15
+        IROW:23
+        DCOL:10
         """
         self.memo = []
 
@@ -164,22 +164,22 @@ class Controller(object):
 
     def on_insert_col(self, col):
         str = "i{0}:{1}".format(COL, col)
-        self.memo.append(str.upper())
+        self.memo.append(str)
         self.grid.insert_col(col)
 
     def on_insert_row(self, row):
         str = "i{0}:{1}".format(ROW, row)
-        self.memo.append(str.upper())
+        self.memo.append(str)
         self.grid.insert_row(row)
 
     def on_remove_col(self, col):
         str = "d{0}:{1}".format(COL, col)
-        self.memo.append(str.upper())
+        self.memo.append(str)
         self.grid.remove_col(col)
 
     def on_remove_row(self, row):
         str = "d{0}:{1}".format(ROW, row)
-        self.memo.append(str.upper())
+        self.memo.append(str)
         self.grid.remove_row(row)
 
     # character/component symbol
@@ -203,7 +203,7 @@ class Controller(object):
     def on_paste_symbol(self, pos):
 
         str = "{0}:{1},{2},{3}".format(COMPONENT, self.symbol.id, self.symbol.ori, pos)
-        self.memo.append(str.upper())
+        self.memo.append(str)
 
         ref = (pos, self.symbol)
         self.objects.append(ref)
@@ -212,11 +212,16 @@ class Controller(object):
 
     # lines
 
-    def on_paste_line(self, startpos, endpos, dir, type):
+    def on_paste_line(self, startpos, endpos, type):
+
         str = "{0}:{1},{2},{3}".format(LINE, type, startpos, endpos)
-        self.memo.append(str.upper())
-        grid = self.symbol.line(startpos, endpos, dir, type)
-        self.grid.fill_rect(startpos, grid)
+        self.memo.append(str)
+
+        self.symbol = Line(startpos, endpos, type)
+        ref = (startpos, self.symbol)
+        self.objects.append(ref)
+
+        self.grid.fill_rect(startpos, self.symbol.grid())
 
     # clipboard
 
@@ -240,17 +245,13 @@ class Controller(object):
 
     def on_write_to_file(self, filename):
         try:
-            # open file in binary mode
-            fout = open(filename, 'wb')
+            fout = open(filename, 'w')
 
-            str = self.grid.to_str()
-            fout.write(str)
-
-            str = "\n"
+            str = ""
             for line in self.memo:
                 print("memo:{0}".format(line))
-                str += line
-            fout.write(bytes(str, encoding='utf-8'))
+                str += line + "\n"
+            fout.write(str)
 
             fout.close()
         except IOError:

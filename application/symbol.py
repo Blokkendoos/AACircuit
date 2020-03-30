@@ -4,7 +4,7 @@ AACircuit
 '''
 
 from application.grid import Grid
-from application import HORIZONTAL
+from application import HORIZONTAL, VERTICAL
 from application import LINE_HOR, LINE_VERT, TERMINAL1, TERMINAL2, TERMINAL3, TERMINAL4
 
 
@@ -14,16 +14,15 @@ class Symbol(Grid):
 
     def __init__(self, id=0, dict=None):
 
-        super(Symbol).__init__()
+        super(Symbol, self).__init__()
 
         self._id = id
+        self._ori = 0
 
         if dict is None:
             self._grid = self.default
         else:
             self._grid = dict
-
-        self._ori = 0
 
     @property
     def id(self):
@@ -37,7 +36,7 @@ class Symbol(Grid):
     def default(self):
         # resistor symbol
         # FIXME default provides one ("N" orientation) grid only
-        grid = {"N": [
+        grid = {'N': [
             [' ', '|', ' '],
             ['.', '+', '.'],
             ['|', ' ', '|'],
@@ -90,61 +89,81 @@ class Symbol(Grid):
 
         self._grid[self.ORIENTATION[self._ori]] = grid
 
-    def line(self, startpos, endpos, dir, type):
 
-        def terminal():
-            if type == '1':
-                term = TERMINAL1
-            elif type == '2':
-                term = TERMINAL2
-            elif type == '3':
-                term = TERMINAL3
-            elif type == '4':
-                term = TERMINAL4
-            else:
-                term = None
-            return term
+class Line(Symbol):
 
+    TERMINAL_TYPE = {'0': None, '1': TERMINAL1, '2': TERMINAL2, '3': TERMINAL3, '4': TERMINAL4}
+
+    def __init__(self, startpos, endpos, type=0):
+        super(Line, self).__init__()
+
+        self._startpos = startpos
+        self._endpos = endpos
+        self._terminal = self.TERMINAL_TYPE[type]
+
+        self._direction()
+        self._line()
+
+    def _direction(self):
+        if self._startpos.x == self._endpos.x:
+            self._dir = VERTICAL
+        elif self._startpos.y == self._endpos.y:
+            self._dir = HORIZONTAL
+        else:
+            self._dir = None
+
+    def _line(self):
+        if self._dir == HORIZONTAL:
+            grid = self._line_hor()
+        elif self._dir == VERTICAL:
+            grid = self._line_vert()
+        else:
+            grid = ['?']
+
+        self._grid = {'N': grid}
+
+    def _line_hor(self):
         grid = []
 
-        if dir == HORIZONTAL:
-
-            if terminal() is None:
-                linechar = LINE_HOR
-            else:
-                linechar = terminal()
-
-            row = []
-            length = abs(endpos.x - startpos.x)
-            for i in range(length):
-                row.append(linechar)
-                linechar = LINE_HOR
-
-            if terminal() is None:
-                linechar = LINE_HOR
-            else:
-                linechar = terminal()
-
-            row.append(linechar)
-            grid.append(row)
+        if self._terminal is None:
+            linechar = LINE_HOR
         else:
-            # vertical line
+            linechar = self._terminal
 
-            if terminal() is None:
-                linechar = LINE_VERT
-            else:
-                linechar = terminal()
+        row = []
+        length = abs(self._endpos.x - self._startpos.x)
+        for i in range(length):
+            row.append(linechar)
+            linechar = LINE_HOR
 
-            length = abs(endpos.y - startpos.y)
-            for i in range(length):
-                grid.append([linechar])
-                linechar = LINE_VERT
+        if self._terminal is None:
+            linechar = LINE_HOR
+        else:
+            linechar = self._terminal
 
-            if terminal() is None:
-                linechar = LINE_VERT
-            else:
-                linechar = terminal()
+        row.append(linechar)
+        grid.append(row)
 
+        return grid
+
+    def _line_vert(self):
+        grid = []
+
+        if self._terminal is None:
+            linechar = LINE_VERT
+        else:
+            linechar = self._terminal
+
+        length = abs(self._endpos.y - self._startpos.y)
+        for i in range(length):
             grid.append([linechar])
+            linechar = LINE_VERT
+
+        if self._terminal is None:
+            linechar = LINE_VERT
+        else:
+            linechar = self._terminal
+
+        grid.append([linechar])
 
         return grid

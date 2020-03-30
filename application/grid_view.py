@@ -112,8 +112,8 @@ class GridView(Gtk.Frame):
 
     def init_surface(self, area):
         """Initialize Cairo surface."""
-        # destroy previous buffer
         if self.surface is not None:
+            # destroy previous buffer
             self.surface.finish()
             self.surface = None
 
@@ -436,6 +436,12 @@ class GridView(Gtk.Frame):
                 # position to grid (col, row) coordinates
                 start = self._drag_startpos.grid_rc()
                 end = self._drag_endpos.grid_rc()
+
+                if self._drag_dir == HORIZONTAL:
+                    end.y = start.y
+                elif self._drag_dir == VERTICAL:
+                    end.x = start.x
+
                 if start > end:
                     endpos = start
                     startpos = end
@@ -443,7 +449,7 @@ class GridView(Gtk.Frame):
                     endpos = end
                     startpos = start
 
-                pub.sendMessage("PASTE_LINE", startpos=startpos, endpos=endpos, dir=self._drag_dir, type=self._selection_type)
+                pub.sendMessage("PASTE_LINE", startpos=startpos, endpos=endpos, type=self._selection_type)
                 self.queue_resize()
 
     def on_drag_update(self, widget, x_offset, y_offset):
