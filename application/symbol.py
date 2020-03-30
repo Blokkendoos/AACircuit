@@ -97,6 +97,7 @@ class Line(Symbol):
     def __init__(self, startpos, endpos, type=0):
         super(Line, self).__init__()
 
+        self._id = type
         self._startpos = startpos
         self._endpos = endpos
         self._terminal = self.TERMINAL_TYPE[type]
