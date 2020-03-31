@@ -156,19 +156,7 @@ class Controller(object):
         pub.sendMessage('NOTHING_SELECTED')
 
     def on_copy(self, pos, rect):
-        self.on_selection_changed(pos, rect)
-        pub.sendMessage('OBJECTS_SELECTED', objects=self.selected_objects)
-
-    def on_paste(self, pos, rect):
-        if self.buffer is not None:
-            self.grid.fill_rect(pos, self.buffer)
-        pub.sendMessage('NOTHING_SELECTED')
-
-    def on_delete(self, pos, rect):
-        self.grid.erase_rect(pos, rect)
-        pub.sendMessage('NOTHING_SELECTED')
-
-    def on_selection_changed(self, pos, rect=None):
+        """Select all symbols that are located within the selection rectangle."""
 
         ul = pos
         # rect = (width,height) in row/col dimension
@@ -186,6 +174,17 @@ class Controller(object):
                 selected.append(sel_obj)
 
         self.selected_objects = selected
+
+        pub.sendMessage('OBJECTS_SELECTED', objects=self.selected_objects)
+
+    def on_paste(self, pos, rect):
+        if self.buffer is not None:
+            self.grid.fill_rect(pos, self.buffer)
+        pub.sendMessage('NOTHING_SELECTED')
+
+    def on_delete(self, pos, rect):
+        self.grid.erase_rect(pos, rect)
+        pub.sendMessage('NOTHING_SELECTED')
 
     # grid manipulation
 
