@@ -256,6 +256,7 @@ class GridView(Gtk.Frame):
 
     def draw_gridlines(self, ctx):
 
+        # TODO use CSS for uniform colors?
         ctx.set_source_rgb(0.75, 0.75, 0.75)
         ctx.set_line_width(0.5)
         ctx.set_tolerance(0.1)
@@ -322,9 +323,9 @@ class GridView(Gtk.Frame):
                 self._selection.draw(ctx)
 
             elif self._selection_item == OBJECTS:
-                self.draw_selected_objects(ctx)
+                self.draw_selected_objects(ctx, True)
 
-    def draw_selected_objects(self, ctx):
+    def draw_selected_objects(self, ctx, follow_pointer=False):
 
         for obj in self._objects:
 
@@ -332,7 +333,9 @@ class GridView(Gtk.Frame):
             ctx.select_font_face("monospace", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
 
             grid_pos = obj[0]  # obj = (relative_pos, objectref)
-            viewpos = grid_pos + self._hover_pos.grid_rc()
+            viewpos = grid_pos
+            if follow_pointer:
+                viewpos += self._hover_pos.grid_rc()
             pos = viewpos.view_xy()
             ctx.move_to(pos.x, pos.y)
             ctx.show_text('X')  # mark the upper-left corner with "x"
