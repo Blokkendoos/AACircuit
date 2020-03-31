@@ -56,7 +56,8 @@ class Symbol(Grid):
 
     def copy(self):
         ori = copy.deepcopy(self._ori)
-        return Symbol(self._id, self._grid, ori)
+        grid = copy.deepcopy(self._grid)
+        return Symbol(self._id, grid, ori)
 
     def grid(self, ori=None):
         if ori is None:
