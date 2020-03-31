@@ -84,6 +84,7 @@ class GridView(Gtk.Frame):
         pub.subscribe(self.on_character_selected, 'CHARACTER_SELECTED')
         pub.subscribe(self.on_symbol_selected, 'SYMBOL_SELECTED')
         pub.subscribe(self.on_objects_selected, 'OBJECTS_SELECTED')
+
         pub.subscribe(self.on_select_rect, 'SELECT_RECT')
 
         pub.subscribe(self.on_selecting_objects, 'SELECTING_OBJECTS')
@@ -284,44 +285,44 @@ class GridView(Gtk.Frame):
 
     def draw_selection(self, ctx):
 
-        if self._selection_item in (CHARACTER, COMPONENT):  # and self._selection_state == SELECTED:
-            self._symbol_view.draw(ctx, self._hover_pos)
-            return
-
-        if self._selection_state == SELECTING and self._selection_item == OBJECTS:
-            self.draw_selected_objects(ctx)
-            return
-
-        ctx.set_source_rgb(0.5, 0.5, 0.75)
-        ctx.set_line_width(0.5)
-        ctx.set_tolerance(0.1)
-        ctx.set_line_join(cairo.LINE_JOIN_ROUND)
-
         if self._selection_state == SELECTING:
 
-            if self._selection_item in (ROW, COL):
-                self._selection.startpos = self._hover_pos
+            if self._selection_item == OBJECTS:
+                self.draw_selected_objects(ctx)
             else:
+                ctx.set_source_rgb(0.5, 0.5, 0.75)
+                ctx.set_line_width(0.5)
+                ctx.set_tolerance(0.1)
+                ctx.set_line_join(cairo.LINE_JOIN_ROUND)
+
+                if self._selection_item in (ROW, COL):
+                    self._selection.startpos = self._hover_pos
+                else:
+                    self._selection.startpos = self._drag_startpos
+                self._selection.endpos = self._drag_currentpos
+                self._selection.maxpos = self.max_pos_grid
+                self._selection.direction = self._drag_dir
+
+                if self._selection_item == MAG_LINE:
+                    self._selection.ml_direction = self._ml_dir
+                    self._selection.ml_startpos = self._ml_startpos
+                    self._selection.ml_endpos = self._ml_currentpos
+
+                self._selection.draw(ctx)
+
+        elif self._selection_state == SELECTED:
+
+            if self._selection_item in (CHARACTER, COMPONENT):
+                self._symbol_view.draw(ctx, self._hover_pos)
+
+            elif self._selection_item == RECT:
+                # draw the selection rectangle
                 self._selection.startpos = self._drag_startpos
-            self._selection.endpos = self._drag_currentpos
-            self._selection.maxpos = self.max_pos_grid
-            self._selection.direction = self._drag_dir
+                self._selection.endpos = self._drag_endpos
+                self._selection.draw(ctx)
 
-            if self._selection_item == MAG_LINE:
-                self._selection.ml_direction = self._ml_dir
-                self._selection.ml_startpos = self._ml_startpos
-                self._selection.ml_endpos = self._ml_currentpos
-
-            self._selection.draw(ctx)
-
-        elif self._selection_state == SELECTED and self._selection_item == RECT:
-            # draw the selection rectangle
-            self._selection.startpos = self._drag_startpos
-            self._selection.endpos = self._drag_endpos
-            self._selection.draw(ctx)
-
-        elif self._selection_state == SELECTED and self._selection_item == OBJECTS:
-            self.draw_selected_objects(ctx)
+            elif self._selection_item == OBJECTS:
+                self.draw_selected_objects(ctx)
 
     def draw_selected_objects(self, ctx):
 
@@ -364,49 +365,53 @@ class GridView(Gtk.Frame):
         pos.snap_to_grid()
         pub.sendMessage('POINTER_MOVED', pos=pos.grid_rc())
 
-        if self._selection_state == SELECTING and self._selection_item == ROW:
-            row = pos.grid_rc().y
-            if self._selection_action == INSERT:
-                pub.sendMessage('INSERT_ROW', row=row)
-            else:
-                pub.sendMessage('REMOVE_ROW', row=row)
+        if self._selection_state == SELECTING:
 
-            self.gridsize_changed()
+            if self._selection_item == ROW:
+                row = pos.grid_rc().y
+                if self._selection_action == INSERT:
+                    pub.sendMessage('INSERT_ROW', row=row)
+                else:
+                    pub.sendMessage('REMOVE_ROW', row=row)
 
-        elif self._selection_state == SELECTING and self._selection_item == COL:
-            col = pos.grid_rc().x
-            if self._selection_action == INSERT:
-                pub.sendMessage('INSERT_COL', col=col)
-            else:
-                pub.sendMessage('REMOVE_COL', col=col)
+                self.gridsize_changed()
 
-            self.gridsize_changed()
+            elif self._selection_item == COL:
+                col = pos.grid_rc().x
+                if self._selection_action == INSERT:
+                    pub.sendMessage('INSERT_COL', col=col)
+                else:
+                    pub.sendMessage('REMOVE_COL', col=col)
 
-        elif self._selection_state == SELECTED and self._selection_item == CHARACTER:
-            # https://stackoverflow.com/questions/6616270/right-click-menu-context-menu-using-pygtk
-            button = event.button
-            if button == 1:
-                # left button
-                pos = self._hover_pos + Pos(0, -1)
-                pub.sendMessage('PASTE_SYMBOL', pos=pos.grid_rc())
+                self.gridsize_changed()
 
-        elif self._selection_state == SELECTED and self._selection_item == COMPONENT:
-            # https://stackoverflow.com/questions/6616270/right-click-menu-context-menu-using-pygtk
-            button = event.button
-            if button == 1:
-                # left button
-                pos = self._hover_pos + Pos(0, -1)
-                pub.sendMessage('PASTE_SYMBOL', pos=pos.grid_rc())
-            elif button == 3:
-                # right button
-                pub.sendMessage('ROTATE_SYMBOL')
+        elif self._selection_state == SELECTED:
 
-        elif self._selection_state == SELECTED and self._selection_item == OBJECTS:
-            button = event.button
-            if button == 1:
-                # left button
-                pos = self._hover_pos + Pos(0, -1)
-                pub.sendMessage('PASTE_OBJECTS', pos=pos.grid_rc())
+            if self._selection_item == CHARACTER:
+                # https://stackoverflow.com/questions/6616270/right-click-menu-context-menu-using-pygtk
+                button = event.button
+                if button == 1:
+                    # left button
+                    pos = self._hover_pos + Pos(0, -1)
+                    pub.sendMessage('PASTE_SYMBOL', pos=pos.grid_rc())
+
+            elif self._selection_item == COMPONENT:
+                # https://stackoverflow.com/questions/6616270/right-click-menu-context-menu-using-pygtk
+                button = event.button
+                if button == 1:
+                    # left button
+                    pos = self._hover_pos + Pos(0, -1)
+                    pub.sendMessage('PASTE_SYMBOL', pos=pos.grid_rc())
+                elif button == 3:
+                    # right button
+                    pub.sendMessage('ROTATE_SYMBOL')
+
+            elif self._selection_item == OBJECTS:
+                button = event.button
+                if button == 1:
+                    # left button
+                    pos = self._hover_pos + Pos(0, -1)
+                    pub.sendMessage('PASTE_OBJECTS', pos=pos.grid_rc())
 
         widget.queue_resize()
 

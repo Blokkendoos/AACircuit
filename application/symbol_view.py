@@ -9,6 +9,7 @@ import cairo
 
 
 class SymbolView(object):
+    """"Draw a single selected symbol."""
 
     def __init__(self):
 
