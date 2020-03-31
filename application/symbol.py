@@ -3,6 +3,9 @@ AACircuit
 2020-03-02 JvO
 '''
 
+import copy
+
+from application import _
 from application.grid import Grid
 from application import HORIZONTAL, VERTICAL
 from application import LINE_HOR, LINE_VERT, TERMINAL1, TERMINAL2, TERMINAL3, TERMINAL4
@@ -12,17 +15,25 @@ class Symbol(Grid):
 
     ORIENTATION = {0: "N", 1: "E", 2: "S", 3: "W"}
 
-    def __init__(self, id=0, dict=None):
+    def __init__(self, id=0, dict=None, ori=None):
 
         super(Symbol, self).__init__()
 
         self._id = id
-        self._ori = 0
+
+        if ori is None:
+            self._ori = 0
+        else:
+            self._ori = ori
 
         if dict is None:
             self._grid = self.default
         else:
             self._grid = dict
+
+    def __str__(self):
+        str = _("symbol id: {0} orientation: {1}").format(self._id, self.ORIENTATION[self._ori])
+        return str
 
     @property
     def id(self):
@@ -56,9 +67,15 @@ class Symbol(Grid):
 
     def grid_next(self):
         """Return the grid with clockwise next orientation for this symbol."""
+
         self._ori += 1
         self._ori %= 4
-        return self.grid(self._ori)
+
+        # return a new instance (to allow object selection keeping traits e.g. orientation)
+        # deep copy orientation
+        ori = copy.deepcopy(self._ori)
+
+        return Symbol(id=self._id, dict=self._grid, ori=ori)
 
     def mirror(self):
         """Return the grid vertically mirrored."""
@@ -86,6 +103,8 @@ class Symbol(Grid):
             grid.append(rev)
 
         self._grid[self.ORIENTATION[self._ori]] = grid
+
+        # FIXME return new instance, with deepcopy, (as to keep traits when selecting multiple objects)
 
 
 class Line(Symbol):
