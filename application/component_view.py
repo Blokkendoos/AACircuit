@@ -41,8 +41,6 @@ class ComponentView():
             # and it is appended to the treeview
             view.append_column(col)
 
-        # subscriptions
-
         pub.subscribe(self.set_components, 'ALL_COMPONENTS')
 
     def set_components(self, list):
@@ -54,7 +52,6 @@ class ComponentView():
         (model, iter) = selection.get_selected()
         label = model[iter][0]
 
-        # get the default grid for the symbol that represents this component
         pub.sendMessage('COMPONENT_CHANGED', label=label)
 
         return True

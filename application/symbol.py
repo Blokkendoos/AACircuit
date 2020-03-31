@@ -71,7 +71,7 @@ class Symbol(Grid):
         self._ori += 1
         self._ori %= 4
 
-        # return a new instance (to allow object selection keeping traits e.g. orientation)
+        # return a new instance (to allow object selection keeping traits cq orientation)
         # deep copy orientation
         ori = copy.deepcopy(self._ori)
 

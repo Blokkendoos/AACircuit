@@ -195,7 +195,7 @@ class MainWindow(Gtk.Window):
             btn.connect('pressed', self.on_char_button_clicked)
 
     def on_pointer_moved(self, pos):
-        """Update the pointer position in the statusbar"""
+        """Update the pointer position in the statusbar."""
         # grid indexing starts at zero, show +1
         self.label_xpos.set_text(format(pos.x + 1))
         self.label_ypos.set_text(format(pos.y + 1))
