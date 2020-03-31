@@ -128,18 +128,18 @@ class MainWindow(Gtk.Window):
 
         # insert/remove rows or columns
         self.btn_stretch1 = self.builder.get_object('stretch1')
-        self.btn_stretch3 = self.builder.get_object('stretch3')
         self.btn_stretch2 = self.builder.get_object('stretch2')
+        self.btn_stretch3 = self.builder.get_object('stretch3')
         self.btn_stretch4 = self.builder.get_object('stretch4')
 
-        self.btn_stretch1.connect('pressed', self.on_selecting_col)
-        self.btn_stretch2.connect('pressed', self.on_selecting_col)
-        self.btn_stretch3.connect('pressed', self.on_selecting_row)
-        self.btn_stretch4.connect('pressed', self.on_selecting_row)
+        self.btn_stretch1.connect('pressed', self.on_selecting_row)
+        self.btn_stretch2.connect('pressed', self.on_selecting_row)
+        self.btn_stretch3.connect('pressed', self.on_selecting_col)
+        self.btn_stretch4.connect('pressed', self.on_selecting_col)
 
         self.btn_stretch1.set_tooltip_text(_("insert rows"))
-        self.btn_stretch3.set_tooltip_text(_("insert columns"))
         self.btn_stretch2.set_tooltip_text(_("remove rows"))
+        self.btn_stretch3.set_tooltip_text(_("insert columns"))
         self.btn_stretch4.set_tooltip_text(_("remove columns"))
 
         self.btn_select_rect = self.builder.get_object("select_rect")
@@ -242,7 +242,7 @@ class MainWindow(Gtk.Window):
     def on_selecting_col(self, button):
         # https://stackoverflow.com/questions/3489520/python-gtk-widget-name
         name = Gtk.Buildable.get_name(button)
-        if name == 'stretch1':
+        if name == 'stretch3':
             action = INSERT
         else:
             action = REMOVE
@@ -250,7 +250,7 @@ class MainWindow(Gtk.Window):
 
     def on_selecting_row(self, button):
         name = Gtk.Buildable.get_name(button)
-        if name == 'stretch3':
+        if name == 'stretch1':
             action = INSERT
         else:
             action = REMOVE

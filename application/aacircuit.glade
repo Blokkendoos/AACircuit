@@ -142,6 +142,11 @@
     <property name="can_focus">False</property>
     <property name="pixbuf">bitmaps/delete.bmp</property>
   </object>
+  <object class="GtkImage" id="image35">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="pixbuf">buttons/stretch1.png</property>
+  </object>
   <object class="GtkImage" id="image4">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -1022,11 +1027,11 @@
                         <property name="can_focus">False</property>
                         <property name="homogeneous">True</property>
                         <child>
-                          <object class="GtkButton" id="stretch3">
+                          <object class="GtkButton" id="stretch1">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
-                            <property name="image">image28</property>
+                            <property name="image">image35</property>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -1035,11 +1040,11 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkButton" id="stretch1">
+                          <object class="GtkButton" id="stretch3">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
-                            <property name="image">image4</property>
+                            <property name="image">image28</property>
                           </object>
                           <packing>
                             <property name="expand">False</property>
