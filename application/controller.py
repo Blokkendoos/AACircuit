@@ -87,6 +87,7 @@ class Controller(object):
 
         pub.subscribe(self.on_character_changed, 'CHARACTER_CHANGED')
         pub.subscribe(self.on_component_changed, 'COMPONENT_CHANGED')
+
         pub.subscribe(self.on_rotate_symbol, 'ROTATE_SYMBOL')
         pub.subscribe(self.on_mirror_symbol, 'MIRROR_SYMBOL')
         pub.subscribe(self.on_paste_symbol, 'PASTE_SYMBOL')
@@ -231,7 +232,8 @@ class Controller(object):
         str = "{0}:{1},{2},{3}".format(COMPONENT, self.symbol.id, self.symbol.ori, pos)
         self.memo.append(str)
 
-        ref = (pos, self.symbol)
+        symbol = self.symbol.copy()
+        ref = (pos, symbol)
         self.objects.append(ref)
 
         self.grid.fill_rect(pos, self.symbol.grid())

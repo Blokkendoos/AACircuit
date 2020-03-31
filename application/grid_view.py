@@ -104,7 +104,7 @@ class GridView(Gtk.Frame):
     def set_grid(self, grid):
         self._grid = grid
         self.set_viewport_size()
-        self.queue_resize()
+        self.queue_draw()
 
     def set_viewport_size(self):
         # https://stackoverflow.com/questions/11546395/how-to-put-gtk-drawingarea-into-gtk-layout

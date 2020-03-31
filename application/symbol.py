@@ -54,6 +54,10 @@ class Symbol(Grid):
             ' (_) ']}
         return grid
 
+    def copy(self):
+        ori = copy.deepcopy(self._ori)
+        return Symbol(self._id, self._grid, ori)
+
     def grid(self, ori=None):
         if ori is None:
             ori = self._ori
@@ -66,16 +70,10 @@ class Symbol(Grid):
             return self._grid[self.ORIENTATION[ori]]
 
     def grid_next(self):
-        """Return the grid with clockwise next orientation for this symbol."""
-
+        """Return the grid with the next (90° clockwise rotated) orientation for this symbol."""
         self._ori += 1
         self._ori %= 4
-
-        # return a new instance (to allow object selection keeping traits cq orientation)
-        # deep copy orientation
-        ori = copy.deepcopy(self._ori)
-
-        return Symbol(id=self._id, dict=self._grid, ori=ori)
+        return self._grid[self.ORIENTATION[self._ori]]
 
     def mirror(self):
         """Return the grid vertically mirrored."""
