@@ -11,6 +11,7 @@ from application import REMOVE, INSERT
 from application.grid import Grid
 from application.pos import Pos
 from application.symbol import Symbol, Line
+from application.symbol_view import SymbolView
 from application.main_window import MainWindow
 from application.component_library import ComponentLibrary
 from application.file import FileChooserWindow
@@ -170,7 +171,8 @@ class Controller(object):
                 pos = obj[0]
                 symbol = obj[1]
                 relative_pos = pos - ul
-                sel_obj = (relative_pos, symbol)
+                symbolview = SymbolView(symbol.grid())
+                sel_obj = (relative_pos, symbol, symbolview)
                 selected.append(sel_obj)
 
         self.selected_objects = selected
@@ -243,7 +245,7 @@ class Controller(object):
 
         for obj in self.selected_objects:
 
-            relative_pos, symbol = obj
+            relative_pos, symbol, symbolview = obj
             target_pos = pos + relative_pos
 
             str = "{0}:{1},{2},{3}".format(COMPONENT, symbol.id, symbol.ori, target_pos)

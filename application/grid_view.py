@@ -332,13 +332,20 @@ class GridView(Gtk.Frame):
             ctx.set_source_rgb(1, 0, 0)
             ctx.select_font_face("monospace", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
 
-            grid_pos = obj[0]  # obj = (relative_pos, objectref)
+            grid_pos = obj[0]  # obj = (relative_pos, objectref, symbolview)
             viewpos = grid_pos
+
             if follow_pointer:
                 viewpos += self._hover_pos.grid_rc()
+
             pos = viewpos.view_xy()
+
             ctx.move_to(pos.x, pos.y)
             ctx.show_text('X')  # mark the upper-left corner with "x"
+
+            if follow_pointer:
+                vw = obj[2]
+                vw.draw(ctx, pos)
 
         self.queue_draw()
 

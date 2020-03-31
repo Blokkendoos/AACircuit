@@ -11,9 +11,9 @@ import cairo
 class SymbolView(object):
     """"Draw a single selected symbol."""
 
-    def __init__(self):
+    def __init__(self, grid=None):
 
-        self._grid = None
+        self._grid = grid
 
         pub.subscribe(self.set_grid, 'SYMBOL_SELECTED')
         pub.subscribe(self.set_grid, 'CHARACTER_SELECTED')
