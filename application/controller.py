@@ -77,7 +77,7 @@ class Controller(object):
                                                                                     self.components.nr_components()))
         # messages
 
-        all_components.sort()
+        # all_components.sort()
         pub.sendMessage('ALL_COMPONENTS', list=all_components)
         pub.sendMessage('GRID', grid=self.grid)
 
