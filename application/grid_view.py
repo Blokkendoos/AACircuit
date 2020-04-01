@@ -326,20 +326,25 @@ class GridView(Gtk.Frame):
                 self.draw_selected_objects(ctx, True)
 
     def draw_selected_objects(self, ctx, follow_pointer=False):
+        """
+        Draw multiple objects selection.
+
+        :param ctx: the Cairo context
+        :param follow_pointer: True: the shown symbols follow the cursor,
+        """
 
         for obj in self._objects:
 
             ctx.set_source_rgb(1, 0, 0)
             ctx.select_font_face("monospace", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
 
-            grid_pos = obj[0]  # obj = (relative_pos, objectref, symbolview)
-            viewpos = grid_pos
+            viewpos = obj[0]  # obj = (relative_pos, objectref, symbolview)
+            viewpos += Pos(0, 1)
 
             if follow_pointer:
                 viewpos += self._hover_pos.grid_rc()
 
             pos = viewpos.view_xy()
-
             if follow_pointer:
                 vw = obj[2]
                 vw.draw(ctx, pos)
