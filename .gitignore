@@ -6,4 +6,11 @@
 
 # Python
 __pycache__
+
+# Doxygen / Sphinx
+doc/
+docs/
+
+# other
+gettext/
  
