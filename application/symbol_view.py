@@ -26,7 +26,13 @@ class SymbolView(object):
         self._grid = symbol.grid()
 
     def draw(self, ctx, pos):
+        """
+        Draw the symbol grid.
 
+        :param ctx: Cairo context
+        :param pos: the canvas (x,y) coordinate
+
+        """
         if self._grid is None or pos is None:
             return
 
@@ -35,12 +41,12 @@ class SymbolView(object):
         ctx.set_source_rgb(1, 0, 0)
         ctx.select_font_face('monospace', cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
 
-        x_start, y = pos.x, pos.y
-        for r in self._grid:
+        x_start, y = pos.xy
+        for row in self._grid:
             x = x_start
-            for c in r:
+            for char in row:
                 ctx.move_to(x, y)
-                ctx.show_text(str(c))
+                ctx.show_text(str(char))
                 x += GRIDSIZE_W
                 if x >= surface.get_width():
                     break

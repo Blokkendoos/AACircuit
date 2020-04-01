@@ -103,8 +103,6 @@ class Symbol(Grid):
 
         self._grid[self.ORIENTATION[self._ori]] = grid
 
-        # FIXME return new instance, with deepcopy, (as to keep traits when selecting multiple objects)
-
 
 class Line(Symbol):
 
