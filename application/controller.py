@@ -63,7 +63,7 @@ class Controller(object):
         self.memo = []
 
         # all objects on the grid
-        # [(position, object), ...] position in row/column coordinates
+        # [(position, object, view), ...] position in row/column coordinates
         self.objects = []
 
         # [(relative_position, object), ...] position relative to the selection rect (in row/column coordinates)
@@ -124,6 +124,7 @@ class Controller(object):
         self.gui.show_all()
 
     def on_undo(self):
+        # TODO restore objects list
         self.grid.undo()
         pub.sendMessage('GRID', grid=self.grid)
 
@@ -146,14 +147,37 @@ class Controller(object):
     # Edit menu
 
     # TODO cut|copy|paste and objects list maintenance, respectively remove from or add to the list
-    # TODO merge on_paste with the on_paste_objects method
+
+    def remove_from_objects(self, symbol):
+
+        to_remove = []
+        for idx, s in enumerate(self.objects):
+            if id(s[1]) == id(symbol):
+                to_remove.append(idx)
+
+        for idx in to_remove:
+            del self.objects[idx]
 
     def on_cut(self, pos, rect):
+
+        self.find_selected(pos, rect)
+
+        for obj in self.selected_objects:
+            symbol_pos, symbol, symbol_view = obj
+            self.remove_from_objects(symbol)
+
         self.buffer = self.grid.rect(pos, rect)
         self.grid.erase_rect(pos, rect)
         pub.sendMessage('NOTHING_SELECTED')
 
     def on_copy(self, pos, rect):
+        """Select all symbols that are located within the selection rectangle."""
+
+        self.find_selected(pos, rect)
+
+        pub.sendMessage('OBJECTS_SELECTED', objects=self.selected_objects)
+
+    def find_selected(self, pos, rect):
         """Select all symbols that are located within the selection rectangle."""
 
         ul = pos
@@ -173,8 +197,6 @@ class Controller(object):
                 selected.append(sel_obj)
 
         self.selected_objects = selected
-
-        pub.sendMessage('OBJECTS_SELECTED', objects=self.selected_objects)
 
     def on_paste(self, pos, rect):
         if self.buffer is not None:
@@ -236,14 +258,12 @@ class Controller(object):
 
         self.grid.fill_rect(pos, self.symbol.grid())
 
-    # multiple selection
-
     def on_paste_objects(self, pos):
 
         for obj in self.selected_objects:
 
             relative_pos, symbol, symbolview = obj
-            target_pos = pos + relative_pos
+            target_pos = pos + relative_pos + Pos(0, 1)
 
             str = "{0}:{1},{2},{3}".format(COMPONENT, symbol.id, symbol.ori, target_pos)
             self.memo.append(str)
@@ -266,6 +286,7 @@ class Controller(object):
 
             grid = symbol.grid()
             dummy, rect = grid.rect()
+
             self.grid.erase_rect(pos, rect)
 
         pub.sendMessage('NOTHING_SELECTED')
