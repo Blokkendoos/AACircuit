@@ -226,10 +226,10 @@ class Grid(object):
                 if char != " ":
                     self._grid[y][x] = char
                 x += 1
-                if x > x_max:
+                if x >= x_max:
                     break
             y += 1
-            if y > y_max:
+            if y >= y_max:
                 break
 
         self._dirty = True
