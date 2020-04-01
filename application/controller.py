@@ -7,7 +7,6 @@ from pubsub import pub
 
 from application import _
 from application import COMPONENT, COL, ROW, RECT, LINE, MAG_LINE
-from application import REMOVE, INSERT
 from application.grid import Grid
 from application.pos import Pos
 from application.symbol import Symbol, Line
@@ -31,13 +30,12 @@ class Controller(object):
         self.symbol = Symbol()
         self.buffer = None
 
-        # TODO commands memo
         """
         <comp_command> ::= "comp:" <id> "," <orientation> "," <pos> "," <mirrored> "," <key>
         <other_command> ::= <type> ":" <id> "," <pos> ["," <pos>]
         <grid_command> ::= <grid> "," <row> | <col>
 
-        <orientation> ::= { 0..3 }
+        <orientation> ::= { 0-3 }
         <mirrored> ::= "y" | "n"
         <type> ::= "char" | "line" | "rect" | "text"
         <grid> ::= "irow" | "icol" | "drow" | "dcol"
@@ -64,12 +62,11 @@ class Controller(object):
         """
         self.memo = []
 
-        # Object list
-        # [(position, object), ...] with position in row/column coordinates
+        # all objects on the grid
+        # [(position, object), ...] position in row/column coordinates
         self.objects = []
 
-        # selected objects list
-        # [(relative_position, object), ...] with position relative to the selection rect (in row/column coordinates)
+        # [(relative_position, object), ...] position relative to the selection rect (in row/column coordinates)
         self.selected_objects = []
 
         all_components = [key for key in self.components.get_dict()]
