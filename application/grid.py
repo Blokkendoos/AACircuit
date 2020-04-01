@@ -214,28 +214,23 @@ class Grid(object):
 
         self._push_grid()
 
-        width = len(content[0])
-        rect = (width, len(content))
+        c_start, r_start = pos.xy
+        x_max = self.nr_cols
+        y_max = self.nr_rows
 
-        c_start, r_start, c_end, r_end = self.pos_to_rc(pos, rect)
-
-        # truncate
-        if r_end >= self.nr_rows:
-            r_end = self.nr_rows
-        if c_end >= self.nr_cols:
-            width = width + self.nr_cols - c_end
-            c_end = self.nr_cols
-
-        i = 0
-        for r in range(r_start, r_end):
-            # crude OR (sybol grid OR grid) by ignoring space char
-            # self._grid[r][c_start:c_end] = content[i][:width]
-            j = 0
-            for c in range(c_start, c_end):
-                if content[i][j] != " ":
-                    self._grid[r][c] = content[i][j]
-                j += 1
-            i += 1
+        y = r_start
+        for row in content:
+            x = c_start
+            for char in row:
+                # TODO crude OR (sybol grid OR grid) by ignoring space char
+                if char != " ":
+                    self._grid[y][x] = char
+                x += 1
+                if x > x_max:
+                    break
+            y += 1
+            if y > y_max:
+                break
 
         self._dirty = True
 
