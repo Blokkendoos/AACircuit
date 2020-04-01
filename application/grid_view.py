@@ -340,12 +340,12 @@ class GridView(Gtk.Frame):
 
             pos = viewpos.view_xy()
 
-            # ctx.move_to(pos.x, pos.y)
-            # ctx.show_text('X')  # mark the upper-left corner with "x"
-
             if follow_pointer:
                 vw = obj[2]
                 vw.draw(ctx, pos)
+            else:
+                ctx.move_to(pos.x, pos.y)
+                ctx.show_text('X')  # mark the upper-left corner with "x"
 
         self.queue_draw()
 
