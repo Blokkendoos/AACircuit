@@ -215,14 +215,12 @@ class GridView(Gtk.Frame):
     def on_selecting_row(self, action):
         self._selection_state = SELECTING
         self._selection_action = action
-        self._drag_dir = None
         self._selection_item = ROW
         self._selection = SelectionRow()
 
     def on_selecting_col(self, action):
         self._selection_state = SELECTING
         self._selection_action = action
-        self._drag_dir = None
         self._selection_item = COL
         self._selection = SelectionCol()
 
@@ -240,6 +238,8 @@ class GridView(Gtk.Frame):
             self._selection = SelectionLineFree()
         else:
             self._selection = SelectionLine(type)
+
+    # DRAWING
 
     def draw_background(self, ctx):
         """Draw a background with the size of the grid."""
