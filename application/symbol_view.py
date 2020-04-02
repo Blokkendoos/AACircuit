@@ -23,7 +23,7 @@ class SymbolView(object):
         The symbol grid.
         :param grid: a 2D array of ASCII chars
         """
-        self._grid = symbol.grid()
+        self._grid = symbol.grid
 
     def draw(self, ctx, pos):
         """
