@@ -6,10 +6,9 @@ AACircuit
 from numpy import sign
 # from bresenham import bresenham
 
-from application import TERMINAL1, TERMINAL2, TERMINAL3, TERMINAL4
 from application import GRIDSIZE_W, GRIDSIZE_H
 from application import HORIZONTAL, VERTICAL
-from application import LINE_HOR, LINE_VERT
+from application import LINE_HOR, LINE_VERT, TERMINAL_TYPE
 from application.pos import Pos
 
 
@@ -40,7 +39,7 @@ class Selection(object):
 
     @property
     def endpos_capped(self):
-        """Return endposition capped by the coordinates maximum."""
+        """Return end position capped by the coordinates maximum."""
         x, y = self._endpos.xy
         if self._endpos.x > self._maxpos.x:
             x = self._maxpos.x
@@ -66,17 +65,7 @@ class SelectionLine(Selection):
 
         super(SelectionLine, self).__init__()
         self._dir = None
-
-        if type == '1':
-            self._line_terminal = TERMINAL1
-        elif type == '2':
-            self._line_terminal = TERMINAL2
-        elif type == '3':
-            self._line_terminal = TERMINAL3
-        elif type == '4':
-            self._line_terminal = TERMINAL4
-        else:
-            self._line_terminal = None
+        self._terminal = TERMINAL_TYPE[type]
 
     @property
     def direction(self):

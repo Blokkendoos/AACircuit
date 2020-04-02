@@ -8,7 +8,7 @@ import copy
 from application import _
 from application.grid import Grid
 from application import HORIZONTAL, VERTICAL
-from application import LINE_HOR, LINE_VERT, TERMINAL1, TERMINAL2, TERMINAL3, TERMINAL4
+from application import LINE_HOR, LINE_VERT, TERMINAL_TYPE
 
 
 class Symbol(Grid):
@@ -104,15 +104,13 @@ class Symbol(Grid):
 
 class Line(Symbol):
 
-    TERMINAL_TYPE = {'0': None, '1': TERMINAL1, '2': TERMINAL2, '3': TERMINAL3, '4': TERMINAL4}
-
     def __init__(self, startpos, endpos, type=0):
         super(Line, self).__init__()
 
         self._id = type
         self._startpos = startpos
         self._endpos = endpos
-        self._terminal = self.TERMINAL_TYPE[type]
+        self._terminal = TERMINAL_TYPE[type]
 
         self._direction()
         self._line()
