@@ -103,7 +103,7 @@ class Symbol(Grid):
         self._grid[self.ORIENTATION[self._ori]] = grid
 
 
-class Line(Symbol):
+class Line(Symbol):  # TODO why is this a subclass of Symbol | Grid?
 
     def __init__(self, startpos, endpos, type=0):
         super(Line, self).__init__()
@@ -189,25 +189,40 @@ class Rect(Symbol):
         self._startpos = startpos
         self._endpos = endpos
 
+        self._rect()
+
     def _rect(self):
-        grid = []
 
         ul = self._startpos
         ur = Pos(self._endpos.x, self._startpos.y)
         bl = Pos(self._startpos.x, self._endpos.y)
         br = self._endpos
 
-        type = TERMINAL3
+        # print("ul:", ul, " ur:", ur, "\nbl:", bl, "br:", br)
+
+        type = '3'
 
         line1 = Line(ul, ur, type)
         line2 = Line(ur, br, type)
         line3 = Line(br, bl, type)
-        line4 = Line(bl, br, type)
+        line4 = Line(bl, ul, type)
 
-        grid.append(line1.grid)
-        grid.append(line2.grid)
-        grid.append(line3.grid)
-        grid.append(line4.grid)
+        # dim = br - ul
+        # w = dim.x * 2
+        # h = dim.y * 2
+        # grid = Grid(rows=h, cols=w)
+        #
+        # grid.fill_rect(ul, line1.grid)
+        # grid.fill_rect(ur, line2.grid)
+        # grid.fill_rect(bl, line3.grid)
+        # grid.fill_rect(br, line4.grid)
+        #
+        # return grid.grid
 
-        # self._grid = {'N': grid}
-        self._grid = self.default
+        grid = []
+        grid.extend(line1.grid)
+        grid.extend(line2.grid)
+        grid.extend(line3.grid)
+
+        # self._grid = {'N': line1.grid}
+        self._grid = {'N': grid}
