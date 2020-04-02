@@ -7,8 +7,9 @@ import copy
 
 from application import _
 from application.grid import Grid
+from application.pos import Pos
 from application import HORIZONTAL, VERTICAL
-from application import LINE_HOR, LINE_VERT, TERMINAL_TYPE
+from application import LINE_HOR, LINE_VERT, TERMINAL_TYPE, TERMINAL3
 
 
 class Symbol(Grid):
@@ -178,3 +179,35 @@ class Line(Symbol):
         grid.append([linechar])
 
         return grid
+
+
+class Rect(Symbol):
+
+    def __init__(self, startpos, endpos):
+        super(Rect, self).__init__()
+
+        self._startpos = startpos
+        self._endpos = endpos
+
+    def _rect(self):
+        grid = []
+
+        ul = self._startpos
+        ur = Pos(self._endpos.x, self._startpos.y)
+        bl = Pos(self._startpos.x, self._endpos.y)
+        br = self._endpos
+
+        type = TERMINAL3
+
+        line1 = Line(ul, ur, type)
+        line2 = Line(ur, br, type)
+        line3 = Line(br, bl, type)
+        line4 = Line(bl, br, type)
+
+        grid.append(line1.grid)
+        grid.append(line2.grid)
+        grid.append(line3.grid)
+        grid.append(line4.grid)
+
+        # self._grid = {'N': grid}
+        self._grid = self.default

@@ -6,10 +6,10 @@ AACircuit.py
 from pubsub import pub
 
 from application import _
-from application import COMPONENT, COL, ROW, RECT, LINE, MAG_LINE
+from application import COMPONENT, COL, ROW, DRAW_RECT, RECT, LINE, MAG_LINE
 from application.grid import Grid
 from application.pos import Pos
-from application.symbol import Symbol, Line
+from application.symbol import Symbol, Line, Rect
 from application.symbol_view import SymbolView
 from application.main_window import MainWindow
 from application.component_library import ComponentLibrary
@@ -91,6 +91,7 @@ class Controller(object):
         pub.subscribe(self.on_paste_symbol, 'PASTE_SYMBOL')
         pub.subscribe(self.on_paste_objects, 'PASTE_OBJECTS')
         pub.subscribe(self.on_paste_line, 'PASTE_LINE')
+        pub.subscribe(self.on_paste_rect, 'PASTE_RECT')
         pub.subscribe(self.on_undo, 'UNDO')
 
         pub.subscribe(self.on_select_objects, 'SELECT_OBJECTS')
@@ -299,6 +300,17 @@ class Controller(object):
         self.memo.append(str)
 
         self.symbol = Line(startpos, endpos, type)
+        ref = (startpos, self.symbol)
+        self.objects.append(ref)
+
+        self.grid.fill_rect(startpos, self.symbol.grid)
+
+    def on_paste_rect(self, startpos, endpos):
+
+        str = "{0}:{1},{2}".format(DRAW_RECT, startpos, endpos)
+        self.memo.append(str)
+
+        self.symbol = Rect(startpos, endpos)
         ref = (startpos, self.symbol)
         self.objects.append(ref)
 

@@ -123,7 +123,7 @@ class MainWindow(Gtk.Window):
         self.btn_line4.set_tooltip_text(_("line with end terminals"))
 
         self.btn_rect = self.builder.get_object('draw_rect')
-        self.btn_rect.connect('pressed', self.on_line)
+        self.btn_rect.connect('pressed', self.on_rect)
         self.btn_rect.set_tooltip_text(_("draw a rectangle"))
 
         # insert/remove rows or columns
@@ -210,6 +210,9 @@ class MainWindow(Gtk.Window):
         name = Gtk.Buildable.get_name(button)
         type = name[-1]
         pub.sendMessage(name.upper(), type=type)
+
+    def on_rect(self, button):
+        pub.sendMessage('DRAW_RECT')
 
     def on_toggled_cursor(self, button):
 
