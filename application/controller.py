@@ -63,10 +63,10 @@ class Controller(object):
         self.memo = []
 
         # all objects on the grid
-        # [(position, object, view), ...] position in row/column coordinates
+        # [(position, object, view), ...] position in column/row coordinates
         self.objects = []
 
-        # [(relative_position, object), ...] position relative to the selection rect (in row/column coordinates)
+        # [(relative_position, object), ...] position relative to the selection rect (in column/row coordinates)
         self.selected_objects = []
 
         all_components = [key for key in self.components.get_dict()]
