@@ -65,7 +65,7 @@ class SelectionLine(Selection):
 
         super(SelectionLine, self).__init__()
         self._dir = None
-        self._terminal = TERMINAL_TYPE[type]
+        self._line_terminal = TERMINAL_TYPE[type]
 
     @property
     def direction(self):
