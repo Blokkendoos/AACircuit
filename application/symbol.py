@@ -59,16 +59,14 @@ class Symbol(Grid):
         grid = copy.deepcopy(self._grid)
         return Symbol(self._id, grid, ori)
 
-    def grid(self, ori=None):
-        if ori is None:
-            ori = self._ori
-
+    @property
+    def grid(self):
         if len(self._grid) == 1:
             # TODO separate logic for single char / default symbol?
             # single character or default symbol
             return self._grid[self.ORIENTATION[0]]
         else:
-            return self._grid[self.ORIENTATION[ori]]
+            return self._grid[self.ORIENTATION[self._ori]]
 
     def grid_next(self):
         """Return the grid with the next (90° clockwise rotated) orientation for this symbol."""

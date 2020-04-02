@@ -192,7 +192,7 @@ class Controller(object):
                 pos = obj[0]
                 symbol = obj[1]
                 relative_pos = pos - ul
-                symbolview = SymbolView(symbol.grid())
+                symbolview = SymbolView(symbol.grid)
                 sel_obj = (relative_pos, symbol, symbolview)
                 selected.append(sel_obj)
 
@@ -256,7 +256,7 @@ class Controller(object):
         ref = (pos, symbol)
         self.objects.append(ref)
 
-        self.grid.fill_rect(pos, self.symbol.grid())
+        self.grid.fill_rect(pos, self.symbol.grid)
 
     def on_paste_objects(self, pos):
 
@@ -271,7 +271,7 @@ class Controller(object):
             ref = (target_pos, symbol)
             self.objects.append(ref)
 
-            grid = symbol.grid()
+            grid = symbol.grid
             self.grid.fill_rect(target_pos, grid)
 
         pub.sendMessage('NOTHING_SELECTED')
@@ -284,7 +284,7 @@ class Controller(object):
 
             pos, symbol = obj
 
-            grid = symbol.grid()
+            grid = symbol.grid
             dummy, rect = grid.rect()
 
             self.grid.erase_rect(pos, rect)
@@ -302,7 +302,7 @@ class Controller(object):
         ref = (startpos, self.symbol)
         self.objects.append(ref)
 
-        self.grid.fill_rect(startpos, self.symbol.grid())
+        self.grid.fill_rect(startpos, self.symbol.grid)
 
     # clipboard
 
