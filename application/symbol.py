@@ -185,6 +185,10 @@ class Line(Symbol):
 
         return grid
 
+    def grid_next(self):
+        # TODO enable to rotate (from HOR to VERT)?
+        return self._grid[self.ORIENTATION[0]]
+
     def paste(self, pos, grid):
 
         start = self._startpos
@@ -255,7 +259,7 @@ class Rect(Symbol):
         bl = Pos(self._startpos.x, self._endpos.y)
         br = self._endpos
 
-        # print("ul:", ul, " ur:", ur, "\nbl:", bl, "br:", br)
+        print("ul:", ul, " ur:", ur, "\nbl:", bl, "br:", br)
 
         type = '3'
 
@@ -264,12 +268,28 @@ class Rect(Symbol):
         line3 = Line(br, bl, type)
         line4 = Line(bl, ul, type)
 
+        # TODO merge the individual line grids into one (respecting their relative position in the resulting rectangle)
         grid = []
         grid.extend(line1.grid)
         grid.extend(line2.grid)
         grid.extend(line3.grid)
+        grid.extend(line4.grid)
 
         self._grid = {'N': grid}
+
+    def grid_next(self):
+
+        w = self._endpos.x - self._startpos.x
+        h = self._endpos.y - self._startpos.y
+
+        ul = self._startpos
+        br = Pos(self._startpos.x + h, self._startpos.y + w)
+
+        self._startpos = ul
+        self._endpos = br
+        self._rect()
+
+        return self._grid[self.ORIENTATION[0]]
 
     def paste(self, pos, grid):
 

@@ -237,12 +237,19 @@ class Controller(object):
         pub.sendMessage('CHARACTER_SELECTED', symbol=self.symbol)
 
     def on_component_changed(self, label):
+        self.selected_objects = []
         self.symbol = self.components.get_symbol(label)
         pub.sendMessage('SYMBOL_SELECTED', symbol=self.symbol)
 
     def on_rotate_symbol(self):
-        self.symbol.grid_next()
-        pub.sendMessage('SYMBOL_SELECTED', symbol=self.symbol)
+
+        if len(self.selected_objects) == 0:
+            self.symbol.grid_next()
+            pub.sendMessage('SYMBOL_SELECTED', symbol=self.symbol)
+        else:
+            for obj in self.selected_objects:
+                relative_pos, symbol, symbolview = obj
+                symbol.grid_next()
 
     def on_mirror_symbol(self):
         self.symbol.mirror()
