@@ -75,7 +75,7 @@ class Symbol(object):
     def paste(self, pos, grid):
         """Paste symbol into the target grid.
 
-        :param pos: the upper left position (of the symbol grid) in the target grid
+        :param pos: the (col,row) coordinate of the upper left position of the symbol grid in the target grid
         :param grid: the target grid
         """
         grid.fill_rect(pos, self.grid)
@@ -187,17 +187,19 @@ class Line(Symbol):
 
     def paste(self, pos, grid):
 
-        if self._startpos > self._endpos:
-            pos = self._endpos
-            end = self._startpos
-        else:
-            pos = self._startpos
-            end = self._endpos
+        start = self._startpos
+        end = self._endpos
+
+        offset = pos - start
+        start = pos
+        end += offset
+
+        # print("start:", start, " end:", end)
 
         if self._dir == HORIZONTAL:
-            grid = self._paste_hor(pos, end, grid)
+            grid = self._paste_hor(start, end, grid)
         elif self._dir == VERTICAL:
-            grid = self._paste_vert(pos, end, grid)
+            grid = self._paste_vert(start, end, grid)
 
     def _paste_hor(self, pos, end, grid):
 
@@ -262,41 +264,37 @@ class Rect(Symbol):
         line3 = Line(br, bl, type)
         line4 = Line(bl, ul, type)
 
-        # dim = br - ul
-        # w = dim.x * 2
-        # h = dim.y * 2
-        # grid = Grid(rows=h, cols=w)
-        #
-        # grid.fill_rect(ul, line1.grid)
-        # grid.fill_rect(ur, line2.grid)
-        # grid.fill_rect(bl, line3.grid)
-        # grid.fill_rect(br, line4.grid)
-        #
-        # return grid.grid
-
         grid = []
         grid.extend(line1.grid)
         grid.extend(line2.grid)
         grid.extend(line3.grid)
 
-        # self._grid = {'N': line1.grid}
         self._grid = {'N': grid}
 
     def paste(self, pos, grid):
 
-        ul = self._startpos
-        ur = Pos(self._endpos.x, self._startpos.y)
-        bl = Pos(self._startpos.x, self._endpos.y)
-        br = self._endpos
+        start = self._startpos
+        end = self._endpos
+
+        offset = pos - start
+        start = pos
+        end += offset
+
+        ul = start
+        ur = Pos(end.x, start.y)
+        bl = Pos(start.x, end.y)
+        br = end
+
+        # print("ul:", ul, " ur:", ur, "\nbl:", bl, "br:", br)
 
         type = '3'
 
         line1 = Line(ul, ur, type)
         line2 = Line(ur, br, type)
-        line3 = Line(br, bl, type)
-        line4 = Line(bl, ul, type)
+        line3 = Line(bl, br, type)
+        line4 = Line(ul, bl, type)
 
-        line1.paste(pos, grid)
-        line2.paste(pos, grid)
-        line3.paste(pos, grid)
-        line4.paste(pos, grid)
+        line1.paste(ul, grid)
+        line2.paste(ur, grid)
+        line3.paste(bl, grid)
+        line4.paste(ul, grid)

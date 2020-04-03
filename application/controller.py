@@ -272,7 +272,7 @@ class Controller(object):
             ref = (target_pos, symbol)
             self.objects.append(ref)
 
-            obj.paste(target_pos, self.grid)
+            symbol.paste(target_pos, self.grid)
 
         pub.sendMessage('NOTHING_SELECTED')
 
