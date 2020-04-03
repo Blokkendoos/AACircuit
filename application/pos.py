@@ -25,38 +25,29 @@ class Pos(object):
         return Pos(x, y)
 
     def __eq__(self, other):
-        if self._x == other.x and self._y == other.y:
-            return True
-        else:
-            return False
+        return (self._x == other.x and self._y == other.y)
 
     def __gt__(self, other):
-        if sqrt(self._x**2 + self._y**2) > sqrt(other._x**2 + other._y**2):
-            return True
-        else:
-            return False
+        return (sqrt(self._x**2 + self._y**2) > sqrt(other._x**2 + other._y**2))
 
     def __lt__(self, other):
-        if sqrt(self._x**2 + self._y**2) < sqrt(other._x**2 + other._y**2):
-            return True
-        else:
-            return False
+        return (sqrt(self._x**2 + self._y**2) < sqrt(other._x**2 + other._y**2))
 
     def __ge__(self, other):
-        if self.__lt__(other):
-            return False
-        else:
-            return True
+        return not (self < other)
 
     def __le__(self, other):
-        if self.__gt__(other):
-            return False
-        else:
-            return True
+        return not (self > other)
 
     def __str__(self):
         """Return coordinates as string: e.g.: "10,12"."""
         return "{0},{1}".format(self._x, self._y)
+
+    def __hash__(self):
+        return hash((self._x, self._y))
+
+    def __ne__(self, other):
+        return not(self == other)
 
     @property
     def x(self):
