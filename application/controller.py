@@ -257,7 +257,7 @@ class Controller(object):
         ref = (pos, symbol)
         self.objects.append(ref)
 
-        self.grid.fill_rect(pos, self.symbol.grid)
+        symbol.paste(pos, self.grid)
 
     def on_paste_objects(self, pos):
 
@@ -272,8 +272,7 @@ class Controller(object):
             ref = (target_pos, symbol)
             self.objects.append(ref)
 
-            grid = symbol.grid
-            self.grid.fill_rect(target_pos, grid)
+            obj.paste(target_pos, self.grid)
 
         pub.sendMessage('NOTHING_SELECTED')
 
@@ -303,7 +302,7 @@ class Controller(object):
         ref = (startpos, self.symbol)
         self.objects.append(ref)
 
-        self.grid.fill_rect(startpos, self.symbol.grid)
+        self.symbol.paste(startpos, self.grid)
 
     def on_paste_rect(self, startpos, endpos):
 
@@ -314,7 +313,7 @@ class Controller(object):
         ref = (startpos, self.symbol)
         self.objects.append(ref)
 
-        self.grid.fill_rect(startpos, self.symbol.grid)
+        self.symbol.paste(startpos, self.grid)
 
     # clipboard
 

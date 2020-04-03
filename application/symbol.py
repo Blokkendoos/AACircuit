@@ -6,19 +6,16 @@ AACircuit
 import copy
 
 from application import _
-from application.grid import Grid
 from application.pos import Pos
 from application import HORIZONTAL, VERTICAL
-from application import LINE_HOR, LINE_VERT, TERMINAL_TYPE, TERMINAL3
+from application import LINE_HOR, LINE_VERT, TERMINAL_TYPE
 
 
-class Symbol(Grid):
+class Symbol(object):
 
     ORIENTATION = {0: "N", 1: "E", 2: "S", 3: "W"}
 
     def __init__(self, id=0, dict=None, ori=None):
-
-        super(Symbol, self).__init__()
 
         self._id = id
 
@@ -75,6 +72,14 @@ class Symbol(Grid):
         self._ori %= 4
         return self._grid[self.ORIENTATION[self._ori]]
 
+    def paste(self, pos, grid):
+        """Paste symbol into the target grid.
+
+        :param pos: the upper left position (of the symbol grid) in the target grid
+        :param grid: the target grid
+        """
+        grid.fill_rect(pos, self.grid)
+
     def mirror(self):
         """Return the grid vertically mirrored."""
         if self._grid is None:
@@ -103,7 +108,7 @@ class Symbol(Grid):
         self._grid[self.ORIENTATION[self._ori]] = grid
 
 
-class Line(Symbol):  # TODO why is this a subclass of Symbol | Grid?
+class Line(Symbol):
 
     def __init__(self, startpos, endpos, type=0):
         super(Line, self).__init__()
@@ -180,6 +185,56 @@ class Line(Symbol):  # TODO why is this a subclass of Symbol | Grid?
 
         return grid
 
+    def paste(self, pos, grid):
+
+        if self._startpos > self._endpos:
+            pos = self._endpos
+            end = self._startpos
+        else:
+            pos = self._startpos
+            end = self._endpos
+
+        if self._dir == HORIZONTAL:
+            grid = self._paste_hor(pos, end, grid)
+        elif self._dir == VERTICAL:
+            grid = self._paste_vert(pos, end, grid)
+
+    def _paste_hor(self, pos, end, grid):
+
+        if self._terminal is None:
+            linechar = LINE_HOR
+        else:
+            linechar = self._terminal
+
+        incr = Pos(1, 0)
+        while pos < end:
+            grid.set_cell(pos, linechar)
+            linechar = LINE_HOR
+            pos += incr
+
+        if self._terminal is None:
+            grid.set_cell(pos, LINE_HOR)
+        else:
+            grid.set_cell(pos, self._terminal)
+
+    def _paste_vert(self, pos, end, grid):
+
+        if self._terminal is None:
+            linechar = LINE_VERT
+        else:
+            linechar = self._terminal
+
+        incr = Pos(0, 1)
+        while pos < end:
+            grid.set_cell(pos, linechar)
+            linechar = LINE_VERT
+            pos += incr
+
+        if self._terminal is None:
+            grid.set_cell(pos, LINE_VERT)
+        else:
+            grid.set_cell(pos, self._terminal)
+
 
 class Rect(Symbol):
 
@@ -226,3 +281,22 @@ class Rect(Symbol):
 
         # self._grid = {'N': line1.grid}
         self._grid = {'N': grid}
+
+    def paste(self, pos, grid):
+
+        ul = self._startpos
+        ur = Pos(self._endpos.x, self._startpos.y)
+        bl = Pos(self._startpos.x, self._endpos.y)
+        br = self._endpos
+
+        type = '3'
+
+        line1 = Line(ul, ur, type)
+        line2 = Line(ur, br, type)
+        line3 = Line(br, bl, type)
+        line4 = Line(bl, ul, type)
+
+        line1.paste(pos, grid)
+        line2.paste(pos, grid)
+        line3.paste(pos, grid)
+        line4.paste(pos, grid)

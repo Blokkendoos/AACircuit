@@ -137,14 +137,16 @@ class Grid(object):
         self._dirty = True
 
     def load_and_paste_from_clipboard(self):
-        None
+        print("Not yet implemented")
 
     # grid manipulation
 
     def cell(self, row, col):
         return self._grid[row][col]
 
-    def set_cell(self, row, col, value):
+    def set_cell(self, pos, value):
+        row = pos.y
+        col = pos.x
         self._grid[row][col] = value
 
     def pos_to_rc(self, pos, rect):
