@@ -76,9 +76,9 @@ class Symbol(object):
 
     def copy(self):
         ori = copy.deepcopy(self._ori)
-        grid = copy.copy(self._grid)
+        grid = copy.deepcopy(self._grid)
         startpos = copy.deepcopy(self._startpos)
-        form = copy.copy(self._form)
+        form = copy.deepcopy(self._form)
         return Symbol(self._id, grid, ori, startpos, form)
 
     @property
