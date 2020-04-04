@@ -10,7 +10,6 @@ from application import COMPONENT, COL, ROW, DRAW_RECT, RECT, LINE, MAG_LINE
 from application.grid import Grid
 from application.pos import Pos
 from application.symbol import Symbol, Line, Rect
-from application.symbol_view import SymbolView
 from application.main_window import MainWindow
 from application.component_library import ComponentLibrary
 from application.file import FileChooserWindow
@@ -195,7 +194,7 @@ class Controller(object):
                 symbol = obj[1]
 
                 # TODO representation of rotated obj in selection to follow the pointer
-                symbolview = SymbolView(symbol.grid, symbol.form, symbol.startpos)
+                symbolview = symbol.view
 
                 # position relative to the selection rectangle (upper left corner) position
                 relative_pos = pos - ul

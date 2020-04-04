@@ -4,12 +4,10 @@ AACircuit
 """
 
 from application import GRIDSIZE_W, GRIDSIZE_H
-from pubsub import pub
 import cairo
 
 
 class SymbolView(object):
-    """"Draw a single selected symbol."""
 
     def __init__(self, grid=None, form={}, startpos=None):
 
@@ -17,8 +15,18 @@ class SymbolView(object):
         self._form = form
         self._startpos = startpos
 
-        pub.subscribe(self.set_grid, 'SYMBOL_SELECTED')
-        pub.subscribe(self.set_grid, 'CHARACTER_SELECTED')
+    def draw(self, ctx, pos):
+        raise NotImplementedError
+
+
+class ComponentView(SymbolView):
+    """"Draw a single selected symbol."""
+
+    def __init__(self, grid=None, startpos=None):
+        super(ComponentView, self).__init__()
+
+        self._grid = grid
+        self._startpos = startpos
 
     def set_grid(self, symbol):
         """
@@ -34,26 +42,9 @@ class SymbolView(object):
 
         :param ctx: Cairo context
         :param pos: the canvas (x,y) coordinate
-
         """
         ctx.set_source_rgb(1, 0, 0)
         ctx.select_font_face('monospace', cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
-
-        if len(self._form) > 0:
-            self._draw_object(ctx, pos)
-        else:
-            # symbol is represented by a 'sprite'
-            self._draw_symbol(ctx, pos)
-
-    def _draw_object(self, ctx, pos):
-        for char_pos, char in self._form.items():
-            # the position relative to the pointer, in view (x,y) coordinates
-            relative_pos = pos + (char_pos - self._startpos).view_xy()
-            x, y = relative_pos.xy
-            ctx.move_to(x, y)
-            ctx.show_text(str(char))
-
-    def _draw_symbol(self, ctx, pos):
 
         surface = ctx.get_target()
 
@@ -70,3 +61,31 @@ class SymbolView(object):
             y += GRIDSIZE_H
             if y >= surface.get_height():
                 break
+
+
+class ObjectView(SymbolView):
+    """"Draw the selected object."""
+
+    def __init__(self, form=None, startpos=None):
+        super(ObjectView, self).__init__()
+
+        self._form = form
+        self._startpos = startpos
+
+    def draw(self, ctx, pos):
+        """
+        Draw the object on the canvas.
+
+        :param ctx: Cairo context
+        :param pos: the canvas (x,y) coordinate
+        """
+
+        ctx.set_source_rgb(1, 0, 0)
+        ctx.select_font_face('monospace', cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+
+        for char_pos, char in self._form.items():
+            # the position relative to the pointer, in view (x,y) coordinates
+            relative_pos = pos + (char_pos - self._startpos).view_xy()
+            x, y = relative_pos.xy
+            ctx.move_to(x, y)
+            ctx.show_text(str(char))

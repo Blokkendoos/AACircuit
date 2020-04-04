@@ -9,6 +9,7 @@ from application import _
 from application.pos import Pos
 from application import HORIZONTAL, VERTICAL
 from application import LINE_HOR, LINE_VERT, TERMINAL_TYPE
+from application.symbol_view import ComponentView, ObjectView
 
 
 class Symbol(object):
@@ -42,6 +43,10 @@ class Symbol(object):
     def __str__(self):
         str = _("symbol id: {0} orientation: {1}").format(self._id, self.ORIENTATION[self._ori])
         return str
+
+    @property
+    def view(self):
+        return ComponentView(self.grid, self._startpos)
 
     @property
     def id(self):
@@ -157,6 +162,10 @@ class Line(Symbol):
         # TODO enable to rotate (from HOR to VERT)?
         print("Not yet implemented")
 
+    @property
+    def view(self):
+        return ObjectView(self._form, self._startpos)
+
     def _line(self, pos):
         """
         Compose the line elements
@@ -253,6 +262,10 @@ class Rect(Symbol):
         self._startpos = ul
         self._endpos = br
         self._rect()
+
+    @property
+    def view(self):
+        return ObjectView(self._form, self._startpos)
 
     def paste(self, pos, grid):
 

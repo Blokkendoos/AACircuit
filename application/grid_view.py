@@ -11,7 +11,6 @@ from application import GRIDSIZE_W, GRIDSIZE_H
 from application import INSERT, HORIZONTAL, VERTICAL
 from application import IDLE, SELECTING, SELECTED
 from application import CHARACTER, COMPONENT, LINE, MAG_LINE, OBJECTS, COL, ROW, RECT, DRAW_RECT
-from application.symbol_view import SymbolView
 from application.pos import Pos
 from application.selection import SelectionLine, SelectionLineFree, SelectionMagicLine, SelectionCol, SelectionRow, SelectionRect
 
@@ -36,8 +35,6 @@ class GridView(Gtk.Frame):
         # https://athenajc.gitbooks.io/python-gtk-3-api/content/gtk-group/gtkdrawingarea.html
         self._drawing_area = Gtk.DrawingArea()
         self.add(self._drawing_area)
-
-        self._symbol_view = SymbolView()
 
         self._selection = None
 
@@ -190,11 +187,13 @@ class GridView(Gtk.Frame):
         self._selection_state = SELECTED
         self._selection_action = INSERT
         self._selection_item = CHARACTER
+        self._symbol = symbol
 
     def on_symbol_selected(self, symbol):
         self._selection_state = SELECTED
         self._selection_action = INSERT
         self._selection_item = COMPONENT
+        self._symbol = symbol
 
     def on_objects_selected(self, objects):
         self._objects = objects
@@ -320,7 +319,7 @@ class GridView(Gtk.Frame):
         elif self._selection_state == SELECTED:
 
             if self._selection_item in (CHARACTER, COMPONENT):
-                self._symbol_view.draw(ctx, self._hover_pos)
+                self._symbol.view.draw(ctx, self._hover_pos)
 
             elif self._selection_item == RECT:
                 # draw the selection rectangle
