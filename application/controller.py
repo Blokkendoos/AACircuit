@@ -149,33 +149,10 @@ class Controller(object):
     # TODO cut|copy|paste and objects list maintenance, respectively remove from or add to the list
 
     def remove_from_objects(self, symbol):
-
-        to_remove = []
         for idx, s in enumerate(self.objects):
             if id(s[1]) == id(symbol):
-                to_remove.append(idx)
-
-        for idx in to_remove:
-            del self.objects[idx]
-
-    def on_cut(self, pos, rect):
-
-        self.find_selected(pos, rect)
-
-        for obj in self.selected_objects:
-            symbol_pos, symbol, symbol_view = obj
-            self.remove_from_objects(symbol)
-
-        self.buffer = self.grid.rect(pos, rect)
-        self.grid.erase_rect(pos, rect)
-        pub.sendMessage('NOTHING_SELECTED')
-
-    def on_copy(self, pos, rect):
-        """Select all symbols that are located within the selection rectangle."""
-
-        self.find_selected(pos, rect)
-
-        pub.sendMessage('OBJECTS_SELECTED', objects=self.selected_objects)
+                del self.objects[idx]
+                break
 
     def find_selected(self, pos, rect):
         """Select all symbols that are located within the selection rectangle."""
@@ -188,9 +165,10 @@ class Controller(object):
         # select symbols of which the upper-left corner is within the selection rectangle
         selected = []
         for obj in self.objects:
-            if obj[0].in_rect(rect):
 
-                pos = obj[0]
+            pos = obj[0]
+            if pos.in_rect(rect):
+
                 symbol = obj[1]
 
                 # TODO representation of rotated obj in selection to follow the pointer
@@ -204,12 +182,38 @@ class Controller(object):
 
         self.selected_objects = selected
 
+    def on_cut(self, pos, rect):
+
+        self.find_selected(pos, rect)
+
+        for obj in self.selected_objects:
+            symbol_pos, symbol, symbol_view = obj
+            self.remove_from_objects(symbol)
+
+        self.buffer = self.grid.rect(pos, rect)
+
+        self.grid.erase_rect(pos, rect)
+        pub.sendMessage('NOTHING_SELECTED')
+
+    def on_copy(self, pos, rect):
+        """Select all symbols that are located within the selection rectangle."""
+
+        self.find_selected(pos, rect)
+
+        pub.sendMessage('OBJECTS_SELECTED', objects=self.selected_objects)
+
     def on_paste(self, pos, rect):
         if self.buffer is not None:
             self.grid.fill_rect(pos, self.buffer)
         pub.sendMessage('NOTHING_SELECTED')
 
     def on_delete(self, pos, rect):
+
+        self.find_selected(pos, rect)
+        for obj in self.selected_objects:
+            symbol_pos, symbol, symbol_view = obj
+            self.remove_from_objects(symbol)
+
         self.grid.erase_rect(pos, rect)
         pub.sendMessage('NOTHING_SELECTED')
 
