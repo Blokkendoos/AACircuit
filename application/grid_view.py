@@ -472,6 +472,7 @@ class GridView(Gtk.Frame):
                 start = self._drag_startpos.grid_rc()
                 end = self._drag_endpos.grid_rc()
 
+                # TODO move this to the Symbol class?
                 if start > end:
                     endpos = start
                     startpos = end
@@ -497,6 +498,7 @@ class GridView(Gtk.Frame):
                 elif self._drag_dir == VERTICAL:
                     end.x = start.x
 
+                # TODO move this to the Symbol class?
                 if start > end:
                     endpos = start
                     startpos = end

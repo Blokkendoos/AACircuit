@@ -15,11 +15,9 @@ class Symbol(object):
 
     ORIENTATION = {0: "N", 1: "E", 2: "S", 3: "W"}
 
-    def __init__(self, id=0, dict=None, ori=None):
+    def __init__(self, id=0, dict=None, ori=None, startpos=None, form=None):
 
         self._id = id
-        self._form = {}
-        self._startpos = Pos(0, 0)
 
         if ori is None:
             self._ori = 0
@@ -30,6 +28,16 @@ class Symbol(object):
             self._grid = self.default
         else:
             self._grid = dict
+
+        if startpos is None:
+            self._startpos = Pos(0, 0)
+        else:
+            self._startpos = startpos
+
+        if form is None:
+            self._form = {}
+        else:
+            self._form = form
 
     def __str__(self):
         str = _("symbol id: {0} orientation: {1}").format(self._id, self.ORIENTATION[self._ori])
@@ -42,6 +50,10 @@ class Symbol(object):
     @property
     def ori(self):
         return self._ori
+
+    @property
+    def form(self):
+        return self._form
 
     @property
     def startpos(self):
@@ -64,8 +76,10 @@ class Symbol(object):
 
     def copy(self):
         ori = copy.deepcopy(self._ori)
-        grid = copy.deepcopy(self._grid)
-        return Symbol(self._id, grid, ori)
+        grid = copy.copy(self._grid)
+        startpos = copy.deepcopy(self._startpos)
+        form = copy.copy(self._form)
+        return Symbol(self._id, grid, ori, startpos, form)
 
     @property
     def grid(self):
@@ -156,7 +170,6 @@ class Line(Symbol):
         end = self._endpos
 
         offset = pos - start
-        start = pos
         end += offset
 
         # print("start:", start, " end:", end)
@@ -164,9 +177,12 @@ class Line(Symbol):
         if self._dir == HORIZONTAL:
             line_char = LINE_HOR
             incr = Pos(1, 0)
-        else:
+        elif self._dir == VERTICAL:
             line_char = LINE_VERT
             incr = Pos(0, 1)
+        else:
+            line_char = "?"
+            incr = Pos(1, 1)
 
         if self._terminal is None:
             terminal = line_char
@@ -216,8 +232,8 @@ class Rect(Symbol):
 
         line1 = Line(ul, ur, type)
         line2 = Line(ur, br, type)
-        line3 = Line(br, bl, type)
-        line4 = Line(bl, ul, type)
+        line3 = Line(bl, br, type)
+        line4 = Line(ul, bl, type)
 
         form = {}
         form.update(line1._form)

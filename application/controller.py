@@ -194,7 +194,8 @@ class Controller(object):
                 pos = obj[0]
                 symbol = obj[1]
 
-                symbolview = SymbolView(symbol.grid, symbol._form, symbol.startpos)
+                # TODO representation of rotated obj in selection to follow the pointer
+                symbolview = SymbolView(symbol.grid, symbol.form, symbol.startpos)
 
                 # position relative to the selection rectangle (upper left corner) position
                 relative_pos = pos - ul

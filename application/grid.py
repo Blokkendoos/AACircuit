@@ -147,7 +147,8 @@ class Grid(object):
     def set_cell(self, pos, value):
         row = pos.y
         col = pos.x
-        self._grid[row][col] = value
+        if row < self.nr_rows and col < self.nr_cols:
+            self._grid[row][col] = value
 
     def pos_to_rc(self, pos, rect):
         """Convert (x,y) position and rect to colum and row start/end values.
