@@ -4,6 +4,7 @@ AACircuit.py
 """
 
 from pubsub import pub
+import re
 
 from application import _
 from application import COMPONENT, COL, ROW, DRAW_RECT, RECT, LINE, MAG_LINE
@@ -267,7 +268,7 @@ class Controller(object):
 
     def on_paste_symbol(self, pos):
 
-        str = "{0}:{1},{2},{3}".format(COMPONENT, self.symbol.id, self.symbol.ori, pos)
+        str = "{0}:{1},{2},{3},{4}".format(COMPONENT, self.symbol.id, self.symbol.ori, self.symbol.mirrored, pos)
         self.memo.append(str)
 
         symbol = self.symbol.copy()
@@ -362,7 +363,6 @@ class Controller(object):
 
             str = ""
             for line in self.memo:
-                print("memo:{0}".format(line))
                 str += line + "\n"
             fout.write(str)
 
@@ -374,14 +374,82 @@ class Controller(object):
         self.filename = filename
         try:
             # open file in binary mode
-            file = open(filename, 'rb')
-            str = file.read()
+            file = open(filename, 'r')
+            str = file.readlines()
 
-            self.grid.from_str(str)
-            pub.sendMessage('GRID', grid=self.grid)
+            memo = []
+            for line in str:
+                memo.append(line)
+
+            # pub.sendMessage('GRID', grid=self.grid)
             pub.sendMessage('FILE_OPENED')
 
             file.close()
 
-        except IOError:
+            skipped = self.play_memo(memo)
+            if skipped > 0:
+                print("{0} lines skipped in file {1}".format(skipped, filename))
+
+        except (IOError, UnicodeDecodeError):
             print(_("Unable to open file for reading: %s" % filename))
+
+    def play_memo(self, memo):
+
+        for item in memo:
+
+            m = re.search('(^comp|^rect|^line):(\d+),(\d+),(\d+),?(\d*),?(\d*)', item)  # noqa W605
+
+            skip = 0
+            if m is None:
+
+                skip += 1
+
+            else:
+                # print("regexp groups:")
+                # for grp in m.groups():
+                #     print(grp)
+
+                type = m.group(1)
+
+                if type == COMPONENT:
+
+                    id = m.group(2)
+                    orientation = m.group(3)
+                    mirrored = m.group(4)
+                    x, y = m.group(5, 6)
+                    pos = Pos(x, y)
+
+                    # print("MEMO: {0} pos: ({1},{2})".format(item, x, y))
+
+                    self.symbol = self.components.get_symbol_byid(id)
+                    self.symbol.ori = orientation
+                    if mirrored == '1':
+                        self.symbol.mirror()
+                    self.on_paste_symbol(pos)
+
+                elif type == LINE:
+
+                    terminal = m.group(2)
+
+                    x, y = m.group(3, 4)
+                    startpos = Pos(x, y)
+
+                    x, y = m.group(5, 6)
+                    endpos = Pos(x, y)
+
+                    self.on_paste_line(startpos, endpos, terminal)
+
+                elif type == DRAW_RECT:
+
+                    x, y = m.group(2, 3)
+                    startpos = Pos(x, y)
+
+                    x, y = m.group(4, 5)
+                    endpos = Pos(x, y)
+
+                    self.on_paste_rect(startpos, endpos)
+
+                else:
+                    skip += 1
+
+        return skip

@@ -96,6 +96,23 @@ class ComponentLibrary(object):
 
         return symbol
 
+    def get_symbol_byid(self, id):
+        """
+        return the id and grid for the symbol that represents the given component.
+
+        :param key: the component name
+        :returns the symbol id and grid
+        """
+        try:
+            keys = list(self._dict)
+            key = keys[int(id)]
+        except IndexError:
+            key = "Resistor"
+
+        symbol = self.get_symbol(key)
+
+        return symbol
+
     def nr_components(self):
         return len(self._dict)
 

@@ -16,7 +16,7 @@ class Symbol(object):
 
     ORIENTATION = {0: "N", 1: "E", 2: "S", 3: "W"}
 
-    def __init__(self, id=0, dict=None, ori=None, startpos=None, form=None):
+    def __init__(self, id=0, dict=None, ori=None, mirrored=None, startpos=None, form=None):
 
         self._id = id
 
@@ -24,6 +24,11 @@ class Symbol(object):
             self._ori = 0
         else:
             self._ori = ori
+
+        if mirrored is None:
+            self._mirrored = 0
+        else:
+            self._mirrored = mirrored
 
         if dict is None:
             self._grid = self.default
@@ -56,6 +61,17 @@ class Symbol(object):
     def ori(self):
         return self._ori
 
+    @ori.setter
+    def ori(self, value):
+        # orientation can be set as the grid is dynamically selected (in grid() method)
+        if value in (0, 1, 2, 3):
+            self._ori = value
+
+    @property
+    def mirrored(self):
+        # mirrored can only be set via the mirror() method
+        return self._mirrored
+
     @property
     def form(self):
         return self._form
@@ -81,10 +97,11 @@ class Symbol(object):
 
     def copy(self):
         ori = copy.deepcopy(self._ori)
+        mirrored = copy.deepcopy(self._mirrored)
         grid = copy.deepcopy(self._grid)
         startpos = copy.deepcopy(self._startpos)
         form = copy.deepcopy(self._form)
-        return Symbol(self._id, grid, ori, startpos, form)
+        return Symbol(self._id, grid, ori, mirrored, startpos, form)
 
     @property
     def grid(self):
@@ -135,6 +152,9 @@ class Symbol(object):
             grid.append(rev)
 
         self._grid[self.ORIENTATION[self._ori]] = grid
+
+        self._mirrored += 1
+        self._mirrored %= 2
 
 
 class Line(Symbol):
