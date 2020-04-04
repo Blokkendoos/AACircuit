@@ -82,8 +82,7 @@ class GridView(Gtk.Frame):
         pub.subscribe(self.on_symbol_selected, 'SYMBOL_SELECTED')
         pub.subscribe(self.on_objects_selected, 'OBJECTS_SELECTED')
 
-        pub.subscribe(self.on_select_rect, 'SELECT_RECT')
-
+        pub.subscribe(self.on_selecting_rect, 'SELECTING_RECT')
         pub.subscribe(self.on_selecting_objects, 'SELECTING_OBJECTS')
         pub.subscribe(self.on_selecting_row, 'SELECTING_ROW')
         pub.subscribe(self.on_selecting_col, 'SELECTING_COL')
@@ -201,9 +200,9 @@ class GridView(Gtk.Frame):
         self._selection_action = INSERT
         self._selection_item = OBJECTS
 
-    def on_select_rect(self, action):
+    def on_selecting_rect(self, objects):
+        self._objects = objects
         self._selection_state = IDLE
-        self._selection_action = action
         self._selection_item = RECT
         self._selection = SelectionRect()
 
@@ -291,10 +290,16 @@ class GridView(Gtk.Frame):
 
     def draw_selection(self, ctx):
 
-        if self._selection_state == SELECTING:
+        if self._selection_state == IDLE:
+
+            if self._selection_item == RECT:
+                self.draw_selected_objects(ctx)
+
+        elif self._selection_state == SELECTING:
 
             if self._selection_item == OBJECTS:
                 self.draw_selected_objects(ctx)
+
             else:
                 ctx.set_source_rgb(0.5, 0.5, 0.75)
                 ctx.set_line_width(0.5)
@@ -314,6 +319,9 @@ class GridView(Gtk.Frame):
                     self._selection.ml_startpos = self._ml_startpos
                     self._selection.ml_endpos = self._ml_currentpos
 
+                if self._selection_item == RECT:
+                    self.draw_selected_objects(ctx)
+
                 self._selection.draw(ctx)
 
         elif self._selection_state == SELECTED:
@@ -326,6 +334,7 @@ class GridView(Gtk.Frame):
                 self._selection.startpos = self._drag_startpos
                 self._selection.endpos = self._drag_endpos
                 self._selection.draw(ctx)
+                self.draw_selected_objects(ctx)
 
             elif self._selection_item == OBJECTS:
                 self.draw_selected_objects(ctx, True)
@@ -353,9 +362,9 @@ class GridView(Gtk.Frame):
             if follow_pointer:
                 vw = obj[2]
                 vw.draw(ctx, pos)
-            else:
-                ctx.move_to(pos.x, pos.y)
-                ctx.show_text('X')  # mark the upper-left corner with "x"
+
+            ctx.move_to(pos.x, pos.y)
+            ctx.show_text('X')  # mark the upper-left corner with "x"
 
         self.queue_draw()
 

@@ -93,6 +93,7 @@ class Controller(object):
         pub.subscribe(self.on_paste_rect, 'PASTE_RECT')
         pub.subscribe(self.on_undo, 'UNDO')
 
+        pub.subscribe(self.on_select_rect, 'SELECT_RECT')
         pub.subscribe(self.on_select_objects, 'SELECT_OBJECTS')
 
         # insert/remove rows or columns
@@ -346,6 +347,9 @@ class Controller(object):
         pub.sendMessage('GRID', grid=self.grid)
 
     # other
+
+    def on_select_rect(self):
+        pub.sendMessage('SELECTING_RECT', objects=self.objects)
 
     def on_select_objects(self):
         pub.sendMessage('SELECTING_OBJECTS', objects=self.objects)

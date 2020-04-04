@@ -10,7 +10,7 @@ from pubsub import pub
 import locale
 from locale import gettext as _
 
-from application import INSERT, REMOVE, IDLE
+from application import INSERT, REMOVE
 from application.menubar import MenuBar
 from application.grid_view import GridView
 from application.component_view import ComponentView
@@ -237,7 +237,7 @@ class MainWindow(Gtk.Window):
         Gtk.main_quit()
 
     def on_select_rect(self, button):
-        pub.sendMessage('SELECT_RECT', action=IDLE)
+        pub.sendMessage('SELECT_RECT')
 
     def on_select_objects(self, button):
         pub.sendMessage('SELECT_OBJECTS')
