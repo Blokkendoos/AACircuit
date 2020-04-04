@@ -190,11 +190,16 @@ class Controller(object):
         selected = []
         for obj in self.objects:
             if obj[0].in_rect(rect):
+
                 pos = obj[0]
                 symbol = obj[1]
+
+                symbolview = SymbolView(symbol.grid, symbol._form, symbol.startpos)
+
+                # position relative to the selection rectangle (upper left corner) position
                 relative_pos = pos - ul
-                symbolview = SymbolView(symbol.grid)
                 sel_obj = (relative_pos, symbol, symbolview)
+
                 selected.append(sel_obj)
 
         self.selected_objects = selected
@@ -261,6 +266,7 @@ class Controller(object):
         self.memo.append(str)
 
         symbol = self.symbol.copy()
+        symbol.pos = pos
         ref = (pos, symbol)
         self.objects.append(ref)
 

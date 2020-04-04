@@ -18,6 +18,8 @@ class Symbol(object):
     def __init__(self, id=0, dict=None, ori=None):
 
         self._id = id
+        self._form = {}
+        self._startpos = Pos(0, 0)
 
         if ori is None:
             self._ori = 0
@@ -40,6 +42,14 @@ class Symbol(object):
     @property
     def ori(self):
         return self._ori
+
+    @property
+    def startpos(self):
+        return self._startpos
+
+    @startpos.setter
+    def startpos(self, value):
+        self._startpos = value
 
     @property
     def default(self):
@@ -119,7 +129,7 @@ class Line(Symbol):
         self._terminal = TERMINAL_TYPE[type]
 
         self._direction()
-        self._line()
+        self._line(self._startpos)
 
     def _direction(self):
         if self._startpos.x == self._endpos.x:
@@ -129,68 +139,19 @@ class Line(Symbol):
         else:
             self._dir = None
 
-    def _line(self):
-        if self._dir == HORIZONTAL:
-            grid = self._line_hor()
-        elif self._dir == VERTICAL:
-            grid = self._line_vert()
-        else:
-            grid = ['?']
-
-        self._grid = {'N': grid}
-
-    def _line_hor(self):
-        grid = []
-
-        if self._terminal is None:
-            linechar = LINE_HOR
-        else:
-            linechar = self._terminal
-
-        row = []
-        length = abs(self._endpos.x - self._startpos.x)
-        for i in range(length):
-            row.append(linechar)
-            linechar = LINE_HOR
-
-        if self._terminal is None:
-            linechar = LINE_HOR
-        else:
-            linechar = self._terminal
-
-        row.append(linechar)
-        grid.append(row)
-
-        return grid
-
-    def _line_vert(self):
-        grid = []
-
-        if self._terminal is None:
-            linechar = LINE_VERT
-        else:
-            linechar = self._terminal
-
-        length = abs(self._endpos.y - self._startpos.y)
-        for i in range(length):
-            grid.append([linechar])
-            linechar = LINE_VERT
-
-        if self._terminal is None:
-            linechar = LINE_VERT
-        else:
-            linechar = self._terminal
-
-        grid.append([linechar])
-
-        return grid
-
     def grid_next(self):
         # TODO enable to rotate (from HOR to VERT)?
-        return self._grid[self.ORIENTATION[0]]
+        print("Not yet implemented")
 
-    def paste(self, pos, grid):
+    def _line(self, pos):
+        """
+        Compose the line elements
 
+        :param pos: the (col,row) coordinate of the upper left position of this line in the target grid
+        :param grid: the target grid
+        """
+
+        self._form = {}
         start = self._startpos
         end = self._endpos
 
@@ -201,45 +162,35 @@ class Line(Symbol):
         # print("start:", start, " end:", end)
 
         if self._dir == HORIZONTAL:
-            grid = self._paste_hor(start, end, grid)
-        elif self._dir == VERTICAL:
-            grid = self._paste_vert(start, end, grid)
-
-    def _paste_hor(self, pos, end, grid):
+            line_char = LINE_HOR
+            incr = Pos(1, 0)
+        else:
+            line_char = LINE_VERT
+            incr = Pos(0, 1)
 
         if self._terminal is None:
-            linechar = LINE_HOR
+            terminal = line_char
         else:
-            linechar = self._terminal
+            terminal = self._terminal
 
-        incr = Pos(1, 0)
+        # startpoint terminal
+        self._form[pos] = terminal
+        pos += incr
+
+        # TODO make this one string (and support an appropriate fill method for this in grid)
         while pos < end:
-            grid.set_cell(pos, linechar)
-            linechar = LINE_HOR
+            self._form[pos] = line_char
             pos += incr
 
-        if self._terminal is None:
-            grid.set_cell(pos, LINE_HOR)
-        else:
-            grid.set_cell(pos, self._terminal)
+        # endpoint terminal
+        self._form[pos] = terminal
 
-    def _paste_vert(self, pos, end, grid):
+    def paste(self, pos, grid):
 
-        if self._terminal is None:
-            linechar = LINE_VERT
-        else:
-            linechar = self._terminal
+        self._line(pos)
 
-        incr = Pos(0, 1)
-        while pos < end:
-            grid.set_cell(pos, linechar)
-            linechar = LINE_VERT
-            pos += incr
-
-        if self._terminal is None:
-            grid.set_cell(pos, LINE_VERT)
-        else:
-            grid.set_cell(pos, self._terminal)
+        for key, value in self._form.items():
+            grid.set_cell(key, value)
 
 
 class Rect(Symbol):
@@ -259,7 +210,7 @@ class Rect(Symbol):
         bl = Pos(self._startpos.x, self._endpos.y)
         br = self._endpos
 
-        print("ul:", ul, " ur:", ur, "\nbl:", bl, "br:", br)
+        # print("ul:", ul, " ur:", ur, "\nbl:", bl, "br:", br)
 
         type = '3'
 
@@ -268,14 +219,12 @@ class Rect(Symbol):
         line3 = Line(br, bl, type)
         line4 = Line(bl, ul, type)
 
-        # TODO merge the individual line grids into one (respecting their relative position in the resulting rectangle)
-        grid = []
-        grid.extend(line1.grid)
-        grid.extend(line2.grid)
-        grid.extend(line3.grid)
-        grid.extend(line4.grid)
-
-        self._grid = {'N': grid}
+        form = {}
+        form.update(line1._form)
+        form.update(line2._form)
+        form.update(line3._form)
+        form.update(line4._form)
+        self._form = form
 
     def grid_next(self):
 
@@ -288,8 +237,6 @@ class Rect(Symbol):
         self._startpos = ul
         self._endpos = br
         self._rect()
-
-        return self._grid[self.ORIENTATION[0]]
 
     def paste(self, pos, grid):
 
