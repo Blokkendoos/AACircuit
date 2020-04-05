@@ -397,59 +397,91 @@ class Controller(object):
 
         for item in memo:
 
-            m = re.search('(^comp|^rect|^line):(\d+),(\d+),(\d+),?(\d*),?(\d*)', item)  # noqa W605
+            m1 = re.search('(^comp|^rect|^line):(\d+),(\d+),(\d+),?(\d*),?(\d*)', item)  # noqa W605
+            m2 = re.search('(^d|^i)(row|col):(\d+)', item)  # noqa W605
 
-            skip = 0
-            if m is None:
+            skipped = 0
 
-                skip += 1
-
+            if m1 is not None:
+                self.play_m1(m1, skipped)
+            elif m2 is not None:
+                self.play_m2(m2, skipped)
             else:
-                # print("regexp groups:")
-                # for grp in m.groups():
-                #     print(grp)
+                skipped += 1
 
-                type = m.group(1)
+        return skipped
 
-                if type == COMPONENT:
+    def play_m1(self, m, skipped):
 
-                    id = m.group(2)
-                    orientation = m.group(3)
-                    mirrored = m.group(4)
-                    x, y = m.group(5, 6)
-                    pos = Pos(x, y)
+        # print("regexp groups:")
+        # for grp in m.groups():
+        #     print(grp)
 
-                    # print("MEMO: {0} pos: ({1},{2})".format(item, x, y))
+        type = m.group(1)
 
-                    self.symbol = self.components.get_symbol_byid(id)
-                    self.symbol.ori = orientation
-                    if mirrored == '1':
-                        self.symbol.mirror()
-                    self.on_paste_symbol(pos)
+        if type == COMPONENT:
 
-                elif type == LINE:
+            id = m.group(2)
+            orientation = m.group(3)
+            mirrored = m.group(4)
+            x, y = m.group(5, 6)
+            pos = Pos(x, y)
 
-                    terminal = m.group(2)
+            # print("MEMO: {0} pos: ({1},{2})".format(item, x, y))
 
-                    x, y = m.group(3, 4)
-                    startpos = Pos(x, y)
+            self.symbol = self.components.get_symbol_byid(id)
+            self.symbol.ori = orientation
+            if mirrored == '1':
+                self.symbol.mirror()
+            self.on_paste_symbol(pos)
 
-                    x, y = m.group(5, 6)
-                    endpos = Pos(x, y)
+        elif type == LINE:
 
-                    self.on_paste_line(startpos, endpos, terminal)
+            terminal = m.group(2)
 
-                elif type == DRAW_RECT:
+            x, y = m.group(3, 4)
+            startpos = Pos(x, y)
 
-                    x, y = m.group(2, 3)
-                    startpos = Pos(x, y)
+            x, y = m.group(5, 6)
+            endpos = Pos(x, y)
 
-                    x, y = m.group(4, 5)
-                    endpos = Pos(x, y)
+            self.on_paste_line(startpos, endpos, terminal)
 
-                    self.on_paste_rect(startpos, endpos)
+        elif type == DRAW_RECT:
 
-                else:
-                    skip += 1
+            x, y = m.group(2, 3)
+            startpos = Pos(x, y)
 
-        return skip
+            x, y = m.group(4, 5)
+            endpos = Pos(x, y)
+
+            self.on_paste_rect(startpos, endpos)
+
+        else:
+            skipped += 1
+
+    def play_m2(self, m, skipped):
+
+        type = m.group(1)
+
+        if type == 'd':
+
+            what = m.group(2)
+            nr = int(m.group(3))
+
+            if what == COL:
+                self.on_remove_col(nr)
+            elif what == ROW:
+                self.on_remove_row(nr)
+
+        elif type == 'i':
+
+            what = m.group(2)
+            nr = int(m.group(3))
+
+            if what == COL:
+                self.on_insert_col(nr)
+            elif what == ROW:
+                self.on_insert_row(nr)
+        else:
+            skipped += 1
