@@ -15,3 +15,11 @@ A kind of reverse engineered version, where the idea and GUI layout are taken fr
 For the ASCII representation, use copy or "Save ASCII". Use a monospaced font in your document, news- or mailclient!
 
 Library: every symbol has to be created for each of the four directions.
+
+
++++ THIS IS NOT A FINISHED APPLICATION +++
+
+!!! WORK IN PROGRESS !!!
+
+
+Original: https://github.com/Andy1978/AACircuit
