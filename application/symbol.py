@@ -105,12 +105,7 @@ class Symbol(object):
 
     @property
     def grid(self):
-        if len(self._grid) == 1:
-            # TODO separate logic for single char / default symbol?
-            # single character or default symbol
-            return self._grid[self.ORIENTATION[0]]
-        else:
-            return self._grid[self.ORIENTATION[self._ori]]
+        return self._grid[self.ORIENTATION[self._ori]]
 
     def grid_next(self):
         """Return the grid with the next (90° clockwise rotated) orientation for this symbol."""
@@ -157,13 +152,25 @@ class Symbol(object):
         self._mirrored %= 2
 
 
+class Character(Symbol):
+
+    def __init__(self, id=0, dict=None):
+        super(Character, self).__init__(id=id, dict=dict)
+
+    @property
+    def grid(self):
+        return self._grid[self.ORIENTATION[0]]
+
+    def grid_next(self):
+        # print("Not implemented")
+        return
+
+
 class Line(Symbol):
 
     def __init__(self, startpos, endpos, type=0):
-        super(Line, self).__init__()
+        super(Line, self).__init__(id=type, startpos=startpos)
 
-        self._id = type
-        self._startpos = startpos
         self._endpos = endpos
         self._terminal = TERMINAL_TYPE[type]
 
@@ -180,7 +187,7 @@ class Line(Symbol):
 
     def grid_next(self):
         # TODO enable to rotate (from HOR to VERT)?
-        print("Not yet implemented")
+        print("Not implemented")
 
     @property
     def view(self):
@@ -241,9 +248,8 @@ class Line(Symbol):
 class Rect(Symbol):
 
     def __init__(self, startpos, endpos):
-        super(Rect, self).__init__()
+        super(Rect, self).__init__(startpos=startpos)
 
-        self._startpos = startpos
         self._endpos = endpos
 
         self._rect()

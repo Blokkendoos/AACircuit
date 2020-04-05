@@ -9,7 +9,7 @@ import sys
 import json
 
 from application import _
-from application.symbol import Symbol
+from application.symbol import Symbol, Character
 
 
 class ComponentLibrary(object):
@@ -49,6 +49,8 @@ class ComponentLibrary(object):
         :param key: the component name
         :returns the symbol id
         """
+        # TODO separate range (other than comp) for chars
+
         if len(key) == 1:
             # single character id is its (decimal) ASCII value
             id = ord(key)
@@ -84,15 +86,14 @@ class ComponentLibrary(object):
         """
 
         if len(key) == 1:
-            # TODO separate the code for single chars?
             # single character
             grid = {"N": [[key]]}
-            id = ord(key)
+            id = ord(key) + 500  # arbitrary range (other than comp) for chars
+            symbol = Character(id, grid)
         else:
             grid = self.get_grid(key)
             id = self.get_id(key)
-
-        symbol = Symbol(id, grid)
+            symbol = Symbol(id, grid)
 
         return symbol
 
@@ -104,9 +105,13 @@ class ComponentLibrary(object):
         :returns the symbol id and grid
         """
         try:
-            idx = int(id) - 1
-            keys = list(self._dict)
-            key = keys[idx]
+            idx = int(id)
+            if idx >= 500:
+                key = chr(idx - 500)  # single character
+            else:
+                idx -= 1  # index start at zero
+                keys = list(self._dict)
+                key = keys[idx]
 
         except IndexError:
             key = "Resistor"
