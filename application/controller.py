@@ -373,7 +373,6 @@ class Controller(object):
     def on_read_from_file(self, filename):
         self.filename = filename
         try:
-            # open file in binary mode
             file = open(filename, 'r')
             str = file.readlines()
 
@@ -381,10 +380,12 @@ class Controller(object):
             for line in str:
                 memo.append(line)
 
-            # pub.sendMessage('GRID', grid=self.grid)
             pub.sendMessage('FILE_OPENED')
 
             file.close()
+
+            self.grid = Grid(72, 36)  # the ASCII grid
+            pub.sendMessage('GRID', grid=self.grid)
 
             skipped = self.play_memo(memo)
             if skipped > 0:
