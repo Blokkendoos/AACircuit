@@ -104,8 +104,10 @@ class ComponentLibrary(object):
         :returns the symbol id and grid
         """
         try:
+            idx = int(id) - 1
             keys = list(self._dict)
-            key = keys[int(id)]
+            key = keys[idx]
+
         except IndexError:
             key = "Resistor"
 

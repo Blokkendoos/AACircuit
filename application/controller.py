@@ -425,6 +425,7 @@ class Controller(object):
             id = m.group(2)
             orientation = m.group(3)
             mirrored = m.group(4)
+
             x, y = m.group(5, 6)
             pos = Pos(x, y)
 
