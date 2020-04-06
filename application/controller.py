@@ -7,10 +7,10 @@ from pubsub import pub
 import re
 
 from application import _
-from application import COMPONENT, COL, ROW, DRAW_RECT, RECT, LINE, MAG_LINE
+from application import COMPONENT, CHARACTER, COL, ROW, DRAW_RECT, RECT, LINE, MAG_LINE
 from application.grid import Grid
 from application.pos import Pos
-from application.symbol import Symbol, Line, Rect
+from application.symbol import Symbol, Character, Line, Rect
 from application.main_window import MainWindow
 from application.component_library import ComponentLibrary
 from application.file import FileChooserWindow
@@ -88,6 +88,7 @@ class Controller(object):
 
         pub.subscribe(self.on_rotate_symbol, 'ROTATE_SYMBOL')
         pub.subscribe(self.on_mirror_symbol, 'MIRROR_SYMBOL')
+        pub.subscribe(self.on_paste_character, 'PASTE_CHARACTER')
         pub.subscribe(self.on_paste_symbol, 'PASTE_SYMBOL')
         pub.subscribe(self.on_paste_objects, 'PASTE_OBJECTS')
         pub.subscribe(self.on_paste_line, 'PASTE_LINE')
@@ -243,9 +244,9 @@ class Controller(object):
 
     # character/component symbol
 
-    def on_character_changed(self, label):
-        self.symbol = self.components.get_symbol(label)
-        pub.sendMessage('CHARACTER_SELECTED', symbol=self.symbol)
+    def on_character_changed(self, char):
+        self.symbol = Character(char)
+        pub.sendMessage('CHARACTER_SELECTED', char=self.symbol)
 
     def on_component_changed(self, label):
         self.selected_objects = []
@@ -269,6 +270,18 @@ class Controller(object):
     def on_paste_symbol(self, pos):
 
         str = "{0}:{1},{2},{3},{4}".format(COMPONENT, self.symbol.id, self.symbol.ori, self.symbol.mirrored, pos)
+        self.memo.append(str)
+
+        symbol = self.symbol.copy()
+        symbol.pos = pos
+        ref = (pos, symbol)
+        self.objects.append(ref)
+
+        symbol.paste(pos, self.grid)
+
+    def on_paste_character(self, pos):
+
+        str = "{0}:{1},{2}".format(CHARACTER, self.symbol.id, pos)
         self.memo.append(str)
 
         symbol = self.symbol.copy()
@@ -357,6 +370,8 @@ class Controller(object):
 
     # file open/save
 
+    # TODO naar eigen file of class zetten
+
     def on_write_to_file(self, filename):
         try:
             fout = open(filename, 'w')
@@ -398,7 +413,7 @@ class Controller(object):
 
         for item in memo:
 
-            m1 = re.search('(^comp|^rect|^line):(\d+),(\d+),(\d+),?(\d*),?(\d*)', item)  # noqa W605
+            m1 = re.search('(^comp|^char|^rect|^line):(\d+),(\d+),(\d+),?(\d*),?(\d*)', item)  # noqa W605
             m2 = re.search('(^d|^i)(row|col):(\d+)', item)  # noqa W605
 
             skipped = 0
@@ -436,6 +451,17 @@ class Controller(object):
             if mirrored == '1':
                 self.symbol.mirror()
             self.on_paste_symbol(pos)
+
+        elif type == CHARACTER:
+
+            ascii = m.group(2)
+            char = chr(int(ascii))
+
+            x, y = m.group(3, 4)
+            pos = Pos(x, y)
+
+            self.symbol = Character(char)
+            self.on_paste_character(pos)
 
         elif type == LINE:
 

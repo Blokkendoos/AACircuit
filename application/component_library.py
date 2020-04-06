@@ -86,15 +86,9 @@ class ComponentLibrary(object):
         :returns the symbol id and grid
         """
 
-        if len(key) == 1:
-            # single character
-            grid = {"N": [[key]]}
-            id = ord(key) + 500  # arbitrary range (other than comp) for chars
-            symbol = Character(id, grid)
-        else:
-            grid = self.get_grid(key)
-            id = self.get_id(key)
-            symbol = Symbol(id, grid)
+        grid = self.get_grid(key)
+        id = self.get_id(key)
+        symbol = Symbol(id, grid)
 
         return symbol
 
@@ -106,13 +100,9 @@ class ComponentLibrary(object):
         :returns the symbol id and grid
         """
         try:
-            idx = int(id)
-            if idx >= 500:
-                key = chr(idx - 500)  # single character
-            else:
-                idx -= 1  # index start at zero
-                keys = list(self._dict)
-                key = keys[idx]
+            idx -= 1  # index start at zero
+            keys = list(self._dict)
+            key = keys[idx]
 
         except IndexError:
             key = DEFAULT_COMPONENT_KEY

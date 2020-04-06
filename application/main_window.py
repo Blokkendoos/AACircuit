@@ -230,7 +230,7 @@ class MainWindow(Gtk.Window):
 
     def on_char_button_clicked(self, button):
         char = button.get_label()
-        pub.sendMessage('CHARACTER_CHANGED', label=char)
+        pub.sendMessage('CHARACTER_CHANGED', char=char)
 
     def on_close_clicked(self, button):
         print(_("Closing application"))

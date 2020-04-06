@@ -154,8 +154,12 @@ class Symbol(object):
 
 class Character(Symbol):
 
-    def __init__(self, id=0, dict=None):
-        super(Character, self).__init__(id=id, dict=dict)
+    def __init__(self, char):
+
+        id = ord(char)
+        grid = {"N": [[char]]}
+
+        super(Character, self).__init__(id=id, dict=grid)
 
     @property
     def grid(self):
