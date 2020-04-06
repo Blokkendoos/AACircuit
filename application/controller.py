@@ -264,7 +264,7 @@ class Controller(object):
                 symbol.grid_next()
 
     def on_mirror_symbol(self):
-        self.symbol.mirror()
+        self.symbol.mirrored = 1
         pub.sendMessage('SYMBOL_SELECTED', symbol=self.symbol)
 
     def on_paste_symbol(self, pos):
@@ -293,12 +293,28 @@ class Controller(object):
 
     def on_paste_objects(self, pos):
 
+        def classname(x):
+            return type(x).__name__
+
         for obj in self.selected_objects:
 
             relative_pos, symbol, symbolview = obj
-            target_pos = pos + relative_pos + Pos(0, 1)
+            target_pos = pos + relative_pos  # TODO + Pos(0, 1)
 
-            str = "{0}:{1},{2},{3}".format(COMPONENT, symbol.id, symbol.ori, target_pos)
+            if classname(symbol) == 'Character':
+                str = "{0}:{1},{2}".format(CHARACTER, symbol.id, target_pos)
+
+            elif classname(symbol) == 'Line':
+                endpos = (symbol.endpos - symbol.startpos) + pos + relative_pos
+                str = "{0}:{1},{2},{3}".format(LINE, symbol.type, target_pos, endpos)
+
+            elif classname(symbol) == 'Rect':
+                endpos = (symbol.endpos - symbol.startpos) + pos + relative_pos
+                str = "{0}:{1},{2}".format(DRAW_RECT, target_pos, endpos)
+
+            else:
+                str = "{0}:{1},{2},{3},{4}".format(COMPONENT, symbol.id, symbol.ori, symbol.mirrored, target_pos)
+
             self.memo.append(str)
 
             ref = (target_pos, symbol)
@@ -438,8 +454,8 @@ class Controller(object):
         if type == COMPONENT:
 
             id = m.group(2)
-            orientation = m.group(3)
-            mirrored = m.group(4)
+            orientation = int(m.group(3))
+            mirrored = int(m.group(4))
 
             x, y = m.group(5, 6)
             pos = Pos(x, y)
@@ -448,8 +464,8 @@ class Controller(object):
 
             self.symbol = self.components.get_symbol_byid(id)
             self.symbol.ori = orientation
-            if mirrored == '1':
-                self.symbol.mirror()
+            self.symbol.mirrored = mirrored
+
             self.on_paste_symbol(pos)
 
         elif type == CHARACTER:

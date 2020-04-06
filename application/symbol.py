@@ -16,7 +16,7 @@ class Symbol(object):
 
     ORIENTATION = {0: "N", 1: "E", 2: "S", 3: "W"}
 
-    def __init__(self, id=0, dict=None, ori=None, mirrored=None, startpos=None, form=None):
+    def __init__(self, id=0, dict=None, ori=None, mirrored=None, startpos=None, endpos=None, form=None):
 
         self._id = id
 
@@ -39,6 +39,11 @@ class Symbol(object):
             self._startpos = Pos(0, 0)
         else:
             self._startpos = startpos
+
+        if endpos is None:
+            self._endpos = Pos(0, 0)
+        else:
+            self._endpos = endpos
 
         if form is None:
             self._form = {}
@@ -69,8 +74,11 @@ class Symbol(object):
 
     @property
     def mirrored(self):
-        # mirrored can only be set via the mirror() method
         return self._mirrored
+
+    @mirrored.setter
+    def mirrored(self, value):
+        self._mirrored = value
 
     @property
     def form(self):
@@ -83,6 +91,14 @@ class Symbol(object):
     @startpos.setter
     def startpos(self, value):
         self._startpos = value
+
+    @property
+    def endpos(self):
+        return self._endpos
+
+    @endpos.setter
+    def ebdpos(self, value):
+        self._endpos = value
 
     @property
     def default(self):
@@ -98,20 +114,23 @@ class Symbol(object):
     def copy(self):
         ori = copy.deepcopy(self._ori)
         mirrored = copy.deepcopy(self._mirrored)
-        grid = copy.deepcopy(self._grid)
         startpos = copy.deepcopy(self._startpos)
         form = copy.deepcopy(self._form)
-        return Symbol(self._id, grid, ori, mirrored, startpos, form)
+        return Symbol(self._id, self._grid, ori, mirrored, startpos, form)
 
     @property
     def grid(self):
-        return self._grid[self.ORIENTATION[self._ori]]
+        if self._mirrored == 1:
+            return self.mirror(self._grid[self.ORIENTATION[self._ori]])
+        else:
+            return self._grid[self.ORIENTATION[self._ori]]
 
     def grid_next(self):
         """Return the grid with the next (90° clockwise rotated) orientation for this symbol."""
         self._ori += 1
         self._ori %= 4
-        return self._grid[self.ORIENTATION[self._ori]]
+
+        return self.grid
 
     def paste(self, pos, grid):
         """Paste symbol into the target grid.
@@ -121,11 +140,9 @@ class Symbol(object):
         """
         grid.fill_rect(pos, self.grid)
 
-    def mirror(self):
+    # TODO don't change the grid
+    def mirror(self, grid):
         """Return the grid vertically mirrored."""
-        if self._grid is None:
-            return
-            # return [[]]
 
         # mirror specific characters
         switcher = {'/': '\\',
@@ -135,21 +152,18 @@ class Symbol(object):
                     '(': ')',
                     ')': '('
                     }
-        grid = []
+        mir_grid = []
 
-        for r, row in enumerate(self._grid[self.ORIENTATION[self._ori]]):
+        for r, row in enumerate(grid):
             rev = []
             for c in reversed(row):
                 try:
                     rev.append(switcher[c])
                 except KeyError:
                     rev.append(c)
-            grid.append(rev)
+            mir_grid.append(rev)
 
-        self._grid[self.ORIENTATION[self._ori]] = grid
-
-        self._mirrored += 1
-        self._mirrored %= 2
+        return mir_grid
 
 
 class Character(Symbol):
@@ -173,9 +187,9 @@ class Character(Symbol):
 class Line(Symbol):
 
     def __init__(self, startpos, endpos, type=0):
-        super(Line, self).__init__(id=type, startpos=startpos)
+        super(Line, self).__init__(id=type, startpos=startpos, endpos=endpos)
 
-        self._endpos = endpos
+        self._type = type
         self._terminal = TERMINAL_TYPE[type]
 
         self._direction()
@@ -196,6 +210,10 @@ class Line(Symbol):
     @property
     def view(self):
         return ObjectView(self._form, self._startpos)
+
+    @property
+    def type(self):
+        return self._type
 
     def _line(self, pos):
         """
@@ -252,9 +270,7 @@ class Line(Symbol):
 class Rect(Symbol):
 
     def __init__(self, startpos, endpos):
-        super(Rect, self).__init__(startpos=startpos)
-
-        self._endpos = endpos
+        super(Rect, self).__init__(startpos=startpos, endpos=endpos)
 
         self._rect()
 

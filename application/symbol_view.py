@@ -28,14 +28,6 @@ class ComponentView(SymbolView):
         self._grid = grid
         self._startpos = startpos
 
-    def set_grid(self, symbol):
-        """
-        The symbol 'sprite'.
-
-        :param grid: a 2D array of ASCII chars
-        """
-        self._grid = symbol.grid
-
     def draw(self, ctx, pos):
         """
         Draw the symbol on the canvas.
