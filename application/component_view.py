@@ -5,6 +5,7 @@ AACircuit
 
 from pubsub import pub
 from application import _
+from application import DEFAULT_COMPONENT_KEY
 
 import gi
 gi.require_version('Gtk', '3.0')
@@ -50,7 +51,11 @@ class ComponentView():
     def on_changed(self, selection):
         # get the model and the iterator that points at the data in the model
         (model, iter) = selection.get_selected()
-        label = model[iter][0]
+
+        if iter is not None:
+            label = model[iter][0]
+        else:
+            label = DEFAULT_COMPONENT_KEY
 
         pub.sendMessage('COMPONENT_CHANGED', label=label)
 

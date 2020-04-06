@@ -10,6 +10,7 @@ import json
 
 from application import _
 from application.symbol import Symbol, Character
+from application import DEFAULT_COMPONENT_KEY
 
 
 class ComponentLibrary(object):
@@ -114,7 +115,7 @@ class ComponentLibrary(object):
                 key = keys[idx]
 
         except IndexError:
-            key = "Resistor"
+            key = DEFAULT_COMPONENT_KEY
 
         symbol = self.get_symbol(key)
 
