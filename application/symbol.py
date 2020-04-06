@@ -113,6 +113,14 @@ class Symbol(object):
         self._ori %= 4
         return self._grid[self.ORIENTATION[self._ori]]
 
+    def paste(self, pos, grid):
+        """Paste symbol into the target grid.
+
+        :param pos: the (col,row) coordinate of the upper left position of the symbol grid in the target grid
+        :param grid: the target grid
+        """
+        grid.fill_rect(pos, self.grid)
+
     def mirror(self):
         """Return the grid vertically mirrored."""
         if self._grid is None:

@@ -277,7 +277,7 @@ class Controller(object):
         ref = (pos, symbol)
         self.objects.append(ref)
 
-        self.grid.fill_rect(pos, symbol.grid)
+        symbol.paste(pos, self.grid)
 
     def on_paste_character(self, pos):
 
@@ -289,7 +289,7 @@ class Controller(object):
         ref = (pos, symbol)
         self.objects.append(ref)
 
-        self.grid.fill_rect(pos, symbol.grid)
+        symbol.paste(pos, self.grid)
 
     def on_paste_objects(self, pos):
 
