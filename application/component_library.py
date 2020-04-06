@@ -100,6 +100,7 @@ class ComponentLibrary(object):
         :returns the symbol id and grid
         """
         try:
+            idx = int(id)
             idx -= 1  # index start at zero
             keys = list(self._dict)
             key = keys[idx]
