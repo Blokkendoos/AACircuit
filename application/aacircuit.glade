@@ -527,7 +527,7 @@
               <placeholder/>
             </child>
             <child>
-              <object class="GtkButton" id="button21">
+              <object class="GtkButton" id="add_text">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
@@ -543,7 +543,7 @@
               <placeholder/>
             </child>
             <child>
-              <object class="GtkButton" id="button1">
+              <object class="GtkButton" id="add_textblock">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
@@ -556,7 +556,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkEntry" id="entry1">
+              <object class="GtkEntry" id="text_entry">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="invisible_char">•</property>

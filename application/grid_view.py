@@ -11,6 +11,7 @@ from application import GRIDSIZE_W, GRIDSIZE_H
 from application import INSERT, HORIZONTAL, VERTICAL
 from application import IDLE, SELECTING, SELECTED
 from application import CHARACTER, COMPONENT, LINE, MAG_LINE, OBJECTS, COL, ROW, RECT, DRAW_RECT
+from application import TEXT, TEXT_BLOCK
 from application.pos import Pos
 from application.selection import SelectionLine, SelectionLineFree, SelectionMagicLine, SelectionCol, SelectionRow, SelectionRect
 
@@ -23,7 +24,7 @@ class GridView(Gtk.Frame):
 
     def __init__(self):
 
-        super().__init__()
+        super(GridView, self).__init__()
 
         self.set_border_width(0)
 
@@ -59,12 +60,18 @@ class GridView(Gtk.Frame):
         self._ml_currentpos = None
         self._ml_prevpos = []
 
+        self._drawing_area.set_can_focus(True)
+
         self._drawing_area.connect('draw', self.on_draw)
         self._drawing_area.connect('configure-event', self.on_configure)
 
         # https://www.programcreek.com/python/example/84675/gi.repository.Gtk.DrawingArea
         self._drawing_area.add_events(Gdk.EventMask.BUTTON_PRESS_MASK)
-        self._drawing_area.connect('button_press_event', self.on_button_press)
+        self._drawing_area.connect('button-press-event', self.on_button_press)
+
+        # https://stackoverflow.com/questions/44098084/how-do-i-handle-keyboard-events-in-gtk3
+        self._drawing_area.add_events(Gdk.EventMask.KEY_PRESS_MASK)
+        self._drawing_area.connect('key-press-event', self.on_key_press)
 
         self._gesture_drag = Gtk.GestureDrag.new(self._drawing_area)
         self._gesture_drag.connect('drag-begin', self.on_drag_begin)
@@ -77,6 +84,9 @@ class GridView(Gtk.Frame):
         # subscriptions
 
         pub.subscribe(self.set_grid, 'GRID')
+
+        pub.subscribe(self.on_add_textblock, 'ADD_TEXTBLOCK')
+        pub.subscribe(self.on_add_text, 'ADD_TEXT')
 
         pub.subscribe(self.on_character_selected, 'CHARACTER_SELECTED')
         pub.subscribe(self.on_symbol_selected, 'SYMBOL_SELECTED')
@@ -182,7 +192,22 @@ class GridView(Gtk.Frame):
         self._selection_item = None
         self.queue_resize()
 
-    def on_character_selected(self, symbol):
+    def on_add_text(self):
+        self._selection_state = SELECTED
+        self._selection_action = INSERT
+        self._selection_item = TEXT
+
+        self._drawing_area.grab_focus()
+        print("Not yet implemented")
+
+    def on_add_textblock(self):
+        self._selection_state = SELECTED
+        self._selection_action = INSERT
+        self._selection_item = TEXT_BLOCK
+        # self._symbol = symbol
+        print("Not yet implemented")
+
+    def on_character_selected(self, char):
         self._selection_state = SELECTED
         self._selection_action = INSERT
         self._selection_item = CHARACTER
@@ -243,10 +268,20 @@ class GridView(Gtk.Frame):
         self._selection_item = DRAW_RECT
         self._selection = SelectionRect()
 
+    # TEXT ENTRY
+
+    def on_key_press(self, widget, event):
+        # if self._selection_item == TEXT:
+        print("Key val, name: ", event.keyval, Gdk.keyval_name(event.keyval))
+        # print("Not yet implemented")
+
+        return True
+
     # DRAWING
 
     def draw_background(self, ctx):
         """Draw a background with the size of the grid."""
+
         ctx.set_source_rgb(0.95, 0.95, 0.85)
         ctx.set_line_width(0.5)
         ctx.set_tolerance(0.1)
