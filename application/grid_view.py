@@ -4,6 +4,7 @@ AACircuit
 """
 
 import cairo
+import time
 from pubsub import pub
 
 from application import _
@@ -17,7 +18,7 @@ from application.selection import SelectionLine, SelectionLineFree, SelectionMag
 
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Gdk  # noqa: E402
+from gi.repository import Gtk, Gdk, GLib  # noqa: E402
 
 
 class GridView(Gtk.Frame):
@@ -31,7 +32,7 @@ class GridView(Gtk.Frame):
         self.surface = None
         self._grid = None
         self._objects = None
-        self._hover_pos = None
+        self._hover_pos = Pos(0, 0)
 
         # https://athenajc.gitbooks.io/python-gtk-3-api/content/gtk-group/gtkdrawingarea.html
         self._drawing_area = Gtk.DrawingArea()
@@ -60,6 +61,9 @@ class GridView(Gtk.Frame):
         self._ml_currentpos = None
         self._ml_prevpos = []
 
+        # text
+        self._cursor_on = True
+
         self._drawing_area.set_can_focus(True)
 
         self._drawing_area.connect('draw', self.on_draw)
@@ -80,6 +84,11 @@ class GridView(Gtk.Frame):
 
         self._drawing_area.add_events(Gdk.EventMask.POINTER_MOTION_MASK)
         self._drawing_area.connect('motion-notify-event', self.on_hover)
+
+        # https://developer.gnome.org/gtk3/stable/GtkWidget.html#gtk-widget-add-tick-callback
+        self.start_time = time.time()
+        self.cursor_callback = self._drawing_area.add_tick_callback(self.toggle_cursor)
+        # self._drawing_area.remove_tick_callback(self.cursor_callback)
 
         # subscriptions
 
@@ -176,11 +185,12 @@ class GridView(Gtk.Frame):
         return False
 
     def do_drawing(self, ctx):
-        """Draw the ASCII grid."""
         self.draw_background(ctx)
         self.draw_gridlines(ctx)
         self.draw_content(ctx)
         self.draw_selection(ctx)
+
+        self.queue_draw()
 
     def gridsize_changed(self, *args, **kwargs):
         self.set_viewport_size()
@@ -193,15 +203,13 @@ class GridView(Gtk.Frame):
         self.queue_resize()
 
     def on_add_text(self):
-        self._selection_state = SELECTED
+        self._selection_state = SELECTING
         self._selection_action = INSERT
         self._selection_item = TEXT
-
         self._drawing_area.grab_focus()
-        print("Not yet implemented")
 
     def on_add_textblock(self):
-        self._selection_state = SELECTED
+        self._selection_state = SELECTING
         self._selection_action = INSERT
         self._selection_item = TEXT_BLOCK
         # self._symbol = symbol
@@ -323,6 +331,26 @@ class GridView(Gtk.Frame):
             ctx.stroke()
             x += x_incr
 
+    def draw_content(self, ctx):
+
+        if self._grid is None:
+            return
+
+        ctx.set_source_rgb(0.1, 0.1, 0.1)
+        ctx.select_font_face("monospace", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+
+        y = GRIDSIZE_H
+        for r in self._grid.grid:
+            x = 0
+            for c in r:
+                ctx.move_to(x, y)
+                ctx.show_text(str(c))
+                x += GRIDSIZE_W
+
+            y += GRIDSIZE_H
+            if y >= self.surface.get_height():
+                break
+
     def draw_selection(self, ctx):
 
         if self._selection_state == IDLE:
@@ -334,6 +362,9 @@ class GridView(Gtk.Frame):
 
             if self._selection_item == OBJECTS:
                 self.draw_selected_objects(ctx)
+
+            elif self._selection_item == TEXT:
+                self.draw_cursor(ctx)
 
             else:
                 ctx.set_source_rgb(0.5, 0.5, 0.75)
@@ -374,6 +405,39 @@ class GridView(Gtk.Frame):
             elif self._selection_item == OBJECTS:
                 self.draw_selected_objects(ctx, True)
 
+    def draw_cursor(self, ctx):
+
+        ctx.set_line_width(1.5)
+        ctx.set_line_join(cairo.LINE_JOIN_ROUND)
+
+        if self._cursor_on:
+            ctx.set_source_rgb(0.85, 0.5, 0.75)
+        else:
+            ctx.set_source_rgb(0.5, 0.5, 0.5)
+
+        x, y = (self._hover_pos + Pos(0, -GRIDSIZE_H)).xy
+
+        ctx.rectangle(x, y, GRIDSIZE_W, GRIDSIZE_H)
+        ctx.stroke()
+
+    def toggle_cursor(self, widget, frame_clock, user_data=None):
+
+        now = time.time()
+        elapsed = now - self.start_time
+
+        if elapsed > 0.5:
+            self.start_time = now
+            self._cursor_on = not self._cursor_on
+
+        # if self._cursor_on:
+        #     print("TIK")
+        # else:
+        #     print("TAK")
+
+        self._drawing_area.queue_resize()
+
+        return GLib.SOURCE_CONTINUE
+
     def draw_selected_objects(self, ctx, follow_pointer=False):
         """
         Draw multiple objects selection.
@@ -401,28 +465,6 @@ class GridView(Gtk.Frame):
             ctx.move_to(pos.x, pos.y)
             ctx.show_text('X')  # mark the upper-left corner with "x"
 
-        self.queue_draw()
-
-    def draw_content(self, ctx):
-
-        if self._grid is None:
-            return
-
-        ctx.set_source_rgb(0.1, 0.1, 0.1)
-        ctx.select_font_face("monospace", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
-
-        y = GRIDSIZE_H
-        for r in self._grid.grid:
-            x = 0
-            for c in r:
-                ctx.move_to(x, y)
-                ctx.show_text(str(c))
-                x += GRIDSIZE_W
-
-            y += GRIDSIZE_H
-            if y >= self.surface.get_height():
-                break
-
     def on_button_press(self, widget, event):
 
         pos = Pos(event.x, event.y)
@@ -448,6 +490,11 @@ class GridView(Gtk.Frame):
                     pub.sendMessage('REMOVE_COL', col=col)
 
                 self.gridsize_changed()
+
+            elif self._selection_item == TEXT:
+                # TODO
+                # self._selection_state = SELECTED
+                None
 
         elif self._selection_state == SELECTED:
 
