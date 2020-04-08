@@ -5,6 +5,7 @@ AACircuit.py
 
 from pubsub import pub
 import re
+import json
 
 from application import _
 from application import COMPONENT, CHARACTER, TEXT, COL, ROW, DRAW_RECT, RECT, LINE, MAG_LINE
@@ -294,7 +295,8 @@ class Controller(object):
 
     def on_paste_text(self, pos, text):
 
-        str = "{0}:{1},{2}".format(TEXT, pos, text)
+        jstext = json.dumps(text)
+        str = "{0}:{1},{2}".format(TEXT, pos, jstext)
         self.memo.append(str)
 
         self.symbol = Text(pos, text)
@@ -427,6 +429,7 @@ class Controller(object):
 
             m1 = re.search('(^comp|^char|^rect|^line):(\d+),(\d+),(\d+),?(\d*),?(\d*)', item)  # noqa W605
             m2 = re.search('(^d|^i)(row|col):(\d+)', item)  # noqa W605
+            m3 = re.search('(^text):(\d+),(\d+),(.*)', item)  # noqa W605
 
             skipped = 0
 
@@ -434,6 +437,8 @@ class Controller(object):
                 self.play_m1(m1, skipped)
             elif m2 is not None:
                 self.play_m2(m2, skipped)
+            elif m3 is not None:
+                self.play_m3(m3, skipped)
             else:
                 skipped += 1
 
@@ -523,5 +528,22 @@ class Controller(object):
                 self.on_insert_col(nr)
             elif what == ROW:
                 self.on_insert_row(nr)
+        else:
+            skipped += 1
+
+    def play_m3(self, m, skipped):
+
+        type = m.group(1)
+
+        if type == TEXT:
+
+            x, y = m.group(2, 3)
+            startpos = Pos(x, y)
+
+            str = m.group(4)
+            text = json.loads(str)
+
+            self.on_paste_text(startpos, text)
+
         else:
             skipped += 1
