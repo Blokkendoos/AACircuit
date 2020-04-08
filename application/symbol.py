@@ -158,7 +158,6 @@ class Character(Symbol):
 
         id = ord(char)
         grid = {"N": [[char]]}
-
         super(Character, self).__init__(id=id, dict=grid)
 
     @property
@@ -168,6 +167,60 @@ class Character(Symbol):
     def grid_next(self):
         # print("Not implemented")
         return
+
+
+class Text(Symbol):
+
+    def __init__(self, pos, text):
+
+        grid = {"N": [['?']]}
+        super(Text, self).__init__(startpos=pos, dict=grid)
+
+        self._text = text
+        self._representation(self._startpos)
+
+    @property
+    def grid(self):
+        return self._grid[self.ORIENTATION[0]]
+
+    @property
+    def text(self):
+        return self._text
+
+    @text.setter
+    def text(self, value):
+        self._text = value
+
+    @property
+    def view(self):
+        return ObjectView(self._form, self._startpos)
+
+    def _representation(self, pos):
+
+        self._form = {}
+
+        incr = Pos(1, 0)
+
+        for line in self._text:
+            for char in line:
+                # startpoint terminal
+                self._form[pos] = char
+                pos += incr
+
+    def grid_next(self):
+        # print("Not implemented")
+        return
+
+    def paste(self, pos, grid):
+        y = pos.y
+        str = self._text.split('\n')
+        for line in str:
+            x = pos.x
+            for char in line:
+                x += 1
+                targetpos = Pos(x, y)
+                grid.set_cell(targetpos, char)
+            y += 1  # TODO check boundary?
 
 
 class Line(Symbol):

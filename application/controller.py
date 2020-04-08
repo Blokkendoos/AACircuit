@@ -7,10 +7,10 @@ from pubsub import pub
 import re
 
 from application import _
-from application import COMPONENT, CHARACTER, COL, ROW, DRAW_RECT, RECT, LINE, MAG_LINE
+from application import COMPONENT, CHARACTER, TEXT, COL, ROW, DRAW_RECT, RECT, LINE, MAG_LINE
 from application.grid import Grid
 from application.pos import Pos
-from application.symbol import Symbol, Character, Line, Rect
+from application.symbol import Symbol, Character, Text, Line, Rect
 from application.main_window import MainWindow
 from application.component_library import ComponentLibrary
 from application.file import FileChooserWindow
@@ -93,6 +93,7 @@ class Controller(object):
         pub.subscribe(self.on_paste_objects, 'PASTE_OBJECTS')
         pub.subscribe(self.on_paste_line, 'PASTE_LINE')
         pub.subscribe(self.on_paste_rect, 'PASTE_RECT')
+        pub.subscribe(self.on_paste_text, 'PASTE_TEXT')
         pub.subscribe(self.on_undo, 'UNDO')
 
         pub.subscribe(self.on_select_rect, 'SELECT_RECT')
@@ -290,6 +291,17 @@ class Controller(object):
         self.objects.append(ref)
 
         symbol.paste(pos, self.grid)
+
+    def on_paste_text(self, pos, text):
+
+        str = "{0}:{1},{2}".format(TEXT, pos, text)
+        self.memo.append(str)
+
+        self.symbol = Text(pos, text)
+        ref = (pos, self.symbol)
+        self.objects.append(ref)
+
+        self.symbol.paste(pos, self.grid)
 
     def on_paste_objects(self, pos):
 

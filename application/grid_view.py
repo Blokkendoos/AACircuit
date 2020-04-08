@@ -525,9 +525,8 @@ class GridView(Gtk.Frame):
                 self.gridsize_changed()
 
             elif self._selection_item == TEXT:
-                # TODO
-                # self._selection_state = SELECTED
-                None
+                self._selection_state = SELECTED
+                pub.sendMessage('PASTE_TEXT', pos=pos.grid_rc(), text=self._text)
 
         elif self._selection_state == SELECTED:
 
