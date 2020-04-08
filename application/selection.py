@@ -205,7 +205,7 @@ class SelectionLineFree(Selection):
         #     ctx.show_text(linechar)
 
         x_start, y_start = self._startpos.xy
-        x_end, y_end = self._endpos_capped.xy
+        x_end, y_end = self.endpos_capped.xy
 
         ctx.move_to(x_start, y_start)
         ctx.line_to(x_end, y_end)
@@ -221,7 +221,7 @@ class SelectionRect(Selection):
         ctx.new_path()
 
         x_start, y_start = self._startpos.xy
-        x_end, y_end = self._endpos_capped.xy
+        x_end, y_end = self.endpos_capped.xy
 
         # w, h = (self._endpos - self._startpos).xy
         w = x_end - x_start
@@ -264,10 +264,10 @@ class SelectionRow(Selection):
 
 class SelectionText(Selection):
 
-    def __init__(self):
+    def __init__(self, text=""):
         super(SelectionText, self).__init__()
 
-        self._text = ""
+        self._text = text
 
     @property
     def text(self):
