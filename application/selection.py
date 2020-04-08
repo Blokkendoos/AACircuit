@@ -16,7 +16,6 @@ class Selection(object):
     """A selection on the grid (canvas)."""
 
     def __init__(self):
-
         self._startpos = None
         self._endpos = None
         self._maxpos = None
@@ -62,8 +61,8 @@ class Selection(object):
 class SelectionLine(Selection):
 
     def __init__(self, type):
-
         super(SelectionLine, self).__init__()
+
         self._dir = None
         if type is None:
             self._line_terminal = None
@@ -153,14 +152,6 @@ class SelectionMagicLine(SelectionLine):
     def ml_startpos(self, value):
         self._ml_startpos = value
 
-    # @property
-    # def ml_currentpos(self):
-    #     return self._ml_currentpos
-    #
-    # @ml_currentpos.setter
-    # def ml_currentpos(self, value):
-    #     self._ml_currentpos = value
-
     @property
     def ml_endpos(self):
         return self._ml_endpos
@@ -213,8 +204,8 @@ class SelectionLineFree(Selection):
         #     ctx.move_to(pos[0], pos[1])
         #     ctx.show_text(linechar)
 
-        x_start, y_start = self.startpos.xy
-        x_end, y_end = self.endpos_capped.xy
+        x_start, y_start = self._startpos.xy
+        x_end, y_end = self._endpos_capped.xy
 
         ctx.move_to(x_start, y_start)
         ctx.line_to(x_end, y_end)
@@ -229,8 +220,8 @@ class SelectionRect(Selection):
     def draw(self, ctx):
         ctx.new_path()
 
-        x_start, y_start = self.startpos.xy
-        x_end, y_end = self.endpos_capped.xy
+        x_start, y_start = self._startpos.xy
+        x_end, y_end = self._endpos_capped.xy
 
         # w, h = (self._endpos - self._startpos).xy
         w = x_end - x_start
@@ -269,3 +260,27 @@ class SelectionRow(Selection):
         ctx.move_to(0, y + GRIDSIZE_H)
         ctx.line_to(self._maxpos.x, y + GRIDSIZE_H)
         ctx.stroke()
+
+
+class SelectionText(Selection):
+
+    def __init__(self):
+        super(SelectionText, self).__init__()
+
+        self._text = "?"
+
+    @property
+    def text(self):
+        return self._text
+
+    @text.setter
+    def text(self, value):
+        self._text = value
+
+    def draw(self, ctx):
+        x, y = self._startpos.xy
+        str = self._text.split('\n')
+        for line in str:
+            ctx.move_to(x, y)
+            ctx.show_text(line)
+            y += GRIDSIZE_H  # TODO check max?

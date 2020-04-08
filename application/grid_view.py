@@ -14,7 +14,7 @@ from application import IDLE, SELECTING, SELECTED
 from application import CHARACTER, COMPONENT, LINE, MAG_LINE, OBJECTS, COL, ROW, RECT, DRAW_RECT
 from application import TEXT, TEXT_BLOCK
 from application.pos import Pos
-from application.selection import SelectionLine, SelectionLineFree, SelectionMagicLine, SelectionCol, SelectionRow, SelectionRect
+from application.selection import SelectionLine, SelectionLineFree, SelectionMagicLine, SelectionCol, SelectionRow, SelectionRect, SelectionText
 
 import gi
 gi.require_version('Gtk', '3.0')
@@ -63,6 +63,7 @@ class GridView(Gtk.Frame):
 
         # text
         self._cursor_on = True
+        self._text = ""
 
         self._drawing_area.set_can_focus(True)
 
@@ -204,33 +205,29 @@ class GridView(Gtk.Frame):
 
     def on_add_text(self):
         self._selection_state = SELECTING
-        self._selection_action = INSERT
         self._selection_item = TEXT
+        self._selection = SelectionText()
         self._drawing_area.grab_focus()
 
     def on_add_textblock(self):
         self._selection_state = SELECTING
-        self._selection_action = INSERT
         self._selection_item = TEXT_BLOCK
-        # self._symbol = symbol
+        self._selection = SelectionText()
         print("Not yet implemented")
 
     def on_character_selected(self, char):
         self._selection_state = SELECTED
-        self._selection_action = INSERT
         self._selection_item = CHARACTER
         self._symbol = char
 
     def on_symbol_selected(self, symbol):
         self._selection_state = SELECTED
-        self._selection_action = INSERT
         self._selection_item = COMPONENT
         self._symbol = symbol
 
     def on_objects_selected(self, objects):
         self._objects = objects
         self._selection_state = SELECTED
-        self._selection_action = INSERT
         self._selection_item = OBJECTS
 
     def on_selecting_rect(self, objects):
@@ -281,7 +278,7 @@ class GridView(Gtk.Frame):
     def on_key_press(self, widget, event):
         # if self._selection_item == TEXT:
         print("Key val, name: ", event.keyval, Gdk.keyval_name(event.keyval))
-        # print("Not yet implemented")
+        self._text += Gdk.keyval_name(event.keyval)
 
         return True
 
@@ -365,6 +362,9 @@ class GridView(Gtk.Frame):
 
             elif self._selection_item == TEXT:
                 self.draw_cursor(ctx)
+                self._selection.text = self._text
+                self._selection.startpos = self._hover_pos
+                self._selection.draw(ctx)
 
             else:
                 ctx.set_source_rgb(0.5, 0.5, 0.75)
@@ -411,7 +411,7 @@ class GridView(Gtk.Frame):
         ctx.set_line_join(cairo.LINE_JOIN_ROUND)
 
         if self._cursor_on:
-            ctx.set_source_rgb(0.85, 0.5, 0.75)
+            ctx.set_source_rgb(0.75, 0.75, 0.75)
         else:
             ctx.set_source_rgb(0.5, 0.5, 0.5)
 
@@ -428,11 +428,6 @@ class GridView(Gtk.Frame):
         if elapsed > 0.5:
             self.start_time = now
             self._cursor_on = not self._cursor_on
-
-        # if self._cursor_on:
-        #     print("TIK")
-        # else:
-        #     print("TAK")
 
         self._drawing_area.queue_resize()
 
