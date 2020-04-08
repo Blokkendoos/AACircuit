@@ -95,8 +95,8 @@ class GridView(Gtk.Frame):
 
         pub.subscribe(self.set_grid, 'GRID')
 
-        pub.subscribe(self.on_add_textblock, 'ADD_TEXTBLOCK')
         pub.subscribe(self.on_add_text, 'ADD_TEXT')
+        pub.subscribe(self.on_add_textblock, 'ADD_TEXTBLOCK')
 
         pub.subscribe(self.on_character_selected, 'CHARACTER_SELECTED')
         pub.subscribe(self.on_symbol_selected, 'SYMBOL_SELECTED')
@@ -210,11 +210,10 @@ class GridView(Gtk.Frame):
         self._selection = SelectionText()
         self._drawing_area.grab_focus()
 
-    def on_add_textblock(self):
+    def on_add_textblock(self, text):
         self._selection_state = SELECTING
         self._selection_item = TEXT_BLOCK
-        self._selection = SelectionText()
-        print("Not yet implemented")
+        self._selection = SelectionText(text=text)
 
     def on_character_selected(self, char):
         self._selection_state = SELECTED
@@ -390,9 +389,10 @@ class GridView(Gtk.Frame):
             if self._selection_item == OBJECTS:
                 self.draw_selected_objects(ctx)
 
-            elif self._selection_item == TEXT:
+            elif self._selection_item in (TEXT, TEXT_BLOCK):
                 self.draw_cursor(ctx)
-                self._selection.text = self._text
+                if self._selection_item == TEXT:
+                    self._selection.text = self._text
                 self._selection.startpos = self._hover_pos
                 self._selection.draw(ctx)
 
@@ -529,6 +529,10 @@ class GridView(Gtk.Frame):
             elif self._selection_item == TEXT:
                 self._selection_state = SELECTED
                 pub.sendMessage('PASTE_TEXT', pos=pos.grid_rc(), text=self._text)
+
+            elif self._selection_item == TEXT_BLOCK:
+                self._selection_state = SELECTED
+                pub.sendMessage('PASTE_TEXTBLOCK', pos=pos.grid_rc(), text=self._selection.text)
 
         elif self._selection_state == SELECTED:
 

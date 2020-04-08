@@ -106,7 +106,7 @@ class MainWindow(Gtk.Window):
         self.text_entry = self.builder.get_object('text_entry')
 
         self.btn_add_text.set_tooltip_text(_("write text"))
-        self.btn_add_textblock.set_tooltip_text(_("insert text block"))
+        self.btn_add_textblock.set_tooltip_text(_("insert text"))
 
         self.btn_add_text.connect('pressed', self.on_add_text)
         self.btn_add_textblock.connect('pressed', self.on_add_textblock)
@@ -215,7 +215,8 @@ class MainWindow(Gtk.Window):
         pub.sendMessage('ADD_TEXT')
 
     def on_add_textblock(self, button):
-        pub.sendMessage('ADD_TEXTBLOCK')
+        text = self.text_entry.get_text()
+        pub.sendMessage('ADD_TEXTBLOCK', text=text)
 
     def on_rotate(self, button):
         pub.sendMessage('ROTATE_SYMBOL')

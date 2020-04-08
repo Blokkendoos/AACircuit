@@ -95,6 +95,7 @@ class Controller(object):
         pub.subscribe(self.on_paste_line, 'PASTE_LINE')
         pub.subscribe(self.on_paste_rect, 'PASTE_RECT')
         pub.subscribe(self.on_paste_text, 'PASTE_TEXT')
+        pub.subscribe(self.on_paste_text, 'PASTE_TEXTBLOCK')
         pub.subscribe(self.on_undo, 'UNDO')
 
         pub.subscribe(self.on_select_rect, 'SELECT_RECT')
