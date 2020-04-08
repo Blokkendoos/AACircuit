@@ -449,10 +449,12 @@ class GridView(Gtk.Frame):
         else:
             ctx.set_source_rgb(0.5, 0.5, 0.5)
 
-        x, y = (self._hover_pos + Pos(0, -GRIDSIZE_H)).xy
+        x, y = (self._hover_pos + Pos(0, -GRIDSIZE_H)).xy  # TODO meelopen met de tekst (blijft nu aan 't begin staan)
 
         ctx.rectangle(x, y, GRIDSIZE_W, GRIDSIZE_H)
         ctx.stroke()
+
+        ctx.restore()
 
     def toggle_cursor(self, widget, frame_clock, user_data=None):
 
