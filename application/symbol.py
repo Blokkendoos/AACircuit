@@ -199,11 +199,14 @@ class Text(Symbol):
 
         self._form = {}
 
+        startpos = pos
         incr = Pos(1, 0)
-
         for line in self._text:
             for char in line:
                 # startpoint terminal
+                if char == '\n':
+                    pos.x = startpos.x
+                    pos += Pos(-1, 1)  # skip the cr, go to next line
                 self._form[pos] = char
                 pos += incr
 
