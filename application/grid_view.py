@@ -616,10 +616,10 @@ class GridView(Gtk.Frame):
                     self._drag_currentpos = pos
                     self._drag_dir = self.pointer_dir()
 
-                    if self._drag_dir != self.pointer_dir2():
+                    if self._drag_dir != self.pointer_dir_avg():
                         # drag direction differs from the magic-line direction
                         # print("line break, startpos:{0} drag_dir:{1}".format(pos, self._drag_dir))
-                        self._ml_dir = self.pointer_dir2()
+                        self._ml_dir = self.pointer_dir_avg()
                         self._ml_startpos = pos
                         self._ml_currentpos = pos
                 else:
@@ -640,7 +640,7 @@ class GridView(Gtk.Frame):
             dir = VERTICAL
         return dir
 
-    def pointer_dir2(self):
+    def pointer_dir_avg(self):
         """Return the pointer direction in relation to the previous position."""
         (x, y) = self._drag_currentpos.xy
 
