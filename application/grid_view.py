@@ -350,6 +350,8 @@ class GridView(Gtk.Frame):
 
     def draw_selection(self, ctx):
 
+        ctx.save()
+
         if self._selection_state == IDLE:
 
             if self._selection_item == RECT:
@@ -405,7 +407,11 @@ class GridView(Gtk.Frame):
             elif self._selection_item == OBJECTS:
                 self.draw_selected_objects(ctx, True)
 
+        ctx.restore()
+
     def draw_cursor(self, ctx):
+
+        ctx.save()
 
         ctx.set_line_width(1.5)
         ctx.set_line_join(cairo.LINE_JOIN_ROUND)
@@ -441,6 +447,8 @@ class GridView(Gtk.Frame):
         :param follow_pointer: True: the shown symbols follow the cursor,
         """
 
+        ctx.save()
+
         for obj in self._objects:
 
             ctx.set_source_rgb(1, 0, 0)
@@ -459,6 +467,8 @@ class GridView(Gtk.Frame):
 
             ctx.move_to(pos.x, pos.y)
             ctx.show_text('X')  # mark the upper-left corner with "x"
+
+        ctx.restore()
 
     def on_button_press(self, widget, event):
 
