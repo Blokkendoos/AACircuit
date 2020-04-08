@@ -267,7 +267,7 @@ class SelectionText(Selection):
     def __init__(self):
         super(SelectionText, self).__init__()
 
-        self._text = "?"
+        self._text = ""
 
     @property
     def text(self):
@@ -278,9 +278,12 @@ class SelectionText(Selection):
         self._text = value
 
     def draw(self, ctx):
-        x, y = self._startpos.xy
+        y = self._startpos.y
         str = self._text.split('\n')
         for line in str:
-            ctx.move_to(x, y)
-            ctx.show_text(line)
+            x = self._startpos.x
+            for char in line:
+                x += GRIDSIZE_W
+                ctx.move_to(x, y)
+                ctx.show_text(char)
             y += GRIDSIZE_H  # TODO check max?

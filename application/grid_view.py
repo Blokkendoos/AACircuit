@@ -204,6 +204,7 @@ class GridView(Gtk.Frame):
         self.queue_resize()
 
     def on_add_text(self):
+        self._text = ""
         self._selection_state = SELECTING
         self._selection_item = TEXT
         self._selection = SelectionText()
@@ -276,9 +277,36 @@ class GridView(Gtk.Frame):
     # TEXT ENTRY
 
     def on_key_press(self, widget, event):
+
+        # TODO Will this work in other locale too?
+        def filter_non_printable(ascii):
+            char = ''
+            if (ascii > 31 and ascii < 255) or ascii == 9:
+                char = chr(ascii)
+            return char
+
+        # TODO Only for TEXT necessary
         # if self._selection_item == TEXT:
-        print("Key val, name: ", event.keyval, Gdk.keyval_name(event.keyval))
-        self._text += Gdk.keyval_name(event.keyval)
+
+        # modifier = event.state
+        # name = Gdk.keyval_name(event.keyval)
+        value = event.keyval
+
+        # check the event modifiers (can also use CONTROL_MASK, etc)
+        shift = (event.state & Gdk.ModifierType.SHIFT_MASK)
+
+        # print("Key val, name, shift: ", value, name, shift)
+
+        if value == Gdk.KEY_Left or value == Gdk.KEY_BackSpace:
+            if len(self._text) > 0:
+                self._text = self._text[:-1]
+
+        elif value & 255 == 13 and shift:  # shift+enter
+            self._text += '\n'
+
+        else:
+            str = filter_non_printable(value)
+            self._text += str
 
         return True
 
