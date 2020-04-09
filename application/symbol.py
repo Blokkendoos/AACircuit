@@ -105,10 +105,9 @@ class Symbol(object):
     def copy(self):
         ori = copy.deepcopy(self._ori)
         mirrored = copy.deepcopy(self._mirrored)
-        grid = copy.deepcopy(self._grid)
         startpos = copy.deepcopy(self._startpos)
         form = copy.deepcopy(self._form)
-        return Symbol(self._id, grid, ori, mirrored, startpos, form)
+        return Symbol(self._id, self._grid, ori, mirrored, startpos, form)
 
     @property
     def grid(self):
@@ -182,10 +181,10 @@ class Character(Symbol):
 
 class Text(Symbol):
 
-    def __init__(self, pos, text):
+    def __init__(self, pos, text, form=None):
 
         grid = {"N": [['?']]}
-        super(Text, self).__init__(startpos=pos, dict=grid)
+        super(Text, self).__init__(startpos=pos, dict=grid, form=form)
 
         self._text = text
         self._representation(self._startpos)
@@ -205,6 +204,10 @@ class Text(Symbol):
     @property
     def view(self):
         return ObjectView(self._form, self._startpos)
+
+    def copy(self):
+        startpos = copy.deepcopy(self._startpos)
+        return Text(startpos, self._text, self._form)
 
     def memo(self):
         jstext = json.dumps(self._text)
@@ -244,8 +247,8 @@ class Text(Symbol):
 
 class Line(Symbol):
 
-    def __init__(self, startpos, endpos, type=0):
-        super(Line, self).__init__(id=type, startpos=startpos)
+    def __init__(self, startpos, endpos, type=0, form=None):
+        super(Line, self).__init__(id=type, startpos=startpos, form=form)
 
         self._endpos = endpos
         self._type = type
@@ -265,6 +268,12 @@ class Line(Symbol):
     def grid_next(self):
         # TODO enable to rotate (from HOR to VERT)?
         print("Not implemented")
+
+    def copy(self):
+        startpos = copy.deepcopy(self._startpos)
+        endpos = copy.deepcopy(self._endpos)
+        type = copy.deepcopy(self._type)
+        return Line(startpos, endpos, type, self._form)
 
     def memo(self):
         str = "{0}:{1},{2},{3}".format(LINE, self._type, self._startpos, self._endpos)
@@ -328,8 +337,8 @@ class Line(Symbol):
 
 class Rect(Symbol):
 
-    def __init__(self, startpos, endpos):
-        super(Rect, self).__init__(startpos=startpos)
+    def __init__(self, startpos, endpos, form=None):
+        super(Rect, self).__init__(startpos=startpos, form=form)
 
         self._endpos = endpos
 
@@ -373,6 +382,11 @@ class Rect(Symbol):
     @property
     def view(self):
         return ObjectView(self._form, self._startpos)
+
+    def copy(self):
+        startpos = copy.deepcopy(self._startpos)
+        endpos = copy.deepcopy(self._endpos)
+        return Rect(startpos, endpos, self._form)
 
     def memo(self):
         str = "{0}:{1},{2}".format(DRAW_RECT, self._startpos, self._endpos)
