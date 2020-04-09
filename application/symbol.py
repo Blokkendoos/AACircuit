@@ -4,11 +4,13 @@ AACircuit
 '''
 
 import copy
+import json
 
 from application import _
 from application.pos import Pos
 from application import HORIZONTAL, VERTICAL
 from application import LINE_HOR, LINE_VERT, TERMINAL_TYPE
+from application import COMPONENT, CHARACTER, TEXT, DRAW_RECT, LINE
 from application.symbol_view import ComponentView, ObjectView
 
 
@@ -95,6 +97,11 @@ class Symbol(object):
             ' (_) ']}
         return grid
 
+    def memo(self):
+        """Return entry for the actions as recorded in the memo."""
+        str = "{0}:{1},{2},{3},{4}".format(COMPONENT, self._id, self._ori, self._mirrored, self._startpos)
+        return str
+
     def copy(self):
         ori = copy.deepcopy(self._ori)
         mirrored = copy.deepcopy(self._mirrored)
@@ -164,6 +171,10 @@ class Character(Symbol):
     def grid(self):
         return self._grid[self.ORIENTATION[0]]
 
+    def memo(self):
+        str = "{0}:{1},{2}".format(CHARACTER, self._id, self._startpos)
+        return str
+
     def grid_next(self):
         # print("Not implemented")
         return
@@ -194,6 +205,11 @@ class Text(Symbol):
     @property
     def view(self):
         return ObjectView(self._form, self._startpos)
+
+    def memo(self):
+        jstext = json.dumps(self._text)
+        str = "{0}:{1},{2}".format(TEXT, self._startpos, jstext)
+        return str
 
     def _representation(self, pos):
 
@@ -232,6 +248,7 @@ class Line(Symbol):
         super(Line, self).__init__(id=type, startpos=startpos)
 
         self._endpos = endpos
+        self._type = type
         self._terminal = TERMINAL_TYPE[type]
 
         self._direction()
@@ -248,6 +265,10 @@ class Line(Symbol):
     def grid_next(self):
         # TODO enable to rotate (from HOR to VERT)?
         print("Not implemented")
+
+    def memo(self):
+        str = "{0}:{1},{2},{3}".format(LINE, self._type, self._startpos, self._endpos)
+        return str
 
     @property
     def view(self):
@@ -352,6 +373,10 @@ class Rect(Symbol):
     @property
     def view(self):
         return ObjectView(self._form, self._startpos)
+
+    def memo(self):
+        str = "{0}:{1},{2}".format(DRAW_RECT, self._startpos, self._endpos)
+        return str
 
     def paste(self, pos, grid):
 

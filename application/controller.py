@@ -272,11 +272,10 @@ class Controller(object):
 
     def on_paste_symbol(self, pos):
 
-        str = "{0}:{1},{2},{3},{4}".format(COMPONENT, self.symbol.id, self.symbol.ori, self.symbol.mirrored, pos)
-        self.memo.append(str)
-
         symbol = self.symbol.copy()
-        symbol.pos = pos
+        symbol.startpos = pos
+        self.memo.append(symbol.memo())
+
         ref = (pos, symbol)
         self.objects.append(ref)
 
@@ -284,11 +283,10 @@ class Controller(object):
 
     def on_paste_character(self, pos):
 
-        str = "{0}:{1},{2}".format(CHARACTER, self.symbol.id, pos)
-        self.memo.append(str)
-
         symbol = self.symbol.copy()
-        symbol.pos = pos
+        symbol.startpos = pos
+        self.memo.append(symbol.memo())
+
         ref = (pos, symbol)
         self.objects.append(ref)
 
@@ -296,11 +294,9 @@ class Controller(object):
 
     def on_paste_text(self, pos, text):
 
-        jstext = json.dumps(text)
-        str = "{0}:{1},{2}".format(TEXT, pos, jstext)
-        self.memo.append(str)
-
         self.symbol = Text(pos, text)
+        self.memo.append(self.symbol.memo())
+
         ref = (pos, self.symbol)
         self.objects.append(ref)
 
@@ -310,12 +306,12 @@ class Controller(object):
 
         for obj in self.selected_objects:
 
-            relative_pos, symbol, symbolview = obj
+            relative_pos, orig_symbol, symbolview = obj
             target_pos = pos + relative_pos + Pos(0, 1)
 
-            # TODO use paste_symbol? Better, new Symbol.memo() method
-            str = "{0}:{1},{2},{3},{4}".format(COMPONENT, symbol.id, symbol.ori, symbol.mirrored, target_pos)
-            self.memo.append(str)
+            symbol = orig_symbol.copy()
+            symbol.startpos = target_pos
+            self.memo.append(symbol.memo())
 
             ref = (target_pos, symbol)
             self.objects.append(ref)
@@ -343,10 +339,9 @@ class Controller(object):
 
     def on_paste_line(self, startpos, endpos, type):
 
-        str = "{0}:{1},{2},{3}".format(LINE, type, startpos, endpos)
-        self.memo.append(str)
-
         self.symbol = Line(startpos, endpos, type)
+        self.memo.append(self.symbol.memo())
+
         ref = (startpos, self.symbol)
         self.objects.append(ref)
 
@@ -354,10 +349,9 @@ class Controller(object):
 
     def on_paste_rect(self, startpos, endpos):
 
-        str = "{0}:{1},{2}".format(DRAW_RECT, startpos, endpos)
-        self.memo.append(str)
-
         self.symbol = Rect(startpos, endpos)
+        self.memo.append(self.symbol.memo())
+
         ref = (startpos, self.symbol)
         self.objects.append(ref)
 
