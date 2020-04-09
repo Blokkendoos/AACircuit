@@ -8,7 +8,7 @@ import re
 import json
 
 from application import _
-from application import COMPONENT, CHARACTER, TEXT, COL, ROW, DRAW_RECT, RECT, LINE, MAG_LINE
+from application import COMPONENT, CHARACTER, TEXT, COL, ROW, DRAW_RECT, LINE
 from application.grid import Grid
 from application.pos import Pos
 from application.symbol import Symbol, Character, Text, Line, Rect
@@ -313,7 +313,8 @@ class Controller(object):
             relative_pos, symbol, symbolview = obj
             target_pos = pos + relative_pos + Pos(0, 1)
 
-            str = "{0}:{1},{2},{3}".format(COMPONENT, symbol.id, symbol.ori, target_pos)
+            # TODO use paste_symbol? Better, new Symbol.memo() method
+            str = "{0}:{1},{2},{3},{4}".format(COMPONENT, symbol.id, symbol.ori, symbol.mirrored, target_pos)
             self.memo.append(str)
 
             ref = (target_pos, symbol)
@@ -378,9 +379,11 @@ class Controller(object):
     # other
 
     def on_select_rect(self):
+        """Select multiple objects."""
         pub.sendMessage('SELECTING_RECT', objects=self.objects)
 
     def on_select_objects(self):
+        """Select individual objects."""
         pub.sendMessage('SELECTING_OBJECTS', objects=self.objects)
 
     # file open/save
