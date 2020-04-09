@@ -315,8 +315,8 @@ class SelectionRow(Selection):
 
 class SelectionText(Selection):
 
-    def __init__(self, text=""):
-        super(SelectionText, self).__init__(item=TEXT)
+    def __init__(self, text="", item=TEXT):
+        super(SelectionText, self).__init__(item=item)
 
         self._state = SELECTING
         self._text = text
