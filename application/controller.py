@@ -3,9 +3,10 @@ AACircuit.py
 2020-03-02 JvO
 """
 
-from pubsub import pub
 import re
 import json
+import collections
+from pubsub import pub
 
 from application import _
 from application import COMPONENT, CHARACTER, TEXT, COL, ROW, DRAW_RECT, LINE
@@ -15,6 +16,9 @@ from application.symbol import Symbol, Character, Text, Line, Rect
 from application.main_window import MainWindow
 from application.component_library import ComponentLibrary
 from application.file import FileChooserWindow
+
+
+SelectedObjects = collections.namedtuple('selection', ['startpos', 'endpos', 'symbol', 'view'])
 
 
 class Controller(object):
@@ -64,10 +68,10 @@ class Controller(object):
         self.memo = []
 
         # all objects on the grid
-        # [(position, object, view), ...] position in column/row coordinates
+        # [(position, endpos, object, view), ...] position in column/row coordinates
         self.objects = []
 
-        # [(relative_position, object), ...] position relative to the selection rect (in column/row coordinates)
+        # [(relative_position, relative_endpos, object), ...] position relative to the selection rect (in column/row coordinates)
         self.selected_objects = []
 
         all_components = [key for key in self.components.get_dict()]
@@ -156,7 +160,7 @@ class Controller(object):
 
     def remove_from_objects(self, symbol):
         for idx, s in enumerate(self.objects):
-            if id(s[1]) == id(symbol):
+            if id(s[2]) == id(symbol):
                 del self.objects[idx]
                 break
 
@@ -170,21 +174,22 @@ class Controller(object):
 
         # select symbols of which the upper-left corner is within the selection rectangle
         selected = []
-        for obj in self.objects:
+        for ref in self.objects:
 
-            pos = obj[0]
+            pos = ref.startpos
             if pos.in_rect(rect):
 
-                symbol = obj[1]
+                symbol = ref.symbol
 
                 # TODO representation of rotated obj in selection to follow the pointer
                 symbolview = symbol.view
 
                 # position relative to the selection rectangle (upper left corner) position
-                relative_pos = pos - ul
-                sel_obj = (relative_pos, symbol, symbolview)
+                relative_pos = symbol.startpos - ul
+                relative_endpos = symbol.endpos - ul
 
-                selected.append(sel_obj)
+                selection = SelectedObjects(startpos=relative_pos, endpos=relative_endpos, symbol=symbol, view=symbolview)
+                selected.append(selection)
 
         self.selected_objects = selected
 
@@ -192,9 +197,8 @@ class Controller(object):
 
         self.find_selected(pos, rect)
 
-        for obj in self.selected_objects:
-            symbol_pos, symbol, symbol_view = obj
-            self.remove_from_objects(symbol)
+        for sel in self.selected_objects:
+            self.remove_from_objects(sel.symbol)
 
         self.buffer = self.grid.rect(pos, rect)
 
@@ -216,9 +220,8 @@ class Controller(object):
     def on_delete(self, pos, rect):
 
         self.find_selected(pos, rect)
-        for obj in self.selected_objects:
-            symbol_pos, symbol, symbol_view = obj
-            self.remove_from_objects(symbol)
+        for sel in self.selected_objects:
+            self.remove_from_objects(sel.symbol)
 
         self.grid.erase_rect(pos, rect)
         pub.sendMessage('NOTHING_SELECTED')
@@ -262,9 +265,8 @@ class Controller(object):
             self.symbol.grid_next()
             pub.sendMessage('SYMBOL_SELECTED', symbol=self.symbol)
         else:
-            for obj in self.selected_objects:
-                relative_pos, symbol, symbolview = obj
-                symbol.grid_next()
+            for sel in self.selected_objects:
+                sel.symbol.grid_next()
 
     def on_mirror_symbol(self):
         self.symbol.mirror()
@@ -274,61 +276,56 @@ class Controller(object):
 
         symbol = self.symbol.copy()
         symbol.startpos = pos
+
         self.memo.append(symbol.memo())
+        self.objects.append(symbol.reference())
 
-        ref = (pos, symbol)
-        self.objects.append(ref)
-
-        symbol.paste(pos, self.grid)
+        symbol.paste(self.grid)
 
     def on_paste_character(self, pos):
 
         symbol = self.symbol.copy()
         symbol.startpos = pos
+
         self.memo.append(symbol.memo())
+        self.objects.append(symbol.reference())
 
-        ref = (pos, symbol)
-        self.objects.append(ref)
-
-        symbol.paste(pos, self.grid)
+        symbol.paste(self.grid)
 
     def on_paste_text(self, pos, text):
 
         self.symbol = Text(pos, text)
+
         self.memo.append(self.symbol.memo())
+        self.objects.append(self.symbol.reference())
 
-        ref = (pos, self.symbol)
-        self.objects.append(ref)
-
-        self.symbol.paste(pos, self.grid)
+        self.symbol.paste(self.grid)
 
     def on_paste_objects(self, pos):
 
-        for obj in self.selected_objects:
+        for sel in self.selected_objects:
 
-            relative_pos, orig_symbol, symbolview = obj
-            target_pos = pos + relative_pos + Pos(0, 1)
+            target_pos = sel.startpos + pos  # + Pos(0, 1)
+            target_endpos = sel.endpos + pos  # + Pos(0, 1)
 
-            symbol = orig_symbol.copy()
+            symbol = sel.symbol.copy()
             symbol.startpos = target_pos
+            symbol.endpos = target_endpos
+
             self.memo.append(symbol.memo())
+            self.objects.append(symbol.reference())
 
-            ref = (target_pos, symbol)
-            self.objects.append(ref)
-
-            symbol.paste(target_pos, self.grid)
+            symbol.paste(self.grid)
 
         pub.sendMessage('NOTHING_SELECTED')
 
     def on_cut_objects(self, pos):
 
-        for obj in self.selected_objects:
+        for sel in self.selected_objects:
 
             # TODO remove symbol from the objects list
 
-            pos, symbol = obj
-
-            grid = symbol.grid
+            grid = sel.symbol.grid
             dummy, rect = grid.rect()
 
             self.grid.erase_rect(pos, rect)
@@ -340,22 +337,20 @@ class Controller(object):
     def on_paste_line(self, startpos, endpos, type):
 
         self.symbol = Line(startpos, endpos, type)
+
         self.memo.append(self.symbol.memo())
+        self.objects.append(self.symbol.reference())
 
-        ref = (startpos, self.symbol)
-        self.objects.append(ref)
-
-        self.symbol.paste(startpos, self.grid)
+        self.symbol.paste(self.grid)
 
     def on_paste_rect(self, startpos, endpos):
 
         self.symbol = Rect(startpos, endpos)
+
         self.memo.append(self.symbol.memo())
+        self.objects.append(self.symbol.reference())
 
-        ref = (startpos, self.symbol)
-        self.objects.append(ref)
-
-        self.symbol.paste(startpos, self.grid)
+        self.symbol.paste(self.grid)
 
     # clipboard
 

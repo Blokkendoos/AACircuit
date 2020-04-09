@@ -7,6 +7,10 @@ import cairo
 import time
 from pubsub import pub
 
+# https://pypi.org/project/profilehooks/
+from profilehooks import coverage
+from profilehooks import timecall
+
 from application import _
 from application import GRIDSIZE_W, GRIDSIZE_H
 from application import INSERT, HORIZONTAL, VERTICAL
@@ -46,13 +50,6 @@ class GridView(Gtk.Frame):
         self._drag_endpos = None
         self._drag_currentpos = None
         self._drag_prevpos = []
-
-        # magic line
-        self._ml_dir = None
-        self._ml_startpos = None
-        self._ml_endpos = None
-        self._ml_currentpos = None
-        self._ml_prevpos = []
 
         # text
         self._cursor_on = True
@@ -264,15 +261,13 @@ class GridView(Gtk.Frame):
         value = event.keyval
 
         # check the event modifiers (can also use CONTROL_MASK, etc)
-        shift = (event.state & Gdk.ModifierType.SHIFT_MASK)
-
-        # print("Key val, name, shift: ", value, name, shift)
+        # shift = (event.state & Gdk.ModifierType.SHIFT_MASK)
 
         if value == Gdk.KEY_Left or value == Gdk.KEY_BackSpace:
             if len(self._text) > 0:
                 self._text = self._text[:-1]
 
-        elif value & 255 == 13 and shift:  # shift+enter
+        elif value & 255 == 13:  # enter
             self._text += '\n'
 
         else:
@@ -347,6 +342,8 @@ class GridView(Gtk.Frame):
             if y >= self.surface.get_height():
                 break
 
+    @coverage
+    # @timecall
     def draw_selection(self, ctx):
 
         ctx.save()
@@ -381,11 +378,6 @@ class GridView(Gtk.Frame):
                 self._selection.endpos = self._drag_currentpos
                 self._selection.maxpos = self.max_pos_grid
                 self._selection.direction = self._drag_dir
-
-                if self._selection.item == MAG_LINE:
-                    self._selection.ml_direction = self._ml_dir
-                    self._selection.ml_startpos = self._ml_startpos
-                    self._selection.ml_endpos = self._ml_currentpos
 
                 if self._selection.item == RECT:
                     self.draw_selected_objects(ctx)
@@ -451,12 +443,13 @@ class GridView(Gtk.Frame):
 
         ctx.save()
 
-        for obj in self._objects:
+        # objects = [(position, endpos, object, view), ...] position in column/row coordinates
+        for ref in self._objects:
 
             ctx.set_source_rgb(1, 0, 0)
             ctx.select_font_face("monospace", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
 
-            viewpos = obj[0]  # obj = (relative_pos, objectref, symbolview)
+            viewpos = ref.startpos
             viewpos += Pos(0, 1)
 
             if follow_pointer:
@@ -464,7 +457,7 @@ class GridView(Gtk.Frame):
 
             pos = viewpos.view_xy()
             if follow_pointer:
-                vw = obj[2]
+                vw = ref.view
                 vw.draw(ctx, pos)
 
             ctx.move_to(pos.x, pos.y)
