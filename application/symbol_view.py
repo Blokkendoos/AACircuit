@@ -9,10 +9,10 @@ import cairo
 
 class SymbolView(object):
 
-    def __init__(self, grid=None, form={}, startpos=None):
+    def __init__(self, grid=None, repr={}, startpos=None):
 
         self._grid = grid
-        self._form = form
+        self._repr = repr
         self._startpos = startpos
 
     def draw(self, ctx, pos):
@@ -58,10 +58,10 @@ class ComponentView(SymbolView):
 class ObjectView(SymbolView):
     """"Draw the selected object."""
 
-    def __init__(self, form=None, startpos=None):
+    def __init__(self, repr=None, startpos=None):
         super(ObjectView, self).__init__()
 
-        self._form = form
+        self._repr = repr
         self._startpos = startpos
 
     def draw(self, ctx, pos):
@@ -75,7 +75,7 @@ class ObjectView(SymbolView):
         ctx.set_source_rgb(1, 0, 0)
         ctx.select_font_face('monospace', cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
 
-        for char_pos, char in self._form.items():
+        for char_pos, char in self._repr.items():
             # the position relative to the pointer, in view (x,y) coordinates
             relative_pos = pos + (char_pos - self._startpos).view_xy()
             x, y = relative_pos.xy
