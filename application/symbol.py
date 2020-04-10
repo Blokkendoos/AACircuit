@@ -84,10 +84,6 @@ class Symbol(object):
         self._mirrored = value
 
     @property
-    def repr(self):
-        return self._repr
-
-    @property
     def startpos(self):
         return self._startpos
 
