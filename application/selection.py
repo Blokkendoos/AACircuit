@@ -9,17 +9,39 @@ from numpy import sign
 from application import GRIDSIZE_W, GRIDSIZE_H
 from application import HORIZONTAL, VERTICAL
 from application import LINE_HOR, LINE_VERT, TERMINAL_TYPE
+from application import IDLE, SELECTING, SELECTED, DRAG
+from application import TEXT, TEXT_BLOCK, LINE, MAG_LINE, COL, ROW, RECT
 from application.pos import Pos
 
 
 class Selection(object):
     """A selection on the grid (canvas)."""
 
-    def __init__(self):
+    SELECTION_STATE = (IDLE, DRAG, SELECTING, SELECTED)
 
+    def __init__(self, item):
         self._startpos = None
         self._endpos = None
         self._maxpos = None
+
+        self._state = IDLE
+        self._item = item
+
+    @property
+    def item(self):
+        return self._item
+
+    @property
+    def state(self):
+        return self._state
+
+    @state.setter
+    def state(self, value):
+        self._state = value
+
+    def state_next(self):
+        self._state += 1
+        self._state %= len(self.SELECTION_STATE)
 
     @property
     def startpos(self):
@@ -61,14 +83,19 @@ class Selection(object):
 
 class SelectionLine(Selection):
 
-    def __init__(self, type):
+    def __init__(self, type, item=LINE):
+        super(SelectionLine, self).__init__(item=item)
 
-        super(SelectionLine, self).__init__()
         self._dir = None
+        self._type = type
         if type is None:
             self._line_terminal = None
         else:
             self._line_terminal = TERMINAL_TYPE[type]
+
+    @property
+    def type(self):
+        return self._type
 
     @property
     def direction(self):
@@ -129,9 +156,10 @@ class SelectionLine(Selection):
 class SelectionMagicLine(SelectionLine):
 
     def __init__(self):
-        super(SelectionMagicLine, self).__init__(type=None)
+        super(SelectionMagicLine, self).__init__(type=None, item=MAG_LINE)
 
         self._ml_dir = None
+        self._ml_split = None
 
         self._ml_startpos = None
         self._ml_endpos = None
@@ -146,20 +174,20 @@ class SelectionMagicLine(SelectionLine):
         self._ml_dir = value
 
     @property
+    def ml_split(self):
+        return self._ml_split
+
+    @ml_split.setter
+    def ml_split(self, value):
+        self._ml_split = value
+
+    @property
     def ml_startpos(self):
         return self._ml_startpos
 
     @ml_startpos.setter
     def ml_startpos(self, value):
         self._ml_startpos = value
-
-    # @property
-    # def ml_currentpos(self):
-    #     return self._ml_currentpos
-    #
-    # @ml_currentpos.setter
-    # def ml_currentpos(self, value):
-    #     self._ml_currentpos = value
 
     @property
     def ml_endpos(self):
@@ -204,7 +232,7 @@ class SelectionMagicLine(SelectionLine):
 class SelectionLineFree(Selection):
 
     def __init__(self):
-        super(SelectionLineFree, self).__init__()
+        super(SelectionLineFree, self).__init__(item=LINE)
 
     def draw(self, ctx):
         # linechar = "/"  # TODO
@@ -213,7 +241,7 @@ class SelectionLineFree(Selection):
         #     ctx.move_to(pos[0], pos[1])
         #     ctx.show_text(linechar)
 
-        x_start, y_start = self.startpos.xy
+        x_start, y_start = self._startpos.xy
         x_end, y_end = self.endpos_capped.xy
 
         ctx.move_to(x_start, y_start)
@@ -223,13 +251,13 @@ class SelectionLineFree(Selection):
 
 class SelectionRect(Selection):
 
-    def __init__(self):
-        super(SelectionRect, self).__init__()
+    def __init__(self, item=RECT):
+        super(SelectionRect, self).__init__(item=item)
 
     def draw(self, ctx):
         ctx.new_path()
 
-        x_start, y_start = self.startpos.xy
+        x_start, y_start = self._startpos.xy
         x_end, y_end = self.endpos_capped.xy
 
         # w, h = (self._endpos - self._startpos).xy
@@ -241,8 +269,15 @@ class SelectionRect(Selection):
 
 class SelectionCol(Selection):
 
-    def __init__(self):
-        super(SelectionCol, self).__init__()
+    def __init__(self, action):
+        super(SelectionCol, self).__init__(item=COL)
+
+        self._action = action
+        self._state = SELECTING
+
+    @property
+    def action(self):
+        return self._action
 
     def draw(self, ctx):
         # highlight the selected column
@@ -257,8 +292,15 @@ class SelectionCol(Selection):
 
 class SelectionRow(Selection):
 
-    def __init__(self):
-        super(SelectionRow, self).__init__()
+    def __init__(self, action):
+        super(SelectionRow, self).__init__(item=ROW)
+
+        self._action = action
+        self._state = SELECTING
+
+    @property
+    def action(self):
+        return self._action
 
     def draw(self, ctx):
         # highlight the selected row
@@ -269,3 +311,39 @@ class SelectionRow(Selection):
         ctx.move_to(0, y + GRIDSIZE_H)
         ctx.line_to(self._maxpos.x, y + GRIDSIZE_H)
         ctx.stroke()
+
+
+class SelectionText(Selection):
+
+    def __init__(self, text="", item=TEXT):
+        super(SelectionText, self).__init__(item=item)
+
+        self._state = SELECTING
+        self._text = text
+
+    @property
+    def text(self):
+        return self._text
+
+    @text.setter
+    def text(self, value):
+        self._text = value
+
+    def draw(self, ctx):
+        y = self._startpos.y
+        str = self._text.split('\n')
+        for line in str:
+            x = self._startpos.x
+            for char in line:
+                x += GRIDSIZE_W
+                ctx.move_to(x, y)
+                ctx.show_text(char)
+            y += GRIDSIZE_H  # TODO check max?
+
+
+class SelectionTextBlock(SelectionText):
+
+    def __init__(self, text=""):
+        super(SelectionTextBlock, self).__init__(text=text, item=TEXT_BLOCK)
+
+        self._text = text

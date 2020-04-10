@@ -9,7 +9,7 @@ import sys
 import json
 
 from application import _
-from application.symbol import Symbol, Character
+from application.symbol import Symbol
 from application import DEFAULT_COMPONENT_KEY
 
 

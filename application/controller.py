@@ -3,17 +3,22 @@ AACircuit.py
 2020-03-02 JvO
 """
 
-from pubsub import pub
 import re
+import json
+import collections
+from pubsub import pub
 
 from application import _
-from application import COMPONENT, CHARACTER, COL, ROW, DRAW_RECT, RECT, LINE, MAG_LINE
+from application import COMPONENT, CHARACTER, TEXT, COL, ROW, DRAW_RECT, LINE
 from application.grid import Grid
 from application.pos import Pos
-from application.symbol import Symbol, Character, Line, Rect
+from application.symbol import Symbol, Character, Text, Line, Rect
 from application.main_window import MainWindow
 from application.component_library import ComponentLibrary
 from application.file import FileChooserWindow
+
+
+SelectedObjects = collections.namedtuple('selection', ['startpos', 'endpos', 'symbol', 'view'])
 
 
 class Controller(object):
@@ -63,10 +68,8 @@ class Controller(object):
         self.memo = []
 
         # all objects on the grid
-        # [(position, object, view), ...] position in column/row coordinates
         self.objects = []
 
-        # [(relative_position, object), ...] position relative to the selection rect (in column/row coordinates)
         self.selected_objects = []
 
         all_components = [key for key in self.components.get_dict()]
@@ -88,11 +91,14 @@ class Controller(object):
 
         pub.subscribe(self.on_rotate_symbol, 'ROTATE_SYMBOL')
         pub.subscribe(self.on_mirror_symbol, 'MIRROR_SYMBOL')
+
         pub.subscribe(self.on_paste_character, 'PASTE_CHARACTER')
         pub.subscribe(self.on_paste_symbol, 'PASTE_SYMBOL')
         pub.subscribe(self.on_paste_objects, 'PASTE_OBJECTS')
         pub.subscribe(self.on_paste_line, 'PASTE_LINE')
         pub.subscribe(self.on_paste_rect, 'PASTE_RECT')
+        pub.subscribe(self.on_paste_text, 'PASTE_TEXT')
+        pub.subscribe(self.on_paste_text, 'PASTE_TEXTBLOCK')
         pub.subscribe(self.on_undo, 'UNDO')
 
         pub.subscribe(self.on_select_rect, 'SELECT_RECT')
@@ -152,8 +158,8 @@ class Controller(object):
     # TODO cut|copy|paste and objects list maintenance, respectively remove from or add to the list
 
     def remove_from_objects(self, symbol):
-        for idx, s in enumerate(self.objects):
-            if id(s[1]) == id(symbol):
+        for idx, sym in enumerate(self.objects):
+            if id(sym) == id(symbol):
                 del self.objects[idx]
                 break
 
@@ -167,21 +173,20 @@ class Controller(object):
 
         # select symbols of which the upper-left corner is within the selection rectangle
         selected = []
-        for obj in self.objects:
+        for symbol in self.objects:
 
-            pos = obj[0]
+            pos = symbol.startpos
             if pos.in_rect(rect):
-
-                symbol = obj[1]
 
                 # TODO representation of rotated obj in selection to follow the pointer
                 symbolview = symbol.view
 
                 # position relative to the selection rectangle (upper left corner) position
-                relative_pos = pos - ul
-                sel_obj = (relative_pos, symbol, symbolview)
+                relative_pos = symbol.startpos - ul
+                relative_endpos = symbol.endpos - ul
 
-                selected.append(sel_obj)
+                selection = SelectedObjects(startpos=relative_pos, endpos=relative_endpos, symbol=symbol, view=symbolview)
+                selected.append(selection)
 
         self.selected_objects = selected
 
@@ -189,8 +194,7 @@ class Controller(object):
 
         self.find_selected(pos, rect)
 
-        for obj in self.selected_objects:
-            symbol_pos, symbol, symbol_view = obj
+        for symbol in self.selected_objects:
             self.remove_from_objects(symbol)
 
         self.buffer = self.grid.rect(pos, rect)
@@ -213,9 +217,8 @@ class Controller(object):
     def on_delete(self, pos, rect):
 
         self.find_selected(pos, rect)
-        for obj in self.selected_objects:
-            symbol_pos, symbol, symbol_view = obj
-            self.remove_from_objects(symbol)
+        for sel in self.selected_objects:
+            self.remove_from_objects(sel.symbol)
 
         self.grid.erase_rect(pos, rect)
         pub.sendMessage('NOTHING_SELECTED')
@@ -259,9 +262,8 @@ class Controller(object):
             self.symbol.grid_next()
             pub.sendMessage('SYMBOL_SELECTED', symbol=self.symbol)
         else:
-            for obj in self.selected_objects:
-                relative_pos, symbol, symbolview = obj
-                symbol.grid_next()
+            for sel in self.selected_objects:
+                sel.symbol.grid_next()
 
     def on_mirror_symbol(self):
         self.symbol.mirrored = 1
@@ -269,70 +271,58 @@ class Controller(object):
 
     def on_paste_symbol(self, pos):
 
-        str = "{0}:{1},{2},{3},{4}".format(COMPONENT, self.symbol.id, self.symbol.ori, self.symbol.mirrored, pos)
-        self.memo.append(str)
-
         symbol = self.symbol.copy()
-        symbol.pos = pos
-        ref = (pos, symbol)
-        self.objects.append(ref)
+        symbol.startpos = pos
 
-        symbol.paste(pos, self.grid)
+        self.memo.append(symbol.memo())
+        self.objects.append(symbol)
+
+        symbol.paste(self.grid)
 
     def on_paste_character(self, pos):
 
-        str = "{0}:{1},{2}".format(CHARACTER, self.symbol.id, pos)
-        self.memo.append(str)
-
         symbol = self.symbol.copy()
-        symbol.pos = pos
-        ref = (pos, symbol)
-        self.objects.append(ref)
+        symbol.startpos = pos
 
-        symbol.paste(pos, self.grid)
+        self.memo.append(symbol.memo())
+        self.objects.append(symbol)
+
+        symbol.paste(self.grid)
+
+    def on_paste_text(self, pos, text):
+
+        self.symbol = Text(pos, text)
+
+        self.memo.append(self.symbol.memo())
+        self.objects.append(self.symbol)
+
+        self.symbol.paste(self.grid)
 
     def on_paste_objects(self, pos):
 
-        def classname(x):
-            return type(x).__name__
+        for sel in self.selected_objects:
 
-        for obj in self.selected_objects:
+            target_pos = sel.startpos + pos  # + Pos(0, 1)
+            target_endpos = sel.endpos + pos  # + Pos(0, 1)
 
-            relative_pos, symbol, symbolview = obj
-            target_pos = pos + relative_pos  # TODO + Pos(0, 1)
+            symbol = sel.symbol.copy()
+            symbol.startpos = target_pos
+            symbol.endpos = target_endpos
 
-            if classname(symbol) == 'Character':
-                str = "{0}:{1},{2}".format(CHARACTER, symbol.id, target_pos)
+            self.memo.append(symbol.memo())
+            self.objects.append(symbol)
 
-            elif classname(symbol) == 'Line':
-                endpos = (symbol.endpos - symbol.startpos) + pos + relative_pos
-                str = "{0}:{1},{2},{3}".format(LINE, symbol.type, target_pos, endpos)
-
-            elif classname(symbol) == 'Rect':
-                endpos = (symbol.endpos - symbol.startpos) + pos + relative_pos
-                str = "{0}:{1},{2}".format(DRAW_RECT, target_pos, endpos)
-
-            else:
-                str = "{0}:{1},{2},{3},{4}".format(COMPONENT, symbol.id, symbol.ori, symbol.mirrored, target_pos)
-
-            self.memo.append(str)
-
-            ref = (target_pos, symbol)
-            self.objects.append(ref)
-
-            symbol.paste(target_pos, self.grid)
+            symbol.paste(self.grid)
 
         pub.sendMessage('NOTHING_SELECTED')
 
     def on_cut_objects(self, pos):
 
-        for obj in self.selected_objects:
+        for sel in self.selected_objects:
 
             # TODO remove symbol from the objects list
 
-            pos, symbol = obj
-
-            grid = symbol.grid
+            grid = sel.symbol.grid
             dummy, rect = grid.rect()
 
             self.grid.erase_rect(pos, rect)
@@ -343,25 +333,21 @@ class Controller(object):
 
     def on_paste_line(self, startpos, endpos, type):
 
-        str = "{0}:{1},{2},{3}".format(LINE, type, startpos, endpos)
-        self.memo.append(str)
-
         self.symbol = Line(startpos, endpos, type)
-        ref = (startpos, self.symbol)
-        self.objects.append(ref)
 
-        self.symbol.paste(startpos, self.grid)
+        self.memo.append(self.symbol.memo())
+        self.objects.append(self.symbol)
+
+        self.symbol.paste(self.grid)
 
     def on_paste_rect(self, startpos, endpos):
 
-        str = "{0}:{1},{2}".format(DRAW_RECT, startpos, endpos)
-        self.memo.append(str)
-
         self.symbol = Rect(startpos, endpos)
-        ref = (startpos, self.symbol)
-        self.objects.append(ref)
 
-        self.symbol.paste(startpos, self.grid)
+        self.memo.append(self.symbol.memo())
+        self.objects.append(self.symbol)
+
+        self.symbol.paste(self.grid)
 
     # clipboard
 
@@ -379,9 +365,11 @@ class Controller(object):
     # other
 
     def on_select_rect(self):
+        """Select multiple objects."""
         pub.sendMessage('SELECTING_RECT', objects=self.objects)
 
     def on_select_objects(self):
+        """Select individual objects."""
         pub.sendMessage('SELECTING_OBJECTS', objects=self.objects)
 
     # file open/save
@@ -431,6 +419,7 @@ class Controller(object):
 
             m1 = re.search('(^comp|^char|^rect|^line):(\d+),(\d+),(\d+),?(\d*),?(\d*)', item)  # noqa W605
             m2 = re.search('(^d|^i)(row|col):(\d+)', item)  # noqa W605
+            m3 = re.search('(^text):(\d+),(\d+),(.*)', item)  # noqa W605
 
             skipped = 0
 
@@ -438,6 +427,8 @@ class Controller(object):
                 self.play_m1(m1, skipped)
             elif m2 is not None:
                 self.play_m2(m2, skipped)
+            elif m3 is not None:
+                self.play_m3(m3, skipped)
             else:
                 skipped += 1
 
@@ -527,5 +518,22 @@ class Controller(object):
                 self.on_insert_col(nr)
             elif what == ROW:
                 self.on_insert_row(nr)
+        else:
+            skipped += 1
+
+    def play_m3(self, m, skipped):
+
+        type = m.group(1)
+
+        if type == TEXT:
+
+            x, y = m.group(2, 3)
+            startpos = Pos(x, y)
+
+            str = m.group(4)
+            text = json.loads(str)
+
+            self.on_paste_text(startpos, text)
+
         else:
             skipped += 1

@@ -4,11 +4,13 @@ AACircuit
 '''
 
 import copy
+import json
 
 from application import _
 from application.pos import Pos
 from application import HORIZONTAL, VERTICAL
 from application import LINE_HOR, LINE_VERT, TERMINAL_TYPE
+from application import COMPONENT, CHARACTER, TEXT, DRAW_RECT, LINE
 from application.symbol_view import ComponentView, ObjectView
 
 
@@ -16,7 +18,7 @@ class Symbol(object):
 
     ORIENTATION = {0: "N", 1: "E", 2: "S", 3: "W"}
 
-    def __init__(self, id=0, dict=None, ori=None, mirrored=None, startpos=None, endpos=None, form=None):
+    def __init__(self, id=0, dict=None, ori=None, mirrored=None, startpos=None, endpos=None):
 
         self._id = id
 
@@ -45,14 +47,15 @@ class Symbol(object):
         else:
             self._endpos = endpos
 
-        if form is None:
-            self._form = {}
-        else:
-            self._form = form
+        self._repr = {}
 
     def __str__(self):
         str = _("symbol id: {0} orientation: {1}").format(self._id, self.ORIENTATION[self._ori])
         return str
+
+    def _representation(self):
+        # raise NotImplementedError
+        return
 
     @property
     def view(self):
@@ -81,8 +84,8 @@ class Symbol(object):
         self._mirrored = value
 
     @property
-    def form(self):
-        return self._form
+    def repr(self):
+        return self._repr
 
     @property
     def startpos(self):
@@ -92,13 +95,19 @@ class Symbol(object):
     def startpos(self, value):
         self._startpos = value
 
+        # representation may be changed due to a changed start/end position
+        self._representation()
+
     @property
     def endpos(self):
         return self._endpos
 
     @endpos.setter
-    def ebdpos(self, value):
+    def endpos(self, value):
         self._endpos = value
+
+        # representation may be changed due to a changed start/end position
+        self._representation()
 
     @property
     def default(self):
@@ -111,12 +120,17 @@ class Symbol(object):
             ' (_) ']}
         return grid
 
+    def memo(self):
+        """Return entry for the actions as recorded in the memo."""
+        str = "{0}:{1},{2},{3},{4}".format(COMPONENT, self._id, self._ori, self._mirrored, self._startpos)
+        return str
+
     def copy(self):
         ori = copy.deepcopy(self._ori)
         mirrored = copy.deepcopy(self._mirrored)
         startpos = copy.deepcopy(self._startpos)
-        form = copy.deepcopy(self._form)
-        return Symbol(self._id, self._grid, ori, mirrored, startpos, form)
+        endpos = copy.deepcopy(self._endpos)
+        return Symbol(id=self._id, dict=self._grid, ori=ori, mirrored=mirrored, startpos=startpos, endpos=endpos)
 
     @property
     def grid(self):
@@ -132,18 +146,11 @@ class Symbol(object):
 
         return self.grid
 
-    def paste(self, pos, grid):
-        """Paste symbol into the target grid.
+    def paste(self, grid):
+        """Paste symbol into the target grid."""
+        grid.fill_rect(self._startpos, self.grid)
 
-        :param pos: the (col,row) coordinate of the upper left position of the symbol grid in the target grid
-        :param grid: the target grid
-        """
-        grid.fill_rect(pos, self.grid)
-
-    # TODO don't change the grid
     def mirror(self, grid):
-        """Return the grid vertically mirrored."""
-
         # mirror specific characters
         switcher = {'/': '\\',
                     '\\': '/',
@@ -168,20 +175,101 @@ class Symbol(object):
 
 class Character(Symbol):
 
-    def __init__(self, char):
+    def __init__(self, char, dict=None, startpos=None):
 
         id = ord(char)
-        grid = {"N": [[char]]}
+        if dict is None:
+            grid = {"N": [[char]]}
+        else:
+            grid = dict
+        super(Character, self).__init__(id=id, dict=grid, startpos=startpos)
 
-        super(Character, self).__init__(id=id, dict=grid)
+        self._char = char
 
     @property
     def grid(self):
         return self._grid[self.ORIENTATION[0]]
 
+    def memo(self):
+        str = "{0}:{1},{2}".format(CHARACTER, self._id, self._startpos)
+        return str
+
+    def copy(self):
+        startpos = copy.deepcopy(self._startpos)
+        return Character(self._char, dict=self._grid, startpos=startpos)
+
     def grid_next(self):
-        # print("Not implemented")
+        # raise NotImplementedError
         return
+
+
+class Text(Symbol):
+
+    def __init__(self, pos, text):
+
+        grid = {"N": [['?']]}
+        super(Text, self).__init__(dict=grid, startpos=pos)
+
+        self._text = text
+        self._representation()
+
+    @property
+    def grid(self):
+        return self._grid[self.ORIENTATION[0]]
+
+    @property
+    def text(self):
+        return self._text
+
+    @text.setter
+    def text(self, value):
+        self._text = value
+
+    @property
+    def view(self):
+        return ObjectView(self._repr, self._startpos)
+
+    def memo(self):
+        jstext = json.dumps(self._text)
+        str = "{0}:{1},{2}".format(TEXT, self._startpos, jstext)
+        return str
+
+    def copy(self):
+        startpos = copy.deepcopy(self._startpos)
+        return Text(pos=startpos, text=self._text)
+
+    def _representation(self):
+
+        self._repr = {}
+
+        pos = self._startpos
+        startpos = self._startpos
+
+        incr = Pos(1, 0)
+        for line in self._text:
+            for char in line:
+                # startpoint terminal
+                if char == '\n':
+                    pos.x = startpos.x
+                    pos += Pos(-1, 1)  # skip the cr, go to next line
+                self._repr[pos] = char
+                pos += incr
+
+    def grid_next(self):
+        # raise NotImplementedError
+        return
+
+    def paste(self, grid):
+        pos = self._startpos
+        y = pos.y
+        str = self._text.split('\n')
+        for line in str:
+            x = pos.x
+            for char in line:
+                x += 1
+                targetpos = Pos(x, y)
+                grid.set_cell(targetpos, char)
+            y += 1  # TODO check boundary?
 
 
 class Line(Symbol):
@@ -193,7 +281,7 @@ class Line(Symbol):
         self._terminal = TERMINAL_TYPE[type]
 
         self._direction()
-        self._line(self._startpos)
+        self._representation()
 
     def _direction(self):
         if self._startpos.x == self._endpos.x:
@@ -205,17 +293,27 @@ class Line(Symbol):
 
     def grid_next(self):
         # TODO enable to rotate (from HOR to VERT)?
-        print("Not implemented")
+        raise NotImplementedError
+
+    def copy(self):
+        startpos = copy.deepcopy(self._startpos)
+        endpos = copy.deepcopy(self._endpos)
+        type = copy.deepcopy(self._type)
+        return Line(startpos, endpos, type)
+
+    def memo(self):
+        str = "{0}:{1},{2},{3}".format(LINE, self._type, self._startpos, self._endpos)
+        return str
 
     @property
     def view(self):
-        return ObjectView(self._form, self._startpos)
+        return ObjectView(self._repr, self._startpos)
 
     @property
     def type(self):
         return self._type
 
-    def _line(self, pos):
+    def _representation(self):
         """
         Compose the line elements
 
@@ -223,12 +321,12 @@ class Line(Symbol):
         :param grid: the target grid
         """
 
-        self._form = {}
-        start = self._startpos
+        self._repr = {}
+        pos = self._startpos
         end = self._endpos
 
-        offset = pos - start
-        end += offset
+        # offset = pos - start
+        # end += offset
 
         # print("start:", start, " end:", end)
 
@@ -248,22 +346,22 @@ class Line(Symbol):
             terminal = self._terminal
 
         # startpoint terminal
-        self._form[pos] = terminal
+        self._repr[pos] = terminal
         pos += incr
 
         # TODO make this one string (and support an appropriate fill method for this in grid)
         while pos < end:
-            self._form[pos] = line_char
+            self._repr[pos] = line_char
             pos += incr
 
         # endpoint terminal
-        self._form[pos] = terminal
+        self._repr[pos] = terminal
 
-    def paste(self, pos, grid):
+    def paste(self, grid):
 
-        self._line(pos)
+        self._representation()
 
-        for key, value in self._form.items():
+        for key, value in self._repr.items():
             grid.set_cell(key, value)
 
 
@@ -272,9 +370,9 @@ class Rect(Symbol):
     def __init__(self, startpos, endpos):
         super(Rect, self).__init__(startpos=startpos, endpos=endpos)
 
-        self._rect()
+        self._representation()
 
-    def _rect(self):
+    def _representation(self):
 
         ul = self._startpos
         ur = Pos(self._endpos.x, self._startpos.y)
@@ -290,12 +388,12 @@ class Rect(Symbol):
         line3 = Line(bl, br, type)
         line4 = Line(ul, bl, type)
 
-        form = {}
-        form.update(line1._form)
-        form.update(line2._form)
-        form.update(line3._form)
-        form.update(line4._form)
-        self._form = form
+        repr = {}
+        repr.update(line1._repr)
+        repr.update(line2._repr)
+        repr.update(line3._repr)
+        repr.update(line4._repr)
+        self._repr = repr
 
     def grid_next(self):
 
@@ -311,16 +409,21 @@ class Rect(Symbol):
 
     @property
     def view(self):
-        return ObjectView(self._form, self._startpos)
+        return ObjectView(self._repr, self._startpos)
 
-    def paste(self, pos, grid):
+    def copy(self):
+        startpos = copy.deepcopy(self._startpos)
+        endpos = copy.deepcopy(self._endpos)
+        return Rect(startpos, endpos)
+
+    def memo(self):
+        str = "{0}:{1},{2}".format(DRAW_RECT, self._startpos, self._endpos)
+        return str
+
+    def paste(self, grid):
 
         start = self._startpos
         end = self._endpos
-
-        offset = pos - start
-        start = pos
-        end += offset
 
         ul = start
         ur = Pos(end.x, start.y)
@@ -336,7 +439,7 @@ class Rect(Symbol):
         line3 = Line(bl, br, type)
         line4 = Line(ul, bl, type)
 
-        line1.paste(ul, grid)
-        line2.paste(ur, grid)
-        line3.paste(bl, grid)
-        line4.paste(ul, grid)
+        line1.paste(grid)
+        line2.paste(grid)
+        line3.paste(grid)
+        line4.paste(grid)

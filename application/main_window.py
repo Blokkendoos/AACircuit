@@ -100,6 +100,17 @@ class MainWindow(Gtk.Window):
         self.btn_mirror.connect('pressed', self.on_mirror)
         self.btn_mirror.set_tooltip_text(_("mirror the symbol vertically"))
 
+        # text entry
+        self.btn_add_text = self.builder.get_object('add_text')
+        self.btn_add_textblock = self.builder.get_object('add_textblock')
+        self.text_entry = self.builder.get_object('text_entry')
+
+        self.btn_add_text.set_tooltip_text(_("write text"))
+        self.btn_add_textblock.set_tooltip_text(_("insert text"))
+
+        self.btn_add_text.connect('pressed', self.on_add_text)
+        self.btn_add_textblock.connect('pressed', self.on_add_textblock)
+
         # line drawing
         self.btn_mag_line = self.builder.get_object('draw_mag_line')
         self.btn_line0 = self.builder.get_object('draw_line0')
@@ -199,6 +210,13 @@ class MainWindow(Gtk.Window):
         # grid indexing starts at zero, show +1
         self.label_xpos.set_text(format(pos.x + 1))
         self.label_ypos.set_text(format(pos.y + 1))
+
+    def on_add_text(self, button):
+        pub.sendMessage('ADD_TEXT')
+
+    def on_add_textblock(self, button):
+        text = self.text_entry.get_text()
+        pub.sendMessage('ADD_TEXTBLOCK', text=text)
 
     def on_rotate(self, button):
         pub.sendMessage('ROTATE_SYMBOL')
