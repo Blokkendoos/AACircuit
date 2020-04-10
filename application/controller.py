@@ -266,7 +266,7 @@ class Controller(object):
                 sel.symbol.grid_next()
 
     def on_mirror_symbol(self):
-        self.symbol.mirror()
+        self.symbol.mirrored = 1
         pub.sendMessage('SYMBOL_SELECTED', symbol=self.symbol)
 
     def on_paste_symbol(self, pos):
@@ -445,8 +445,8 @@ class Controller(object):
         if type == COMPONENT:
 
             id = m.group(2)
-            orientation = m.group(3)
-            mirrored = m.group(4)
+            orientation = int(m.group(3))
+            mirrored = int(m.group(4))
 
             x, y = m.group(5, 6)
             pos = Pos(x, y)
@@ -455,8 +455,8 @@ class Controller(object):
 
             self.symbol = self.components.get_symbol_byid(id)
             self.symbol.ori = orientation
-            if mirrored == '1':
-                self.symbol.mirror()
+            self.symbol.mirrored = mirrored
+
             self.on_paste_symbol(pos)
 
         elif type == CHARACTER:

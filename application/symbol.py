@@ -77,8 +77,11 @@ class Symbol(object):
 
     @property
     def mirrored(self):
-        # mirrored can only be set via the mirror() method
         return self._mirrored
+
+    @mirrored.setter
+    def mirrored(self, value):
+        self._mirrored = value
 
     @property
     def repr(self):
@@ -131,20 +134,23 @@ class Symbol(object):
 
     @property
     def grid(self):
-        return self._grid[self.ORIENTATION[self._ori]]
+        if self._mirrored == 1:
+            return self.mirror(self._grid[self.ORIENTATION[self._ori]])
+        else:
+            return self._grid[self.ORIENTATION[self._ori]]
 
     def grid_next(self):
         """Return the grid with the next (90° clockwise rotated) orientation for this symbol."""
         self._ori += 1
         self._ori %= 4
-        return self._grid[self.ORIENTATION[self._ori]]
+
+        return self.grid
 
     def paste(self, grid):
         """Paste symbol into the target grid."""
         grid.fill_rect(self._startpos, self.grid)
 
-    def mirror(self):
-
+    def mirror(self, grid):
         # mirror specific characters
         switcher = {'/': '\\',
                     '\\': '/',
@@ -153,21 +159,18 @@ class Symbol(object):
                     '(': ')',
                     ')': '('
                     }
-        grid = []
+        mir_grid = []
 
-        for r, row in enumerate(self._grid[self.ORIENTATION[self._ori]]):
+        for r, row in enumerate(grid):
             rev = []
             for c in reversed(row):
                 try:
                     rev.append(switcher[c])
                 except KeyError:
                     rev.append(c)
-            grid.append(rev)
+            mir_grid.append(rev)
 
-        self._grid[self.ORIENTATION[self._ori]] = grid
-
-        self._mirrored += 1
-        self._mirrored %= 2
+        return mir_grid
 
 
 class Character(Symbol):
