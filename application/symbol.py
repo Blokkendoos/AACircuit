@@ -10,7 +10,7 @@ from application import _
 from application.pos import Pos
 from application import HORIZONTAL, VERTICAL
 from application import LINE_HOR, LINE_VERT, TERMINAL_TYPE
-from application import COMPONENT, CHARACTER, TEXT, DRAW_RECT, LINE
+from application import COMPONENT, CHARACTER, TEXT, DRAW_RECT, LINE, MAG_LINE
 from application.symbol_view import ComponentView, ObjectView
 
 
@@ -84,12 +84,19 @@ class Symbol(object):
         self._mirrored = value
 
     @property
+    def repr(self):
+        return self._repr
+
+    @property
     def startpos(self):
         return self._startpos
 
     @startpos.setter
     def startpos(self, value):
         self._startpos = value
+
+        # representation may be changed due to a changed start/end position
+        self._representation()
 
     @property
     def endpos(self):
@@ -98,6 +105,9 @@ class Symbol(object):
     @endpos.setter
     def endpos(self, value):
         self._endpos = value
+
+        # representation may be changed due to a changed start/end position
+        self._representation()
 
     @property
     def default(self):
@@ -201,6 +211,7 @@ class Text(Symbol):
         super(Text, self).__init__(dict=grid, startpos=pos)
 
         self._text = text
+        self._representation()
 
     @property
     def grid(self):
@@ -216,7 +227,6 @@ class Text(Symbol):
 
     @property
     def view(self):
-        self._representation()
         return ObjectView(self._repr, self._startpos)
 
     def memo(self):
@@ -264,7 +274,7 @@ class Text(Symbol):
 
 class Line(Symbol):
 
-    def __init__(self, startpos, endpos, type=0):
+    def __init__(self, startpos, endpos, type='0'):
         super(Line, self).__init__(id=type, startpos=startpos, endpos=endpos)
 
         self._type = type
@@ -297,7 +307,6 @@ class Line(Symbol):
 
     @property
     def view(self):
-        self._representation()
         return ObjectView(self._repr, self._startpos)
 
     @property
@@ -305,19 +314,18 @@ class Line(Symbol):
         return self._type
 
     def _representation(self):
-        """
-        Compose the line elements
-
-        :param pos: the (col,row) coordinate of the upper left position of this line in the target grid
-        :param grid: the target grid
-        """
+        """Compose the line elements."""
 
         self._repr = {}
-        pos = self._startpos
+
+        start = self._startpos
         end = self._endpos
 
-        # offset = pos - start
-        # end += offset
+        if start < end:
+            pos = start
+        else:
+            pos = end
+            end = start
 
         # print("start:", start, " end:", end)
 
@@ -349,17 +357,67 @@ class Line(Symbol):
         self._repr[pos] = terminal
 
     def paste(self, grid):
+        for key, value in self._repr.items():
+            grid.set_cell(key, value)
+
+
+class MagLine(Symbol):
+
+    def __init__(self, startpos, endpos, ml_endpos):
+        super(MagLine, self).__init__(startpos=startpos, endpos=endpos)
+
+        self._ml_endpos = ml_endpos
 
         self._representation()
 
-        for key, value in self._repr.items():
-            grid.set_cell(key, value)
+    @property
+    def ml_endpos(self):
+        return self._endpos
+
+    @ml_endpos.setter
+    def ml_endpos(self, value):
+        self._ml_endpos = value
+
+    def grid_next(self):
+        # TODO enable to rotate (from HOR to VERT)?
+        raise NotImplementedError
+
+    def copy(self):
+        startpos = copy.deepcopy(self._startpos)
+        endpos = copy.deepcopy(self._endpos)
+        ml_endpos = copy.deepcopy(self._ml_endpos)
+        return MagLine(startpos, endpos, ml_endpos)
+
+    def memo(self):
+        str = "{0}:{1},{2},{3}".format(MAG_LINE, self._startpos, self._endpos, self._ml_endpos)
+        return str
+
+    def _representation(self):
+
+        line1 = Line(self._startpos, self._endpos)
+        line2 = Line(self._endpos, self._ml_endpos)
+
+        repr = {}
+        repr.update(line1._repr)
+        repr.update(line2._repr)
+
+        self._repr = repr
+
+    def paste(self, grid):
+
+        line1 = Line(self._startpos, self._endpos)
+        line2 = Line(self._endpos, self._ml_endpos)
+
+        line1.paste(grid)
+        line2.paste(grid)
 
 
 class Rect(Symbol):
 
     def __init__(self, startpos, endpos):
         super(Rect, self).__init__(startpos=startpos, endpos=endpos)
+
+        self._representation()
 
     def _representation(self):
 
@@ -398,7 +456,6 @@ class Rect(Symbol):
 
     @property
     def view(self):
-        self._representation()
         return ObjectView(self._repr, self._startpos)
 
     def copy(self):
@@ -411,8 +468,6 @@ class Rect(Symbol):
         return str
 
     def paste(self, grid):
-
-        self._representation()
 
         start = self._startpos
         end = self._endpos

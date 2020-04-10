@@ -9,10 +9,10 @@ import collections
 from pubsub import pub
 
 from application import _
-from application import COMPONENT, CHARACTER, TEXT, COL, ROW, DRAW_RECT, LINE
+from application import COMPONENT, CHARACTER, TEXT, COL, ROW, DRAW_RECT, LINE, MAG_LINE
 from application.grid import Grid
 from application.pos import Pos
-from application.symbol import Symbol, Character, Text, Line, Rect
+from application.symbol import Symbol, Character, Text, Line, MagLine, Rect
 from application.main_window import MainWindow
 from application.component_library import ComponentLibrary
 from application.file import FileChooserWindow
@@ -95,6 +95,7 @@ class Controller(object):
         pub.subscribe(self.on_paste_character, 'PASTE_CHARACTER')
         pub.subscribe(self.on_paste_symbol, 'PASTE_SYMBOL')
         pub.subscribe(self.on_paste_objects, 'PASTE_OBJECTS')
+        pub.subscribe(self.on_paste_mag_line, 'PASTE_MAG_LINE')
         pub.subscribe(self.on_paste_line, 'PASTE_LINE')
         pub.subscribe(self.on_paste_rect, 'PASTE_RECT')
         pub.subscribe(self.on_paste_text, 'PASTE_TEXT')
@@ -340,6 +341,15 @@ class Controller(object):
 
         self.symbol.paste(self.grid)
 
+    def on_paste_mag_line(self, startpos, endpos, ml_endpos):
+
+        self.symbol = MagLine(startpos, endpos, ml_endpos)
+
+        self.memo.append(self.symbol.memo())
+        self.objects.append(self.symbol)
+
+        self.symbol.paste(self.grid)
+
     def on_paste_rect(self, startpos, endpos):
 
         self.symbol = Rect(startpos, endpos)
@@ -417,7 +427,7 @@ class Controller(object):
 
         for item in memo:
 
-            m1 = re.search('(^comp|^char|^rect|^line):(\d+),(\d+),(\d+),?(\d*),?(\d*)', item)  # noqa W605
+            m1 = re.search('(^comp|^char|^rect|^line|^mline):(\d+),(\d+),(\d+),?(\d*),?(\d*),?(\d*)', item)  # noqa W605
             m2 = re.search('(^d|^i)(row|col):(\d+)', item)  # noqa W605
             m3 = re.search('(^text):(\d+),(\d+),(.*)', item)  # noqa W605
 
@@ -481,6 +491,19 @@ class Controller(object):
             endpos = Pos(x, y)
 
             self.on_paste_line(startpos, endpos, terminal)
+
+        elif type == MAG_LINE:
+
+            x, y = m.group(2, 3)
+            startpos = Pos(x, y)
+
+            x, y = m.group(4, 5)
+            endpos = Pos(x, y)
+
+            x, y = m.group(6, 7)
+            ml_endpos = Pos(x, y)
+
+            self.on_paste_mag_line(startpos, endpos, ml_endpos)
 
         elif type == DRAW_RECT:
 

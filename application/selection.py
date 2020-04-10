@@ -155,22 +155,21 @@ class SelectionLine(Selection):
 
 class SelectionMagicLine(SelectionLine):
 
-    def __init__(self):
-        super(SelectionMagicLine, self).__init__(type=None, item=MAG_LINE)
+    def __init__(self, item=MAG_LINE):
+        super(SelectionMagicLine, self).__init__(type=None, item=item)
 
         self._ml_dir = None
-        self._ml_split = None
 
         self._ml_startpos = None
         self._ml_endpos = None
         self._ml_maxpos = None
 
     @property
-    def ml_direction(self):
+    def ml_dir(self):
         return self._ml_dir
 
-    @ml_direction.setter
-    def ml_direction(self, value):
+    @ml_dir.setter
+    def ml_dir(self, value):
         self._ml_dir = value
 
     @property
@@ -200,6 +199,9 @@ class SelectionMagicLine(SelectionLine):
     @property
     def ml_endpos_capped(self):
         """Return magic line endposition capped by the coordinates maximum."""
+
+        # TODO grid maxpos
+
         x, y = self._ml_endpos.xy
         if self._ml_endpos.x > self._maxpos.x:
             x = self._maxpos.x

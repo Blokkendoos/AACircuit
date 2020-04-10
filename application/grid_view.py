@@ -12,7 +12,7 @@ from profilehooks import coverage
 from profilehooks import timecall
 
 from application import _
-from application import GRIDSIZE_W, GRIDSIZE_H
+from application import FONTSIZE, GRIDSIZE_W, GRIDSIZE_H
 from application import INSERT, HORIZONTAL, VERTICAL
 from application import IDLE, SELECTING, SELECTED
 from application import CHARACTER, COMPONENT, LINE, MAG_LINE, OBJECTS, COL, ROW, RECT, DRAW_RECT
@@ -327,6 +327,7 @@ class GridView(Gtk.Frame):
         if self._grid is None:
             return
 
+        ctx.set_font_size(FONTSIZE)
         ctx.set_source_rgb(0.1, 0.1, 0.1)
         ctx.select_font_face("monospace", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
 
@@ -459,6 +460,7 @@ class GridView(Gtk.Frame):
             if follow_pointer:
                 vw = ref.view
                 vw.draw(ctx, pos)
+                pos -= Pos(GRIDSIZE_W, 0)  # prepare for the mark (to show left of the object)
 
             ctx.move_to(pos.x, pos.y)
             ctx.show_text('X')  # mark the upper-left corner with "x"
@@ -579,7 +581,7 @@ class GridView(Gtk.Frame):
             elif self._selection.item == RECT:
                 pub.sendMessage('SELECTION_CHANGED', selected=True)
 
-            elif self._selection.item == LINE:
+            elif self._selection.item in (LINE, MAG_LINE):
 
                 # TODO line terminal-type?
 
@@ -592,15 +594,14 @@ class GridView(Gtk.Frame):
                 elif self._drag_dir == VERTICAL:
                     end.x = start.x
 
-                # TODO move this to the Symbol class?
-                if start > end:
-                    endpos = start
-                    startpos = end
-                else:
-                    endpos = end
-                    startpos = start
+                if self._selection.item == LINE:
+                    pub.sendMessage("PASTE_LINE", startpos=startpos, endpos=endpos, type=self._selection.type)
 
-                pub.sendMessage("PASTE_LINE", startpos=startpos, endpos=endpos, type=self._selection.type)
+                elif self._selection.item == MAG_LINE:
+
+                    ml_end = self._selection.ml_endpos.grid_rc()
+
+                    pub.sendMessage("PASTE_MAG_LINE", startpos=start, endpos=end, ml_endpos=ml_end)
 
     def on_drag_update(self, widget, x_offset, y_offset):
 
@@ -627,12 +628,12 @@ class GridView(Gtk.Frame):
 
                     if self._drag_dir != self.pointer_dir_avg():
                         # drag direction differs from the magic-line direction
-                        # print("line break, startpos:{0} drag_dir:{1}".format(pos, self._drag_dir))
+                        # print("line break, startpos:{0} drag_dir:{1} dir_avg:{2}".format(pos, self._drag_dir, self.pointer_dir_avg()))
                         self._selection.ml_dir = self.pointer_dir_avg()
                         self._selection.ml_startpos = pos
-                        self._selection.ml_currentpos = pos
+                        self._selection.ml_endpos = pos
                 else:
-                    self._selection.ml_currentpos = pos
+                    self._selection.ml_endpos = pos
                     # reposition the magic line square
                     if self._drag_dir == HORIZONTAL:
                         self._drag_currentpos.x = pos.x
