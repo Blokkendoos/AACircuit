@@ -68,10 +68,8 @@ class Controller(object):
         self.memo = []
 
         # all objects on the grid
-        # [(position, endpos, object, view), ...] position in column/row coordinates
         self.objects = []
 
-        # [(relative_position, relative_endpos, object), ...] position relative to the selection rect (in column/row coordinates)
         self.selected_objects = []
 
         all_components = [key for key in self.components.get_dict()]
@@ -93,6 +91,7 @@ class Controller(object):
 
         pub.subscribe(self.on_rotate_symbol, 'ROTATE_SYMBOL')
         pub.subscribe(self.on_mirror_symbol, 'MIRROR_SYMBOL')
+
         pub.subscribe(self.on_paste_character, 'PASTE_CHARACTER')
         pub.subscribe(self.on_paste_symbol, 'PASTE_SYMBOL')
         pub.subscribe(self.on_paste_objects, 'PASTE_OBJECTS')
@@ -159,8 +158,8 @@ class Controller(object):
     # TODO cut|copy|paste and objects list maintenance, respectively remove from or add to the list
 
     def remove_from_objects(self, symbol):
-        for idx, s in enumerate(self.objects):
-            if id(s[2]) == id(symbol):
+        for idx, sym in enumerate(self.objects):
+            if id(sym) == id(symbol):
                 del self.objects[idx]
                 break
 
@@ -174,12 +173,10 @@ class Controller(object):
 
         # select symbols of which the upper-left corner is within the selection rectangle
         selected = []
-        for ref in self.objects:
+        for symbol in self.objects:
 
-            pos = ref.startpos
+            pos = symbol.startpos
             if pos.in_rect(rect):
-
-                symbol = ref.symbol
 
                 # TODO representation of rotated obj in selection to follow the pointer
                 symbolview = symbol.view
@@ -197,8 +194,8 @@ class Controller(object):
 
         self.find_selected(pos, rect)
 
-        for sel in self.selected_objects:
-            self.remove_from_objects(sel.symbol)
+        for symbol in self.selected_objects:
+            self.remove_from_objects(symbol)
 
         self.buffer = self.grid.rect(pos, rect)
 
@@ -278,7 +275,7 @@ class Controller(object):
         symbol.startpos = pos
 
         self.memo.append(symbol.memo())
-        self.objects.append(symbol.reference())
+        self.objects.append(symbol)
 
         symbol.paste(self.grid)
 
@@ -288,7 +285,7 @@ class Controller(object):
         symbol.startpos = pos
 
         self.memo.append(symbol.memo())
-        self.objects.append(symbol.reference())
+        self.objects.append(symbol)
 
         symbol.paste(self.grid)
 
@@ -297,7 +294,7 @@ class Controller(object):
         self.symbol = Text(pos, text)
 
         self.memo.append(self.symbol.memo())
-        self.objects.append(self.symbol.reference())
+        self.objects.append(self.symbol)
 
         self.symbol.paste(self.grid)
 
@@ -313,7 +310,7 @@ class Controller(object):
             symbol.endpos = target_endpos
 
             self.memo.append(symbol.memo())
-            self.objects.append(symbol.reference())
+            self.objects.append(symbol)
 
             symbol.paste(self.grid)
 
@@ -339,7 +336,7 @@ class Controller(object):
         self.symbol = Line(startpos, endpos, type)
 
         self.memo.append(self.symbol.memo())
-        self.objects.append(self.symbol.reference())
+        self.objects.append(self.symbol)
 
         self.symbol.paste(self.grid)
 
@@ -348,7 +345,7 @@ class Controller(object):
         self.symbol = Rect(startpos, endpos)
 
         self.memo.append(self.symbol.memo())
-        self.objects.append(self.symbol.reference())
+        self.objects.append(self.symbol)
 
         self.symbol.paste(self.grid)
 

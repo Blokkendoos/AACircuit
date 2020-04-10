@@ -5,7 +5,6 @@ AACircuit
 
 import copy
 import json
-import collections
 
 from application import _
 from application.pos import Pos
@@ -15,14 +14,11 @@ from application import COMPONENT, CHARACTER, TEXT, DRAW_RECT, LINE
 from application.symbol_view import ComponentView, ObjectView
 
 
-Reference = collections.namedtuple('reference', ['startpos', 'endpos', 'symbol'])
-
-
 class Symbol(object):
 
     ORIENTATION = {0: "N", 1: "E", 2: "S", 3: "W"}
 
-    def __init__(self, id=0, dict=None, ori=None, mirrored=None, startpos=None, endpos=None, form=None):
+    def __init__(self, id=0, dict=None, ori=None, mirrored=None, startpos=None, endpos=None):
 
         self._id = id
 
@@ -51,10 +47,7 @@ class Symbol(object):
         else:
             self._endpos = endpos
 
-        if form is None:
-            self._form = {}
-        else:
-            self._form = form
+        self._repr = {}
 
     def __str__(self):
         str = _("symbol id: {0} orientation: {1}").format(self._id, self.ORIENTATION[self._ori])
@@ -88,8 +81,8 @@ class Symbol(object):
         return self._mirrored
 
     @property
-    def form(self):
-        return self._form
+    def repr(self):
+        return self._repr
 
     @property
     def startpos(self):
@@ -129,17 +122,12 @@ class Symbol(object):
         str = "{0}:{1},{2},{3},{4}".format(COMPONENT, self._id, self._ori, self._mirrored, self._startpos)
         return str
 
-    def reference(self):
-        ref = Reference(startpos=self._startpos, endpos=self._endpos, symbol=self)
-        return ref
-
     def copy(self):
         ori = copy.deepcopy(self._ori)
         mirrored = copy.deepcopy(self._mirrored)
         startpos = copy.deepcopy(self._startpos)
         endpos = copy.deepcopy(self._endpos)
-        form = copy.deepcopy(self._form)
-        return Symbol(id=self._id, dict=self._grid, ori=ori, mirrored=mirrored, startpos=startpos, endpos=endpos, form=form)
+        return Symbol(id=self._id, dict=self._grid, ori=ori, mirrored=mirrored, startpos=startpos, endpos=endpos)
 
     @property
     def grid(self):
@@ -205,7 +193,7 @@ class Character(Symbol):
 
     def copy(self):
         startpos = copy.deepcopy(self._startpos)
-        return Character(char=self._char, dict=self._grid, startpos=startpos)
+        return Character(self._char, dict=self._grid, startpos=startpos)
 
     def grid_next(self):
         # raise NotImplementedError
@@ -214,10 +202,10 @@ class Character(Symbol):
 
 class Text(Symbol):
 
-    def __init__(self, pos, text, form=None):
+    def __init__(self, pos, text):
 
         grid = {"N": [['?']]}
-        super(Text, self).__init__(startpos=pos, dict=grid, form=form)
+        super(Text, self).__init__(dict=grid, startpos=pos)
 
         self._text = text
         self._representation()
@@ -236,7 +224,7 @@ class Text(Symbol):
 
     @property
     def view(self):
-        return ObjectView(self._form, self._startpos)
+        return ObjectView(self._repr, self._startpos)
 
     def memo(self):
         jstext = json.dumps(self._text)
@@ -244,16 +232,12 @@ class Text(Symbol):
         return str
 
     def copy(self):
-        ori = copy.deepcopy(self._ori)
-        mirrored = copy.deepcopy(self._mirrored)
         startpos = copy.deepcopy(self._startpos)
-        endpos = copy.deepcopy(self._endpos)
-        form = copy.deepcopy(self._form)
-        return Symbol(id=self._id, dict=self._grid, ori=ori, mirrored=mirrored, startpos=startpos, endpos=endpos, form=form)
+        return Text(pos=startpos, text=self._text)
 
     def _representation(self):
 
-        self._form = {}
+        self._repr = {}
 
         pos = self._startpos
         startpos = self._startpos
@@ -265,7 +249,7 @@ class Text(Symbol):
                 if char == '\n':
                     pos.x = startpos.x
                     pos += Pos(-1, 1)  # skip the cr, go to next line
-                self._form[pos] = char
+                self._repr[pos] = char
                 pos += incr
 
     def grid_next(self):
@@ -287,8 +271,8 @@ class Text(Symbol):
 
 class Line(Symbol):
 
-    def __init__(self, startpos, endpos, type=0, form=None):
-        super(Line, self).__init__(id=type, startpos=startpos, endpos=endpos, form=form)
+    def __init__(self, startpos, endpos, type=0):
+        super(Line, self).__init__(id=type, startpos=startpos, endpos=endpos)
 
         self._type = type
         self._terminal = TERMINAL_TYPE[type]
@@ -312,7 +296,7 @@ class Line(Symbol):
         startpos = copy.deepcopy(self._startpos)
         endpos = copy.deepcopy(self._endpos)
         type = copy.deepcopy(self._type)
-        return Line(startpos, endpos, type, self._form)
+        return Line(startpos, endpos, type)
 
     def memo(self):
         str = "{0}:{1},{2},{3}".format(LINE, self._type, self._startpos, self._endpos)
@@ -320,7 +304,7 @@ class Line(Symbol):
 
     @property
     def view(self):
-        return ObjectView(self._form, self._startpos)
+        return ObjectView(self._repr, self._startpos)
 
     def _representation(self):
         """
@@ -330,7 +314,7 @@ class Line(Symbol):
         :param grid: the target grid
         """
 
-        self._form = {}
+        self._repr = {}
         pos = self._startpos
         end = self._endpos
 
@@ -355,29 +339,29 @@ class Line(Symbol):
             terminal = self._terminal
 
         # startpoint terminal
-        self._form[pos] = terminal
+        self._repr[pos] = terminal
         pos += incr
 
         # TODO make this one string (and support an appropriate fill method for this in grid)
         while pos < end:
-            self._form[pos] = line_char
+            self._repr[pos] = line_char
             pos += incr
 
         # endpoint terminal
-        self._form[pos] = terminal
+        self._repr[pos] = terminal
 
     def paste(self, grid):
 
         self._representation()
 
-        for key, value in self._form.items():
+        for key, value in self._repr.items():
             grid.set_cell(key, value)
 
 
 class Rect(Symbol):
 
-    def __init__(self, startpos, endpos, form=None):
-        super(Rect, self).__init__(startpos=startpos, endpos=endpos, form=form)
+    def __init__(self, startpos, endpos):
+        super(Rect, self).__init__(startpos=startpos, endpos=endpos)
 
         self._representation()
 
@@ -397,12 +381,12 @@ class Rect(Symbol):
         line3 = Line(bl, br, type)
         line4 = Line(ul, bl, type)
 
-        form = {}
-        form.update(line1._form)
-        form.update(line2._form)
-        form.update(line3._form)
-        form.update(line4._form)
-        self._form = form
+        repr = {}
+        repr.update(line1._repr)
+        repr.update(line2._repr)
+        repr.update(line3._repr)
+        repr.update(line4._repr)
+        self._repr = repr
 
     def grid_next(self):
 
@@ -418,12 +402,12 @@ class Rect(Symbol):
 
     @property
     def view(self):
-        return ObjectView(self._form, self._startpos)
+        return ObjectView(self._repr, self._startpos)
 
     def copy(self):
         startpos = copy.deepcopy(self._startpos)
         endpos = copy.deepcopy(self._endpos)
-        return Rect(startpos, endpos, self._form)
+        return Rect(startpos, endpos)
 
     def memo(self):
         str = "{0}:{1},{2}".format(DRAW_RECT, self._startpos, self._endpos)

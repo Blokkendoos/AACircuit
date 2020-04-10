@@ -342,7 +342,7 @@ class GridView(Gtk.Frame):
             if y >= self.surface.get_height():
                 break
 
-    @coverage
+    # @coverage
     # @timecall
     def draw_selection(self, ctx):
 
