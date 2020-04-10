@@ -91,9 +91,6 @@ class Symbol(object):
     def startpos(self, value):
         self._startpos = value
 
-        # representation may be changed due to a changed start/end position
-        self._representation()
-
     @property
     def endpos(self):
         return self._endpos
@@ -101,9 +98,6 @@ class Symbol(object):
     @endpos.setter
     def endpos(self, value):
         self._endpos = value
-
-        # representation may be changed due to a changed start/end position
-        self._representation()
 
     @property
     def default(self):
@@ -207,7 +201,6 @@ class Text(Symbol):
         super(Text, self).__init__(dict=grid, startpos=pos)
 
         self._text = text
-        self._representation()
 
     @property
     def grid(self):
@@ -223,6 +216,7 @@ class Text(Symbol):
 
     @property
     def view(self):
+        self._representation()
         return ObjectView(self._repr, self._startpos)
 
     def memo(self):
@@ -303,6 +297,7 @@ class Line(Symbol):
 
     @property
     def view(self):
+        self._representation()
         return ObjectView(self._repr, self._startpos)
 
     @property
@@ -366,8 +361,6 @@ class Rect(Symbol):
     def __init__(self, startpos, endpos):
         super(Rect, self).__init__(startpos=startpos, endpos=endpos)
 
-        self._representation()
-
     def _representation(self):
 
         ul = self._startpos
@@ -405,6 +398,7 @@ class Rect(Symbol):
 
     @property
     def view(self):
+        self._representation()
         return ObjectView(self._repr, self._startpos)
 
     def copy(self):
@@ -417,6 +411,8 @@ class Rect(Symbol):
         return str
 
     def paste(self, grid):
+
+        self._representation()
 
         start = self._startpos
         end = self._endpos
