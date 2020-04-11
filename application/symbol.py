@@ -9,7 +9,7 @@ import json
 from application import _
 from application.pos import Pos
 from application import HORIZONTAL, VERTICAL
-from application import LINE_HOR, LINE_VERT, TERMINAL_TYPE, ML_SPLIT_CHAR
+from application import LINE_HOR, LINE_VERT, TERMINAL_TYPE, ML_BEND_CHAR
 from application import COMPONENT, CHARACTER, TEXT, DRAW_RECT, LINE, MAG_LINE
 from application.symbol_view import ComponentView, ObjectView
 
@@ -383,12 +383,16 @@ class MagLine(Line):
         line2 = Line(self._endpos, self._ml_endpos)
 
         repr = dict()
-
         repr.update(line1._repr)
-        last = list(repr.keys())[-1]
 
-        repr.update(line2._repr)
-        repr[last] = ML_SPLIT_CHAR
+        # special char in the bend
+        repr2 = line2._repr
+        if self._endpos < self._ml_endpos:
+            bend = list(repr2.keys())[0]
+        else:
+            bend = list(repr2.keys())[-1]
+        repr2[bend] = ML_BEND_CHAR
+        repr.update(repr2)
 
         self._repr = repr
 
