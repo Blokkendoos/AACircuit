@@ -324,7 +324,7 @@ class Controller(object):
             grid = sel.symbol.grid
             dummy, rect = grid.rect()
 
-            self.grid.erase_rect(pos, rect)
+            self.grid.erase_rect(rect)
 
         pub.sendMessage('NOTHING_SELECTED')
 
