@@ -184,7 +184,15 @@ class MainWindow(Gtk.Window):
 
         self.menubar = MenuBar(self.builder, self.grid_view)
 
+        self.on_nothing_selected()
+
+        # subscriptions
+
         pub.subscribe(self.on_pointer_moved, 'POINTER_MOVED')
+        pub.subscribe(self.on_symbol_selected, 'SYMBOL_SELECTED')
+
+        pub.subscribe(self.on_paste_symbol, 'PASTE_SYMBOL')
+        pub.subscribe(self.on_nothing_selected, 'NOTHING_SELECTED')
 
     def init_components(self):
         component_canvas = ComponentView(self.builder)  # noqa F841
@@ -210,6 +218,21 @@ class MainWindow(Gtk.Window):
         # grid indexing starts at zero, show +1
         self.label_xpos.set_text(format(pos.x + 1))
         self.label_ypos.set_text(format(pos.y + 1))
+
+    def on_paste_symbol(self, pos):
+        self.on_nothing_selected()
+
+    def on_nothing_selected(self):
+        # de-activate symbol manipulation
+        self.btn_rotate.set_sensitive(False)
+        self.btn_mirror.set_sensitive(False)
+
+    def on_symbol_selected(self, symbol):
+        """Update the symbol manipulation buttons."""
+
+        # activate symbol manipulation
+        self.btn_rotate.set_sensitive(True)
+        self.btn_mirror.set_sensitive(True)
 
     def on_add_text(self, button):
         pub.sendMessage('ADD_TEXT')

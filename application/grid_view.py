@@ -204,6 +204,7 @@ class GridView(Gtk.Frame):
         self._symbol = char
 
     def on_symbol_selected(self, symbol):
+        # only components (can be rotated or mirrored)
         self._selection = Selection(item=COMPONENT)
         self._selection.state = SELECTED
         self._symbol = symbol
