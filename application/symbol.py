@@ -213,6 +213,23 @@ class Text(Symbol):
         self._text = text
         self._representation()
 
+    def _representation(self):
+
+        self._repr = {}
+
+        pos = self._startpos
+        startpos = self._startpos
+
+        incr = Pos(1, 0)
+        for line in self._text:
+            for char in line:
+                # startpoint terminal
+                if char == '\n':
+                    pos.x = startpos.x
+                    pos += Pos(-1, 1)  # skip the cr, go to next line
+                self._repr[pos] = char
+                pos += incr
+
     @property
     def grid(self):
         return self._grid[self.ORIENTATION[0]]
@@ -237,23 +254,6 @@ class Text(Symbol):
     def copy(self):
         startpos = copy.deepcopy(self._startpos)
         return Text(pos=startpos, text=self._text)
-
-    def _representation(self):
-
-        self._repr = {}
-
-        pos = self._startpos
-        startpos = self._startpos
-
-        incr = Pos(1, 0)
-        for line in self._text:
-            for char in line:
-                # startpoint terminal
-                if char == '\n':
-                    pos.x = startpos.x
-                    pos += Pos(-1, 1)  # skip the cr, go to next line
-                self._repr[pos] = char
-                pos += incr
 
     def grid_next(self):
         # raise NotImplementedError
@@ -290,28 +290,6 @@ class Line(Symbol):
             self._dir = HORIZONTAL
         else:
             self._dir = None
-
-    def grid_next(self):
-        # TODO enable to rotate (from HOR to VERT)?
-        raise NotImplementedError
-
-    def copy(self):
-        startpos = copy.deepcopy(self._startpos)
-        endpos = copy.deepcopy(self._endpos)
-        type = copy.deepcopy(self._type)
-        return Line(startpos, endpos, type)
-
-    def memo(self):
-        str = "{0}:{1},{2},{3}".format(LINE, self._type, self._startpos, self._endpos)
-        return str
-
-    @property
-    def view(self):
-        return ObjectView(self._repr, self._startpos)
-
-    @property
-    def type(self):
-        return self._type
 
     def _representation(self):
         """Compose the line elements."""
@@ -356,6 +334,28 @@ class Line(Symbol):
         # endpoint terminal
         self._repr[pos] = terminal
 
+    def grid_next(self):
+        # TODO enable to rotate (from HOR to VERT)?
+        raise NotImplementedError
+
+    def copy(self):
+        startpos = copy.deepcopy(self._startpos)
+        endpos = copy.deepcopy(self._endpos)
+        type = copy.deepcopy(self._type)
+        return Line(startpos, endpos, type)
+
+    def memo(self):
+        str = "{0}:{1},{2},{3}".format(LINE, self._type, self._startpos, self._endpos)
+        return str
+
+    @property
+    def view(self):
+        return ObjectView(self._repr, self._startpos)
+
+    @property
+    def type(self):
+        return self._type
+
     def paste(self, grid):
         for key, value in self._repr.items():
             grid.set_cell(key, value)
@@ -370,6 +370,17 @@ class MagLine(Symbol):
 
         self._representation()
 
+    def _representation(self):
+
+        line1 = Line(self._startpos, self._endpos)
+        line2 = Line(self._endpos, self._ml_endpos)
+
+        repr = {}
+        repr.update(line1._repr)
+        repr.update(line2._repr)
+
+        self._repr = repr
+
     @property
     def ml_endpos(self):
         return self._endpos
@@ -377,6 +388,10 @@ class MagLine(Symbol):
     @ml_endpos.setter
     def ml_endpos(self, value):
         self._ml_endpos = value
+
+    @property
+    def view(self):
+        return ObjectView(self._repr, self._startpos)
 
     def grid_next(self):
         # TODO enable to rotate (from HOR to VERT)?
@@ -391,17 +406,6 @@ class MagLine(Symbol):
     def memo(self):
         str = "{0}:{1},{2},{3}".format(MAG_LINE, self._startpos, self._endpos, self._ml_endpos)
         return str
-
-    def _representation(self):
-
-        line1 = Line(self._startpos, self._endpos)
-        line2 = Line(self._endpos, self._ml_endpos)
-
-        repr = {}
-        repr.update(line1._repr)
-        repr.update(line2._repr)
-
-        self._repr = repr
 
     def paste(self, grid):
 
