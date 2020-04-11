@@ -15,6 +15,16 @@ from application.symbol_view import ComponentView, ObjectView
 
 
 class Symbol(object):
+    """
+    Symbol represented by a grid.
+
+    :param id: the component id
+    :param dict: the character-grid that create the symbol
+    :param ori: orientation (0-3)
+    :param mirrored: set to 1 to mirror the symbol vertically
+    :param startpos: the upper-left corner (col,row) coordinate of the character-grid
+    :param endpos: used in subclasses, e.g. Line
+    """
 
     ORIENTATION = {0: "N", 1: "E", 2: "S", 3: "W"}
 
