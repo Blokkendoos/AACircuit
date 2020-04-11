@@ -63,8 +63,10 @@ class MenuBar(object):
     def on_menu_edit(self, item):
         # menu cut|copy|paste
         name = Gtk.Buildable.get_name(item)
-        pos, width, height = self.grid_view.drag_rect
-        pub.sendMessage(name.upper(), pos=pos, rect=(width, height))
+
+        ul, br = self.grid_view.drag_rect
+
+        pub.sendMessage(name.upper(), rect=(ul, br))
 
     def on_selection_changed(self, selected=False):
         # enable the cut and copy menu only when one or more objects are selected

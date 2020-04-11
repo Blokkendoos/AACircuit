@@ -144,22 +144,19 @@ class GridView(Gtk.Frame):
 
     @property
     def drag_rect(self):
-        """Return the upper-left position and width and height of the selected rectangle."""
+        """Return the selected rectangle (upper-left and bottom-right) position."""
 
         if self._drag_startpos <= self._drag_endpos:
-            start = self._drag_startpos
-            end = self._drag_endpos
+            ul = self._drag_startpos
+            br = self._drag_endpos
         else:
-            start = self._drag_endpos
-            end = self._drag_startpos
+            ul = self._drag_endpos
+            br = self._drag_startpos
 
-        pos = start.grid_rc()
+        ul = ul.grid_rc()
+        br = br.grid_rc()
 
-        # width and height in grid (col,row) dimensions
-        w = int((end.x - start.x) / GRIDSIZE_W)
-        h = int((end.y - start.y) / GRIDSIZE_H)
-
-        return pos, w, h
+        return ul, br
 
     def on_configure(self, area, event, data=None):
         self.init_surface(self._drawing_area)
