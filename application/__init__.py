@@ -47,7 +47,8 @@ LINE = 'line'
 MAG_LINE = 'mline'
 
 DEFAULT_COMPONENT_KEY = 'Resistor'
-MARK_CHAR = '+'
+MARK_CHAR = 'X'
+ML_SPLIT_CHAR = '+'
 
 # lines
 LINE_HOR = '-'
