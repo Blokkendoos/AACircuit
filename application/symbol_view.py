@@ -56,7 +56,12 @@ class ComponentView(SymbolView):
 
 
 class ObjectView(SymbolView):
-    """"Draw the selected object."""
+    """"
+    Draw the selected object.
+
+    :param repr: the (list of) position and char comprising the object representation
+    :param startpos: the symbol startposition (col,row) coordinate
+    """
 
     def __init__(self, repr=None, startpos=None):
         super(ObjectView, self).__init__()
@@ -75,9 +80,11 @@ class ObjectView(SymbolView):
         ctx.set_source_rgb(1, 0, 0)
         ctx.select_font_face('monospace', cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
 
+        offset = pos - self._startpos.view_xy()
+
         for char_pos, char in self._repr.items():
             # the position relative to the pointer, in view (x,y) coordinates
-            relative_pos = pos + (char_pos - self._startpos).view_xy()
+            relative_pos = char_pos.view_xy() + offset
             x, y = relative_pos.xy
             ctx.move_to(x, y)
             ctx.show_text(str(char))

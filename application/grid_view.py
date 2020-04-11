@@ -448,17 +448,16 @@ class GridView(Gtk.Frame):
             ctx.set_source_rgb(1, 0, 0)
             ctx.select_font_face("monospace", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
 
-            viewpos = ref.startpos
-            viewpos += Pos(0, 1)
+            # offset between the current position and the ul position of the original selection rectangle
+            offset = self._hover_pos - ref.startpos.view_xy()
 
+            pos = ref.startpos.view_xy()
             if follow_pointer:
-                viewpos += self._hover_pos.grid_rc()
+                pos = ref.symbol.startpos.view_xy() + offset
 
-            pos = viewpos.view_xy()
-            if follow_pointer:
                 vw = ref.view
                 vw.draw(ctx, pos)
-                pos -= Pos(GRIDSIZE_W, 0)  # prepare for the mark (to show left of the object)
+                # pos -= Pos(GRIDSIZE_W, 0)  # prepare for the mark (to show left of the object)
 
             ctx.move_to(pos.x, pos.y)
             ctx.show_text(MARK_CHAR)  # mark the upper-left corner
@@ -584,13 +583,13 @@ class GridView(Gtk.Frame):
                 # TODO line terminal-type?
 
                 # position to grid (col, row) coordinates
-                start = self._drag_startpos.grid_rc()
-                end = self._drag_endpos.grid_rc()
+                startpos = self._drag_startpos.grid_rc()
+                endpos = self._drag_endpos.grid_rc()
 
                 if self._drag_dir == HORIZONTAL:
-                    end.y = start.y
+                    endpos.y = startpos.y
                 elif self._drag_dir == VERTICAL:
-                    end.x = start.x
+                    endpos.x = startpos.x
 
                 if self._selection.item == LINE:
                     pub.sendMessage("PASTE_LINE", startpos=startpos, endpos=endpos, type=self._selection.type)
@@ -599,7 +598,7 @@ class GridView(Gtk.Frame):
 
                     ml_end = self._selection.ml_endpos.grid_rc()
 
-                    pub.sendMessage("PASTE_MAG_LINE", startpos=start, endpos=end, ml_endpos=ml_end)
+                    pub.sendMessage("PASTE_MAG_LINE", startpos=startpos, endpos=endpos, ml_endpos=ml_end)
 
     def on_drag_update(self, widget, x_offset, y_offset):
 
