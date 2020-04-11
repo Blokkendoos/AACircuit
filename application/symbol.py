@@ -391,7 +391,7 @@ class MagLine(Symbol):
 
     @property
     def ml_endpos(self):
-        return self._endpos
+        return self._ml_endpos
 
     @ml_endpos.setter
     def ml_endpos(self, value):

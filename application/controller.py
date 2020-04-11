@@ -292,18 +292,25 @@ class Controller(object):
         self.symbol.paste(self.grid)
 
     def on_paste_objects(self, pos):
+        """
+        Paste multiple selection.
+        :param pos: the target position in grid (col, row) coordinates.
+        """
+
+        def classname(x):
+            return type(x).__name__
 
         for sel in self.selected_objects:
 
-            # TODO make the position translation a Symbol method
-
             offset = pos - sel.startpos
 
+            # TODO make the position translation a Symbol method
             symbol = sel.symbol.copy()
             symbol.startpos += offset
             symbol.endpos += offset
 
-            # if classname(symbol) == 'MagLine':
+            if classname(symbol) == 'MagLine':  # FIXME
+                symbol.ml_endpos += offset
 
             self.memo.append(symbol.memo())
             self.objects.append(symbol)
