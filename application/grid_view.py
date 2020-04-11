@@ -16,6 +16,7 @@ from application import FONTSIZE, GRIDSIZE_W, GRIDSIZE_H
 from application import INSERT, HORIZONTAL, VERTICAL
 from application import IDLE, SELECTING, SELECTED
 from application import CHARACTER, COMPONENT, LINE, MAG_LINE, OBJECTS, COL, ROW, RECT, DRAW_RECT
+from application import MARK_CHAR
 from application import TEXT, TEXT_BLOCK
 from application.pos import Pos
 from application.selection import Selection, SelectionLine, SelectionLineFree, SelectionMagicLine, SelectionCol, SelectionRow, SelectionRect, SelectionText, SelectionTextBlock
@@ -463,7 +464,7 @@ class GridView(Gtk.Frame):
                 pos -= Pos(GRIDSIZE_W, 0)  # prepare for the mark (to show left of the object)
 
             ctx.move_to(pos.x, pos.y)
-            ctx.show_text('X')  # mark the upper-left corner with "x"
+            ctx.show_text(MARK_CHAR)  # mark the upper-left corner
 
         ctx.restore()
 

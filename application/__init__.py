@@ -46,7 +46,8 @@ DRAW_RECT = 'rect'
 LINE = 'line'
 MAG_LINE = 'mline'
 
-DEFAULT_COMPONENT_KEY = "Resistor"
+DEFAULT_COMPONENT_KEY = 'Resistor'
+MARK_CHAR = '+'
 
 # lines
 LINE_HOR = '-'
