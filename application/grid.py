@@ -150,26 +150,26 @@ class Grid(object):
         if row < self.nr_rows and col < self.nr_cols:
             self._grid[row][col] = value
 
-    def pos_to_rc(self, pos, rect):
-        """Convert (x,y) position and rect to colum and row start/end values.
-        :param pos: position (Pos) of the upper left corner (row, column) of the rectangle
-        :param rect: tuple (width, height)
+    def rect_to_rc(self, rect):
+        """Convert the rect view (x,y) coordinates to colum and row start/end values.
+        :param rect: (tuple) position (Pos) of the upper left corner (row, column) of the rectangle
         :returns the start and end column and row
         """
-        c_start, r_start = pos.xy
-        c_end, r_end = tuple(map(lambda i, j : i + j, pos.xy, rect))  # noqa: E203
+        ul = rect[0]
+        br = rect[1]
+        c_start, r_start = ul.xy
+        c_end, r_end = br.xy
         return (c_start, r_start, c_end, r_end)
 
-    def rect(self, pos, rect):
+    def rect(self, rect):
         """
         Return the content of the given rectangle.
-        :param pos:  canvas position (Pos) of the upper left corner (row, column) of the rectangle
-        :param rect: tuple (width, height)
+        :param rect: the canvas position (Pos) of the upper left corner (row, column) and bottom-rigth corner of the rectangle
         :returns the content of the given rectangle
         """
         content = []
 
-        c_start, r_start, c_end, r_end = self.pos_to_rc(pos, rect)
+        c_start, r_start, c_end, r_end = self.rect_to_rc(rect)
 
         # truncate
         if r_end >= self.nr_rows:
@@ -183,16 +183,15 @@ class Grid(object):
 
         return content
 
-    def erase_rect(self, pos, rect):
+    def erase_rect(self, rect):
         """
         Erase a rectangle its content.
-        :param pos: rectangle upper left corner (row, column) tuple
-        :param rect: tuple (width, height)
+        :param rect: rectangle upper-left corner and bottom-right corner (row, column) tuple
         """
 
         self._push_grid()
 
-        c_start, r_start, c_end, r_end = self.pos_to_rc(pos, rect)
+        c_start, r_start, c_end, r_end = self.rect_to_rc(rect)
 
         # truncate
         if r_end >= self.nr_rows:

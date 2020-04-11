@@ -156,8 +156,6 @@ class Controller(object):
 
     # Edit menu
 
-    # TODO cut|copy|paste and objects list maintenance, respectively remove from or add to the list
-
     def remove_from_objects(self, symbol):
         for idx, sym in enumerate(self.objects):
             if id(sym) == id(symbol):
@@ -174,25 +172,22 @@ class Controller(object):
 
             # select symbols of which the upper-left corner is within the selection rectangle
             if symbol.startpos.in_rect(rect):
-
-                # TODO representation of rotated obj in selection to follow the pointer
                 symbolview = symbol.view
-
                 selection = SelectedObjects(startpos=ul, symbol=symbol, view=symbolview)
                 selected.append(selection)
 
         self.selected_objects = selected
 
-    def on_cut(self, pos, rect):
+    def on_cut(self, rect):
 
-        self.find_selected(pos, rect)
+        self.find_selected(rect)
 
-        for symbol in self.selected_objects:
-            self.remove_from_objects(symbol)
+        for sel in self.selected_objects:
+            self.remove_from_objects(sel.symbol)
 
-        self.buffer = self.grid.rect(pos, rect)
+        self.buffer = self.grid.rect(rect)
+        self.grid.erase_rect(rect)
 
-        self.grid.erase_rect(pos, rect)
         pub.sendMessage('NOTHING_SELECTED')
 
     def on_copy(self, rect):
@@ -207,13 +202,15 @@ class Controller(object):
             self.grid.fill_rect(pos, self.buffer)
         pub.sendMessage('NOTHING_SELECTED')
 
-    def on_delete(self, pos, rect):
+    def on_delete(self, rect):
 
-        self.find_selected(pos, rect)
+        self.find_selected(rect)
+
         for sel in self.selected_objects:
             self.remove_from_objects(sel.symbol)
 
-        self.grid.erase_rect(pos, rect)
+        self.grid.erase_rect(rect)
+
         pub.sendMessage('NOTHING_SELECTED')
 
     # grid manipulation
@@ -319,11 +316,10 @@ class Controller(object):
 
         pub.sendMessage('NOTHING_SELECTED')
 
-    def on_cut_objects(self, pos):
+    def on_cut_objects(self, rect):
 
         for sel in self.selected_objects:
-
-            # TODO remove symbol from the objects list
+            self.remove_from_objects(sel.symbol)
 
             grid = sel.symbol.grid
             dummy, rect = grid.rect()

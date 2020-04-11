@@ -61,7 +61,7 @@ class MenuBar(object):
         self.menu_save.set_sensitive(True)
 
     def on_menu_edit(self, item):
-        # menu cut|copy|paste
+        # menu cut|copy|paste|delete
         name = Gtk.Buildable.get_name(item)
 
         ul, br = self.grid_view.drag_rect
@@ -72,6 +72,7 @@ class MenuBar(object):
         # enable the cut and copy menu only when one or more objects are selected
         self.menu_copy.set_sensitive(selected)
         self.menu_cut.set_sensitive(selected)
+        self.menu_delete.set_sensitive(selected)
 
     def on_undo_changed(self, undo=False):
         # enable undo only if the undo-stack is not empty
