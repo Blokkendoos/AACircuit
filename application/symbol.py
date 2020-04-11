@@ -9,7 +9,7 @@ import json
 from application import _
 from application.pos import Pos
 from application import HORIZONTAL, VERTICAL
-from application import LINE_HOR, LINE_VERT, TERMINAL_TYPE
+from application import LINE_HOR, LINE_VERT, TERMINAL_TYPE, ML_SPLIT_CHAR
 from application import COMPONENT, CHARACTER, TEXT, DRAW_RECT, LINE, MAG_LINE
 from application.symbol_view import ComponentView, ObjectView
 
@@ -368,23 +368,27 @@ class Line(Symbol):
             grid.set_cell(key, value)
 
 
-class MagLine(Symbol):
+class MagLine(Line):
 
     def __init__(self, startpos, endpos, ml_endpos):
-        super(MagLine, self).__init__(startpos=startpos, endpos=endpos)
 
+        # declare before super init as this is used in the representation method (called in super init)
         self._ml_endpos = ml_endpos
 
-        self._representation()
+        super(MagLine, self).__init__(startpos=startpos, endpos=endpos)
 
     def _representation(self):
 
         line1 = Line(self._startpos, self._endpos)
         line2 = Line(self._endpos, self._ml_endpos)
 
-        repr = {}
+        repr = dict()
+
         repr.update(line1._repr)
+        last = list(repr.keys())[-1]
+
         repr.update(line2._repr)
+        repr[last] = ML_SPLIT_CHAR
 
         self._repr = repr
 
@@ -395,10 +399,7 @@ class MagLine(Symbol):
     @ml_endpos.setter
     def ml_endpos(self, value):
         self._ml_endpos = value
-
-    @property
-    def view(self):
-        return ObjectView(self._repr, self._startpos)
+        self._representation()
 
     def grid_next(self):
         # TODO enable to rotate (from HOR to VERT)?
