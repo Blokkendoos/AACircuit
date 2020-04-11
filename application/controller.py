@@ -250,16 +250,16 @@ class Controller(object):
         pub.sendMessage('SYMBOL_SELECTED', symbol=self.symbol)
 
     def on_rotate_symbol(self):
-
+        # only components can be rotated
         if len(self.selected_objects) == 0:
             self.symbol.grid_next()
             pub.sendMessage('SYMBOL_SELECTED', symbol=self.symbol)
-        else:
-            for sel in self.selected_objects:
-                sel.symbol.grid_next()
+        # else:
+        #     for sel in self.selected_objects:
+        #         sel.symbol.grid_next()
 
     def on_mirror_symbol(self):
-        self.symbol.mirrored = 1
+        self.symbol.mirrored = 1 - self.symbol.mirrored  # toggle 0/1
         pub.sendMessage('SYMBOL_SELECTED', symbol=self.symbol)
 
     def on_paste_symbol(self, pos):
