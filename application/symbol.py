@@ -217,18 +217,17 @@ class Text(Symbol):
 
         self._repr = {}
 
-        pos = self._startpos
         startpos = self._startpos
-
+        pos = self._startpos
         incr = Pos(1, 0)
-        for line in self._text:
+
+        str = self._text.split('\n')
+        for line in str:
+            pos.x = startpos.x
             for char in line:
-                # startpoint terminal
-                if char == '\n':
-                    pos.x = startpos.x
-                    pos += Pos(-1, 1)  # skip the cr, go to next line
                 self._repr[pos] = char
                 pos += incr
+            pos += Pos(0, 1)
 
     @property
     def grid(self):
@@ -267,8 +266,7 @@ class Text(Symbol):
             x = pos.x
             for char in line:
                 x += 1
-                targetpos = Pos(x, y)
-                grid.set_cell(targetpos, char)
+                grid.set_cell(Pos(x, y), char)
             y += 1  # TODO check boundary?
 
 

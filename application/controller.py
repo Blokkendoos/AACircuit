@@ -18,7 +18,7 @@ from application.component_library import ComponentLibrary
 from application.file import FileChooserWindow
 
 
-SelectedObjects = collections.namedtuple('selection', ['startpos', 'endpos', 'symbol', 'view'])
+SelectedObjects = collections.namedtuple('selection', ['startpos', 'symbol', 'view'])
 
 
 class Controller(object):
@@ -164,29 +164,21 @@ class Controller(object):
                 del self.objects[idx]
                 break
 
-    def find_selected(self, pos, rect):
+    def find_selected(self, rect):
         """Select all symbols that are located within the selection rectangle."""
 
-        ul = pos
-        # rect = (width,height) in row/col dimension
-        br = ul + Pos(rect[0], rect[1])
-        rect = (ul, br)
+        ul, br = rect
 
-        # select symbols of which the upper-left corner is within the selection rectangle
         selected = []
         for symbol in self.objects:
 
-            pos = symbol.startpos
-            if pos.in_rect(rect):
+            # select symbols of which the upper-left corner is within the selection rectangle
+            if symbol.startpos.in_rect(rect):
 
                 # TODO representation of rotated obj in selection to follow the pointer
                 symbolview = symbol.view
 
-                # position relative to the selection rectangle (upper left corner) position
-                relative_pos = symbol.startpos - ul
-                relative_endpos = symbol.endpos - ul
-
-                selection = SelectedObjects(startpos=relative_pos, endpos=relative_endpos, symbol=symbol, view=symbolview)
+                selection = SelectedObjects(startpos=ul, symbol=symbol, view=symbolview)
                 selected.append(selection)
 
         self.selected_objects = selected
@@ -203,10 +195,10 @@ class Controller(object):
         self.grid.erase_rect(pos, rect)
         pub.sendMessage('NOTHING_SELECTED')
 
-    def on_copy(self, pos, rect):
+    def on_copy(self, rect):
         """Select all symbols that are located within the selection rectangle."""
 
-        self.find_selected(pos, rect)
+        self.find_selected(rect)
 
         pub.sendMessage('OBJECTS_SELECTED', objects=self.selected_objects)
 
@@ -303,12 +295,15 @@ class Controller(object):
 
         for sel in self.selected_objects:
 
-            target_pos = sel.startpos + pos  # + Pos(0, 1)
-            target_endpos = sel.endpos + pos  # + Pos(0, 1)
+            # TODO make the position translation a Symbol method
+
+            offset = pos - sel.startpos
 
             symbol = sel.symbol.copy()
-            symbol.startpos = target_pos
-            symbol.endpos = target_endpos
+            symbol.startpos += offset
+            symbol.endpos += offset
+
+            # if classname(symbol) == 'MagLine':
 
             self.memo.append(symbol.memo())
             self.objects.append(symbol)
