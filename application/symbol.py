@@ -28,7 +28,7 @@ class Symbol(object):
 
     ORIENTATION = {0: "N", 1: "E", 2: "S", 3: "W"}
 
-    def __init__(self, id=0, dict=None, ori=None, mirrored=None, startpos=None, endpos=None):
+    def __init__(self, id=0, grid=None, ori=None, mirrored=None, startpos=None, endpos=None):
 
         self._id = id
 
@@ -42,10 +42,10 @@ class Symbol(object):
         else:
             self._mirrored = mirrored
 
-        if dict is None:
+        if grid is None:
             self._grid = self.default
         else:
-            self._grid = dict
+            self._grid = grid
 
         if startpos is None:
             self._startpos = Pos(0, 0)
@@ -57,7 +57,7 @@ class Symbol(object):
         else:
             self._endpos = endpos
 
-        self._repr = {}
+        self._repr = dict()
 
     def __str__(self):
         str = _("symbol id: {0} orientation: {1}").format(self._id, self.ORIENTATION[self._ori])
@@ -140,7 +140,7 @@ class Symbol(object):
         mirrored = copy.deepcopy(self._mirrored)
         startpos = copy.deepcopy(self._startpos)
         endpos = copy.deepcopy(self._endpos)
-        return Symbol(id=self._id, dict=self._grid, ori=ori, mirrored=mirrored, startpos=startpos, endpos=endpos)
+        return Symbol(id=self._id, grid=self._grid, ori=ori, mirrored=mirrored, startpos=startpos, endpos=endpos)
 
     @property
     def grid(self):
@@ -185,14 +185,14 @@ class Symbol(object):
 
 class Character(Symbol):
 
-    def __init__(self, char, dict=None, startpos=None):
+    def __init__(self, char, grid=None, startpos=None):
 
         id = ord(char)
-        if dict is None:
-            grid = {"N": [[char]]}
+        if grid is None:
+            thegrid = {"N": [[char]]}
         else:
-            grid = dict
-        super(Character, self).__init__(id=id, dict=grid, startpos=startpos)
+            thegrid = grid
+        super(Character, self).__init__(id=id, grid=thegrid, startpos=startpos)
 
         self._char = char
 
@@ -206,7 +206,7 @@ class Character(Symbol):
 
     def copy(self):
         startpos = copy.deepcopy(self._startpos)
-        return Character(self._char, dict=self._grid, startpos=startpos)
+        return Character(self._char, grid=self._grid, startpos=startpos)
 
     def grid_next(self):
         # raise NotImplementedError
@@ -218,14 +218,14 @@ class Text(Symbol):
     def __init__(self, pos, text):
 
         grid = {"N": [['?']]}
-        super(Text, self).__init__(dict=grid, startpos=pos)
+        super(Text, self).__init__(grid=grid, startpos=pos)
 
         self._text = text
         self._representation()
 
     def _representation(self):
 
-        self._repr = {}
+        self._repr = dict()
 
         startpos = self._startpos
         pos = self._startpos
@@ -283,6 +283,7 @@ class Text(Symbol):
 class Line(Symbol):
 
     def __init__(self, startpos, endpos, type='0'):
+
         super(Line, self).__init__(id=type, startpos=startpos, endpos=endpos)
 
         self._type = type
@@ -302,7 +303,7 @@ class Line(Symbol):
     def _representation(self):
         """Compose the line elements."""
 
-        self._repr = {}
+        self._repr = dict()
 
         start = self._startpos
         end = self._endpos
@@ -312,8 +313,6 @@ class Line(Symbol):
         else:
             pos = end
             end = start
-
-        # print("start:", start, " end:", end)
 
         if self._dir == HORIZONTAL:
             line_char = LINE_HOR
@@ -415,18 +414,11 @@ class MagLine(Symbol):
         str = "{0}:{1},{2},{3}".format(MAG_LINE, self._startpos, self._endpos, self._ml_endpos)
         return str
 
-    def paste(self, grid):
-
-        line1 = Line(self._startpos, self._endpos)
-        line2 = Line(self._endpos, self._ml_endpos)
-
-        line1.paste(grid)
-        line2.paste(grid)
-
 
 class Rect(Symbol):
 
     def __init__(self, startpos, endpos):
+
         super(Rect, self).__init__(startpos=startpos, endpos=endpos)
 
         self._representation()
@@ -447,7 +439,8 @@ class Rect(Symbol):
         line3 = Line(bl, br, type)
         line4 = Line(ul, bl, type)
 
-        repr = {}
+        repr = dict()
+
         repr.update(line1._repr)
         repr.update(line2._repr)
         repr.update(line3._repr)
