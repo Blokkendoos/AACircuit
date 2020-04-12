@@ -113,19 +113,19 @@ class Controller(object):
             self.objects.append(symbol)
             symbol.paste(self.grid)
 
-        # la = self.last_action[-1]
+        if len(self.last_action) > 0:
 
-        for act in self.last_action:
+            action, symbol = self.last_action.pop()
 
-            symbol = act.symbol
-            if act.action == REMOVE:
+            if action == REMOVE:
                 paste_symbol()
 
-            elif act.action == INSERT:
+            elif action == INSERT:
                 cut_symbol()
 
-        # self.grid.undo()
-        pub.sendMessage('GRID', grid=self.grid)
+        else:
+            # no more actions to undo
+            pub.sendMessage('UNDO_CHANGED', undo=False)  # TODO enable undo (in each paste_xxxx method?)
 
     # File menu
 

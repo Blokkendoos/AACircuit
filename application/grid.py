@@ -73,6 +73,9 @@ class Grid(object):
         return column
 
     def undo(self):
+
+        print("Grid.undo: Deprecated method")
+
         # FIXME grid viewport is not resized when the gridsize has been changed (by this undo)
         if len(self._undo_stack) > 0:
             self._pop_grid(self._undo_stack.pop())
