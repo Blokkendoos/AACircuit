@@ -93,7 +93,7 @@ class Controller(object):
 
         pub.subscribe(self.on_cut, 'CUT')
         pub.subscribe(self.on_copy, 'COPY')
-        pub.subscribe(self.on_paste, 'PASTE')
+        # pub.subscribe(self.on_paste, 'PASTE')
         pub.subscribe(self.on_delete, 'DELETE')
 
         # open/save grid from/to file
@@ -104,11 +104,27 @@ class Controller(object):
         self.gui.show_all()
 
     def on_undo(self):
-        # TODO restore objects list
 
-        # for act in self.last_action:
+        def cut_symbol():
+            self.remove_from_objects(symbol)
+            symbol.remove(self.grid)
 
-        self.grid.undo()
+        def paste_symbol():
+            self.objects.append(symbol)
+            symbol.paste(self.grid)
+
+        # la = self.last_action[-1]
+
+        for act in self.last_action:
+
+            symbol = act.symbol
+            if act.action == REMOVE:
+                paste_symbol()
+
+            elif act.action == INSERT:
+                cut_symbol()
+
+        # self.grid.undo()
         pub.sendMessage('GRID', grid=self.grid)
 
     # File menu
@@ -155,7 +171,7 @@ class Controller(object):
 
         self.find_selected(rect)
 
-        action = list()
+        action = []
         for sel in self.selected_objects:
 
             act = Action(action=REMOVE, symbol=sel.symbol)
@@ -164,7 +180,7 @@ class Controller(object):
             sel.symbol.remove(self.grid)
             self.remove_from_objects(sel.symbol)
 
-        self.last_action.update(action)
+        self.last_action += action
 
         pub.sendMessage('NOTHING_SELECTED')
 
@@ -174,18 +190,6 @@ class Controller(object):
         self.find_selected(rect)
 
         pub.sendMessage('OBJECTS_SELECTED', objects=self.selected_objects)
-
-    def on_paste(self, pos, rect):
-
-        if self.last_action is not None:
-            None
-            # TODO
-            # self.grid.fill_rect(pos, self.buffer)
-
-            # act = Action(action=INSERT, symbol=sel.symbol)
-            # action.append(act)
-
-        pub.sendMessage('NOTHING_SELECTED')
 
     def on_delete(self, rect):
 
@@ -200,8 +204,12 @@ class Controller(object):
     # grid manipulation
 
     def on_grid_col(self, col, action):
+
         symbol = Column(col, action)
         self.objects.append(symbol)
+
+        act = Action(action=action, symbol=symbol)
+        self.last_action.append(act)
 
         if action == INSERT:
             self.grid.insert_col(col)
@@ -209,8 +217,12 @@ class Controller(object):
             self.grid.remove_col(col)
 
     def on_grid_row(self, row, action):
+
         symbol = Row(row, action)
         self.objects.append(symbol)
+
+        act = Action(action=action, symbol=symbol)
+        self.last_action.append(act)
 
         if action == INSERT:
             self.grid.insert_row(row)
@@ -276,7 +288,8 @@ class Controller(object):
         def classname(x):
             return type(x).__name__
 
-        action = list()
+        action = []
+
         for sel in self.selected_objects:
 
             offset = pos - sel.startpos
@@ -296,19 +309,27 @@ class Controller(object):
 
             symbol.paste(self.grid)
 
-        self.last_action.update(action)
+        self.last_action += action
 
         pub.sendMessage('NOTHING_SELECTED')
 
     def on_cut_objects(self, rect):
 
+        action = []
+
         for sel in self.selected_objects:
+
+            act = Action(action=REMOVE, symbol=symbol)
+            action.append(act)
+
             self.remove_from_objects(sel.symbol)
 
             grid = sel.symbol.grid
             dummy, rect = grid.rect()
 
             self.grid.erase_rect(rect)
+
+        self.last_action += action
 
         pub.sendMessage('NOTHING_SELECTED')
 
