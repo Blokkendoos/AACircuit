@@ -68,6 +68,18 @@ class Symbol(object):
         return
 
     @property
+    def width(self):
+        """Return the width of the symbol grid."""
+        # dimensions of grid (taking into account the orientation)
+        return len(self.grid[0])
+
+    @property
+    def height(self):
+        """Return the heigth of the symbol grid."""
+        # dimensions of grid (taking into account the orientation)
+        return len(self.grid)
+
+    @property
     def view(self):
         return ComponentView(self.grid, self._startpos)
 
@@ -159,6 +171,12 @@ class Symbol(object):
     def paste(self, grid):
         """Paste symbol into the target grid."""
         grid.fill_rect(self._startpos, self.grid)
+
+    def remove(self, grid):
+        """Remove the symbol from the target grid."""
+        ul = self._startpos
+        br = Pos(self._startpos.x + self.width, self._startpos.y + self.height)
+        grid.erase_rect((ul, br))
 
     def mirror(self, grid):
         # mirror specific characters
@@ -279,6 +297,17 @@ class Text(Symbol):
                 grid.set_cell(Pos(x, y), char)
             y += 1  # TODO check boundary?
 
+    def remove(self, grid):
+        pos = self._startpos
+        y = pos.y
+        str = self._text.split('\n')
+        for line in str:
+            x = pos.x
+            for char in line:
+                x += 1
+                grid.set_cell(Pos(x, y), ' ')
+            y += 1  # TODO check boundary?
+
 
 class Line(Symbol):
 
@@ -366,6 +395,10 @@ class Line(Symbol):
     def paste(self, grid):
         for key, value in self._repr.items():
             grid.set_cell(key, value)
+
+    def remove(self, grid):
+        for key, value in self._repr.items():
+            grid.set_cell(key, ' ')
 
 
 class MagLine(Line):
@@ -500,3 +533,25 @@ class Rect(Symbol):
         line2.paste(grid)
         line3.paste(grid)
         line4.paste(grid)
+
+    def remove(self, grid):
+
+        start = self._startpos
+        end = self._endpos
+
+        ul = start
+        ur = Pos(end.x, start.y)
+        bl = Pos(start.x, end.y)
+        br = end
+
+        type = '3'
+
+        line1 = Line(ul, ur, type)
+        line2 = Line(ur, br, type)
+        line3 = Line(bl, br, type)
+        line4 = Line(ul, bl, type)
+
+        line1.remove(grid)
+        line2.remove(grid)
+        line3.remove(grid)
+        line4.remove(grid)

@@ -207,9 +207,10 @@ class Controller(object):
         self.find_selected(rect)
 
         for sel in self.selected_objects:
+            sel.symbol.remove(self.grid)
             self.remove_from_objects(sel.symbol)
 
-        self.grid.erase_rect(rect)
+        # self.grid.erase_rect(rect)
 
         pub.sendMessage('NOTHING_SELECTED')
 
