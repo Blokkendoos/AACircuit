@@ -394,7 +394,6 @@ class Line(Symbol):
         return self._type
 
     def paste(self, grid):
-
         first = True
         for pos, value in self._repr.items():
             # crossing lines

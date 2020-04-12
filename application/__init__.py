@@ -48,6 +48,7 @@ MAG_LINE = 'mline'
 
 DEFAULT_COMPONENT_KEY = 'Resistor'
 MARK_CHAR = 'X'
+JUMP_CHAR = ')'
 ML_BEND_CHAR = '+'
 
 # lines
