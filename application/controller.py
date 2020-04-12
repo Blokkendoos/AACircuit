@@ -125,7 +125,7 @@ class Controller(object):
 
         else:
             # no more actions to undo
-            pub.sendMessage('UNDO_CHANGED', undo=False)  # TODO enable undo (in each paste_xxxx method?)
+            pub.sendMessage('UNDO_CHANGED', undo=False)
 
     # File menu
 
@@ -258,18 +258,26 @@ class Controller(object):
         symbol = self.symbol.copy()
         symbol.startpos = pos
 
-        self.objects.append(symbol)
+        act = Action(action=INSERT, symbol=symbol)
+        self.last_action.append(act)
 
+        self.objects.append(symbol)
         symbol.paste(self.grid)
+
+        pub.sendMessage('UNDO_CHANGED', undo=True)
 
     def on_paste_character(self, pos):
 
         symbol = self.symbol.copy()
         symbol.startpos = pos
 
-        self.objects.append(symbol)
+        act = Action(action=INSERT, symbol=symbol)
+        self.last_action.append(act)
 
+        self.objects.append(symbol)
         symbol.paste(self.grid)
+
+        pub.sendMessage('UNDO_CHANGED', undo=True)
 
     def on_paste_text(self, pos, text):
 
