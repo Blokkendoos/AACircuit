@@ -9,16 +9,18 @@ import collections
 from pubsub import pub
 
 from application import _
+from application import REMOVE, INSERT
 from application import COMPONENT, CHARACTER, TEXT, COL, ROW, DRAW_RECT, LINE, MAG_LINE
 from application.grid import Grid
 from application.pos import Pos
-from application.symbol import Symbol, Character, Text, Line, MagLine, Rect
+from application.symbol import Symbol, Character, Text, Line, MagLine, Rect, Row, Column
 from application.main_window import MainWindow
 from application.component_library import ComponentLibrary
 from application.file import FileChooserWindow
 
 
 SelectedObjects = collections.namedtuple('selection', ['startpos', 'symbol', 'view'])
+Action = collections.namedtuple('action', ['action', 'symbol'])
 
 
 class Controller(object):
@@ -33,39 +35,9 @@ class Controller(object):
 
         self.components = ComponentLibrary()
         self.symbol = Symbol()
-        self.buffer = None
 
-        """
-        <comp_command> ::= "comp:" <id> "," <orientation> "," <pos> "," <mirrored> "," <key>
-        <other_command> ::= <type> ":" <id> "," <pos> ["," <pos>]
-        <grid_command> ::= <grid> "," <row> | <col>
-
-        <orientation> ::= { 0-3 }
-        <mirrored> ::= "y" | "n"
-        <type> ::= "char" | "line" | "rect" | "text"
-        <grid> ::= "irow" | "icol" | "drow" | "dcol"
-
-        <id> ::= <integer>
-        <pos> ::= <x> "," <y>
-        <key> ::= <string>
-        <string> ::= '"' <alphanum>* '"'
-        <x> ::= <integer>*
-        <y> ::= <integer>*
-        <row> ::= <integer>*
-        <col> ::= <integer>*
-
-        Example:
-        COMP:45,0,10,15,N,"N-FET"
-        COMP:46,0,10,15,N, "P-FET"
-        LINE:10,10,15,10,20
-        RECT:47,10,15,15,20
-        CHAR:43,10,15
-        TEXT:  + + Tekst + +,10,15
-        TEXT:Tekst met komma,, in de tekst,10,15
-        IROW:23
-        DCOL:10
-        """
-        self.memo = []
+        # last cut/pasted symbol(s)
+        self.last_action = []
 
         # all objects on the grid
         self.objects = []
@@ -106,10 +78,8 @@ class Controller(object):
         pub.subscribe(self.on_select_objects, 'SELECT_OBJECTS')
 
         # insert/remove rows or columns
-        pub.subscribe(self.on_insert_col, 'INSERT_COL')
-        pub.subscribe(self.on_insert_row, 'INSERT_ROW')
-        pub.subscribe(self.on_remove_col, 'REMOVE_COL')
-        pub.subscribe(self.on_remove_row, 'REMOVE_ROW')
+        pub.subscribe(self.on_grid_col, 'GRID_COL')
+        pub.subscribe(self.on_grid_row, 'GRID_ROW')
 
         # clipboard
         pub.subscribe(self.on_copy_to_clipboard, 'COPY_TO_CLIPBOARD')
@@ -135,6 +105,9 @@ class Controller(object):
 
     def on_undo(self):
         # TODO restore objects list
+
+        # for act in self.last_action:
+
         self.grid.undo()
         pub.sendMessage('GRID', grid=self.grid)
 
@@ -182,11 +155,16 @@ class Controller(object):
 
         self.find_selected(rect)
 
+        action = list()
         for sel in self.selected_objects:
+
+            act = Action(action=REMOVE, symbol=sel.symbol)
+            action.append(act)
+
+            sel.symbol.remove(self.grid)
             self.remove_from_objects(sel.symbol)
 
-        self.buffer = self.grid.rect(rect)
-        self.grid.erase_rect(rect)
+        self.last_action.update(action)
 
         pub.sendMessage('NOTHING_SELECTED')
 
@@ -198,8 +176,15 @@ class Controller(object):
         pub.sendMessage('OBJECTS_SELECTED', objects=self.selected_objects)
 
     def on_paste(self, pos, rect):
-        if self.buffer is not None:
-            self.grid.fill_rect(pos, self.buffer)
+
+        if self.last_action is not None:
+            None
+            # TODO
+            # self.grid.fill_rect(pos, self.buffer)
+
+            # act = Action(action=INSERT, symbol=sel.symbol)
+            # action.append(act)
+
         pub.sendMessage('NOTHING_SELECTED')
 
     def on_delete(self, rect):
@@ -210,31 +195,27 @@ class Controller(object):
             sel.symbol.remove(self.grid)
             self.remove_from_objects(sel.symbol)
 
-        # self.grid.erase_rect(rect)
-
         pub.sendMessage('NOTHING_SELECTED')
 
     # grid manipulation
 
-    def on_insert_col(self, col):
-        str = "i{0}:{1}".format(COL, col)
-        self.memo.append(str)
-        self.grid.insert_col(col)
+    def on_grid_col(self, col, action):
+        symbol = Column(col, action)
+        self.objects.append(symbol)
 
-    def on_insert_row(self, row):
-        str = "i{0}:{1}".format(ROW, row)
-        self.memo.append(str)
-        self.grid.insert_row(row)
+        if action == INSERT:
+            self.grid.insert_col(col)
+        else:
+            self.grid.remove_col(col)
 
-    def on_remove_col(self, col):
-        str = "d{0}:{1}".format(COL, col)
-        self.memo.append(str)
-        self.grid.remove_col(col)
+    def on_grid_row(self, row, action):
+        symbol = Row(row, action)
+        self.objects.append(symbol)
 
-    def on_remove_row(self, row):
-        str = "d{0}:{1}".format(ROW, row)
-        self.memo.append(str)
-        self.grid.remove_row(row)
+        if action == INSERT:
+            self.grid.insert_row(row)
+        else:
+            self.grid.remove_row(row)
 
     # character/component symbol
 
@@ -265,7 +246,6 @@ class Controller(object):
         symbol = self.symbol.copy()
         symbol.startpos = pos
 
-        self.memo.append(symbol.memo())
         self.objects.append(symbol)
 
         symbol.paste(self.grid)
@@ -275,7 +255,6 @@ class Controller(object):
         symbol = self.symbol.copy()
         symbol.startpos = pos
 
-        self.memo.append(symbol.memo())
         self.objects.append(symbol)
 
         symbol.paste(self.grid)
@@ -284,7 +263,6 @@ class Controller(object):
 
         self.symbol = Text(pos, text)
 
-        self.memo.append(self.symbol.memo())
         self.objects.append(self.symbol)
 
         self.symbol.paste(self.grid)
@@ -298,6 +276,7 @@ class Controller(object):
         def classname(x):
             return type(x).__name__
 
+        action = list()
         for sel in self.selected_objects:
 
             offset = pos - sel.startpos
@@ -310,10 +289,14 @@ class Controller(object):
             if classname(symbol) == 'MagLine':  # FIXME
                 symbol.ml_endpos += offset
 
-            self.memo.append(symbol.memo())
+            act = Action(action=INSERT, symbol=symbol)
+            action.append(act)
+
             self.objects.append(symbol)
 
             symbol.paste(self.grid)
+
+        self.last_action.update(action)
 
         pub.sendMessage('NOTHING_SELECTED')
 
@@ -335,7 +318,6 @@ class Controller(object):
 
         self.symbol = Line(startpos, endpos, type)
 
-        self.memo.append(self.symbol.memo())
         self.objects.append(self.symbol)
 
         self.symbol.paste(self.grid)
@@ -344,7 +326,6 @@ class Controller(object):
 
         self.symbol = MagLine(startpos, endpos, ml_endpos)
 
-        self.memo.append(self.symbol.memo())
         self.objects.append(self.symbol)
 
         self.symbol.paste(self.grid)
@@ -353,7 +334,6 @@ class Controller(object):
 
         self.symbol = Rect(startpos, endpos)
 
-        self.memo.append(self.symbol.memo())
         self.objects.append(self.symbol)
 
         self.symbol.paste(self.grid)
@@ -390,8 +370,8 @@ class Controller(object):
             fout = open(filename, 'w')
 
             str = ""
-            for line in self.memo:
-                str += line + "\n"
+            for symbol in self.objects:
+                str += symbol.memo() + "\n"
             fout.write(str)
 
             fout.close()
@@ -521,25 +501,20 @@ class Controller(object):
 
         type = m.group(1)
 
-        if type == 'd':
+        if type == 'i':
+            action = INSERT
+        else:
+            action = REMOVE
 
-            what = m.group(2)
-            nr = int(m.group(3))
+        what = m.group(2)
+        nr = int(m.group(3))
 
-            if what == COL:
-                self.on_remove_col(nr)
-            elif what == ROW:
-                self.on_remove_row(nr)
+        if what == COL:
+            self.on_grid_col(nr, action)
 
-        elif type == 'i':
+        elif what == ROW:
+            self.on_grid_row(nr, action)
 
-            what = m.group(2)
-            nr = int(m.group(3))
-
-            if what == COL:
-                self.on_insert_col(nr)
-            elif what == ROW:
-                self.on_insert_row(nr)
         else:
             skipped += 1
 

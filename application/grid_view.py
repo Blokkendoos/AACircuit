@@ -13,7 +13,7 @@ from profilehooks import timecall
 
 from application import _
 from application import FONTSIZE, GRIDSIZE_W, GRIDSIZE_H
-from application import INSERT, HORIZONTAL, VERTICAL
+from application import HORIZONTAL, VERTICAL
 from application import IDLE, SELECTING, SELECTED
 from application import CHARACTER, COMPONENT, LINE, MAG_LINE, OBJECTS, COL, ROW, RECT, DRAW_RECT
 from application import MARK_CHAR
@@ -475,20 +475,12 @@ class GridView(Gtk.Frame):
 
             if self._selection.item == ROW:
                 row = pos.grid_rc().y
-                if self._selection.action == INSERT:
-                    pub.sendMessage('INSERT_ROW', row=row)
-                else:
-                    pub.sendMessage('REMOVE_ROW', row=row)
-
+                pub.sendMessage('GRID_ROW', row=row, action=self._selection.action)
                 self.gridsize_changed()
 
             elif self._selection.item == COL:
                 col = pos.grid_rc().x
-                if self._selection.action == INSERT:
-                    pub.sendMessage('INSERT_COL', col=col)
-                else:
-                    pub.sendMessage('REMOVE_COL', col=col)
-
+                pub.sendMessage('GRID_COL', col=col, action=self._selection.action)
                 self.gridsize_changed()
 
             elif self._selection.item == TEXT:

@@ -8,6 +8,7 @@ import json
 
 from application import _
 from application.pos import Pos
+from application import INSERT, COL, ROW
 from application import HORIZONTAL, VERTICAL
 from application import LINE_HOR, LINE_VERT, TERMINAL_TYPE, ML_BEND_CHAR
 from application import COMPONENT, CHARACTER, TEXT, DRAW_RECT, LINE, MAG_LINE
@@ -555,3 +556,49 @@ class Rect(Symbol):
         line2.remove(grid)
         line3.remove(grid)
         line4.remove(grid)
+
+
+class Column(Symbol):
+
+    def __init__(self, col, action):
+
+        self._col = col
+        self._action = action
+
+        super(Column, self).__init__(id=col, startpos=Pos(col, 0))
+
+    @property
+    def col(self):
+        return self._col
+
+    def memo(self):
+        if self._action == INSERT:
+            str = "i"
+        else:
+            str = "d"
+
+        str += "{0}:{1}".format(COL, self.col)
+        return str
+
+
+class Row(Symbol):
+
+    def __init__(self, row, action):
+
+        self._row = row
+        self._action = action
+
+        super(Row, self).__init__(id=row, startpos=Pos(0, row))
+
+    @property
+    def row(self):
+        return self._row
+
+    def memo(self):
+        if self._action == INSERT:
+            str = "i"
+        else:
+            str = "d"
+
+        str += "{0}:{1}".format(ROW, self.row)
+        return str
