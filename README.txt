@@ -17,7 +17,7 @@ Draw electronic circuits with ASCII characters.
            '-'          '-'
             |            |
       ||    |          |/
-    --||----)----------|   BC109
+     -||----+----------|   BC109
       ||    |          |>
             |            |
            .-.          .-.
