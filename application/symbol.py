@@ -10,7 +10,7 @@ from application import _
 from application.pos import Pos
 from application import INSERT, COL, ROW
 from application import HORIZONTAL, VERTICAL
-from application import LINE_HOR, LINE_VERT, TERMINAL_TYPE, ML_BEND_CHAR
+from application import LINE_HOR, LINE_VERT, TERMINAL_TYPE, ML_BEND_CHAR, JUMP_CHAR
 from application import COMPONENT, CHARACTER, TEXT, DRAW_RECT, LINE, MAG_LINE
 from application.symbol_view import ComponentView, ObjectView
 
@@ -394,12 +394,19 @@ class Line(Symbol):
         return self._type
 
     def paste(self, grid):
-        for key, value in self._repr.items():
-            grid.set_cell(key, value)
+
+        first = True
+        for pos, value in self._repr.items():
+            # crossing lines
+            if grid.cell(pos) in (LINE_HOR, LINE_VERT) and not first:
+                grid.set_cell(pos, JUMP_CHAR)
+            else:
+                grid.set_cell(pos, value)
+            first = False
 
     def remove(self, grid):
-        for key, value in self._repr.items():
-            grid.set_cell(key, ' ')
+        for pos, value in self._repr.items():
+            grid.set_cell(pos, ' ')
 
 
 class MagLine(Line):
