@@ -9,6 +9,24 @@
 
 Draw electronic circuits with ASCII characters.
 
+            -------------------
+            |            |
+           .-.          .-.
+           | |          | |
+           | |          | |
+           '-'          '-'
+            |            |
+      ||    |          |/
+    --||----)----------|   BC109
+      ||    |          |>
+            |            |
+           .-.          .-.
+           | |          | |
+           | |          | |
+           '-'          '-'
+            |            |
+            -------------------
+
 This is a pythonized version of the original (Borland Delphi) AACircuit (by Andreas Weber).
 A kind of reverse engineered version, where the idea and GUI layout are taken from the original.
 
