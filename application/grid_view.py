@@ -491,6 +491,29 @@ class GridView(Gtk.Frame):
                 self._selection.state = SELECTED
                 pub.sendMessage('PASTE_TEXTBLOCK', pos=pos.grid_rc(), text=self._selection.text)
 
+            elif self._selection.item == OBJECTS:
+
+                # FIXME this is a hack (switching from one to another Selection subclass)
+
+                # and select the object within this rect
+                self._selection = SelectionRect()
+                self._selection.state = SELECTED
+
+                # create a small rect (one cell in all directions)
+                ul = pos - Pos(GRIDSIZE_W, GRIDSIZE_H)
+                br = pos + Pos(2 * GRIDSIZE_W, GRIDSIZE_H)
+
+                self._drag_startpos = ul
+                self._drag_endpos = br
+
+                self._selection.startpos = ul
+                self._selection.endpos = br
+
+                self._selection.maxpos = self.max_pos_grid
+                self._selection.direction = HORIZONTAL
+
+                pub.sendMessage('SELECTION_CHANGED', selected=True)
+
         elif self._selection.state == SELECTED:
 
             if self._selection.item == CHARACTER:

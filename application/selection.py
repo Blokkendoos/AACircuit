@@ -15,7 +15,10 @@ from application.pos import Pos
 
 
 class Selection(object):
-    """A selection on the grid (canvas)."""
+    """
+    A selection on the grid (canvas).
+    All positions are canvas (x,y) coordinates.
+    """
 
     SELECTION_STATE = (IDLE, DRAG, SELECTING, SELECTED)
 

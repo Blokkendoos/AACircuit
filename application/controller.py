@@ -327,7 +327,7 @@ class Controller(object):
 
         for sel in self.selected_objects:
 
-            act = Action(action=REMOVE, symbol=symbol)
+            act = Action(action=REMOVE, symbol=sel.symbol)
             action.append(act)
 
             self.remove_from_objects(sel.symbol)

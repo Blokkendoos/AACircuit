@@ -64,6 +64,7 @@ class MenuBar(object):
         # menu cut|copy|paste|delete
         name = Gtk.Buildable.get_name(item)
 
+        # get the rectangle (ul and br have been set in drag begin/end)
         ul, br = self.grid_view.drag_rect
 
         pub.sendMessage(name.upper(), rect=(ul, br))
