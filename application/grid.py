@@ -144,7 +144,8 @@ class Grid(object):
 
     # grid manipulation
 
-    def cell(self, row, col):
+    def cell(self, pos):
+        col, row = pos.xy
         return self._grid[row][col]
 
     def set_cell(self, pos, value):
