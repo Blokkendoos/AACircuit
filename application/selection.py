@@ -10,7 +10,7 @@ from application import GRIDSIZE_W, GRIDSIZE_H
 from application import HORIZONTAL, VERTICAL
 from application import LINE_HOR, LINE_VERT, TERMINAL_TYPE
 from application import IDLE, SELECTING, SELECTED, DRAG
-from application import TEXT, TEXT_BLOCK, LINE, MAG_LINE, COL, ROW, RECT
+from application import TEXT, TEXT_BLOCK, LINE, MAG_LINE, DIR_LINE, COL, ROW, RECT
 from application.pos import Pos
 
 
@@ -234,10 +234,10 @@ class SelectionMagicLine(SelectionLine):
                 self.draw_vert(ctx, self._ml_startpos, self._ml_endpos)
 
 
-class SelectionLineFree(Selection):
+class SelectionDirLine(SelectionLine):
 
-    def __init__(self):
-        super(SelectionLineFree, self).__init__(item=LINE)
+    def __init__(self, item=DIR_LINE):
+        super(SelectionDirLine, self).__init__(type=None, item=item)
 
     def draw(self, ctx):
         # linechar = "/"  # TODO

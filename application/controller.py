@@ -14,7 +14,7 @@ from application import REMOVE, INSERT
 from application import COMPONENT, CHARACTER, TEXT, COL, ROW, DRAW_RECT, LINE, MAG_LINE
 from application.grid import Grid
 from application.pos import Pos
-from application.symbol import Symbol, Character, Text, Line, MagLine, Rect, Row, Column
+from application.symbol import Symbol, Character, Text, Line, MagLine, DirLine, Rect, Row, Column
 from application.main_window import MainWindow
 from application.component_library import ComponentLibrary
 from application.file import FileChooserWindow
@@ -69,6 +69,7 @@ class Controller(object):
         pub.subscribe(self.on_paste_symbol, 'PASTE_SYMBOL')
         pub.subscribe(self.on_paste_objects, 'PASTE_OBJECTS')
         pub.subscribe(self.on_paste_mag_line, 'PASTE_MAG_LINE')
+        pub.subscribe(self.on_paste_dir_line, 'PASTE_DIR_LINE')
         pub.subscribe(self.on_paste_line, 'PASTE_LINE')
         pub.subscribe(self.on_paste_rect, 'PASTE_RECT')
         pub.subscribe(self.on_paste_text, 'PASTE_TEXT')
@@ -153,7 +154,7 @@ class Controller(object):
                 break
 
     def find_selected(self, rect):
-        """Select all symbols that are located within the selection rectangle."""
+        """Find all symbols that are located within the selection rectangle."""
 
         ul, br = rect
 
@@ -345,27 +346,23 @@ class Controller(object):
     # lines
 
     def on_paste_line(self, startpos, endpos, type):
-
         self.symbol = Line(startpos, endpos, type)
-
         self.objects.append(self.symbol)
+        self.symbol.paste(self.grid)
 
+    def on_paste_dir_line(self, startpos, endpos):
+        self.symbol = DirLine(startpos, endpos)
+        self.objects.append(self.symbol)
         self.symbol.paste(self.grid)
 
     def on_paste_mag_line(self, startpos, endpos, ml_endpos):
-
         self.symbol = MagLine(startpos, endpos, ml_endpos)
-
         self.objects.append(self.symbol)
-
         self.symbol.paste(self.grid)
 
     def on_paste_rect(self, startpos, endpos):
-
         self.symbol = Rect(startpos, endpos)
-
         self.objects.append(self.symbol)
-
         self.symbol.paste(self.grid)
 
     # clipboard

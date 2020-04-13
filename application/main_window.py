@@ -248,6 +248,7 @@ class MainWindow(Gtk.Window):
         pub.sendMessage('MIRROR_SYMBOL')
 
     def on_line(self, button):
+        # draw_linex, draw_mag_line
         name = Gtk.Buildable.get_name(button)
         type = name[-1]
         pub.sendMessage(name.upper(), type=type)

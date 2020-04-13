@@ -5,13 +5,14 @@ AACircuit
 
 import copy
 import json
+from bresenham import bresenham
 
 from application import _
 from application.pos import Pos
 from application import INSERT, COL, ROW
 from application import HORIZONTAL, VERTICAL
 from application import LINE_HOR, LINE_VERT, TERMINAL_TYPE, ML_BEND_CHAR, JUMP_CHAR
-from application import COMPONENT, CHARACTER, TEXT, DRAW_RECT, LINE, MAG_LINE
+from application import COMPONENT, CHARACTER, TEXT, DRAW_RECT, LINE, MAG_LINE, DIR_LINE
 from application.symbol_view import ComponentView, ObjectView
 
 
@@ -311,13 +312,17 @@ class Text(Symbol):
 
 
 class Line(Symbol):
+    """A horizontal or verical line from start to end position."""
 
-    def __init__(self, startpos, endpos, type='0'):
+    def __init__(self, startpos, endpos, type=None):
 
         super(Line, self).__init__(id=type, startpos=startpos, endpos=endpos)
 
-        self._type = type
-        self._terminal = TERMINAL_TYPE[type]
+        if type is None:
+            self._type = '0'
+        else:
+            self._type = type
+        self._terminal = TERMINAL_TYPE[self._type]
 
         self._direction()
         self._representation()
@@ -408,7 +413,37 @@ class Line(Symbol):
             grid.set_cell(pos, ' ')
 
 
+class DirLine(Line):
+    """A straigth line from start to end position."""
+
+    def __init__(self, startpos, endpos):
+
+        super(DirLine, self).__init__(startpos=startpos, endpos=endpos)
+
+    def _representation(self):
+
+        repr = dict()
+
+        line = bresenham(self._startpos.x, self._startpos.y, self._endpos.x, self._endpos.y)
+        linechar = "."
+        for coord in line:
+            pos = Pos(coord[0], coord[1])
+            repr[pos] = linechar
+
+        self._repr = repr
+
+    def copy(self):
+        startpos = copy.deepcopy(self._startpos)
+        endpos = copy.deepcopy(self._endpos)
+        return DirLine(startpos, endpos)
+
+    def memo(self):
+        str = "{0}:{1},{2}".format(DIR_LINE, self._startpos, self._endpos)
+        return str
+
+
 class MagLine(Line):
+    """A square bend from start to end position."""
 
     def __init__(self, startpos, endpos, ml_endpos):
 
@@ -444,10 +479,6 @@ class MagLine(Line):
     def ml_endpos(self, value):
         self._ml_endpos = value
         self._representation()
-
-    def grid_next(self):
-        # TODO enable to rotate (from HOR to VERT)?
-        raise NotImplementedError
 
     def copy(self):
         startpos = copy.deepcopy(self._startpos)

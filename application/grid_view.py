@@ -8,18 +8,18 @@ import time
 from pubsub import pub
 
 # https://pypi.org/project/profilehooks/
-from profilehooks import coverage
-from profilehooks import timecall
+# from profilehooks import coverage
+# from profilehooks import timecall
 
 from application import _
 from application import FONTSIZE, GRIDSIZE_W, GRIDSIZE_H
 from application import HORIZONTAL, VERTICAL
 from application import IDLE, SELECTING, SELECTED
-from application import CHARACTER, COMPONENT, LINE, MAG_LINE, OBJECTS, COL, ROW, RECT, DRAW_RECT
+from application import CHARACTER, COMPONENT, LINE, MAG_LINE, DIR_LINE, OBJECTS, COL, ROW, RECT, DRAW_RECT
 from application import MARK_CHAR
 from application import TEXT, TEXT_BLOCK
 from application.pos import Pos
-from application.selection import Selection, SelectionLine, SelectionLineFree, SelectionMagicLine, SelectionCol, SelectionRow, SelectionRect, SelectionText, SelectionTextBlock
+from application.selection import Selection, SelectionLine, SelectionDirLine, SelectionMagicLine, SelectionCol, SelectionRow, SelectionRect, SelectionText, SelectionTextBlock
 
 import gi
 gi.require_version('Gtk', '3.0')
@@ -101,7 +101,7 @@ class GridView(Gtk.Frame):
         pub.subscribe(self.on_nothing_selected, 'NOTHING_SELECTED')
 
         pub.subscribe(self.on_draw_mag_line, 'DRAW_MAG_LINE')
-        pub.subscribe(self.on_draw_line, 'DRAW_LINE0')
+        pub.subscribe(self.on_draw_dir_line, 'DRAW_LINE0')
         pub.subscribe(self.on_draw_line, 'DRAW_LINE1')
         pub.subscribe(self.on_draw_line, 'DRAW_LINE2')
         pub.subscribe(self.on_draw_line, 'DRAW_LINE3')
@@ -229,14 +229,16 @@ class GridView(Gtk.Frame):
     def on_selecting_col(self, action):
         self._selection = SelectionCol(action)
 
+    # LINES
+
     def on_draw_mag_line(self, type):
         self._selection = SelectionMagicLine()
 
+    def on_draw_dir_line(self, type):
+        self._selection = SelectionDirLine()
+
     def on_draw_line(self, type):
-        if type == '0':
-            self._selection = SelectionLineFree()
-        else:
-            self._selection = SelectionLine(type)
+        self._selection = SelectionLine(type)
 
     def on_draw_rect(self):
         self._selection = SelectionRect(item=DRAW_RECT)
@@ -472,186 +474,192 @@ class GridView(Gtk.Frame):
         pub.sendMessage('POINTER_MOVED', pos=pos.grid_rc())
 
         if self._selection.state == SELECTING:
-
-            if self._selection.item == ROW:
-                row = pos.grid_rc().y
-                pub.sendMessage('GRID_ROW', row=row, action=self._selection.action)
-                self.gridsize_changed()
-
-            elif self._selection.item == COL:
-                col = pos.grid_rc().x
-                pub.sendMessage('GRID_COL', col=col, action=self._selection.action)
-                self.gridsize_changed()
-
-            elif self._selection.item == TEXT:
-                self._selection.state = SELECTED
-                pub.sendMessage('PASTE_TEXT', pos=pos.grid_rc(), text=self._text)
-
-            elif self._selection.item == TEXT_BLOCK:
-                self._selection.state = SELECTED
-                pub.sendMessage('PASTE_TEXTBLOCK', pos=pos.grid_rc(), text=self._selection.text)
-
-            elif self._selection.item == OBJECTS:
-
-                # FIXME this is a hack (switching from one to another Selection subclass)
-
-                # and select the object within this rect
-                self._selection = SelectionRect()
-                self._selection.state = SELECTED
-
-                # create a small rect (one cell in all directions)
-                ul = pos - Pos(GRIDSIZE_W, GRIDSIZE_H)
-                br = pos + Pos(2 * GRIDSIZE_W, GRIDSIZE_H)
-
-                self._drag_startpos = ul
-                self._drag_endpos = br
-
-                self._selection.startpos = ul
-                self._selection.endpos = br
-
-                self._selection.maxpos = self.max_pos_grid
-                self._selection.direction = HORIZONTAL
-
-                pub.sendMessage('SELECTION_CHANGED', selected=True)
+            self.selecting_chosen(pos)
 
         elif self._selection.state == SELECTED:
-
-            if self._selection.item == CHARACTER:
-                # https://stackoverflow.com/questions/6616270/right-click-menu-context-menu-using-pygtk
-                button = event.button
-                if button == 1:
-                    # left button
-                    pos = self._hover_pos + Pos(0, -1)
-                    pub.sendMessage('PASTE_CHARACTER', pos=pos.grid_rc())
-
-            elif self._selection.item == COMPONENT:
-                # https://stackoverflow.com/questions/6616270/right-click-menu-context-menu-using-pygtk
-                button = event.button
-                if button == 1:
-                    # left button
-                    pos = self._hover_pos + Pos(0, -1)
-                    pub.sendMessage('PASTE_SYMBOL', pos=pos.grid_rc())
-                elif button == 3:
-                    # right button
-                    pub.sendMessage('ROTATE_SYMBOL')
-
-            elif self._selection.item == OBJECTS:
-                button = event.button
-                if button == 1:
-                    # left button
-                    pos = self._hover_pos + Pos(0, -1)
-                    pub.sendMessage('PASTE_OBJECTS', pos=pos.grid_rc())
+            self.selected_chosen(event)
 
         widget.queue_resize()
 
+    def selected_chosen(self, event):
+
+        if self._selection.item == CHARACTER:
+            # https://stackoverflow.com/questions/6616270/right-click-menu-context-menu-using-pygtk
+            button = event.button
+            if button == 1:
+                # left button
+                pos = self._hover_pos + Pos(0, -1)
+                pub.sendMessage('PASTE_CHARACTER', pos=pos.grid_rc())
+
+        elif self._selection.item == COMPONENT:
+            # https://stackoverflow.com/questions/6616270/right-click-menu-context-menu-using-pygtk
+            button = event.button
+            if button == 1:
+                # left button
+                pos = self._hover_pos + Pos(0, -1)
+                pub.sendMessage('PASTE_SYMBOL', pos=pos.grid_rc())
+            elif button == 3:
+                # right button
+                pub.sendMessage('ROTATE_SYMBOL')
+
+        elif self._selection.item == OBJECTS:
+            button = event.button
+            if button == 1:
+                # left button
+                pos = self._hover_pos + Pos(0, -1)
+                pub.sendMessage('PASTE_OBJECTS', pos=pos.grid_rc())
+
+    def selecting_chosen(self, pos):
+
+        if self._selection.item == ROW:
+            row = pos.grid_rc().y
+            pub.sendMessage('GRID_ROW', row=row, action=self._selection.action)
+            self.gridsize_changed()
+
+        elif self._selection.item == COL:
+            col = pos.grid_rc().x
+            pub.sendMessage('GRID_COL', col=col, action=self._selection.action)
+            self.gridsize_changed()
+
+        elif self._selection.item == TEXT:
+            self._selection.state = SELECTED
+            pub.sendMessage('PASTE_TEXT', pos=pos.grid_rc(), text=self._text)
+
+        elif self._selection.item == TEXT_BLOCK:
+            self._selection.state = SELECTED
+            pub.sendMessage('PASTE_TEXTBLOCK', pos=pos.grid_rc(), text=self._selection.text)
+
+        elif self._selection.item == OBJECTS:
+
+            # FIXME this is a hack (switching from one to another Selection subclass)
+
+            # and select the object within this rect
+            self._selection = SelectionRect()
+            self._selection.state = SELECTED
+
+            # create a small rect (one cell in all directions)
+            ul = pos - Pos(GRIDSIZE_W, GRIDSIZE_H)
+            br = pos + Pos(2 * GRIDSIZE_W, GRIDSIZE_H)
+
+            self._drag_startpos = ul
+            self._drag_endpos = br
+
+            self._selection.startpos = ul
+            self._selection.endpos = br
+
+            self._selection.maxpos = self.max_pos_grid
+            self._selection.direction = HORIZONTAL
+
+            pub.sendMessage('SELECTION_CHANGED', selected=True)
+
     def on_drag_begin(self, widget, x_start, y_start):
 
-        if self._selection.state == IDLE and self._selection.item in (DRAW_RECT, RECT, LINE, MAG_LINE):
+        if self._selection.state != IDLE:
+            return
 
-            pos = Pos(x_start, y_start)
-            pos.snap_to_grid()
+        pos = Pos(x_start, y_start)
+        pos.snap_to_grid()
 
-            if self._selection.item == MAG_LINE:
-                self._selection.ml_dir = None
-                self._selection.ml_startpos = None
-                self._selection.ml_currentpos = None
+        if self._selection.item == MAG_LINE:
+            self._selection.ml_dir = None
+            self._selection.ml_startpos = None
+            self._selection.ml_currentpos = None
 
-            self._drag_dir = None
-            self._drag_startpos = pos
-            self._drag_currentpos = pos
+        self._drag_dir = None
+        self._drag_startpos = pos
+        self._drag_currentpos = pos
 
-            self._drag_prevpos = []
-            self._drag_prevpos.append(pos)
+        self._drag_prevpos = []
+        self._drag_prevpos.append(pos)
 
-            self._selection.state = SELECTING
+        self._selection.state = SELECTING
 
     def on_drag_end(self, widget, x_offset, y_offset):
 
-        if self._selection.state == SELECTING and self._selection.item in (DRAW_RECT, RECT, LINE, MAG_LINE):
+        if self._selection.state != SELECTING:
+            return
 
-            offset = Pos(x_offset, y_offset)
-            self._drag_endpos = self._drag_startpos + offset
-            self._drag_endpos.snap_to_grid()
+        offset = Pos(x_offset, y_offset)
+        self._drag_endpos = self._drag_startpos + offset
+        self._drag_endpos.snap_to_grid()
 
-            self._selection.state = SELECTED
+        # position to grid (col, row) coordinates
+        startpos = self._drag_startpos.grid_rc()
+        endpos = self._drag_endpos.grid_rc()
 
-            if self._selection.item == DRAW_RECT:
+        self._selection.state = SELECTED
 
-                # position to grid (col, row) coordinates
-                start = self._drag_startpos.grid_rc()
-                end = self._drag_endpos.grid_rc()
+        if self._selection.item == DRAW_RECT:
 
-                # TODO move this to the Symbol class?
-                if start > end:
-                    endpos = start
-                    startpos = end
-                else:
-                    endpos = end
-                    startpos = start
+            # TODO move this to the Symbol class?
+            if startpos > endpos:
+                tmp = endpos
+                endpos = startpos
+                startpos = tmp
 
-                pub.sendMessage('PASTE_RECT', startpos=startpos, endpos=endpos)
+            pub.sendMessage('PASTE_RECT', startpos=startpos, endpos=endpos)
 
-            elif self._selection.item == RECT:
-                pub.sendMessage('SELECTION_CHANGED', selected=True)
+        elif self._selection.item == RECT:
+            pub.sendMessage('SELECTION_CHANGED', selected=True)
 
-            elif self._selection.item in (LINE, MAG_LINE):
+        elif self._selection.item in (LINE, MAG_LINE):
 
-                # TODO line terminal-type?
+            # TODO line terminal-type?
 
-                # position to grid (col, row) coordinates
-                startpos = self._drag_startpos.grid_rc()
-                endpos = self._drag_endpos.grid_rc()
+            if self._drag_dir == HORIZONTAL:
+                endpos.y = startpos.y
+            elif self._drag_dir == VERTICAL:
+                endpos.x = startpos.x
 
-                if self._drag_dir == HORIZONTAL:
-                    endpos.y = startpos.y
-                elif self._drag_dir == VERTICAL:
-                    endpos.x = startpos.x
-
-                if self._selection.item == LINE:
-                    pub.sendMessage("PASTE_LINE", startpos=startpos, endpos=endpos, type=self._selection.type)
-
-                elif self._selection.item == MAG_LINE:
-
-                    ml_end = self._selection.ml_endpos.grid_rc()
-
-                    pub.sendMessage("PASTE_MAG_LINE", startpos=startpos, endpos=endpos, ml_endpos=ml_end)
-
-    def on_drag_update(self, widget, x_offset, y_offset):
-
-        if self._selection.state == SELECTING and self._selection.item in (DRAW_RECT, RECT, LINE, MAG_LINE):
-
-            offset = Pos(x_offset, y_offset)
-            pos = self._drag_startpos + offset
-            pos.snap_to_grid()
-
-            if self._selection.item in (DRAW_RECT, RECT):
-                self._drag_currentpos = pos
-
-            elif self._selection.item == LINE:
-                self._drag_currentpos = pos
-                # snap to either a horizontal or a vertical straight line
-                self._drag_dir = self.pointer_dir()
+            if self._selection.item == LINE:
+                pub.sendMessage("PASTE_LINE", startpos=startpos, endpos=endpos, type=self._selection.type)
 
             elif self._selection.item == MAG_LINE:
 
-                # snap to either a horizontal or a vertical straight line
-                if self._selection.ml_dir is None:
-                    self._drag_currentpos = pos
-                    self._drag_dir = self.pointer_dir()
+                ml_end = self._selection.ml_endpos.grid_rc()
 
-                    if self._drag_dir != self.pointer_dir_avg():
-                        # drag direction differs from the magic-line direction
-                        # print("line break, startpos:{0} drag_dir:{1} dir_avg:{2}".format(pos, self._drag_dir, self.pointer_dir_avg()))
-                        self._selection.ml_dir = self.pointer_dir_avg()
-                        self._selection.ml_startpos = pos
-                        self._selection.ml_endpos = pos
-                else:
+                pub.sendMessage("PASTE_MAG_LINE", startpos=startpos, endpos=endpos, ml_endpos=ml_end)
+
+        elif self._selection.item == DIR_LINE:
+            pub.sendMessage("PASTE_DIR_LINE", startpos=startpos, endpos=endpos)
+
+    def on_drag_update(self, widget, x_offset, y_offset):
+
+        if self._selection.state != SELECTING:
+            return
+
+        offset = Pos(x_offset, y_offset)
+        pos = self._drag_startpos + offset
+        pos.snap_to_grid()
+
+        if self._selection.item in (DRAW_RECT, RECT, DIR_LINE):
+            self._drag_currentpos = pos
+
+        elif self._selection.item == LINE:
+            self._drag_currentpos = pos
+            # snap to either a horizontal or a vertical straight line
+            self._drag_dir = self.pointer_dir()
+
+        elif self._selection.item == MAG_LINE:
+
+            # snap to either a horizontal or a vertical straight line
+            if self._selection.ml_dir is None:
+                self._drag_currentpos = pos
+                self._drag_dir = self.pointer_dir()
+
+                if self._drag_dir != self.pointer_dir_avg():
+                    # drag direction differs from the magic-line direction
+                    # print("line break, startpos:{0} drag_dir:{1} dir_avg:{2}".format(pos, self._drag_dir, self.pointer_dir_avg()))
+                    self._selection.ml_dir = self.pointer_dir_avg()
+                    self._selection.ml_startpos = pos
                     self._selection.ml_endpos = pos
-                    # reposition the magic line square
-                    if self._drag_dir == HORIZONTAL:
-                        self._drag_currentpos.x = pos.x
-                    else:
-                        self._drag_currentpos.y = pos.y
+            else:
+                self._selection.ml_endpos = pos
+                # reposition the magic line square
+                if self._drag_dir == HORIZONTAL:
+                    self._drag_currentpos.x = pos.x
+                else:
+                    self._drag_currentpos.y = pos.y
 
     def pointer_dir(self):
         """Return the pointer direction in relation to the start position."""
