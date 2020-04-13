@@ -95,8 +95,6 @@ class Controller(object):
 
         pub.subscribe(self.on_cut, 'CUT')
         pub.subscribe(self.on_copy, 'COPY')
-        # pub.subscribe(self.on_paste, 'PASTE')
-        pub.subscribe(self.on_delete, 'DELETE')
 
         # open/save grid from/to file
         pub.subscribe(self.on_read_from_file, 'READ_FROM_FILE')
