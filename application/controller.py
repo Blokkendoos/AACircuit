@@ -17,7 +17,7 @@ from application.pos import Pos
 from application.symbol import Symbol, Character, Text, Line, MagLine, DirLine, Rect, Row, Column
 from application.main_window import MainWindow
 from application.component_library import ComponentLibrary
-from application.file import FileChooserWindow
+from application.file import FileChooserWindow, AsciiFileChooserWindow
 
 
 SelectedObjects = collections.namedtuple('selection', ['startpos', 'symbol', 'view'])
@@ -103,6 +103,8 @@ class Controller(object):
         # open/save grid from/to file
         pub.subscribe(self.on_read_from_file, 'READ_FROM_FILE')
         pub.subscribe(self.on_write_to_file, 'WRITE_TO_FILE')
+
+        pub.subscribe(self.on_load_ascii_from_file, 'LOAD_ASCII_FROM_FILE')
 
     def show_all(self):
         self.gui.show_all()
@@ -427,8 +429,33 @@ class Controller(object):
         pub.sendMessage('OBJECTS_SELECTED', objects=self.selected_objects)
 
     def on_load_and_paste_from_clipboard(self):
-        self.grid.load_and_paste_from_clipboard()
-        pub.sendMessage('GRID', grid=self.grid)
+        # self.grid.load_and_paste_from_clipboard()
+        # pub.sendMessage('GRID', grid=self.grid)
+        dialog = AsciiFileChooserWindow()  # noqa: F841
+
+    def on_load_ascii_from_file(self, filename):
+
+        try:
+            file = open(filename, 'r')
+            str = file.readlines()
+
+            startpos = Pos(0, 0)
+            pos = Pos(0, 0)
+            for line in str:
+                # create a TEXT instance for each line
+                # fill selected_objects...
+                symbol = Text(pos, line)
+                selection = SelectedObjects(startpos=startpos, symbol=symbol, view=symbol.view)
+
+                pos += Pos(0, 1)
+                self.selected_objects.append(selection)
+
+            file.close()
+
+            pub.sendMessage('OBJECTS_SELECTED', objects=self.selected_objects)
+
+        except (IOError, UnicodeDecodeError):
+            print(_("Unable to open file for reading: %s" % filename))
 
     # other
 

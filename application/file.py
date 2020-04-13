@@ -46,22 +46,22 @@ class FileChooserWindow(Gtk.Window):
         response = dialog.run()
 
         if response == Gtk.ResponseType.OK:
-            filename = dialog.get_filename()
-            print(_("File selected: %s") % filename)
-
-            if self.open:
-                pub.sendMessage('READ_FROM_FILE', filename=filename)
-            else:
-                pub.sendMessage('WRITE_TO_FILE', filename=filename)
-        # elif response == Gtk.ResponseType.CANCEL:
-        #     print(_("Cancel clicked"))
+            self.filename = dialog.get_filename()
+            self.action()
 
         dialog.destroy()
 
+    def action(self):
+        # print(_("File selected: %s") % self.filename)
+        if self.open:
+            pub.sendMessage('READ_FROM_FILE', filename=self.filename)
+        else:
+            pub.sendMessage('WRITE_TO_FILE', filename=self.filename)
+
     def add_filters(self, dialog):
         filter_any = Gtk.FileFilter()
-        filter_any.set_name(_("Any files"))
-        filter_any.add_pattern('*')
+        filter_any.set_name(_("AAC files"))
+        filter_any.add_pattern('*.aac')
         dialog.add_filter(filter_any)
 
         filter_text = Gtk.FileFilter()
@@ -81,7 +81,20 @@ class FileChooserWindow(Gtk.Window):
         response = dialog.run()
         if response == Gtk.ResponseType.OK:
             print(_("Folder selected: %s") % dialog.get_filename())
-        # elif response == Gtk.ResponseType.CANCEL:
-        #     print(_("Cancel clicked"))
 
         dialog.destroy()
+
+
+class AsciiFileChooserWindow(FileChooserWindow):
+
+    def __init__(self):
+        super(AsciiFileChooserWindow, self).__init__(open=True)
+
+    def action(self):
+        pub.sendMessage('LOAD_ASCII_FROM_FILE', filename=self.filename)
+
+    def add_filters(self, dialog):
+        filter_text = Gtk.FileFilter()
+        filter_text.set_name(_("Text files"))
+        filter_text.add_mime_type('text/plain')
+        dialog.add_filter(filter_text)
