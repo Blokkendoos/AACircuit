@@ -11,7 +11,7 @@ from pubsub import pub
 
 from application import _
 from application import REMOVE, INSERT
-from application import COMPONENT, CHARACTER, TEXT, COL, ROW, DRAW_RECT, LINE, MAG_LINE
+from application import COMPONENT, CHARACTER, TEXT, COL, ROW, DRAW_RECT, LINE, MAG_LINE, DIR_LINE
 from application.grid import Grid
 from application.pos import Pos
 from application.symbol import Symbol, Character, Text, Line, MagLine, DirLine, Rect, Row, Column
@@ -455,7 +455,7 @@ class Controller(object):
 
         for item in memo:
 
-            m1 = re.search('(^comp|^char|^rect|^line|^mline):(\d+),(\d+),(\d+),?(\d*),?(\d*),?(\d*)', item)  # noqa W605
+            m1 = re.search('(^comp|^char|^rect|^line|^magl|^dirl):(\d+),(\d+),(\d+),?(\d*),?(\d*),?(\d*)', item)  # noqa W605
             m2 = re.search('(^d|^i)(row|col):(\d+)', item)  # noqa W605
             m3 = re.search('(^text):(\d+),(\d+),(.*)', item)  # noqa W605
 
@@ -519,6 +519,16 @@ class Controller(object):
             endpos = Pos(x, y)
 
             self.on_paste_line(startpos, endpos, terminal)
+
+        elif type == DIR_LINE:
+
+            x, y = m.group(2, 3)
+            startpos = Pos(x, y)
+
+            x, y = m.group(4, 5)
+            endpos = Pos(x, y)
+
+            self.on_paste_dir_line(startpos, endpos)
 
         elif type == MAG_LINE:
 
