@@ -183,24 +183,13 @@ class Controller(object):
 
         self.last_action += action
 
+        pub.sendMessage('UNDO_CHANGED', undo=True)
         pub.sendMessage('NOTHING_SELECTED')
 
     def on_copy(self, rect):
         """Select all symbols that are located within the selection rectangle."""
-
         self.find_selected(rect)
-
         pub.sendMessage('OBJECTS_SELECTED', objects=self.selected_objects)
-
-    def on_delete(self, rect):
-
-        self.find_selected(rect)
-
-        for sel in self.selected_objects:
-            sel.symbol.remove(self.grid)
-            self.remove_from_objects(sel.symbol)
-
-        pub.sendMessage('NOTHING_SELECTED')
 
     # grid manipulation
 
