@@ -123,9 +123,17 @@ class Controller(object):
             elif action == INSERT:
                 cut_symbol()
 
-        else:
-            # no more actions to undo
+        if len(self.last_action) < 1:
+            # there are no more actions to undo
             pub.sendMessage('UNDO_CHANGED', undo=False)
+
+    def push_undo_paste(self, symbol, action=INSERT):
+        """Add a cut or paste action to the undo stack."""
+
+        act = Action(action=action, symbol=symbol)
+        self.last_action.append(act)
+
+        pub.sendMessage('UNDO_CHANGED', undo=True)
 
     # File menu
 
@@ -204,6 +212,8 @@ class Controller(object):
         else:
             self.grid.remove_col(col)
 
+        self.push_undo_paste(symbol, action)
+
     def on_grid_row(self, row, action):
 
         symbol = Row(row, action)
@@ -216,6 +226,8 @@ class Controller(object):
             self.grid.insert_row(row)
         else:
             self.grid.remove_row(row)
+
+        self.push_undo_paste(symbol, action)
 
     # character/component symbol
 
@@ -251,6 +263,7 @@ class Controller(object):
 
         self.objects.append(symbol)
         symbol.paste(self.grid)
+        self.push_undo_paste(symbol)
 
         pub.sendMessage('UNDO_CHANGED', undo=True)
 
@@ -264,6 +277,7 @@ class Controller(object):
 
         self.objects.append(symbol)
         symbol.paste(self.grid)
+        self.push_undo_paste(symbol)
 
         pub.sendMessage('UNDO_CHANGED', undo=True)
 
@@ -272,8 +286,10 @@ class Controller(object):
         self.symbol = Text(pos, text)
 
         self.objects.append(self.symbol)
-
         self.symbol.paste(self.grid)
+        self.push_undo_paste(self.symbol)
+
+        pub.sendMessage('UNDO_CHANGED', undo=True)
 
     def on_paste_objects(self, pos):
         """
@@ -307,8 +323,8 @@ class Controller(object):
 
         self.last_action += action
 
-        pub.sendMessage('UNDO_CHANGED', undo=True)
         pub.sendMessage('NOTHING_SELECTED')
+        pub.sendMessage('UNDO_CHANGED', undo=True)
 
     def on_cut_objects(self, rect):
 
@@ -329,6 +345,7 @@ class Controller(object):
         self.last_action += action
 
         pub.sendMessage('NOTHING_SELECTED')
+        pub.sendMessage('UNDO_CHANGED', undo=True)
 
     # lines
 
@@ -336,21 +353,25 @@ class Controller(object):
         self.symbol = Line(startpos, endpos, type)
         self.objects.append(self.symbol)
         self.symbol.paste(self.grid)
+        self.push_undo_paste(self.symbol)
 
     def on_paste_dir_line(self, startpos, endpos):
         self.symbol = DirLine(startpos, endpos)
         self.objects.append(self.symbol)
         self.symbol.paste(self.grid)
+        self.push_undo_paste(self.symbol)
 
     def on_paste_mag_line(self, startpos, endpos, ml_endpos):
         self.symbol = MagLine(startpos, endpos, ml_endpos)
         self.objects.append(self.symbol)
         self.symbol.paste(self.grid)
+        self.push_undo_paste(self.symbol)
 
     def on_paste_rect(self, startpos, endpos):
         self.symbol = Rect(startpos, endpos)
         self.objects.append(self.symbol)
         self.symbol.paste(self.grid)
+        self.push_undo_paste(self.symbol)
 
     # clipboard
 

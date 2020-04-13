@@ -385,7 +385,9 @@ class GridView(Gtk.Frame):
                 if self._selection.item == RECT:
                     self.draw_selected_objects(ctx)
 
-                self._selection.draw(ctx)
+                if self._selection.item:
+                    # draw it, if we have any valid (not None) selection
+                    self._selection.draw(ctx)
 
         elif self._selection.state == SELECTED:
 
