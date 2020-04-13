@@ -5,6 +5,7 @@ AACircuit.py
 
 import re
 import json
+import xerox
 import collections
 from pubsub import pub
 
@@ -161,8 +162,7 @@ class Controller(object):
 
             # select symbols of which the upper-left corner is within the selection rectangle
             if symbol.startpos.in_rect(rect):
-                symbolview = symbol.view
-                selection = SelectedObjects(startpos=ul, symbol=symbol, view=symbolview)
+                selection = SelectedObjects(startpos=ul, symbol=symbol, view=symbol.view)
                 selected.append(selection)
 
         self.selected_objects = selected
@@ -319,6 +319,7 @@ class Controller(object):
 
         self.last_action += action
 
+        pub.sendMessage('UNDO_CHANGED', undo=True)
         pub.sendMessage('NOTHING_SELECTED')
 
     def on_cut_objects(self, rect):
@@ -373,8 +374,22 @@ class Controller(object):
         self.grid.copy_to_clipboard()
 
     def on_paste_from_clipboard(self):
-        self.grid.paste_from_clipboard()
-        pub.sendMessage('GRID', grid=self.grid)
+
+        selected = []
+        pos = Pos(0, 0)
+        relative_pos = Pos(0, 0)
+
+        content = xerox.paste().splitlines()
+
+        for line in content:
+            symbol = Text(relative_pos, line)
+            selection = SelectedObjects(startpos=pos, symbol=symbol, view=symbol.view)
+            selected.append(selection)
+            relative_pos += Pos(0, 1)
+
+        self.selected_objects = selected
+
+        pub.sendMessage('OBJECTS_SELECTED', objects=self.selected_objects)
 
     def on_load_and_paste_from_clipboard(self):
         self.grid.load_and_paste_from_clipboard()
