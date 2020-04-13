@@ -112,6 +112,7 @@ class Grid(object):
         Copy the content of the clipboard to the grid.
         ASCII lines, terminated by CR, are interpreted as rows.
         """
+        print("Deprecated method")
 
         self._push_grid()
 

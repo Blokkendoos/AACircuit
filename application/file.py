@@ -53,9 +53,8 @@ class FileChooserWindow(Gtk.Window):
                 pub.sendMessage('READ_FROM_FILE', filename=filename)
             else:
                 pub.sendMessage('WRITE_TO_FILE', filename=filename)
-
-        elif response == Gtk.ResponseType.CANCEL:
-            print(_("Cancel clicked"))
+        # elif response == Gtk.ResponseType.CANCEL:
+        #     print(_("Cancel clicked"))
 
         dialog.destroy()
 
@@ -82,7 +81,7 @@ class FileChooserWindow(Gtk.Window):
         response = dialog.run()
         if response == Gtk.ResponseType.OK:
             print(_("Folder selected: %s") % dialog.get_filename())
-        elif response == Gtk.ResponseType.CANCEL:
-            print(_("Cancel clicked"))
+        # elif response == Gtk.ResponseType.CANCEL:
+        #     print(_("Cancel clicked"))
 
         dialog.destroy()
