@@ -34,21 +34,25 @@ class MenuBar(object):
         self.menu_cut = builder.get_object('cut')
         self.menu_paste = builder.get_object('paste')
         self.menu_undo = builder.get_object('undo')
+        self.menu_redo = builder.get_object('redo')
 
         self.menu_copy.connect('activate', self.on_menu_edit)
         self.menu_cut.connect('activate', self.on_menu_edit)
         self.menu_paste.connect('activate', self.on_menu_edit)
         self.menu_undo.connect('activate', self.on_undo)
+        self.menu_redo.connect('activate', self.on_undo)
 
         self.menu_copy.set_sensitive(False)
         self.menu_cut.set_sensitive(False)
         self.menu_paste.set_sensitive(False)
         self.menu_undo.set_sensitive(False)
+        self.menu_redo.set_sensitive(False)
 
         pub.subscribe(self.on_file_opened, 'FILE_OPENED')
         pub.subscribe(self.on_nothing_selected, 'NOTHING_SELECTED')
         pub.subscribe(self.on_selection_changed, 'SELECTION_CHANGED')
         pub.subscribe(self.on_undo_changed, 'UNDO_CHANGED')
+        pub.subscribe(self.on_redo_changed, 'REDO_CHANGED')
 
     def on_menu_file(self, item):
         name = Gtk.Buildable.get_name(item).upper()
@@ -79,5 +83,10 @@ class MenuBar(object):
         # enable undo only if the undo-stack is not empty
         self.menu_undo.set_sensitive(undo)
 
+    def on_redo_changed(self, redo=False):
+        # enable redo only if the redo-stack is not empty
+        self.menu_redo.set_sensitive(redo)
+
     def on_undo(self, button):
-        pub.sendMessage('UNDO')
+        name = Gtk.Buildable.get_name(button)
+        pub.sendMessage(name.upper())

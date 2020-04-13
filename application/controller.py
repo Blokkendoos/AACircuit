@@ -37,8 +37,11 @@ class Controller(object):
         self.components = ComponentLibrary()
         self.symbol = Symbol()
 
-        # last cut/pasted symbol(s)
-        self.last_action = []
+        # action stack with the last cut/pasted symbol(s)
+        self.latest_action = []
+
+        # redo stack that contains the last undone actions
+        self.undone_action = []
 
         # all objects on the grid
         self.objects = []
@@ -75,6 +78,7 @@ class Controller(object):
         pub.subscribe(self.on_paste_text, 'PASTE_TEXT')
         pub.subscribe(self.on_paste_text, 'PASTE_TEXTBLOCK')
         pub.subscribe(self.on_undo, 'UNDO')
+        pub.subscribe(self.on_redo, 'REDO')
 
         pub.subscribe(self.on_select_rect, 'SELECT_RECT')
         pub.subscribe(self.on_select_objects, 'SELECT_OBJECTS')
@@ -103,7 +107,7 @@ class Controller(object):
     def show_all(self):
         self.gui.show_all()
 
-    def on_undo(self):
+    def revert_action(self, stack):
 
         def cut_symbol():
             self.remove_from_objects(symbol)
@@ -113,27 +117,59 @@ class Controller(object):
             self.objects.append(symbol)
             symbol.paste(self.grid)
 
-        if len(self.last_action) > 0:
+        action = None
+        if len(stack) > 0:
 
-            action, symbol = self.last_action.pop()
+            action, symbol = stack.pop()
 
+            # revert action
             if action == REMOVE:
                 paste_symbol()
+                action = INSERT
 
             elif action == INSERT:
                 cut_symbol()
+                action = REMOVE
 
-        if len(self.last_action) < 1:
+        return symbol, action
+
+    def on_undo(self):
+
+        if len(self.latest_action) > 0:
+            symbol, action = self.revert_action(self.latest_action)
+            if action:
+                self.push_undone(symbol, action)
+
+        if len(self.latest_action) < 1:
             # there are no more actions to undo
             pub.sendMessage('UNDO_CHANGED', undo=False)
 
-    def push_undo_paste(self, symbol, action=INSERT):
+    def on_redo(self):
+
+        if len(self.undone_action) > 0:
+            symbol, action = self.revert_action(self.undone_action)
+            if action:
+                self.push_latest_action(symbol, action)
+
+        if len(self.undone_action) < 1:
+            # there are no more actions to redo
+            pub.sendMessage('REDO_CHANGED', redo=False)
+
+    def push_latest_action(self, symbol, action=INSERT):
         """Add a cut or paste action to the undo stack."""
 
         act = Action(action=action, symbol=symbol)
-        self.last_action.append(act)
+        self.latest_action.append(act)
 
         pub.sendMessage('UNDO_CHANGED', undo=True)
+
+    def push_undone(self, symbol, action):
+        """Add an undone action to the redo stack."""
+
+        act = Action(action=action, symbol=symbol)
+        self.undone_action.append(act)
+
+        pub.sendMessage('REDO_CHANGED', redo=True)
 
     # File menu
 
@@ -187,7 +223,7 @@ class Controller(object):
             sel.symbol.remove(self.grid)
             self.remove_from_objects(sel.symbol)
 
-        self.last_action += action
+        self.latest_action += action
 
         pub.sendMessage('UNDO_CHANGED', undo=True)
         pub.sendMessage('NOTHING_SELECTED')
@@ -204,30 +240,24 @@ class Controller(object):
         symbol = Column(col, action)
         self.objects.append(symbol)
 
-        act = Action(action=action, symbol=symbol)
-        self.last_action.append(act)
-
         if action == INSERT:
             self.grid.insert_col(col)
         else:
             self.grid.remove_col(col)
 
-        self.push_undo_paste(symbol, action)
+        self.push_latest_action(symbol, action)
 
     def on_grid_row(self, row, action):
 
         symbol = Row(row, action)
         self.objects.append(symbol)
 
-        act = Action(action=action, symbol=symbol)
-        self.last_action.append(act)
-
         if action == INSERT:
             self.grid.insert_row(row)
         else:
             self.grid.remove_row(row)
 
-        self.push_undo_paste(symbol, action)
+        self.push_latest_action(symbol, action)
 
     # character/component symbol
 
@@ -258,12 +288,10 @@ class Controller(object):
         symbol = self.symbol.copy()
         symbol.startpos = pos
 
-        act = Action(action=INSERT, symbol=symbol)
-        self.last_action.append(act)
-
         self.objects.append(symbol)
         symbol.paste(self.grid)
-        self.push_undo_paste(symbol)
+
+        self.push_latest_action(symbol)
 
         pub.sendMessage('UNDO_CHANGED', undo=True)
 
@@ -272,12 +300,10 @@ class Controller(object):
         symbol = self.symbol.copy()
         symbol.startpos = pos
 
-        act = Action(action=INSERT, symbol=symbol)
-        self.last_action.append(act)
-
         self.objects.append(symbol)
         symbol.paste(self.grid)
-        self.push_undo_paste(symbol)
+
+        self.push_latest_action(symbol)
 
         pub.sendMessage('UNDO_CHANGED', undo=True)
 
@@ -287,7 +313,8 @@ class Controller(object):
 
         self.objects.append(self.symbol)
         self.symbol.paste(self.grid)
-        self.push_undo_paste(self.symbol)
+
+        self.push_latest_action(self.symbol)
 
         pub.sendMessage('UNDO_CHANGED', undo=True)
 
@@ -321,7 +348,7 @@ class Controller(object):
 
             symbol.paste(self.grid)
 
-        self.last_action += action
+        self.latest_action += action
 
         pub.sendMessage('NOTHING_SELECTED')
         pub.sendMessage('UNDO_CHANGED', undo=True)
@@ -342,7 +369,7 @@ class Controller(object):
 
             self.grid.erase_rect(rect)
 
-        self.last_action += action
+        self.latest_action += action
 
         pub.sendMessage('NOTHING_SELECTED')
         pub.sendMessage('UNDO_CHANGED', undo=True)
@@ -353,25 +380,25 @@ class Controller(object):
         self.symbol = Line(startpos, endpos, type)
         self.objects.append(self.symbol)
         self.symbol.paste(self.grid)
-        self.push_undo_paste(self.symbol)
+        self.push_latest_action(self.symbol)
 
     def on_paste_dir_line(self, startpos, endpos):
         self.symbol = DirLine(startpos, endpos)
         self.objects.append(self.symbol)
         self.symbol.paste(self.grid)
-        self.push_undo_paste(self.symbol)
+        self.push_latest_action(self.symbol)
 
     def on_paste_mag_line(self, startpos, endpos, ml_endpos):
         self.symbol = MagLine(startpos, endpos, ml_endpos)
         self.objects.append(self.symbol)
         self.symbol.paste(self.grid)
-        self.push_undo_paste(self.symbol)
+        self.push_latest_action(self.symbol)
 
     def on_paste_rect(self, startpos, endpos):
         self.symbol = Rect(startpos, endpos)
         self.objects.append(self.symbol)
         self.symbol.paste(self.grid)
-        self.push_undo_paste(self.symbol)
+        self.push_latest_action(self.symbol)
 
     # clipboard
 
@@ -379,7 +406,10 @@ class Controller(object):
         self.grid.copy_to_clipboard()
 
     def on_paste_from_clipboard(self):
-
+        """
+        Copy the content of the clipboard to the grid.
+        ASCII lines, terminated by CR, are interpreted as rows.
+        """
         selected = []
         pos = Pos(0, 0)
         relative_pos = Pos(0, 0)
