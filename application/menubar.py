@@ -33,22 +33,20 @@ class MenuBar(object):
         self.menu_copy = builder.get_object('copy')
         self.menu_cut = builder.get_object('cut')
         self.menu_paste = builder.get_object('paste')
-        self.menu_delete = builder.get_object('delete')
         self.menu_undo = builder.get_object('undo')
 
         self.menu_copy.connect('activate', self.on_menu_edit)
         self.menu_cut.connect('activate', self.on_menu_edit)
         self.menu_paste.connect('activate', self.on_menu_edit)
-        self.menu_delete.connect('activate', self.on_menu_edit)
         self.menu_undo.connect('activate', self.on_undo)
 
         self.menu_copy.set_sensitive(False)
         self.menu_cut.set_sensitive(False)
         self.menu_paste.set_sensitive(False)
-        self.menu_delete.set_sensitive(False)
         self.menu_undo.set_sensitive(False)
 
         pub.subscribe(self.on_file_opened, 'FILE_OPENED')
+        pub.subscribe(self.on_nothing_selected, 'NOTHING_SELECTED')
         pub.subscribe(self.on_selection_changed, 'SELECTION_CHANGED')
         pub.subscribe(self.on_undo_changed, 'UNDO_CHANGED')
 
