@@ -6,6 +6,7 @@ AACircuit
 import copy
 import json
 from bresenham import bresenham
+from math import pi, radians, atan
 
 from application import _
 from application.pos import Pos
@@ -414,7 +415,7 @@ class Line(Symbol):
 
 
 class DirLine(Line):
-    """A straigth line from start to end position."""
+    """A straight line from start to end position."""
 
     def __init__(self, startpos, endpos):
 
@@ -422,10 +423,40 @@ class DirLine(Line):
 
     def _representation(self):
 
+        x, y = (self._endpos - self._startpos).xy
+
+        # TODO better represenation of straight line (using ASCII chars)?
+
+        if abs(x) > 0:
+            angle = atan(y / x)
+        else:
+            angle = pi / 2
+
+        if angle < radians(-75):
+            linechar = '|'
+        if angle >= radians(-75) and angle <= radians(-52):
+            linechar = '.'
+        elif angle > radians(-52) and angle <= radians(-37):
+            linechar = '/'
+        elif angle > radians(-37) and angle <= radians(-15):
+            linechar = '.'
+        elif angle > radians(-15) and angle <= radians(15):
+            linechar = '-'
+        elif angle > radians(15) and angle <= radians(37):
+            linechar = '.'
+        elif angle > radians(37) and angle <= radians(52):
+            linechar = '\\'
+        elif angle > radians(52) and angle <= radians(75):
+            linechar = '.'
+        elif angle > radians(75):
+            linechar = '|'
+        else:
+            linechar = '?'
+
         repr = dict()
 
         line = bresenham(self._startpos.x, self._startpos.y, self._endpos.x, self._endpos.y)
-        linechar = "."
+
         for coord in line:
             pos = Pos(coord[0], coord[1])
             repr[pos] = linechar
