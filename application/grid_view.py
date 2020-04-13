@@ -377,6 +377,7 @@ class GridView(Gtk.Frame):
                     self._selection.startpos = self._hover_pos
                 else:
                     self._selection.startpos = self._drag_startpos
+
                 self._selection.endpos = self._drag_currentpos
                 self._selection.maxpos = self.max_pos_grid
                 self._selection.direction = self._drag_dir
@@ -483,21 +484,20 @@ class GridView(Gtk.Frame):
 
     def selected_chosen(self, event):
 
+        pos = self._hover_pos + Pos(0, -1)
+        pos = pos.grid_rc()
+
         if self._selection.item == CHARACTER:
-            # https://stackoverflow.com/questions/6616270/right-click-menu-context-menu-using-pygtk
             button = event.button
             if button == 1:
-                # left button
-                pos = self._hover_pos + Pos(0, -1)
-                pub.sendMessage('PASTE_CHARACTER', pos=pos.grid_rc())
+                pub.sendMessage('PASTE_CHARACTER', pos=pos)
 
         elif self._selection.item == COMPONENT:
             # https://stackoverflow.com/questions/6616270/right-click-menu-context-menu-using-pygtk
             button = event.button
             if button == 1:
                 # left button
-                pos = self._hover_pos + Pos(0, -1)
-                pub.sendMessage('PASTE_SYMBOL', pos=pos.grid_rc())
+                pub.sendMessage('PASTE_SYMBOL', pos=pos)
             elif button == 3:
                 # right button
                 pub.sendMessage('ROTATE_SYMBOL')
@@ -505,9 +505,7 @@ class GridView(Gtk.Frame):
         elif self._selection.item == OBJECTS:
             button = event.button
             if button == 1:
-                # left button
-                pos = self._hover_pos + Pos(0, -1)
-                pub.sendMessage('PASTE_OBJECTS', pos=pos.grid_rc())
+                pub.sendMessage('PASTE_OBJECTS', pos=pos)
 
     def selecting_chosen(self, pos):
 
