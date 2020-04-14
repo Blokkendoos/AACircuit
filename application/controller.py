@@ -36,27 +36,15 @@ class Controller(object):
 
         self.components = ComponentLibrary()
         self.symbol = Symbol()
-
-        # action stack with the last cut/pasted symbol(s)
-        self.latest_action = []
-
-        # redo stack that contains the last undone actions
-        self.undone_action = []
-
-        # all objects on the grid
-        self.objects = []
-
-        self.selected_objects = []
+        self.init_stack()
 
         all_components = [key for key in self.components.get_dict()]
         if self.components.nr_libraries() == 1:
-            print(_("One library loaded, total number of components: {0}").format(self.components.nr_components()))
+            msg = _("One library loaded, total number of components: {0}").format(self.components.nr_components())
         else:
-            print(_("{0} libraries loaded, total number of components: {1}").format(self.components.nr_libraries(),
-                                                                                    self.components.nr_components()))
-        # messages
-
-        # all_components.sort()
+            msg = _("{0} libraries loaded, total number of components: {1}").format(self.components.nr_libraries(),
+                                                                                    self.components.nr_components())
+        pub.sendMessage('STATUS_MESSAGE', msg=msg)
         pub.sendMessage('ALL_COMPONENTS', list=all_components)
         pub.sendMessage('GRID', grid=self.grid)
 
@@ -105,6 +93,18 @@ class Controller(object):
         pub.subscribe(self.on_write_to_file, 'WRITE_TO_FILE')
 
         pub.subscribe(self.on_load_ascii_from_file, 'LOAD_ASCII_FROM_FILE')
+
+    def init_stack(self):
+        # action stack with the last cut/pasted symbol(s)
+        self.latest_action = []
+
+        # redo stack that contains the last undone actions
+        self.undone_action = []
+
+        # all objects on the grid
+        self.objects = []
+
+        self.selected_objects = []
 
     def show_all(self):
         self.gui.show_all()
@@ -176,8 +176,12 @@ class Controller(object):
     # File menu
 
     def on_new(self):
+        self.init_stack()
+
         self.grid = Grid(72, 36)
         pub.sendMessage('GRID', grid=self.grid)
+
+        pub.sendMessage('NOTHING_SELECTED')
 
     def on_open(self):
         dialog = FileChooserWindow(open=True)  # noqa: F841
@@ -481,8 +485,13 @@ class Controller(object):
             fout.write(str)
 
             fout.close()
+
+            msg = _("Schema has been saved in: %s" % filename)
+            pub.sendMessage('STATUS_MESSAGE', msg=msg)
+
         except IOError:
-            print(_("Unable to open file for writing: %s" % filename))
+            msg = _("Unable to open file for writing: %s" % filename)
+            pub.sendMessage('STATUS_MESSAGE', msg=msg)
 
     def on_read_from_file(self, filename):
         self.filename = filename
@@ -490,25 +499,36 @@ class Controller(object):
             file = open(filename, 'r')
             str = file.readlines()
 
+            self.init_stack()
+
             memo = []
             for line in str:
                 memo.append(line)
 
-            pub.sendMessage('FILE_OPENED')
-
             file.close()
 
-            self.grid = Grid(72, 36)  # the ASCII grid
+            # start with a fresh grid
+            self.grid = Grid(72, 36)
             pub.sendMessage('GRID', grid=self.grid)
 
             skipped = self.play_memo(memo)
+
             if skipped > 0:
-                print("{0} lines skipped in file {1}".format(skipped, filename))
+                msg = _("{0} lines skipped in {1}".format(skipped, filename))
+            else:
+                msg = "%s" % filename
+
+            pub.sendMessage('STATUS_MESSAGE', msg=msg)
+
+            pub.sendMessage('FILE_OPENED')
 
         except (IOError, UnicodeDecodeError):
-            print(_("Unable to open file for reading: %s" % filename))
+            msg = _("Unable to open file for reading: %s" % filename)
+            pub.sendMessage('STATUS_MESSAGE', msg=msg)
 
     def play_memo(self, memo):
+
+        skipped = 0
 
         for item in memo:
 
@@ -516,25 +536,24 @@ class Controller(object):
             m2 = re.search('(^d|^i)(row|col):(\d+)', item)  # noqa W605
             m3 = re.search('(^text):(\d+),(\d+),(.*)', item)  # noqa W605
 
-            skipped = 0
-
             if m1 is not None:
-                self.play_m1(m1, skipped)
+                skipped += self.play_m1(m1)
             elif m2 is not None:
-                self.play_m2(m2, skipped)
+                skipped += self.play_m2(m2)
             elif m3 is not None:
-                self.play_m3(m3, skipped)
+                skipped += self.play_m3(m3)
             else:
                 skipped += 1
 
         return skipped
 
-    def play_m1(self, m, skipped):
+    def play_m1(self, m):
 
         # print("regexp groups:")
         # for grp in m.groups():
         #     print(grp)
 
+        skip = 0
         type = m.group(1)
 
         if type == COMPONENT:
@@ -611,10 +630,13 @@ class Controller(object):
             self.on_paste_rect(startpos, endpos)
 
         else:
-            skipped += 1
+            skip = 1
 
-    def play_m2(self, m, skipped):
+        return skip
 
+    def play_m2(self, m):
+
+        skip = 0
         type = m.group(1)
 
         if type == 'i':
@@ -632,10 +654,13 @@ class Controller(object):
             self.on_grid_row(nr, action)
 
         else:
-            skipped += 1
+            skip = 1
 
-    def play_m3(self, m, skipped):
+        return skip
 
+    def play_m3(self, m):
+
+        skip = 0
         type = m.group(1)
 
         if type == TEXT:
@@ -649,4 +674,6 @@ class Controller(object):
             self.on_paste_text(startpos, text)
 
         else:
-            skipped += 1
+            skip = 1
+
+        return skip

@@ -59,7 +59,7 @@ class MenuBar(object):
         pub.sendMessage(name)
 
     def on_file_opened(self):
-        # only when a file is opened, enable 'save' in the File menu
+        # enable 'save' in the File menu when a file has been opened
         self.menu_save.set_sensitive(True)
 
     def on_menu_edit(self, item):

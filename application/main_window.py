@@ -76,6 +76,7 @@ class MainWindow(Gtk.Window):
         # statusbar
         self.label_xpos = self.builder.get_object('x_pos')
         self.label_ypos = self.builder.get_object('y_pos')
+        self.msg = self.builder.get_object('statusbar1')
 
         self.builder.connect_signals(self)
 
@@ -189,8 +190,9 @@ class MainWindow(Gtk.Window):
         # subscriptions
 
         pub.subscribe(self.on_pointer_moved, 'POINTER_MOVED')
-        pub.subscribe(self.on_symbol_selected, 'SYMBOL_SELECTED')
+        pub.subscribe(self.on_message, 'STATUS_MESSAGE')
 
+        pub.subscribe(self.on_symbol_selected, 'SYMBOL_SELECTED')
         pub.subscribe(self.on_paste_symbol, 'PASTE_SYMBOL')
         pub.subscribe(self.on_nothing_selected, 'NOTHING_SELECTED')
 
@@ -218,6 +220,11 @@ class MainWindow(Gtk.Window):
         # grid indexing starts at zero, show +1
         self.label_xpos.set_text(format(pos.x + 1))
         self.label_ypos.set_text(format(pos.y + 1))
+
+    def on_message(self, msg):
+        """Add message to statusbar."""
+        id = self.msg.get_context_id(msg)
+        self.msg.push(id, msg)
 
     def on_paste_symbol(self, pos):
         self.on_nothing_selected()

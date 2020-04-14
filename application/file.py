@@ -59,15 +59,20 @@ class FileChooserWindow(Gtk.Window):
             pub.sendMessage('WRITE_TO_FILE', filename=self.filename)
 
     def add_filters(self, dialog):
-        filter_any = Gtk.FileFilter()
-        filter_any.set_name(_("AAC files"))
-        filter_any.add_pattern('*.aac')
-        dialog.add_filter(filter_any)
+        filter_aac = Gtk.FileFilter()
+        filter_aac.set_name(_("AAC files"))
+        filter_aac.add_pattern('*.aac')
+        dialog.add_filter(filter_aac)
 
         filter_text = Gtk.FileFilter()
         filter_text.set_name(_("Text files"))
         filter_text.add_mime_type('text/plain')
         dialog.add_filter(filter_text)
+
+        filter_any = Gtk.FileFilter()
+        filter_any.set_name(_("All files"))
+        filter_any.add_pattern('*')
+        dialog.add_filter(filter_any)
 
     def on_folder_clicked(self, widget):
         dialog = Gtk.FileChooserDialog(_("Please choose a folder"), self,
@@ -80,7 +85,8 @@ class FileChooserWindow(Gtk.Window):
 
         response = dialog.run()
         if response == Gtk.ResponseType.OK:
-            print(_("Folder selected: %s") % dialog.get_filename())
+            msg = _("Folder selected: %s") % dialog.get_filename()
+            pub.sendMessage('STATUS_MESSAGE', msg=msg)
 
         dialog.destroy()
 
@@ -98,3 +104,8 @@ class AsciiFileChooserWindow(FileChooserWindow):
         filter_text.set_name(_("Text files"))
         filter_text.add_mime_type('text/plain')
         dialog.add_filter(filter_text)
+
+        filter_any = Gtk.FileFilter()
+        filter_any.set_name(_("All files"))
+        filter_any.add_pattern('*')
+        dialog.add_filter(filter_any)
