@@ -297,7 +297,8 @@ class Text(Symbol):
             x = pos.x
             for char in line:
                 x += 1
-                grid.set_cell(Pos(x, y), char)
+                if char != ' ':
+                    grid.set_cell(Pos(x, y), char)
             y += 1  # TODO check boundary?
 
     def remove(self, grid):
