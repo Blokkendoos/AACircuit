@@ -21,11 +21,13 @@ class MenuBar(object):
         menu_open = builder.get_object('open_file')
         self.menu_save = builder.get_object('save_file')
         self.menu_save_as = builder.get_object('save_as_file')
+        self.menu_print_file = builder.get_object('print_file')
 
         menu_new.connect('activate', self.on_menu_file)
         menu_open.connect('activate', self.on_menu_file)
         self.menu_save.connect('activate', self.on_menu_file)
         self.menu_save_as.connect('activate', self.on_menu_file)
+        self.menu_print_file.connect('activate', self.on_menu_file)
 
         self.menu_save.set_sensitive(False)
 
@@ -59,7 +61,7 @@ class MenuBar(object):
         pub.sendMessage(name)
 
     def on_file_opened(self):
-        # enable 'save' in the File menu when a file has been opened
+        # enable File menu 'save' when a file has been opened
         self.menu_save.set_sensitive(True)
 
     def on_menu_edit(self, item):

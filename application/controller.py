@@ -84,6 +84,7 @@ class Controller(object):
         pub.subscribe(self.on_open, 'OPEN_FILE')
         pub.subscribe(self.on_save, 'SAVE_FILE')
         pub.subscribe(self.on_save_as, 'SAVE_AS_FILE')
+        pub.subscribe(self.on_print_file, 'PRINT_FILE')
 
         pub.subscribe(self.on_cut, 'CUT')
         pub.subscribe(self.on_copy, 'COPY')
@@ -192,6 +193,10 @@ class Controller(object):
 
     def on_save_as(self):
         dialog = FileChooserWindow()  # noqa: F841
+
+    def on_print_file(self):
+        print("Not yet implemented")
+        return
 
     # Edit menu
 
