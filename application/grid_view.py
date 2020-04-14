@@ -554,7 +554,9 @@ class GridView(Gtk.Frame):
 
     def on_drag_begin(self, widget, x_start, y_start):
 
-        if self._selection.state != IDLE:
+        if self._selection.state == IDLE and self._selection.item in (DRAW_RECT, RECT, LINE, MAG_LINE, DIR_LINE):
+            None
+        else:
             return
 
         pos = Pos(x_start, y_start)
@@ -576,7 +578,9 @@ class GridView(Gtk.Frame):
 
     def on_drag_end(self, widget, x_offset, y_offset):
 
-        if self._selection.state != SELECTING:
+        if self._selection.state == SELECTING and self._selection.item in (DRAW_RECT, RECT, LINE, MAG_LINE, DIR_LINE):
+            None
+        else:
             return
 
         offset = Pos(x_offset, y_offset)
