@@ -17,7 +17,11 @@ from application.pos import Pos
 from application.symbol import Symbol, Character, Text, Line, MagLine, DirLine, Rect, Row, Column
 from application.main_window import MainWindow
 from application.component_library import ComponentLibrary
-from application.file import FileChooserWindow, AsciiFileChooserWindow
+from application.file import FileChooserWindow, AsciiFileChooserWindow, PrintOperation
+
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk, GLib  # noqa: E402
 
 
 SelectedObjects = collections.namedtuple('selection', ['startpos', 'symbol', 'view'])
@@ -195,8 +199,8 @@ class Controller(object):
         dialog = FileChooserWindow()  # noqa: F841
 
     def on_print_file(self):
-        print("Not yet implemented")
-        return
+        dialog = PrintOperation(self.gui)  # noqa: F841
+        dialog.run()
 
     # Edit menu
 

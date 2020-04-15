@@ -109,6 +109,10 @@ class GridView(Gtk.Frame):
 
         pub.subscribe(self.on_draw_rect, 'DRAW_RECT')
 
+        # printing
+        pub.subscribe(self.on_begin_print, 'BEGIN_PRINT')
+        pub.subscribe(self.on_draw_page, 'DRAW_PAGE')
+
     def set_grid(self, grid):
         self._grid = grid
         self.set_viewport_size()
@@ -172,6 +176,35 @@ class GridView(Gtk.Frame):
         else:
             print(_("Invalid surface"))
         return False
+
+    # printing
+
+    # def on_begin_print(self, operation, print_ctx, print_data):
+    def on_begin_print(self, parms):
+        operation, print_ctx = parms
+
+        operation.set_n_pages(1)
+
+    # def on_draw_page(self, operation, print_ctx, page_num, print_data):
+    def on_draw_page(self, parms):
+        operation, print_ctx, page_num = parms
+
+        ctx = print_ctx.get_cairo_context()
+        w = print_ctx.get_width()
+        h = print_ctx.get_height()
+
+        ctx.set_source_rgb(0.75, 0.75, 0.75)
+        ctx.set_line_width(0.25)
+
+        ctx.rectangle(w*0.1, h*0.1, w*0.8, h*0.8)  # noqa E226
+        ctx.stroke()
+
+        self.draw_content(ctx)
+
+        # msg = "Finished..."
+        # pub.sendMessage('STATUS_MESSAGE', msg=msg)
+
+    # drawing
 
     def do_drawing(self, ctx):
         self.draw_background(ctx)

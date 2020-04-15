@@ -283,7 +283,7 @@ class MainWindow(Gtk.Window):
 
     def on_close_clicked(self, button):
         print(_("Closing application"))
-        Gtk.main_quit()
+        self.destroy()
 
     def on_select_rect(self, button):
         pub.sendMessage('SELECT_RECT')

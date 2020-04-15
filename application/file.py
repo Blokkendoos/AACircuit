@@ -109,3 +109,42 @@ class AsciiFileChooserWindow(FileChooserWindow):
         filter_any.set_name(_("All files"))
         filter_any.add_pattern('*')
         dialog.add_filter(filter_any)
+
+
+class PrintOperation(object):
+
+    settings = Gtk.PrintSettings()
+
+    def __init__(self, parent):
+
+        # https://askubuntu.com/questions/220350/how-to-add-a-print-dialog-to-an-application
+        # https://stackoverflow.com/questions/28325525/python-gtk-printoperation-print-a-pdf
+
+        self.parent = parent
+        self.printop = Gtk.PrintOperation()
+
+        self.printop.set_embed_page_setup(True)
+        self.printop.set_print_settings(self.settings)
+
+        self.printop.connect('begin-print', self.on_begin_print)
+        self.printop.connect('draw-page', self.on_draw_page)
+        # self.printop.connect('end-print', self.on_end_print)
+
+    def run(self):
+
+        result = self.printop.run(Gtk.PrintOperationAction.PRINT_DIALOG,
+                                  self.parent)
+
+        if result == Gtk.PrintOperationResult.ERROR:
+            print(self.printop.get_error())
+
+        elif result == Gtk.PrintOperationResult.APPLY:
+            self.settings = self.printop.get_print_settings()
+
+    def on_begin_print(self, operation, print_ctx):
+        parms = (operation, print_ctx)
+        pub.sendMessage('BEGIN_PRINT', parms=parms)
+
+    def on_draw_page(self, operation, print_ctx, page_num):
+        parms = (operation, print_ctx, page_num)
+        pub.sendMessage('DRAW_PAGE', parms=parms)
