@@ -321,7 +321,7 @@ class Line(Symbol):
         super(Line, self).__init__(id=type, startpos=startpos, endpos=endpos)
 
         if type is None:
-            self._type = '0'
+            self._type = 0
         else:
             self._type = type
         self._terminal = TERMINAL_TYPE[self._type]
@@ -540,7 +540,7 @@ class Rect(Symbol):
 
         # print("ul:", ul, " ur:", ur, "\nbl:", bl, "br:", br)
 
-        type = '3'
+        type = 3
 
         line1 = Line(ul, ur, type)
         line2 = Line(ur, br, type)
@@ -592,7 +592,7 @@ class Rect(Symbol):
 
         # print("ul:", ul, " ur:", ur, "\nbl:", bl, "br:", br)
 
-        type = '3'
+        type = 3
 
         line1 = Line(ul, ur, type)
         line2 = Line(ur, br, type)
@@ -614,7 +614,7 @@ class Rect(Symbol):
         bl = Pos(start.x, end.y)
         br = end
 
-        type = '3'
+        type = 3
 
         line1 = Line(ul, ur, type)
         line2 = Line(ur, br, type)

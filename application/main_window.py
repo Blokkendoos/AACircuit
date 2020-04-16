@@ -120,7 +120,7 @@ class MainWindow(Gtk.Window):
         self.btn_line3 = self.builder.get_object('draw_line3')
         self.btn_line4 = self.builder.get_object('draw_line4')
 
-        self.btn_mag_line.connect('pressed', self.on_line)
+        self.btn_mag_line.connect('pressed', self.on_mag_line)
         self.btn_line0.connect('pressed', self.on_line)
         self.btn_line1.connect('pressed', self.on_line)
         self.btn_line2.connect('pressed', self.on_line)
@@ -256,9 +256,12 @@ class MainWindow(Gtk.Window):
 
     def on_line(self, button):
         name = Gtk.Buildable.get_name(button)
-        type = name[-1]
-        # DRAW_LINEx, DRAW_MAG_LINE
+        type = int(name[-1])
+        # DRAW_LINEx
         pub.sendMessage(name.upper(), type=type)
+
+    def on_mag_line(self, button):
+        pub.sendMessage('DRAW_MAG_LINE')
 
     def on_rect(self, button):
         pub.sendMessage('DRAW_RECT')

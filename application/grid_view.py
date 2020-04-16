@@ -264,7 +264,7 @@ class GridView(Gtk.Frame):
 
     # LINES
 
-    def on_draw_mag_line(self, type):
+    def on_draw_mag_line(self):
         self._selection = SelectionMagicLine()
 
     def on_draw_dir_line(self, type):

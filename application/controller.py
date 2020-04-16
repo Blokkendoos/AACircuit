@@ -595,7 +595,7 @@ class Controller(object):
 
         elif type == LINE:
 
-            terminal = m.group(2)
+            terminal = int(m.group(2))
 
             x, y = m.group(3, 4)
             startpos = Pos(x, y)
