@@ -5,14 +5,16 @@ AACircuit
 
 import copy
 import json
+import collections
 from bresenham import bresenham
 from math import pi, radians, atan
 
 from application import _
 from application.pos import Pos
 from application import INSERT, COL, ROW
-from application import HORIZONTAL, VERTICAL
-from application import LINE_HOR, LINE_VERT, TERMINAL_TYPE, ML_BEND_CHAR, JUMP_CHAR
+from application import HORIZONTAL, VERTICAL, LONGEST_FIRST
+from application import LINE_HOR, LINE_VERT, ML_BEND_CHAR, JUMP_CHAR
+from application import TERMINAL_TYPE, TERMINAL2, TERMINAL3, TERMINAL4
 from application import COMPONENT, CHARACTER, TEXT, DRAW_RECT, LINE, MAG_LINE, DIR_LINE
 from application.symbol_view import ComponentView, ObjectView
 
@@ -477,6 +479,52 @@ class DirLine(Line):
 class MagLine(Line):
     """A square bend from start to end position."""
 
+    # TODO move to preferences
+
+    LineMatchingData = collections.namedtuple('line_matching_data', ['pattern', 'ori', 'char'])
+
+    LMD = []
+    LMD.append(LineMatchingData(
+        [[' ', ' ', ' '],
+         [' ', ' ', ' '],
+         [' ', ' ', ' ']], 2, 'o'))
+    LMD.append(LineMatchingData(
+        [['x', 'x', 'x'],
+         ['-', 'x', '-'],
+         ['x', 'x', 'x']], 1, 'o'))
+    LMD.append(LineMatchingData(
+        [['x', '|', 'x'],
+         ['x', 'x', 'x'],
+         ['x', '|', 'x']], 0, 'o'))
+    LMD.append(LineMatchingData(
+        [['x', 'x', 'x'],
+         ['x', 'x', '-'],
+         ['x', 'x', 'x']], 0, '-'))
+    LMD.append(LineMatchingData(
+        [['x', 'x', 'x'],
+         ['-', 'x', 'x'],
+         ['x', 'x', 'x']], 0, '-'))
+    LMD.append(LineMatchingData(
+        [['x', 'x', 'x'],
+         ['x', 'x', 'x'],
+         [' ', '|', ' ']], 1, '|'))
+    LMD.append(LineMatchingData(
+        [[' ', '|', ' '],
+         ['x', 'x', 'x'],
+         ['x', 'x', 'x']], 1, '|'))
+    LMD.append(LineMatchingData(
+        [['x', 'x', 'x'],
+         ['x', 'x', 'x'],
+         ['x', '|', 'x']], 0, '.'))
+    LMD.append(LineMatchingData(
+        [['x', '|', 'x'],
+         ['x', 'x', 'x'],
+         ['x', 'x', 'x']], 0, "'"))
+    LMD.append(LineMatchingData(
+        [['x', 'x', 'x'],
+         ['x', '|', 'x'],
+         ['x', 'x', 'x']], 1, '|'))
+
     def __init__(self, startpos, endpos, ml_endpos):
 
         # declare before super init as this is used in the representation method (called in super init)
@@ -502,6 +550,152 @@ class MagLine(Line):
         repr.update(repr2)
 
         self._repr = repr
+
+    def _line_match(self, idx, ori, pos):
+        """
+        Match a character in the grid against a Magic Line pattern.
+
+        :param ori: search direction
+        :param pos: character position (col, row) coordinates
+        :param idx: number of the line matching pattern to be used
+
+        :return result: True if a match was found, otherwise False
+        :return ori: magic line orientation
+        :return char: corner character
+
+        """
+        lmd = self.LMD[idx]
+
+        result = True
+        m_ori = None
+        m_char = None
+
+        if pos > Pos(0, 0) and (ori is None or ori == lmd.ori):
+
+            for row in lmd.pattern:
+                for i, char in row.items():
+                    if char != 'x':
+                        m_pos = pos + Pos(i, i)
+                        m_cell = cell(d_pos)  # FIXME grid.cell() method
+
+                        if m_cell == chr(0):  # FIXME x00 and x32 (space)
+                            m_cell = chr(32)
+
+                        if m_cell != char:
+                            result = False
+                            break
+            if result:
+                m_ori = lmd[idx].ori
+                m_char = lmd[idx].char
+
+        else:
+            result = False
+
+        return result, m_ori, m_char
+
+    def _presentation2(self, startpos, endpos):
+
+        dx = abs(endpos.x - startpos.x)
+        dy = abs(endpos.y - startpos.y)
+
+        f_ori = None
+        f_terminal = None
+
+        # determine the terminal of the first line
+        for i in range(len(self.LMD)):
+            match, f_ori, f_terminal = self._line_match(i, f_ori, startpos)
+            if match:
+                # TODO put f_terminal at startpos
+                None
+
+        # determine the orientation of the first line
+        if f_ori == LONGEST_FIRST:
+            if dx > dy:
+                f_ori = HORIZONTAL
+            else:
+                f_ori = VERTICAL
+
+        # TODO statusmessage
+        # MainForm.SBar.Panels[5].Text:='Start: D['+inttostr(index)+'] car:'+chr(se_c)+' dir.'+inttostr(dir);
+
+        # determine the orientation of the second line
+        if f_ori == HORIZONTAL:
+            if dy > 0:
+                s_ori = VERTICAL
+            else:
+                s_ori = HORIZONTAL
+        elif f_ori == VERTICAL:
+            if dx > 0:
+                s_ori = HORIZONTAL
+            else:
+                s_ori = HORIZONTAL
+
+        for i in range(len(self.LMD)):
+            match, m_ori, m_terminal = self._line_match(i, f_ori, endpos)
+            if match:
+                # TODO put m_terminal at endpos
+                None
+
+        # TODO statusmessage
+        # MainForm.SBar.Panels[6].Text:='End: D['+inttostr(index)+'] dir:'+inttostr(s_dir)+' char:'+chr(se_c);
+
+        self._cornerline(f_dir, startpos, endpos)
+
+    def _corner_line(self, ori, startpos, endpos):
+
+        dx = endpos.x - startpos.x
+        dy = endpos.y - startpos.y
+
+        if dy >= 0 ^ (ori != HORIZONTAL):
+            corner_char = ord("'")  # x39
+        else:
+            corner_char = ord('.')  # x49
+
+        if dx > 0:
+            startv = startpos.x
+            endv = endpos.x
+        else
+            startv = endpos.x
+            endv = startpos.x
+
+        if ori == HORIZONTAL:
+            top = startpos.y
+            left = endpos.x
+        elif ori == VERTICAL:
+            top = endpos.y
+            left = startpos.x
+
+        # horizontal part
+        if abs(dx) > 1:
+            for temp in range( startv +1 - endv - 1):  # FIXME
+                if cell(temp, top) == '|':  # x124
+                    p_char = ')'
+                else:
+                    p_char = '-'
+
+                # TODO paint/fill line char @ Pos(temp, top)
+
+        if dy > 0:
+            startv = startpos.y
+            endv = endpos.y
+        else:
+            startv = endpos.y
+            endv = startpos.y
+
+        # vertical part
+        if abs(dy) > 1:
+            for temp in range( startv+1 - endv - 1):  # FIXME
+                if cell(temp, top) == '-':  # x45
+                    p_char = ')'
+                else:
+                    p_char = '|'
+
+                # TODO paint/fill line char @ Pos(left, temp)
+
+        # corner character, if there is a corner
+        if (ori == HORIZONTAL and abs(dy) > 0) or (ori == VERTICAL and abs(dx) > 0 ):
+            # TODO paint/fill corner char @ Pos(left, top)
+            None
 
     @property
     def ml_endpos(self):
