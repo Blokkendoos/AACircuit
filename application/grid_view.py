@@ -199,6 +199,7 @@ class GridView(Gtk.Frame):
         ctx.rectangle(w*0.1, h*0.1, w*0.8, h*0.8)  # noqa E226
         ctx.stroke()
 
+        ctx.scale(0.5, 0.5)
         self.draw_content(ctx)
 
         # msg = "Finished..."
