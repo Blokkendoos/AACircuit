@@ -384,7 +384,7 @@ class GridView(Gtk.Frame):
         if self._selection.state == IDLE:
 
             if self._selection.item == RECT:
-                self.draw_selected_objects(ctx)
+                self.mark_all_objects(ctx)
 
         elif self._selection.state == SELECTING:
             self.draw_selecting_state(ctx)
@@ -403,14 +403,15 @@ class GridView(Gtk.Frame):
             self._selection.startpos = self._drag_startpos
             self._selection.endpos = self._drag_endpos
             self._selection.draw(ctx)
-            self.draw_selected_objects(ctx)
+            self.mark_all_objects(ctx)
 
         elif self._selection.item == OBJECTS:
-            self.draw_selected_objects(ctx, True)
+            self.mark_all_objects(ctx)
+            self.draw_selected_objects(ctx)
 
     def draw_selecting_state(self, ctx):
         if self._selection.item == OBJECTS:
-            self.draw_selected_objects(ctx)
+            self.mark_all_objects(ctx)
 
         elif self._selection.item in (TEXT, TEXT_BLOCK):
             self.draw_cursor(ctx)
@@ -436,7 +437,7 @@ class GridView(Gtk.Frame):
             self._selection.direction = self._drag_dir
 
             if self._selection.item == RECT:
-                self.draw_selected_objects(ctx)
+                self.mark_all_objects(ctx)
 
             if self._selection.item:
                 if self._selection.item == MAG_LINE:
@@ -478,13 +479,25 @@ class GridView(Gtk.Frame):
 
         return GLib.SOURCE_CONTINUE
 
-    def draw_selected_objects(self, ctx, follow_pointer=False):
-        """
-        Draw multiple objects selection.
+    def mark_all_objects(self, ctx):
+        """Mark all objects on the grid canvas."""
 
-        :param ctx: the Cairo context
-        :param follow_pointer: True: the shown symbols follow the cursor,
-        """
+        ctx.save()
+
+        for ref in self._objects:
+
+            ctx.set_source_rgb(1, 0, 0)
+            ctx.select_font_face("monospace", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+
+            pos = ref.startpos.view_xy()
+
+            ctx.move_to(pos.x, pos.y)
+            ctx.show_text(MARK_CHAR)  # mark the upper-left corner
+
+        ctx.restore()
+
+    def draw_selected_objects(self, ctx):
+        """Draw multiple objects selection."""
 
         ctx.save()
 
@@ -496,13 +509,8 @@ class GridView(Gtk.Frame):
             # offset between the current position and the ul position of the original selection rectangle
             offset = self._hover_pos - ref.startpos.view_xy()
 
-            pos = ref.startpos.view_xy()
-            if follow_pointer:
-                pos = ref.symbol.startpos.view_xy() + offset
-                ref.symbol.draw(ctx, pos)
-
-            ctx.move_to(pos.x, pos.y)
-            ctx.show_text(MARK_CHAR)  # mark the upper-left corner
+            pos = ref.symbol.startpos.view_xy() + offset
+            ref.symbol.draw(ctx, pos)
 
         ctx.restore()
 

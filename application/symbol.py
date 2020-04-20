@@ -129,6 +129,10 @@ class Symbol(object):
             ' (_) ']}
         return grid
 
+    @property
+    def repr(self):
+        return self._repr
+
     def memo(self):
         """Return entry for the actions as recorded in the memo."""
         str = "{0}:{1},{2},{3},{4}".format(COMPONENT, self._id, self._ori, self._mirrored, self._startpos)
@@ -399,6 +403,9 @@ class Line(Symbol):
         return self._type
 
     def paste(self, grid):
+
+        self._representation()
+
         first = True
         for pos, value in self._repr.items():
             # crossing lines
@@ -410,7 +417,7 @@ class Line(Symbol):
 
     def remove(self, grid):
         for pos, value in self._repr.items():
-            grid.set_cell(pos, ' ')
+            grid.set_cell(pos, ' ')  # TODO use CONSTANT
 
 
 class DirLine(Line):
@@ -419,6 +426,8 @@ class DirLine(Line):
     def __init__(self, startpos, endpos):
 
         super(DirLine, self).__init__(startpos=startpos, endpos=endpos)
+
+        self._representation()
 
     def _representation(self):
 
@@ -526,6 +535,8 @@ class MagLine(Line):
         self.cell = cell_callback
 
         super(MagLine, self).__init__(startpos=startpos, endpos=endpos)
+
+        self._representation()
 
     def _line_match(self, idx, search_dir, pos):
         """
@@ -696,7 +707,7 @@ class MagLine(Line):
     def copy(self):
         startpos = copy.deepcopy(self._startpos)
         endpos = copy.deepcopy(self._endpos)
-        return MagLine(startpos, endpos)
+        return MagLine(startpos, endpos, self.cell)
 
     def memo(self):
         str = "{0}:{1},{2},{3}".format(MAG_LINE, self._startpos, self._endpos)
@@ -727,13 +738,12 @@ class Rect(Symbol):
         line3 = Line(bl, br, type)
         line4 = Line(ul, bl, type)
 
-        repr = dict()
+        self._repr = dict()
 
-        repr.update(line1._repr)
-        repr.update(line2._repr)
-        repr.update(line3._repr)
-        repr.update(line4._repr)
-        self._repr = repr
+        self._repr.update(line1.repr)
+        self._repr.update(line2.repr)
+        self._repr.update(line3.repr)
+        self._repr.update(line4.repr)
 
     def rotate(self):
 
@@ -745,7 +755,9 @@ class Rect(Symbol):
 
         self._startpos = ul
         self._endpos = br
-        self._rect()
+
+        # TODO
+        # self._rect()
 
     def copy(self):
         startpos = copy.deepcopy(self._startpos)
@@ -757,6 +769,8 @@ class Rect(Symbol):
         return str
 
     def paste(self, grid):
+
+        self._representation()
 
         start = self._startpos
         end = self._endpos
