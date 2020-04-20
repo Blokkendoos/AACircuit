@@ -14,7 +14,7 @@ from application import _
 from application.pos import Pos
 from application import INSERT, COL, ROW
 from application import HORIZONTAL, VERTICAL, LONGEST_FIRST
-from application import LINE_HOR, LINE_VERT, ML_BEND_CHAR, JUMP_CHAR
+from application import LINE_HOR, LINE_VERT
 from application import TERMINAL_TYPE
 from application import COMPONENT, CHARACTER, TEXT, DRAW_RECT, LINE, MAG_LINE, DIR_LINE
 
@@ -336,12 +336,11 @@ class Line(Symbol):
         self._representation()
 
     def _direction(self):
-        if self._startpos.x == self._endpos.x:
-            self._dir = VERTICAL
-        elif self._startpos.y == self._endpos.y:
+        dx, dy = (self._endpos - self._startpos).xy
+        if dx > dy:
             self._dir = HORIZONTAL
         else:
-            self._dir = None
+            self._dir = VERTICAL
 
     def _representation(self):
         """Compose the line elements."""
@@ -636,9 +635,9 @@ class MagLine(Line):
 
         # TODO use CONSTANTs
         if (dy >= 0) ^ (ori != VERTICAL):
-            corner_char = "'"  # x39
+            corner_char = "'"  # lower corner x39
         else:
-            corner_char = '.'  # x46
+            corner_char = '.'  # upper corner x46
 
         top = 0
         left = 0
