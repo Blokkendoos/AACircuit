@@ -24,8 +24,11 @@ GRIDSIZE_H = 16
 # selection action
 REMOVE = 'remove'
 INSERT = 'insert'
-HORIZONTAL = 'hor'
-VERTICAL = 'vert'
+
+# orientation
+HORIZONTAL = 0
+VERTICAL = 1
+LONGEST_FIRST = 2
 
 # selection state
 IDLE = 0

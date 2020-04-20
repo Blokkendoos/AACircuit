@@ -19,11 +19,6 @@ from application.main_window import MainWindow
 from application.component_library import ComponentLibrary
 from application.file import FileChooserWindow, AsciiFileChooserWindow, PrintOperation
 
-import gi
-gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, GLib  # noqa: E402
-
-
 SelectedObjects = collections.namedtuple('selection', ['startpos', 'symbol', 'view'])
 Action = collections.namedtuple('action', ['action', 'symbol'])
 
@@ -353,9 +348,6 @@ class Controller(object):
             symbol.startpos += offset
             symbol.endpos += offset
 
-            if classname(symbol) == 'MagLine':  # FIXME
-                symbol.ml_endpos += offset
-
             act = Action(action=INSERT, symbol=symbol)
             action.append(act)
 
@@ -403,8 +395,8 @@ class Controller(object):
         self.symbol.paste(self.grid)
         self.push_latest_action(self.symbol)
 
-    def on_paste_mag_line(self, startpos, endpos, ml_endpos):
-        self.symbol = MagLine(startpos, endpos, ml_endpos)
+    def on_paste_mag_line(self, startpos, endpos):
+        self.symbol = MagLine(startpos, endpos, self.grid)  # FIXME grid only used in debugging
         self.objects.append(self.symbol)
         self.symbol.paste(self.grid)
         self.push_latest_action(self.symbol)
@@ -623,10 +615,7 @@ class Controller(object):
             x, y = m.group(4, 5)
             endpos = Pos(x, y)
 
-            x, y = m.group(6, 7)
-            ml_endpos = Pos(x, y)
-
-            self.on_paste_mag_line(startpos, endpos, ml_endpos)
+            self.on_paste_mag_line(startpos, endpos)
 
         elif type == DRAW_RECT:
 
