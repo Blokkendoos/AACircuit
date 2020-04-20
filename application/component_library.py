@@ -40,6 +40,7 @@ class ComponentLibrary(object):
         self._key = None
         self._dir = None
 
+    # TODO not a property, unless you make up a better name (than dict())
     def get_dict(self):
         return self._dict
 
