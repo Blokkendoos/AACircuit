@@ -147,7 +147,11 @@ class Grid(object):
 
     def cell(self, pos):
         col, row = pos.xy
-        return self._grid[row][col]
+        # TODO return space or x00?
+        if row < self.nr_rows and col < self.nr_cols:
+            return self._grid[row][col]
+        else:
+            return ' '
 
     def set_cell(self, pos, value):
         row = pos.y

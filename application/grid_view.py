@@ -401,6 +401,7 @@ class GridView(Gtk.Frame):
                 self._selection.draw(ctx)
 
             else:
+                ctx.set_font_size(FONTSIZE)
                 ctx.set_source_rgb(0.5, 0.5, 0.75)
                 ctx.set_line_width(0.5)
                 ctx.set_tolerance(0.1)
@@ -419,8 +420,12 @@ class GridView(Gtk.Frame):
                     self.draw_selected_objects(ctx)
 
                 if self._selection.item:
-                    # draw it, if we have any valid (not None) selection
-                    self._selection.draw(ctx)
+                    if self._selection.item == MAG_LINE:
+                        symbol = MagLine(self._selection.startpos.grid_rc(), self._selection.endpos.grid_rc(), self._grid)
+                        symbol.draw(ctx)
+                    else:
+                        # draw it, if we have any valid (not None) selection
+                        self._selection.draw(ctx)
 
         elif self._selection.state == SELECTED:
 
@@ -510,14 +515,14 @@ class GridView(Gtk.Frame):
         pub.sendMessage('POINTER_MOVED', pos=pos.grid_rc())
 
         if self._selection.state == SELECTING:
-            self.selecting_chosen(pos)
+            self.selecting_state(pos)
 
         elif self._selection.state == SELECTED:
-            self.selected_chosen(event)
+            self.selected_state(event)
 
         widget.queue_resize()
 
-    def selected_chosen(self, event):
+    def selected_state(self, event):
 
         pos = self._hover_pos + Pos(0, -1)
         pos = pos.grid_rc()
@@ -542,7 +547,7 @@ class GridView(Gtk.Frame):
             if button == 1:
                 pub.sendMessage('PASTE_OBJECTS', pos=pos)
 
-    def selecting_chosen(self, pos):
+    def selecting_state(self, pos):
 
         if self._selection.item == ROW:
             row = pos.grid_rc().y
@@ -595,11 +600,6 @@ class GridView(Gtk.Frame):
         pos = Pos(x_start, y_start)
         pos.snap_to_grid()
 
-        if self._selection.item == MAG_LINE:
-            self._selection.ml_dir = None
-            self._selection.ml_startpos = None
-            self._selection.ml_currentpos = None
-
         self._drag_dir = None
         self._drag_startpos = pos
         self._drag_currentpos = pos
@@ -639,23 +639,16 @@ class GridView(Gtk.Frame):
         elif self._selection.item == RECT:
             pub.sendMessage('SELECTION_CHANGED', selected=True)
 
-        elif self._selection.item in (LINE, MAG_LINE):
-
-            # TODO line terminal-type?
+        elif self._selection.item == LINE:
 
             if self._drag_dir == HORIZONTAL:
                 endpos.y = startpos.y
             elif self._drag_dir == VERTICAL:
                 endpos.x = startpos.x
+            pub.sendMessage("PASTE_LINE", startpos=startpos, endpos=endpos, type=self._selection.type)
 
-            if self._selection.item == LINE:
-                pub.sendMessage("PASTE_LINE", startpos=startpos, endpos=endpos, type=self._selection.type)
-
-            elif self._selection.item == MAG_LINE:
-
-                ml_end = self._selection.ml_endpos.grid_rc()
-
-                pub.sendMessage("PASTE_MAG_LINE", startpos=startpos, endpos=endpos, ml_endpos=ml_end)
+        elif self._selection.item == MAG_LINE:
+            pub.sendMessage("PASTE_MAG_LINE", startpos=startpos, endpos=endpos)
 
         elif self._selection.item == DIR_LINE:
             pub.sendMessage("PASTE_DIR_LINE", startpos=startpos, endpos=endpos)
@@ -671,34 +664,13 @@ class GridView(Gtk.Frame):
         pos = self._drag_startpos + offset
         pos.snap_to_grid()
 
-        if self._selection.item in (DRAW_RECT, RECT, DIR_LINE):
+        if self._selection.item in (DRAW_RECT, RECT, DIR_LINE, MAG_LINE):
             self._drag_currentpos = pos
 
         elif self._selection.item == LINE:
             self._drag_currentpos = pos
             # snap to either a horizontal or a vertical straight line
             self._drag_dir = self.pointer_dir()
-
-        elif self._selection.item == MAG_LINE:
-
-            # snap to either a horizontal or a vertical straight line
-            if self._selection.ml_dir is None:
-                self._drag_currentpos = pos
-                self._drag_dir = self.pointer_dir()
-
-                if self._drag_dir != self.pointer_dir_avg():
-                    # drag direction differs from the magic-line direction
-                    # print("line break, startpos:{0} drag_dir:{1} dir_avg:{2}".format(pos, self._drag_dir, self.pointer_dir_avg()))
-                    self._selection.ml_dir = self.pointer_dir_avg()
-                    self._selection.ml_startpos = pos
-                    self._selection.ml_endpos = pos
-            else:
-                self._selection.ml_endpos = pos
-                # reposition the magic line square
-                if self._drag_dir == HORIZONTAL:
-                    self._drag_currentpos.x = pos.x
-                else:
-                    self._drag_currentpos.y = pos.y
 
     def pointer_dir(self):
         """Return the pointer direction in relation to the start position."""

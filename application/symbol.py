@@ -6,6 +6,7 @@ AACircuit
 import copy
 import json
 import collections
+from pubsub import pub
 from bresenham import bresenham
 from math import pi, radians, atan
 
@@ -14,9 +15,11 @@ from application.pos import Pos
 from application import INSERT, COL, ROW
 from application import HORIZONTAL, VERTICAL, LONGEST_FIRST
 from application import LINE_HOR, LINE_VERT, ML_BEND_CHAR, JUMP_CHAR
-from application import TERMINAL_TYPE, TERMINAL2, TERMINAL3, TERMINAL4
+from application import TERMINAL_TYPE
 from application import COMPONENT, CHARACTER, TEXT, DRAW_RECT, LINE, MAG_LINE, DIR_LINE
+
 from application.symbol_view import ComponentView, ObjectView
+from application import FONTSIZE, GRIDSIZE_W, GRIDSIZE_H
 
 
 class Symbol(object):
@@ -402,6 +405,15 @@ class Line(Symbol):
     def type(self):
         return self._type
 
+    def draw(self, ctx):
+        self._representation()
+        for pos, char in self._repr.items():
+            grid_pos = pos.view_xy()
+            x = grid_pos.x
+            y = grid_pos.y
+            ctx.move_to(x, y)
+            ctx.show_text(char)
+
     def paste(self, grid):
         first = True
         for pos, value in self._repr.items():
@@ -487,77 +499,57 @@ class MagLine(Line):
     LMD.append(LineMatchingData(
         [[' ', ' ', ' '],
          [' ', ' ', ' '],
-         [' ', ' ', ' ']], 2, 'o'))
+         [' ', ' ', ' ']], LONGEST_FIRST, 'o'))
     LMD.append(LineMatchingData(
         [['x', 'x', 'x'],
          ['-', 'x', '-'],
-         ['x', 'x', 'x']], 1, 'o'))
+         ['x', 'x', 'x']], VERTICAL, 'o'))
     LMD.append(LineMatchingData(
         [['x', '|', 'x'],
          ['x', 'x', 'x'],
-         ['x', '|', 'x']], 0, 'o'))
+         ['x', '|', 'x']], HORIZONTAL, 'o'))
     LMD.append(LineMatchingData(
         [['x', 'x', 'x'],
          ['x', 'x', '-'],
-         ['x', 'x', 'x']], 0, '-'))
+         ['x', 'x', 'x']], HORIZONTAL, '-'))
     LMD.append(LineMatchingData(
         [['x', 'x', 'x'],
          ['-', 'x', 'x'],
-         ['x', 'x', 'x']], 0, '-'))
+         ['x', 'x', 'x']], HORIZONTAL, '-'))
     LMD.append(LineMatchingData(
         [['x', 'x', 'x'],
          ['x', 'x', 'x'],
-         [' ', '|', ' ']], 1, '|'))
+         [' ', '|', ' ']], VERTICAL, '|'))
     LMD.append(LineMatchingData(
         [[' ', '|', ' '],
          ['x', 'x', 'x'],
-         ['x', 'x', 'x']], 1, '|'))
+         ['x', 'x', 'x']], VERTICAL, '|'))
     LMD.append(LineMatchingData(
         [['x', 'x', 'x'],
          ['x', 'x', 'x'],
-         ['x', '|', 'x']], 0, '.'))
+         ['x', '|', 'x']], HORIZONTAL, '.'))
     LMD.append(LineMatchingData(
         [['x', '|', 'x'],
          ['x', 'x', 'x'],
-         ['x', 'x', 'x']], 0, "'"))
+         ['x', 'x', 'x']], HORIZONTAL, "'"))
     LMD.append(LineMatchingData(
         [['x', 'x', 'x'],
          ['x', '|', 'x'],
-         ['x', 'x', 'x']], 1, '|'))
+         ['x', 'x', 'x']], VERTICAL, '|'))
 
-    def __init__(self, startpos, endpos, ml_endpos):
+    def __init__(self, startpos, endpos, mygrid):
 
-        # declare before super init as this is used in the representation method (called in super init)
-        self._ml_endpos = ml_endpos
+        self._mygrid = mygrid  # FIXME for debugging only
 
         super(MagLine, self).__init__(startpos=startpos, endpos=endpos)
 
-    def _representation(self):
-
-        line1 = Line(self._startpos, self._endpos)
-        line2 = Line(self._endpos, self._ml_endpos)
-
-        repr = dict()
-        repr.update(line1._repr)
-
-        # special char in the bend
-        repr2 = line2._repr
-        if self._endpos < self._ml_endpos:
-            bend = list(repr2.keys())[0]
-        else:
-            bend = list(repr2.keys())[-1]
-        repr2[bend] = ML_BEND_CHAR
-        repr.update(repr2)
-
-        self._repr = repr
-
-    def _line_match(self, idx, ori, pos):
+    def _line_match(self, idx, search_dir, pos):
         """
         Match a character in the grid against a Magic Line pattern.
 
-        :param ori: search direction
-        :param pos: character position (col, row) coordinates
         :param idx: number of the line matching pattern to be used
+        :param search_dir: search direction
+        :param pos: character position (col, row) coordinates
 
         :return result: True if a match was found, otherwise False
         :return ori: magic line orientation
@@ -570,53 +562,62 @@ class MagLine(Line):
         m_ori = None
         m_char = None
 
-        if pos > Pos(0, 0) and (ori is None or ori == lmd.ori):
+        if pos > Pos(0, 0) and (search_dir is None or search_dir == lmd.ori):
 
-            for row in lmd.pattern:
-                for i, char in row.items():
+            for j, row in enumerate(lmd.pattern):
+                for i, char in enumerate(row):
                     if char != 'x':
-                        m_pos = pos + Pos(i, i)
-                        m_cell = cell(d_pos)  # FIXME grid.cell() method
+                        m_pos = pos + Pos(i - 1, j - 1)
+                        m_cell = self._mygrid.cell(m_pos)
 
-                        if m_cell == chr(0):  # FIXME x00 and x32 (space)
+                        if m_cell == chr(0):  # TODO x00 and x32 (space)
                             m_cell = chr(32)
 
                         if m_cell != char:
                             result = False
                             break
             if result:
-                m_ori = lmd[idx].ori
-                m_char = lmd[idx].char
+                m_ori = lmd.ori
+                m_char = lmd.char
+                # print("line_match, idx:", idx, " m_ori:", m_ori, " m_char:", m_char)
 
         else:
             result = False
 
         return result, m_ori, m_char
 
-    def _presentation2(self, startpos, endpos):
+    def _representation(self):
+
+        startpos = self._startpos
+        endpos = self._endpos
 
         dx = abs(endpos.x - startpos.x)
         dy = abs(endpos.y - startpos.y)
 
+        self._repr = dict()
+
         f_ori = None
         f_terminal = None
 
+        s_ori = HORIZONTAL
+
         # determine the terminal of the first line
         for i in range(len(self.LMD)):
-            match, f_ori, f_terminal = self._line_match(i, f_ori, startpos)
+            match, f_ori, f_terminal = self._line_match(i, None, startpos)
             if match:
-                # TODO put f_terminal at startpos
-                None
+                self._repr[startpos] = f_terminal
+                break
 
         # determine the orientation of the first line
         if f_ori == LONGEST_FIRST:
-            if dx > dy:
-                f_ori = HORIZONTAL
-            else:
+            if dy > dx:
                 f_ori = VERTICAL
+            else:
+                f_ori = HORIZONTAL
 
-        # TODO statusmessage
-        # MainForm.SBar.Panels[5].Text:='Start: D['+inttostr(index)+'] car:'+chr(se_c)+' dir.'+inttostr(dir);
+        # TODO Move this to view
+        msg = _("Start: D[{0}] char:{1} ori:{2}".format(i, f_terminal, f_ori))
+        pub.sendMessage('STATUS_MESSAGE', msg=msg)
 
         # determine the orientation of the second line
         if f_ori == HORIZONTAL:
@@ -624,96 +625,99 @@ class MagLine(Line):
                 s_ori = VERTICAL
             else:
                 s_ori = HORIZONTAL
+
         elif f_ori == VERTICAL:
             if dx > 0:
                 s_ori = HORIZONTAL
             else:
-                s_ori = HORIZONTAL
+                s_ori = VERTICAL
 
         for i in range(len(self.LMD)):
-            match, m_ori, m_terminal = self._line_match(i, f_ori, endpos)
+            match, m_ori, m_terminal = self._line_match(i, s_ori, endpos)
             if match:
-                # TODO put m_terminal at endpos
-                None
+                # the end-terminal of the second line
+                self._repr[endpos] = m_terminal
+                break
 
-        # TODO statusmessage
-        # MainForm.SBar.Panels[6].Text:='End: D['+inttostr(index)+'] dir:'+inttostr(s_dir)+' char:'+chr(se_c);
+        # TODO Move this to view
+        msg = _("End: D[{0}] char:{1} ori:{2}".format(i, m_terminal, m_ori))
+        pub.sendMessage('STATUS_MESSAGE', msg=msg)
 
-        self._cornerline(f_dir, startpos, endpos)
+        self._corner_line(f_ori)
 
-    def _corner_line(self, ori, startpos, endpos):
+    def _corner_line(self, ori):
 
-        dx = endpos.x - startpos.x
-        dy = endpos.y - startpos.y
+        startpos = self._startpos
+        endpos = self._endpos
 
-        if dy >= 0 ^ (ori != HORIZONTAL):
-            corner_char = ord("'")  # x39
+        dx, dy = (endpos - startpos).xy
+
+        if (dy >= 0) ^ (ori != VERTICAL):
+            corner_char = "'"  # x39
         else:
-            corner_char = ord('.')  # x49
+            corner_char = '.'  # x46
 
-        if dx > 0:
-            startv = startpos.x
-            endv = endpos.x
-        else
-            startv = endpos.x
-            endv = startpos.x
+        top = 0
+        left = 0
 
         if ori == HORIZONTAL:
             top = startpos.y
             left = endpos.x
+
         elif ori == VERTICAL:
             top = endpos.y
             left = startpos.x
 
-        # horizontal part
+        # horizontal line
+        if dx > 0:
+            startv = startpos.x + 1  # don't overwrite the terminal char (in the startposition)
+            endv = endpos.x
+        else:
+            startv = endpos.x + 1  # don't overwrite the terminal char (in the startposition)
+            endv = startpos.x
+
         if abs(dx) > 1:
-            for temp in range( startv +1 - endv - 1):  # FIXME
-                if cell(temp, top) == '|':  # x124
-                    p_char = ')'
+            for temp in range(endv - startv):  # FIXME
+                pos = Pos(startv + temp, top)
+                if self._mygrid.cell(pos) == '|':  # x124
+                    char = ')'
                 else:
-                    p_char = '-'
+                    char = '-'
+                self._repr[pos] = char
 
-                # TODO paint/fill line char @ Pos(temp, top)
-
+        # vertical line
         if dy > 0:
-            startv = startpos.y
+            startv = startpos.y + 1  # don't overwrite the terminal char (in the startposition)
             endv = endpos.y
         else:
-            startv = endpos.y
+            startv = endpos.y + 1  # don't overwrite the terminal char (in the startposition)
             endv = startpos.y
 
-        # vertical part
         if abs(dy) > 1:
-            for temp in range( startv+1 - endv - 1):  # FIXME
-                if cell(temp, top) == '-':  # x45
-                    p_char = ')'
+            for temp in range(endv - startv):  # FIXME
+                pos = Pos(left, startv + temp)
+                if self._mygrid.cell(pos) == '-':  # x45
+                    char = ')'
                 else:
-                    p_char = '|'
-
-                # TODO paint/fill line char @ Pos(left, temp)
+                    char = '|'
+                self._repr[pos] = char
 
         # corner character, if there is a corner
-        if (ori == HORIZONTAL and abs(dy) > 0) or (ori == VERTICAL and abs(dx) > 0 ):
-            # TODO paint/fill corner char @ Pos(left, top)
-            None
+        if (ori == HORIZONTAL and abs(dy) > 0) or (ori == VERTICAL and abs(dx) > 0):
+            self._repr[Pos(left, top)] = corner_char
 
-    @property
-    def ml_endpos(self):
-        return self._ml_endpos
-
-    @ml_endpos.setter
-    def ml_endpos(self, value):
-        self._ml_endpos = value
-        self._representation()
+    # FIXME for debugging only (use superclass paste() method)
+    def paste(self, grid):
+        for pos, value in self._repr.items():
+            grid.set_cell(pos, value)
 
     def copy(self):
         startpos = copy.deepcopy(self._startpos)
         endpos = copy.deepcopy(self._endpos)
-        ml_endpos = copy.deepcopy(self._ml_endpos)
-        return MagLine(startpos, endpos, ml_endpos)
+        return MagLine(startpos, endpos)
 
     def memo(self):
-        str = "{0}:{1},{2},{3}".format(MAG_LINE, self._startpos, self._endpos, self._ml_endpos)
+        str = "{0}:{1},{2},{3}".format(MAG_LINE, self._startpos, self._endpos)
         return str
 
 
