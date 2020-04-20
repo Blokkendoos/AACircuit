@@ -20,7 +20,7 @@ from application import MARK_CHAR
 from application import TEXT, TEXT_BLOCK
 from application.pos import Pos
 from application.selection import Selection, SelectionLine, SelectionCol, SelectionRow, SelectionRect
-from application.symbol import Symbol, Character, Text, Line, MagLine, DirLine, Rect, Row, Column
+from application.symbol import Character, Text, Line, MagLine, DirLine, Rect
 
 import gi
 gi.require_version('Gtk', '3.0')
@@ -363,7 +363,7 @@ class GridView(Gtk.Frame):
         ctx.set_source_rgb(0.1, 0.1, 0.1)
         ctx.select_font_face("monospace", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
 
-        y = GRIDSIZE_H
+        y = 0
         for r in self._grid.grid:
             x = 0
             for c in r:
@@ -448,6 +448,10 @@ class GridView(Gtk.Frame):
                 symbol = Rect(self._selection.startpos.grid_rc(), self._selection.endpos.grid_rc())
                 symbol.draw(ctx)
 
+            elif self._selection.item == LINE:
+                symbol = Line(self._selection.startpos.grid_rc(), self._selection.endpos.grid_rc(), type=self._selection.type)
+                symbol.draw(ctx)
+
             elif self._selection.item:
                 # draw it, if we have any valid (not None) selection
                 self._selection.draw(ctx)
@@ -529,13 +533,13 @@ class GridView(Gtk.Frame):
             self.selecting_state(pos)
 
         elif self._selection.state == SELECTED:
-            self.selected_state(event)
+            self.selected_state()
 
         widget.queue_resize()
 
-    def selected_state(self, event):
+    def selected_state(self):
 
-        pos = self._hover_pos + Pos(0, -1)
+        pos = self._hover_pos - Pos(0, 1)  # FIXME irw MAGIC LINE pattern matching
         pos = pos.grid_rc()
 
         if self._selection.item == CHARACTER:
@@ -656,9 +660,11 @@ class GridView(Gtk.Frame):
                 endpos.y = startpos.y
             elif self._drag_dir == VERTICAL:
                 endpos.x = startpos.x
+            print("PASTE_LINE start:", startpos, " end:", endpos)
             pub.sendMessage("PASTE_LINE", startpos=startpos, endpos=endpos, type=self._selection.type)
 
         elif self._selection.item == MAG_LINE:
+            print("PASTE_MAG_LINE start:", startpos, " end:", endpos)
             pub.sendMessage("PASTE_MAG_LINE", startpos=startpos, endpos=endpos)
 
         elif self._selection.item == DIR_LINE:
