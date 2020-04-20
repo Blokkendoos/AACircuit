@@ -19,7 +19,8 @@ from application import CHARACTER, COMPONENT, LINE, MAG_LINE, DIR_LINE, OBJECTS,
 from application import MARK_CHAR
 from application import TEXT, TEXT_BLOCK
 from application.pos import Pos
-from application.selection import Selection, SelectionLine, SelectionDirLine, SelectionMagicLine, SelectionCol, SelectionRow, SelectionRect, SelectionText, SelectionTextBlock
+from application.selection import Selection, SelectionLine, SelectionCol, SelectionRow, SelectionRect
+from application.symbol import Symbol, Character, Text, Line, MagLine, DirLine, Rect, Row, Column
 
 import gi
 gi.require_version('Gtk', '3.0')
@@ -212,49 +213,45 @@ class GridView(Gtk.Frame):
         self.draw_gridlines(ctx)
         self.draw_content(ctx)
         self.draw_selection(ctx)
-
         self.queue_draw()
 
     def gridsize_changed(self, *args, **kwargs):
         self.set_viewport_size()
 
-    # SELECTION
+    # SELECTIONs
 
     def on_nothing_selected(self):
         self._selection = Selection(None)
         self.queue_resize()
 
     def on_add_text(self):
+        self._selection = Selection(item=TEXT, state=SELECTING)
         self._text = ""
-        self._selection = SelectionText()
         self._drawing_area.grab_focus()
 
     def on_add_textblock(self, text):
-        self._selection = SelectionTextBlock(text=text)
+        self._selection = Selection(item=TEXT_BLOCK, state=SELECTING)
+        self._text = text
 
     def on_character_selected(self, char):
-        self._selection = Selection(item=CHARACTER)
-        self._selection.state = SELECTED
+        self._selection = Selection(item=CHARACTER, state=SELECTED)
         self._symbol = char
 
     def on_symbol_selected(self, symbol):
         # only components (can be rotated or mirrored)
-        self._selection = Selection(item=COMPONENT)
-        self._selection.state = SELECTED
+        self._selection = Selection(item=COMPONENT, state=SELECTED)
         self._symbol = symbol
 
     def on_objects_selected(self, objects):
-        self._selection = Selection(item=OBJECTS)
-        self._selection.state = SELECTED
+        self._selection = Selection(item=OBJECTS, state=SELECTED)
+        self._objects = objects
+
+    def on_selecting_objects(self, objects):
+        self._selection = Selection(item=OBJECTS, state=SELECTING)
         self._objects = objects
 
     def on_selecting_rect(self, objects):
         self._selection = SelectionRect()
-        self._objects = objects
-
-    def on_selecting_objects(self, objects):
-        self._selection = Selection(item=OBJECTS)
-        self._selection.state = SELECTING
         self._objects = objects
 
     def on_selecting_row(self, action):
@@ -266,16 +263,16 @@ class GridView(Gtk.Frame):
     # LINES
 
     def on_draw_mag_line(self):
-        self._selection = SelectionMagicLine()
+        self._selection = Selection(item=MAG_LINE)
 
     def on_draw_dir_line(self, type):
-        self._selection = SelectionDirLine()
+        self._selection = Selection(item=DIR_LINE)
 
     def on_draw_line(self, type):
-        self._selection = SelectionLine(type)
+        self._selection = SelectionLine(item=LINE, type=type)
 
     def on_draw_rect(self):
-        self._selection = SelectionRect(item=DRAW_RECT)
+        self._selection = Selection(item=DRAW_RECT)
 
     # TEXT ENTRY
 
@@ -399,7 +396,7 @@ class GridView(Gtk.Frame):
 
     def draw_selected_state(self, ctx):
         if self._selection.item in (CHARACTER, COMPONENT):
-            self._symbol.view.draw(ctx, self._hover_pos)
+            self._symbol.draw(ctx, self._hover_pos)
 
         elif self._selection.item == RECT:
             # draw the selection rectangle
@@ -443,7 +440,7 @@ class GridView(Gtk.Frame):
 
             if self._selection.item:
                 if self._selection.item == MAG_LINE:
-                    symbol = MagLine(self._selection.startpos.grid_rc(), self._selection.endpos.grid_rc(), self._grid)
+                    symbol = MagLine(self._selection.startpos.grid_rc(), self._selection.endpos.grid_rc(), self._grid.cell)
                     symbol.draw(ctx)
                 else:
                     # draw it, if we have any valid (not None) selection

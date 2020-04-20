@@ -33,10 +33,6 @@ class Symbol(object):
 
     ORIENTATION = {0: "N", 1: "E", 2: "S", 3: "W"}
 
-    @classmethod
-    def get_classname(cls):
-        return cls.__name__
-
     def __init__(self, id=0, grid=None, ori=None, mirrored=None, startpos=None, endpos=None):
 
         self._id = id
