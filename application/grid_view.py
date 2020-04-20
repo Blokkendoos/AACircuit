@@ -438,14 +438,17 @@ class GridView(Gtk.Frame):
 
             if self._selection.item == RECT:
                 self.mark_all_objects(ctx)
+                self._selection.draw(ctx)
 
             elif self._selection.item == MAG_LINE:
                 symbol = MagLine(self._selection.startpos.grid_rc(), self._selection.endpos.grid_rc(), self._grid.cell)
                 symbol.draw(ctx)
+
             elif self._selection.item == DRAW_RECT:
                 symbol = Rect(self._selection.startpos.grid_rc(), self._selection.endpos.grid_rc())
                 symbol.draw(ctx)
-            else:
+
+            elif self._selection.item:
                 # draw it, if we have any valid (not None) selection
                 self._selection.draw(ctx)
 
