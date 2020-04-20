@@ -19,8 +19,8 @@ from application.main_window import MainWindow
 from application.component_library import ComponentLibrary
 from application.file import FileChooserWindow, AsciiFileChooserWindow, PrintOperation
 
-SelectedObjects = collections.namedtuple('selection', ['startpos', 'symbol', 'view'])
-Action = collections.namedtuple('action', ['action', 'symbol'])
+SelectedObjects = collections.namedtuple('SelectedObjects', ['startpos', 'symbol'])
+Action = collections.namedtuple('Action', ['action', 'symbol'])
 
 
 class Controller(object):
@@ -215,7 +215,7 @@ class Controller(object):
 
             # select symbols of which the upper-left corner is within the selection rectangle
             if symbol.startpos.in_rect(rect):
-                selection = SelectedObjects(startpos=ul, symbol=symbol, view=symbol.view)
+                selection = SelectedObjects(startpos=ul, symbol=symbol)
                 selected.append(selection)
 
         self.selected_objects = selected
@@ -283,7 +283,7 @@ class Controller(object):
     def on_rotate_symbol(self):
         # only components can be rotated
         if len(self.selected_objects) == 0:
-            self.symbol.grid_next()
+            self.symbol.rotate()
             pub.sendMessage('SYMBOL_SELECTED', symbol=self.symbol)
         # else:
         #     for sel in self.selected_objects:
@@ -371,7 +371,7 @@ class Controller(object):
 
             self.remove_from_objects(sel.symbol)
 
-            grid = sel.symbol.grid
+            grid = self.symbol.grid
             dummy, rect = grid.rect()
 
             self.grid.erase_rect(rect)
@@ -396,7 +396,7 @@ class Controller(object):
         self.push_latest_action(self.symbol)
 
     def on_paste_mag_line(self, startpos, endpos):
-        self.symbol = MagLine(startpos, endpos, self.grid)  # FIXME grid only used in debugging
+        self.symbol = MagLine(startpos, endpos, self.grid.cell)
         self.objects.append(self.symbol)
         self.symbol.paste(self.grid)
         self.push_latest_action(self.symbol)
@@ -425,7 +425,7 @@ class Controller(object):
 
         for line in content:
             symbol = Text(relative_pos, line)
-            selection = SelectedObjects(startpos=pos, symbol=symbol, view=symbol.view)
+            selection = SelectedObjects(startpos=pos, symbol=symbol)
             selected.append(selection)
             relative_pos += Pos(0, 1)
 
@@ -450,7 +450,7 @@ class Controller(object):
                 # create a TEXT instance for each line
                 # fill selected_objects...
                 symbol = Text(pos, line)
-                selection = SelectedObjects(startpos=startpos, symbol=symbol, view=symbol.view)
+                selection = SelectedObjects(startpos=startpos, symbol=symbol)
 
                 pos += Pos(0, 1)
                 self.selected_objects.append(selection)

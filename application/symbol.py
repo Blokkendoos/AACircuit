@@ -18,16 +18,13 @@ from application import LINE_HOR, LINE_VERT, ML_BEND_CHAR, JUMP_CHAR
 from application import TERMINAL_TYPE
 from application import COMPONENT, CHARACTER, TEXT, DRAW_RECT, LINE, MAG_LINE, DIR_LINE
 
-from application.symbol_view import ComponentView, ObjectView
-from application import FONTSIZE, GRIDSIZE_W, GRIDSIZE_H
-
 
 class Symbol(object):
     """
     Symbol represented by a grid.
 
     :param id: the component id
-    :param dict: the character-grid that create the symbol
+    :param dict: the character-grid to create the symbol
     :param ori: orientation (0-3)
     :param mirrored: set to 1 to mirror the symbol vertically
     :param startpos: the upper-left corner (col,row) coordinate of the character-grid
@@ -35,6 +32,10 @@ class Symbol(object):
     """
 
     ORIENTATION = {0: "N", 1: "E", 2: "S", 3: "W"}
+
+    @classmethod
+    def get_classname(cls):
+        return cls.__name__
 
     def __init__(self, id=0, grid=None, ori=None, mirrored=None, startpos=None, endpos=None):
 
@@ -65,31 +66,23 @@ class Symbol(object):
         else:
             self._endpos = endpos
 
-        self._repr = dict()
-
     def __str__(self):
         str = _("symbol id: {0} orientation: {1}").format(self._id, self.ORIENTATION[self._ori])
         return str
 
     def _representation(self):
-        # raise NotImplementedError
-        return
 
-    @property
-    def width(self):
-        """Return the width of the symbol grid."""
-        # dimensions of grid (taking into account the orientation)
-        return len(self.grid[0])
+        self._repr = dict()
 
-    @property
-    def height(self):
-        """Return the heigth of the symbol grid."""
-        # dimensions of grid (taking into account the orientation)
-        return len(self.grid)
+        pos = self._startpos
+        incr = Pos(1, 0)
 
-    @property
-    def view(self):
-        return ComponentView(self.grid, self._startpos)
+        for row in self.grid:
+            pos.x = self._startpos.x
+            for char in row:
+                self._repr[pos] = char
+                pos += incr
+            pos += Pos(0, 1)
 
     @property
     def id(self):
@@ -114,19 +107,12 @@ class Symbol(object):
         self._mirrored = value
 
     @property
-    def repr(self):
-        return self._repr
-
-    @property
     def startpos(self):
         return self._startpos
 
     @startpos.setter
     def startpos(self, value):
         self._startpos = value
-
-        # representation may be changed due to a changed start/end position
-        self._representation()
 
     @property
     def endpos(self):
@@ -135,9 +121,6 @@ class Symbol(object):
     @endpos.setter
     def endpos(self, value):
         self._endpos = value
-
-        # representation may be changed due to a changed start/end position
-        self._representation()
 
     @property
     def default(self):
@@ -169,22 +152,41 @@ class Symbol(object):
         else:
             return self._grid[self.ORIENTATION[self._ori]]
 
-    def grid_next(self):
+    def rotate(self):
         """Return the grid with the next (90° clockwise rotated) orientation for this symbol."""
         self._ori += 1
         self._ori %= 4
 
         return self.grid
 
+    def draw(self, ctx, pos=None):
+        """
+        Draw the symbol on the grid canvas.
+        :param ctx: the Cairo context
+        :param pos: target position in grid canvas (x,y) coordinates
+        """
+        self._representation()
+
+        if pos is None:
+            pos = self._startpos.view_xy()
+
+        offset = pos - self._startpos.view_xy()
+        for pos, char in self._repr.items():
+            grid_pos = pos.view_xy() + offset
+            ctx.move_to(grid_pos.x, grid_pos.y)
+            ctx.show_text(char)
+
     def paste(self, grid):
+        self._representation()
+
         """Paste symbol into the target grid."""
-        grid.fill_rect(self._startpos, self.grid)
+        for pos, value in self._repr.items():
+            grid.set_cell(pos, value)
 
     def remove(self, grid):
         """Remove the symbol from the target grid."""
-        ul = self._startpos
-        br = Pos(self._startpos.x + self.width, self._startpos.y + self.height)
-        grid.erase_rect((ul, br))
+        for pos in self._repr.keys():
+            grid.set_cell(pos, ' ')  # TODO use CONSTANT value
 
     def mirror(self, grid):
         # mirror specific characters
@@ -218,9 +220,12 @@ class Character(Symbol):
             thegrid = {"N": [[char]]}
         else:
             thegrid = grid
+
         super(Character, self).__init__(id=id, grid=thegrid, startpos=startpos)
 
         self._char = char
+
+        self._representation()
 
     @property
     def grid(self):
@@ -234,7 +239,7 @@ class Character(Symbol):
         startpos = copy.deepcopy(self._startpos)
         return Character(self._char, grid=self._grid, startpos=startpos)
 
-    def grid_next(self):
+    def rotate(self):
         # raise NotImplementedError
         return
 
@@ -277,10 +282,6 @@ class Text(Symbol):
     def text(self, value):
         self._text = value
 
-    @property
-    def view(self):
-        return ObjectView(self._repr, self._startpos)
-
     def memo(self):
         jstext = json.dumps(self._text)
         str = "{0}:{1},{2}".format(TEXT, self._startpos, jstext)
@@ -290,7 +291,7 @@ class Text(Symbol):
         startpos = copy.deepcopy(self._startpos)
         return Text(pos=startpos, text=self._text)
 
-    def grid_next(self):
+    def rotate(self):
         # raise NotImplementedError
         return
 
@@ -383,7 +384,7 @@ class Line(Symbol):
         # endpoint terminal
         self._repr[pos] = terminal
 
-    def grid_next(self):
+    def rotate(self):
         # TODO enable to rotate (from HOR to VERT)?
         raise NotImplementedError
 
@@ -398,21 +399,8 @@ class Line(Symbol):
         return str
 
     @property
-    def view(self):
-        return ObjectView(self._repr, self._startpos)
-
-    @property
     def type(self):
         return self._type
-
-    def draw(self, ctx):
-        self._representation()
-        for pos, char in self._repr.items():
-            grid_pos = pos.view_xy()
-            x = grid_pos.x
-            y = grid_pos.y
-            ctx.move_to(x, y)
-            ctx.show_text(char)
 
     def paste(self, grid):
         first = True
@@ -537,9 +525,9 @@ class MagLine(Line):
          ['x', '|', 'x'],
          ['x', 'x', 'x']], VERTICAL, '|'))
 
-    def __init__(self, startpos, endpos, mygrid):
+    def __init__(self, startpos, endpos, cell_callback=None):
 
-        self._mygrid = mygrid  # FIXME for debugging only
+        self.cell = cell_callback
 
         super(MagLine, self).__init__(startpos=startpos, endpos=endpos)
 
@@ -568,7 +556,7 @@ class MagLine(Line):
                 for i, char in enumerate(row):
                     if char != 'x':
                         m_pos = pos + Pos(i - 1, j - 1)
-                        m_cell = self._mygrid.cell(m_pos)
+                        m_cell = self.cell(m_pos)
 
                         if m_cell == chr(0):  # TODO x00 and x32 (space)
                             m_cell = chr(32)
@@ -652,6 +640,7 @@ class MagLine(Line):
 
         dx, dy = (endpos - startpos).xy
 
+        # TODO use CONSTANTs
         if (dy >= 0) ^ (ori != VERTICAL):
             corner_char = "'"  # x39
         else:
@@ -677,9 +666,10 @@ class MagLine(Line):
             endv = startpos.x
 
         if abs(dx) > 1:
-            for temp in range(endv - startv):  # FIXME
+            for temp in range(endv - startv):
                 pos = Pos(startv + temp, top)
-                if self._mygrid.cell(pos) == '|':  # x124
+                # TODO use CONSTANTs
+                if self.cell(pos) == '|':  # x124
                     char = ')'
                 else:
                     char = '-'
@@ -694,9 +684,10 @@ class MagLine(Line):
             endv = startpos.y
 
         if abs(dy) > 1:
-            for temp in range(endv - startv):  # FIXME
+            for temp in range(endv - startv):
                 pos = Pos(left, startv + temp)
-                if self._mygrid.cell(pos) == '-':  # x45
+                # TODO use CONSTANTs
+                if self.cell(pos) == '-':  # x45
                     char = ')'
                 else:
                     char = '|'
@@ -705,11 +696,6 @@ class MagLine(Line):
         # corner character, if there is a corner
         if (ori == HORIZONTAL and abs(dy) > 0) or (ori == VERTICAL and abs(dx) > 0):
             self._repr[Pos(left, top)] = corner_char
-
-    # FIXME for debugging only (use superclass paste() method)
-    def paste(self, grid):
-        for pos, value in self._repr.items():
-            grid.set_cell(pos, value)
 
     def copy(self):
         startpos = copy.deepcopy(self._startpos)
@@ -753,7 +739,7 @@ class Rect(Symbol):
         repr.update(line4._repr)
         self._repr = repr
 
-    def grid_next(self):
+    def rotate(self):
 
         w = self._endpos.x - self._startpos.x
         h = self._endpos.y - self._startpos.y
@@ -764,10 +750,6 @@ class Rect(Symbol):
         self._startpos = ul
         self._endpos = br
         self._rect()
-
-    @property
-    def view(self):
-        return ObjectView(self._repr, self._startpos)
 
     def copy(self):
         startpos = copy.deepcopy(self._startpos)
