@@ -402,19 +402,6 @@ class Line(Symbol):
     def type(self):
         return self._type
 
-    def paste(self, grid):
-
-        self._representation()
-
-        first = True
-        for pos, value in self._repr.items():
-            # crossing lines
-            if grid.cell(pos) in (LINE_HOR, LINE_VERT) and not first:
-                grid.set_cell(pos, JUMP_CHAR)
-            else:
-                grid.set_cell(pos, value)
-            first = False
-
     def remove(self, grid):
         for pos, value in self._repr.items():
             grid.set_cell(pos, ' ')  # TODO use CONSTANT
