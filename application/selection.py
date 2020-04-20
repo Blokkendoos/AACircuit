@@ -22,12 +22,12 @@ class Selection(object):
 
     SELECTION_STATE = (IDLE, DRAG, SELECTING, SELECTED)
 
-    def __init__(self, item):
+    def __init__(self, item, state=IDLE):
         self._startpos = None
         self._endpos = None
         self._maxpos = None
 
-        self._state = IDLE
+        self._state = state
         self._item = item
 
     @property

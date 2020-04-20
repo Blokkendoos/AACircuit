@@ -390,60 +390,64 @@ class GridView(Gtk.Frame):
                 self.draw_selected_objects(ctx)
 
         elif self._selection.state == SELECTING:
-
-            if self._selection.item == OBJECTS:
-                self.draw_selected_objects(ctx)
-
-            elif self._selection.item in (TEXT, TEXT_BLOCK):
-                self.draw_cursor(ctx)
-                if self._selection.item == TEXT:
-                    self._selection.text = self._text
-                self._selection.startpos = self._hover_pos
-                self._selection.draw(ctx)
-
-            else:
-                ctx.set_font_size(FONTSIZE)
-                ctx.set_source_rgb(0.5, 0.5, 0.75)
-                ctx.set_line_width(0.5)
-                ctx.set_tolerance(0.1)
-                ctx.set_line_join(cairo.LINE_JOIN_ROUND)
-
-                if self._selection.item in (ROW, COL):
-                    self._selection.startpos = self._hover_pos
-                else:
-                    self._selection.startpos = self._drag_startpos
-
-                self._selection.endpos = self._drag_currentpos
-                self._selection.maxpos = self.max_pos_grid
-                self._selection.direction = self._drag_dir
-
-                if self._selection.item == RECT:
-                    self.draw_selected_objects(ctx)
-
-                if self._selection.item:
-                    if self._selection.item == MAG_LINE:
-                        symbol = MagLine(self._selection.startpos.grid_rc(), self._selection.endpos.grid_rc(), self._grid)
-                        symbol.draw(ctx)
-                    else:
-                        # draw it, if we have any valid (not None) selection
-                        self._selection.draw(ctx)
+            self.draw_selecting_state(ctx)
 
         elif self._selection.state == SELECTED:
-
-            if self._selection.item in (CHARACTER, COMPONENT):
-                self._symbol.view.draw(ctx, self._hover_pos)
-
-            elif self._selection.item == RECT:
-                # draw the selection rectangle
-                self._selection.startpos = self._drag_startpos
-                self._selection.endpos = self._drag_endpos
-                self._selection.draw(ctx)
-                self.draw_selected_objects(ctx)
-
-            elif self._selection.item == OBJECTS:
-                self.draw_selected_objects(ctx, True)
+            self.draw_selected_state(ctx)
 
         ctx.restore()
+
+    def draw_selected_state(self, ctx):
+        if self._selection.item in (CHARACTER, COMPONENT):
+            self._symbol.view.draw(ctx, self._hover_pos)
+
+        elif self._selection.item == RECT:
+            # draw the selection rectangle
+            self._selection.startpos = self._drag_startpos
+            self._selection.endpos = self._drag_endpos
+            self._selection.draw(ctx)
+            self.draw_selected_objects(ctx)
+
+        elif self._selection.item == OBJECTS:
+            self.draw_selected_objects(ctx, True)
+
+    def draw_selecting_state(self, ctx):
+        if self._selection.item == OBJECTS:
+            self.draw_selected_objects(ctx)
+
+        elif self._selection.item in (TEXT, TEXT_BLOCK):
+            self.draw_cursor(ctx)
+            if self._selection.item == TEXT:
+                self._selection.text = self._text
+            self._selection.startpos = self._hover_pos
+            self._selection.draw(ctx)
+
+        else:
+            ctx.set_font_size(FONTSIZE)
+            ctx.set_source_rgb(0.5, 0.5, 0.75)
+            ctx.set_line_width(0.5)
+            ctx.set_tolerance(0.1)
+            ctx.set_line_join(cairo.LINE_JOIN_ROUND)
+
+            if self._selection.item in (ROW, COL):
+                self._selection.startpos = self._hover_pos
+            else:
+                self._selection.startpos = self._drag_startpos
+
+            self._selection.endpos = self._drag_currentpos
+            self._selection.maxpos = self.max_pos_grid
+            self._selection.direction = self._drag_dir
+
+            if self._selection.item == RECT:
+                self.draw_selected_objects(ctx)
+
+            if self._selection.item:
+                if self._selection.item == MAG_LINE:
+                    symbol = MagLine(self._selection.startpos.grid_rc(), self._selection.endpos.grid_rc(), self._grid)
+                    symbol.draw(ctx)
+                else:
+                    # draw it, if we have any valid (not None) selection
+                    self._selection.draw(ctx)
 
     def draw_cursor(self, ctx):
 
@@ -487,7 +491,6 @@ class GridView(Gtk.Frame):
 
         ctx.save()
 
-        # objects = [(position, endpos, object, view), ...] position in column/row coordinates
         for ref in self._objects:
 
             ctx.set_source_rgb(1, 0, 0)
@@ -499,10 +502,7 @@ class GridView(Gtk.Frame):
             pos = ref.startpos.view_xy()
             if follow_pointer:
                 pos = ref.symbol.startpos.view_xy() + offset
-
-                vw = ref.view
-                vw.draw(ctx, pos)
-                # pos -= Pos(GRIDSIZE_W, 0)  # prepare for the mark (to show left of the object)
+                ref.symbol.draw(ctx, pos)
 
             ctx.move_to(pos.x, pos.y)
             ctx.show_text(MARK_CHAR)  # mark the upper-left corner
