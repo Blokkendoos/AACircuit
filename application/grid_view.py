@@ -525,21 +525,20 @@ class GridView(Gtk.Frame):
 
     def on_button_press(self, widget, event):
 
-        pos = Pos(event.x, event.y)
-        pos.snap_to_grid()
+        pos = self.calc_position(event.x, event.y)
         pub.sendMessage('POINTER_MOVED', pos=pos.grid_rc())
 
         if self._selection.state == SELECTING:
             self.selecting_state(pos)
 
         elif self._selection.state == SELECTED:
-            self.selected_state()
+            self.selected_state(event)
 
         widget.queue_resize()
 
-    def selected_state(self):
+    def selected_state(self, event):
 
-        pos = self._hover_pos - Pos(0, 1)  # FIXME irw MAGIC LINE pattern matching
+        pos = self._hover_pos
         pos = pos.grid_rc()
 
         if self._selection.item == CHARACTER:
@@ -605,6 +604,16 @@ class GridView(Gtk.Frame):
 
             pub.sendMessage('SELECTION_CHANGED', selected=True)
 
+    def calc_position(self, x, y):
+        """Calculate the grid view position."""
+        pos = Pos(x, y)
+
+        # take into account that Cairo text glyph origin is left-bottom corner
+        pos += Pos(0, 1).view_xy()
+
+        pos.snap_to_grid()
+        return pos
+
     def on_drag_begin(self, widget, x_start, y_start):
 
         if self._selection.state == IDLE and self._selection.item in (DRAW_RECT, RECT, LINE, MAG_LINE, DIR_LINE):
@@ -612,8 +621,7 @@ class GridView(Gtk.Frame):
         else:
             return
 
-        pos = Pos(x_start, y_start)
-        pos.snap_to_grid()
+        pos = self.calc_position(x_start, y_start)
 
         self._drag_dir = None
         self._drag_startpos = pos
@@ -631,9 +639,10 @@ class GridView(Gtk.Frame):
         else:
             return
 
-        offset = Pos(x_offset, y_offset)
+        offset = self.calc_position(x_offset, y_offset)
+
         self._drag_endpos = self._drag_startpos + offset
-        self._drag_endpos.snap_to_grid()
+        # self._drag_endpos.snap_to_grid()
 
         # position to grid (col, row) coordinates
         startpos = self._drag_startpos.grid_rc()
@@ -677,7 +686,8 @@ class GridView(Gtk.Frame):
         else:
             return
 
-        offset = Pos(x_offset, y_offset)
+        offset = self.calc_position(x_offset, y_offset)
+
         pos = self._drag_startpos + offset
         pos.snap_to_grid()
 
@@ -728,8 +738,7 @@ class GridView(Gtk.Frame):
         return dir
 
     def on_hover(self, widget, event):
-        self._hover_pos = Pos(event.x, event.y)
-        self._hover_pos.snap_to_grid()
+        self._hover_pos = self.calc_position(event.x, event.y)
         pub.sendMessage('POINTER_MOVED', pos=self._hover_pos.grid_rc())
 
         widget.queue_resize()
