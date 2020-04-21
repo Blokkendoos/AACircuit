@@ -337,7 +337,7 @@ class Line(Symbol):
 
     def _direction(self):
         dx, dy = (self._endpos - self._startpos).xy
-        if dx > dy:
+        if abs(dx) > abs(dy):
             self._dir = HORIZONTAL
         else:
             self._dir = VERTICAL
