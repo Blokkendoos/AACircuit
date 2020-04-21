@@ -19,6 +19,22 @@ from application import TERMINAL_TYPE
 from application import COMPONENT, CHARACTER, TEXT, DRAW_RECT, LINE, MAG_LINE, DIR_LINE
 
 
+# TODO how to get this into an 'utility' source
+# TODO now has a duplicate in symbol.py
+
+def show_text(ctx, x, y, text):
+    """Show text on a canvas position taking into account the Cairo glyph origin."""
+
+    # the Cairo text glyph origin is its left-bottom corner
+    pos = Pos(0, 1).view_xy()
+    x += pos.x
+    y += pos.y
+
+    ctx.move_to(x, y)
+    ctx.show_text(text)
+    return
+
+
 class Symbol(object):
     """
     Symbol represented by a grid.
@@ -173,8 +189,7 @@ class Symbol(object):
         offset = pos - self._startpos.view_xy()
         for pos, char in self._repr.items():
             grid_pos = pos.view_xy() + offset
-            ctx.move_to(grid_pos.x, grid_pos.y)
-            ctx.show_text(char)
+            show_text(ctx, grid_pos.x, grid_pos.y, char)
 
     def paste(self, grid):
         self._representation()
@@ -359,9 +374,11 @@ class Line(Symbol):
         if self._dir == HORIZONTAL:
             line_char = LINE_HOR
             incr = Pos(1, 0)
+
         elif self._dir == VERTICAL:
             line_char = LINE_VERT
             incr = Pos(0, 1)
+
         else:
             line_char = "?"
             incr = Pos(1, 1)

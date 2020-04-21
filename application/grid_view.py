@@ -27,6 +27,22 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GLib  # noqa: E402
 
 
+# TODO how to get this into an 'utility' source
+# TODO now has a duplicate in symbol.py
+
+def show_text(ctx, x, y, text):
+    """Show text on a canvas position taking into account the Cairo glyph origin."""
+
+    # the Cairo text glyph origin is its left-bottom corner
+    pos = Pos(0, 1).view_xy()
+    x += pos.x
+    y += pos.y
+
+    ctx.move_to(x, y)
+    ctx.show_text(text)
+    return
+
+
 class GridView(Gtk.Frame):
 
     def __init__(self):
@@ -363,12 +379,13 @@ class GridView(Gtk.Frame):
         ctx.set_source_rgb(0.1, 0.1, 0.1)
         ctx.select_font_face("monospace", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
 
+        # show_text(ctx, 0, 16, "HALLO")
+
         y = 0
         for r in self._grid.grid:
             x = 0
             for c in r:
-                ctx.move_to(x, y)
-                ctx.show_text(str(c))
+                show_text(ctx, x, y, str(c))
                 x += GRIDSIZE_W
 
             y += GRIDSIZE_H
@@ -499,9 +516,7 @@ class GridView(Gtk.Frame):
             ctx.select_font_face("monospace", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
 
             pos = ref.startpos.view_xy()
-
-            ctx.move_to(pos.x, pos.y)
-            ctx.show_text(MARK_CHAR)  # mark the upper-left corner
+            show_text(ctx, pos.x, pos.y, MARK_CHAR)  # mark the upper-left corner
 
         ctx.restore()
 
@@ -607,10 +622,6 @@ class GridView(Gtk.Frame):
     def calc_position(self, x, y):
         """Calculate the grid view position."""
         pos = Pos(x, y)
-
-        # take into account that Cairo text glyph origin is left-bottom corner
-        pos += Pos(0, 1).view_xy()
-
         pos.snap_to_grid()
         return pos
 
