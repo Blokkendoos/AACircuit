@@ -392,7 +392,6 @@ class Line(Symbol):
         self._repr[pos] = terminal
         pos += incr
 
-        # TODO make this one string (and support an appropriate fill method for this in grid)
         while pos < end:
             self._repr[pos] = line_char
             pos += incr
@@ -614,8 +613,8 @@ class MagLine(Line):
                 f_ori = HORIZONTAL
 
         # TODO Move this to view
-        msg = _("Start: D[{0}] char:{1} ori:{2}".format(i, f_terminal, f_ori))
-        pub.sendMessage('STATUS_MESSAGE', msg=msg)
+        # msg = _("Start: D[{0}] char:{1} ori:{2}".format(i, f_terminal, f_ori))
+        # pub.sendMessage('STATUS_MESSAGE', msg=msg)
 
         # determine the orientation of the second line
         if f_ori == HORIZONTAL:
@@ -638,8 +637,8 @@ class MagLine(Line):
                 break
 
         # TODO Move this to view
-        msg = _("End: D[{0}] char:{1} ori:{2}".format(i, m_terminal, m_ori))
-        pub.sendMessage('STATUS_MESSAGE', msg=msg)
+        # msg = _("End: D[{0}] char:{1} ori:{2}".format(i, m_terminal, m_ori))
+        # pub.sendMessage('STATUS_MESSAGE', msg=msg)
 
         self._corner_line(f_ori)
 

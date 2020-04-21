@@ -217,9 +217,8 @@ class MainWindow(Gtk.Window):
 
     def on_pointer_moved(self, pos):
         """Update the pointer position in the statusbar."""
-        # grid indexing starts at zero, show +1
-        self.label_xpos.set_text(format(pos.x + 1))
-        self.label_ypos.set_text(format(pos.y + 1))
+        self.label_xpos.set_text(format(pos.x))
+        self.label_ypos.set_text(format(pos.y))
 
     def on_message(self, msg):
         """Add message to statusbar."""

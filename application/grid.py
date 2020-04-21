@@ -33,6 +33,7 @@ class Grid(object):
 
     # PRIVATE
 
+    # TODO remove grid 'undo' functionality
     def _push_grid(self):
         """Use (Pickle) serialization to implement a simple undo functionality."""
         self._undo_stack.append(pickle.dumps(self._grid))
