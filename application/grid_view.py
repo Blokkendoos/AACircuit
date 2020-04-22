@@ -292,6 +292,7 @@ class GridView(Gtk.Frame):
 
     def on_draw_rect(self):
         self._selection = Selection(item=DRAW_RECT)
+        self._symbol = Rect(Pos(0, 0), Pos(1, 1))
 
     # TEXT ENTRY
 
@@ -455,14 +456,10 @@ class GridView(Gtk.Frame):
                 self.mark_all_objects(ctx)
                 self._selection.draw(ctx)
 
-            elif self._selection.item in (MAG_LINE, LINE, DIR_LINE):
+            elif self._selection.item in (MAG_LINE, LINE, DIR_LINE, DRAW_RECT):
                 self._symbol.startpos = self._selection.startpos.grid_rc()
                 self._symbol.endpos = self._selection.endpos.grid_rc()
                 self._symbol.draw(ctx)
-
-            elif self._selection.item == DRAW_RECT:
-                symbol = Rect(self._selection.startpos.grid_rc(), self._selection.endpos.grid_rc())
-                symbol.draw(ctx)
 
             elif self._selection.item:
                 # draw it, if we have any valid (not None) selection
