@@ -69,7 +69,7 @@ class Selection(object):
 
     @property
     def maxpos(self):
-        return self.maxpos
+        return self._maxpos
 
     @maxpos.setter
     def maxpos(self, value):
@@ -112,12 +112,13 @@ class SelectionCol(Selection):
     def draw(self, ctx):
         # highlight the selected column
         x = self._startpos.x
-        ctx.new_path()
-        ctx.move_to(x, 0)
-        ctx.line_to(x, self._maxpos.y)
-        ctx.move_to(x + GRIDSIZE_W, 0)
-        ctx.line_to(x + GRIDSIZE_W, self._maxpos.y)
-        ctx.stroke()
+        if x <= self._maxpos.x:
+            ctx.new_path()
+            ctx.move_to(x, 0)
+            ctx.line_to(x, self._maxpos.y)
+            ctx.move_to(x + GRIDSIZE_W, 0)
+            ctx.line_to(x + GRIDSIZE_W, self._maxpos.y)
+            ctx.stroke()
 
 
 class SelectionRow(Selection):
@@ -135,12 +136,13 @@ class SelectionRow(Selection):
     def draw(self, ctx):
         # highlight the selected row
         y = self._startpos.y
-        ctx.new_path()
-        ctx.move_to(0, y)
-        ctx.line_to(self._maxpos.x, y)
-        ctx.move_to(0, y + GRIDSIZE_H)
-        ctx.line_to(self._maxpos.x, y + GRIDSIZE_H)
-        ctx.stroke()
+        if y <= self._maxpos.y:
+            ctx.new_path()
+            ctx.move_to(0, y)
+            ctx.line_to(self._maxpos.x, y)
+            ctx.move_to(0, y + GRIDSIZE_H)
+            ctx.line_to(self._maxpos.x, y + GRIDSIZE_H)
+            ctx.stroke()
 
 
 class SelectionText(Selection):
