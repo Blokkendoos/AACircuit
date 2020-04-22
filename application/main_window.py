@@ -163,9 +163,9 @@ class MainWindow(Gtk.Window):
 
         # clipboard
         self.btn_clipboard = [
-            self.builder.get_object('copy_to_clipboard'),
-            self.builder.get_object('paste_from_clipboard'),
-            self.builder.get_object('load_and_paste_from_clipboard')]
+            self.builder.get_object('copy_grid'),
+            self.builder.get_object('paste_grid'),
+            self.builder.get_object('load_and_paste_grid')]
         for btn in self.btn_clipboard:
             btn.connect('pressed', self.on_clipboard)
 

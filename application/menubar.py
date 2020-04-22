@@ -50,6 +50,13 @@ class MenuBar(object):
         self.menu_undo.set_sensitive(False)
         self.menu_redo.set_sensitive(False)
 
+        self.menu_grid = [
+            builder.get_object('menu_copy_grid'),
+            builder.get_object('menu_paste_grid'),
+            builder.get_object('menu_load_and_paste_grid')]
+        for option in self.menu_grid:
+            option.connect('activate', self.on_menu_grid)
+
         pub.subscribe(self.on_file_opened, 'FILE_OPENED')
         pub.subscribe(self.on_nothing_selected, 'NOTHING_SELECTED')
         pub.subscribe(self.on_selection_changed, 'SELECTION_CHANGED')
@@ -72,6 +79,12 @@ class MenuBar(object):
         ul, br = self.grid_view.drag_rect
 
         pub.sendMessage(name.upper(), rect=(ul, br))
+
+    def on_menu_grid(self, button):
+        name = Gtk.Buildable.get_name(button)
+        # strip prefix
+        name = name.replace('menu_', '')
+        pub.sendMessage(name.upper())
 
     def on_nothing_selected(self):
         self.on_selection_changed()

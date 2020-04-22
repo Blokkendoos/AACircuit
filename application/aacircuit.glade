@@ -345,6 +345,36 @@
                         <accelerator key="z" signal="activate" modifiers="GDK_SHIFT_MASK | GDK_CONTROL_MASK"/>
                       </object>
                     </child>
+                    <child>
+                      <object class="GtkSeparatorMenuItem">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="menu_copy_grid">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Copy grid</property>
+                        <property name="use_underline">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="menu_paste_grid">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Paste grid</property>
+                        <property name="use_underline">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="menu_load_and_paste_grid">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Load and paste ASCII</property>
+                        <property name="use_underline">True</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>
@@ -622,7 +652,7 @@
                             <property name="can_focus">False</property>
                             <property name="n_rows">3</property>
                             <child>
-                              <object class="GtkButton" id="load_and_paste_from_clipboard">
+                              <object class="GtkButton" id="load_and_paste_grid">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
@@ -634,7 +664,7 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkButton" id="paste_from_clipboard">
+                              <object class="GtkButton" id="paste_grid">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
@@ -646,7 +676,7 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkButton" id="copy_to_clipboard">
+                              <object class="GtkButton" id="copy_grid">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
@@ -839,6 +869,10 @@
                 <property name="width_request">600</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="margin_left">5</property>
+                <property name="margin_right">5</property>
+                <property name="margin_top">5</property>
+                <property name="margin_bottom">5</property>
                 <child>
                   <placeholder/>
                 </child>

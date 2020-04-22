@@ -75,9 +75,9 @@ class Controller(object):
         pub.subscribe(self.on_grid_row, 'GRID_ROW')
 
         # clipboard
-        pub.subscribe(self.on_copy_to_clipboard, 'COPY_TO_CLIPBOARD')
-        pub.subscribe(self.on_paste_from_clipboard, 'PASTE_FROM_CLIPBOARD')
-        pub.subscribe(self.on_load_and_paste_from_clipboard, 'LOAD_AND_PASTE_FROM_CLIPBOARD')
+        pub.subscribe(self.on_copy_grid, 'COPY_GRID')
+        pub.subscribe(self.on_paste_grid, 'PASTE_GRID')
+        pub.subscribe(self.on_load_and_paste_grid, 'LOAD_AND_PASTE_GRID')
 
         pub.subscribe(self.on_new, 'NEW_FILE')
         pub.subscribe(self.on_open, 'OPEN_FILE')
@@ -409,10 +409,10 @@ class Controller(object):
 
     # clipboard
 
-    def on_copy_to_clipboard(self):
+    def on_copy_grid(self):
         self.grid.copy_to_clipboard()
 
-    def on_paste_from_clipboard(self):
+    def on_paste_grid(self):
         """
         Copy the content of the clipboard to the grid.
         ASCII lines, terminated by CR, are interpreted as rows.
@@ -433,7 +433,7 @@ class Controller(object):
 
         pub.sendMessage('OBJECTS_SELECTED', objects=self.selected_objects)
 
-    def on_load_and_paste_from_clipboard(self):
+    def on_load_and_paste_grid(self):
         # self.grid.load_and_paste_from_clipboard()
         # pub.sendMessage('GRID', grid=self.grid)
         dialog = AsciiFileChooserWindow()  # noqa: F841
