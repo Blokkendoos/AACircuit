@@ -605,11 +605,14 @@ class MagLine(Line):
                 break
 
         # determine the orientation of the first line
-        if f_ori == LONGEST_FIRST:
-            if dy > dx:
-                f_ori = VERTICAL
-            else:
-                f_ori = HORIZONTAL
+        if f_ori:
+            if f_ori == LONGEST_FIRST:
+                if abs(dy) > abs(dx):
+                    f_ori = VERTICAL
+                else:
+                    f_ori = HORIZONTAL
+        else:
+            f_ori = HORIZONTAL
 
         # TODO Move this to view
         # msg = _("Start: D[{0}] char:{1} ori:{2}".format(i, f_terminal, f_ori))
