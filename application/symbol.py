@@ -394,10 +394,6 @@ class Line(Symbol):
     def type(self):
         return self._type
 
-    def remove(self, grid):
-        for pos, value in self._repr.items():
-            grid.set_cell(pos, ' ')  # TODO use CONSTANT
-
 
 class DirLine(Line):
     """A straight line from start to end position."""
