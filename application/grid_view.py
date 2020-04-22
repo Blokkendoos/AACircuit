@@ -34,9 +34,7 @@ def show_text(ctx, x, y, text):
     """Show text on a canvas position taking into account the Cairo glyph origin."""
 
     # the Cairo text glyph origin is its left-bottom corner
-    pos = Pos(0, 1).view_xy()
-    x += pos.x
-    y += pos.y
+    y += FONTSIZE
 
     ctx.move_to(x, y)
     ctx.show_text(text)
