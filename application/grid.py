@@ -10,17 +10,14 @@ import xerox
 from pubsub import pub
 
 from application import _
+from application import CELL_DEFAULT, CELL_EMPTY, CELL_NEW
 
 
 class Grid(object):
 
-    DEFAULT_VALUE = " "  # default cell-value
-    NEW_VALUE = " "  # value for inserted cell
-    EMPTY = " "  # empty cell-value
-
     def __init__(self, rows=5, cols=5):
         self._undo_stack = []
-        self._grid = [[self.DEFAULT_VALUE] * rows for i in range(cols)]
+        self._grid = [[CELL_DEFAULT] * rows for i in range(cols)]
         # set to True when the grid has been changed
         self._dirty = False
 
@@ -211,7 +208,7 @@ class Grid(object):
 
         for r in range(r_start, r_end):
             for c in range(c_start, c_end):
-                self._grid[r][c] = self.EMPTY
+                self._grid[r][c] = CELL_EMPTY
 
         self._dirty = True
 
@@ -263,11 +260,11 @@ class Grid(object):
 
     def insert_row(self, row):
         self._push_grid()
-        self._grid.insert(row, [self.NEW_VALUE] * self.nr_cols)
+        self._grid.insert(row, [CELL_NEW] * self.nr_cols)
         self._dirty = True
 
     def insert_col(self, col):
         self._push_grid()
         for r in self._grid:
-            r.insert(col, self.NEW_VALUE)
+            r.insert(col, CELL_NEW)
         self._dirty = True

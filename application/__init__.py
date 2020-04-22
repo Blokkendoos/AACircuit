@@ -21,6 +21,10 @@ FONTSIZE = 12
 GRIDSIZE_W = 10
 GRIDSIZE_H = 16
 
+CELL_DEFAULT = ' '
+CELL_NEW = CELL_DEFAULT
+CELL_EMPTY = CELL_DEFAULT
+
 # selection action
 REMOVE = 'remove'
 INSERT = 'insert'
