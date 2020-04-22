@@ -241,10 +241,12 @@ class GridView(Gtk.Frame):
     def on_add_text(self):
         self._selection = Selection(item=TEXT, state=SELECTING)
         self._text = ""
+        self._symbol = Text(Pos(0, 0), self._text)
         self._drawing_area.grab_focus()
 
     def on_add_textblock(self, text):
         self._selection = Selection(item=TEXT_BLOCK, state=SELECTING)
+        self._symbol = Text(Pos(0, 0), text)
         self._text = text
 
     def on_character_selected(self, char):
@@ -302,16 +304,12 @@ class GridView(Gtk.Frame):
                 char = chr(ascii)
             return char
 
-        # TODO Only for TEXT necessary
-        # if self._selection.item == TEXT:
-
         # modifier = event.state
         # name = Gdk.keyval_name(event.keyval)
         value = event.keyval
 
         # check the event modifiers (can also use CONTROL_MASK, etc)
         # shift = (event.state & Gdk.ModifierType.SHIFT_MASK)
-
         if value == Gdk.KEY_Left or value == Gdk.KEY_BackSpace:
             if len(self._text) > 0:
                 self._text = self._text[:-1]
@@ -433,10 +431,9 @@ class GridView(Gtk.Frame):
 
         elif self._selection.item in (TEXT, TEXT_BLOCK):
             self.draw_cursor(ctx)
-            if self._selection.item == TEXT:
-                self._selection.text = self._text
-            self._selection.startpos = self._hover_pos
-            self._selection.draw(ctx)
+            self._symbol.startpos = self._hover_pos.grid_rc()
+            self._symbol.text = self._text
+            self._symbol.draw(ctx)
 
         else:
             ctx.set_font_size(FONTSIZE)
@@ -483,7 +480,7 @@ class GridView(Gtk.Frame):
         else:
             ctx.set_source_rgb(0.5, 0.5, 0.5)
 
-        x, y = (self._hover_pos + Pos(0, -GRIDSIZE_H)).xy  # TODO meelopen met de tekst (blijft nu aan 't begin staan)
+        x, y = self._hover_pos.xy  # TODO meelopen met de tekst (blijft nu aan 't begin staan)
 
         ctx.rectangle(x, y, GRIDSIZE_W, GRIDSIZE_H)
         ctx.stroke()
@@ -588,11 +585,11 @@ class GridView(Gtk.Frame):
 
         elif self._selection.item == TEXT:
             self._selection.state = SELECTED
-            pub.sendMessage('PASTE_TEXT', pos=pos.grid_rc(), text=self._text)
+            pub.sendMessage('PASTE_TEXT', pos=pos.grid_rc(), text=self._symbol.text)
 
         elif self._selection.item == TEXT_BLOCK:
             self._selection.state = SELECTED
-            pub.sendMessage('PASTE_TEXTBLOCK', pos=pos.grid_rc(), text=self._selection.text)
+            pub.sendMessage('PASTE_TEXTBLOCK', pos=pos.grid_rc(), text=self._symbol.text)
 
         elif self._selection.item == OBJECTS:
 

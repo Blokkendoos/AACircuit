@@ -279,7 +279,8 @@ class Text(Symbol):
         for line in str:
             pos.x = startpos.x
             for char in line:
-                self._repr[pos] = char
+                if char != ' ':
+                    self._repr[pos] = char
                 pos += incr
             pos += Pos(0, 1)
 
@@ -307,29 +308,6 @@ class Text(Symbol):
     def rotate(self):
         # raise NotImplementedError
         return
-
-    def paste(self, grid):
-        pos = self._startpos
-        y = pos.y
-        str = self._text.split('\n')
-        for line in str:
-            x = pos.x
-            for char in line:
-                x += 1
-                if char != ' ':
-                    grid.set_cell(Pos(x, y), char)
-            y += 1  # TODO check boundary?
-
-    def remove(self, grid):
-        pos = self._startpos
-        y = pos.y
-        str = self._text.split('\n')
-        for line in str:
-            x = pos.x
-            for char in line:
-                x += 1
-                grid.set_cell(Pos(x, y), ' ')
-            y += 1  # TODO check boundary?
 
 
 class Line(Symbol):
