@@ -57,6 +57,13 @@ class MenuBar(object):
         for option in self.menu_grid:
             option.connect('activate', self.on_menu_grid)
 
+        # symbol menu
+        self.menu_rotate = builder.get_object('rotate_symbol')
+        self.menu_mirror = builder.get_object('mirror_symbol')
+
+        self.menu_rotate.connect('activate', self.on_menu_symbol)
+        self.menu_mirror.connect('activate', self.on_menu_symbol)
+
         # view menu
         self.menu_grid_size = [
             builder.get_object('grid_size_1'),
@@ -93,6 +100,10 @@ class MenuBar(object):
         name = Gtk.Buildable.get_name(button)
         # strip prefix
         name = name.replace('menu_', '')
+        pub.sendMessage(name.upper())
+
+    def on_menu_symbol(self, item):
+        name = Gtk.Buildable.get_name(item)
         pub.sendMessage(name.upper())
 
     def on_menu_grid_size(self, item):
