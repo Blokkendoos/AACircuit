@@ -12,6 +12,7 @@ from math import pi, radians, atan
 from application import _
 from application.pos import Pos
 from application import FONTSIZE
+from application import CELL_EMPTY, UPPER_CORNER, LOWER_CORNER, CROSSING
 from application import INSERT, COL, ROW
 from application import HORIZONTAL, VERTICAL, LONGEST_FIRST
 from application import LINE_HOR, LINE_VERT
@@ -199,7 +200,7 @@ class Symbol(object):
     def remove(self, grid):
         """Remove the symbol from the target grid."""
         for pos in self._repr.keys():
-            grid.set_cell(pos, ' ')  # TODO use CONSTANT value
+            grid.set_cell(pos, CELL_EMPTY)
 
     def mirror(self, grid):
         # mirror specific characters
@@ -539,10 +540,6 @@ class MagLine(Line):
                     if char != 'x':
                         m_pos = pos + Pos(i - 1, j - 1)
                         m_cell = self.cell(m_pos)
-
-                        if m_cell == chr(0):  # TODO x00 and x32 (space)
-                            m_cell = chr(32)
-
                         if m_cell != char:
                             result = False
                             break
@@ -626,11 +623,10 @@ class MagLine(Line):
         dx = endpos.x - startpos.x
         dy = endpos.y - startpos.y
 
-        # TODO use CONSTANTs
         if (dy >= 0) ^ (ori != VERTICAL):
-            corner_char = "'"  # lower corner x39
+            corner_char = LOWER_CORNER
         else:
-            corner_char = '.'  # upper corner x46
+            corner_char = UPPER_CORNER
 
         top = 0
         left = 0
@@ -654,11 +650,10 @@ class MagLine(Line):
         if abs(dx) > 1:
             for temp in range(endv - startv):
                 pos = Pos(startv + temp, top)
-                # TODO use CONSTANTs
-                if self.cell(pos) == '|':  # x124
-                    char = ')'
+                if self.cell(pos) == LINE_VERT:
+                    char = CROSSING
                 else:
-                    char = '-'
+                    char = LINE_HOR
                 self._repr[pos] = char
 
         # vertical line
@@ -672,11 +667,10 @@ class MagLine(Line):
         if abs(dy) > 1:
             for temp in range(endv - startv):
                 pos = Pos(left, startv + temp)
-                # TODO use CONSTANTs
-                if self.cell(pos) == '-':  # x45
-                    char = ')'
+                if self.cell(pos) == LINE_HOR:
+                    char = CROSSING
                 else:
-                    char = '|'
+                    char = LINE_VERT
                 self._repr[pos] = char
 
         # corner character, if there is a corner

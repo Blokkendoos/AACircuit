@@ -62,6 +62,11 @@ ML_BEND_CHAR = '+'
 # lines
 LINE_HOR = '-'
 LINE_VERT = '|'
+CROSSING = ')'
+
+LOWER_CORNER = "'"
+UPPER_CORNER = '.'
+
 TERMINAL1 = None
 TERMINAL2 = 'o'
 TERMINAL3 = '+'
