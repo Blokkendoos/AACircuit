@@ -587,8 +587,8 @@ class MagLine(Line):
         startpos = self._startpos
         endpos = self._endpos
 
-        dx = abs(endpos.x - startpos.x)
-        dy = abs(endpos.y - startpos.y)
+        dx = endpos.x - startpos.x
+        dy = endpos.y - startpos.y
 
         self._repr = dict()
 
@@ -617,13 +617,13 @@ class MagLine(Line):
 
         # determine the orientation of the second line
         if f_ori == HORIZONTAL:
-            if dy > 0:
+            if abs(dy) > 0:
                 s_ori = VERTICAL
             else:
                 s_ori = HORIZONTAL
 
         elif f_ori == VERTICAL:
-            if dx > 0:
+            if abs(dx) > 0:
                 s_ori = HORIZONTAL
             else:
                 s_ori = VERTICAL
@@ -646,7 +646,8 @@ class MagLine(Line):
         startpos = self._startpos
         endpos = self._endpos
 
-        dx, dy = (endpos - startpos).xy
+        dx = endpos.x - startpos.x
+        dy = endpos.y - startpos.y
 
         # TODO use CONSTANTs
         if (dy >= 0) ^ (ori != VERTICAL):
