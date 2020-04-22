@@ -689,7 +689,7 @@ class MagLine(Line):
         return MagLine(startpos, endpos, self.cell)
 
     def memo(self):
-        str = "{0}:{1},{2},{3}".format(MAG_LINE, self._startpos, self._endpos)
+        str = "{0}:{1},{2}".format(MAG_LINE, self._startpos, self._endpos)
         return str
 
 
