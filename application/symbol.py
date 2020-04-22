@@ -6,7 +6,6 @@ AACircuit
 import copy
 import json
 import collections
-from pubsub import pub
 from bresenham import bresenham
 from math import pi, radians, atan
 
@@ -346,7 +345,6 @@ class Line(Symbol):
             self._type = type
         self._terminal = TERMINAL_TYPE[self._type]
 
-        self._direction()
         self._representation()
 
     def _direction(self):
@@ -358,6 +356,8 @@ class Line(Symbol):
 
     def _representation(self):
         """Compose the line elements."""
+
+        self._direction()
 
         self._repr = dict()
 
@@ -604,21 +604,21 @@ class MagLine(Line):
                 self._repr[startpos] = f_terminal
                 break
 
-        # determine the orientation of the first line
-        if f_ori:
-            if f_ori == LONGEST_FIRST:
-                if abs(dy) > abs(dx):
-                    f_ori = VERTICAL
-                else:
-                    f_ori = HORIZONTAL
-        else:
+        # the orientation of the first line
+        if f_ori is None:
             f_ori = HORIZONTAL
+
+        elif f_ori == LONGEST_FIRST:
+            if abs(dy) > abs(dx):
+                f_ori = VERTICAL
+            else:
+                f_ori = HORIZONTAL
 
         # TODO Move this to view
         # msg = _("Start: D[{0}] char:{1} ori:{2}".format(i, f_terminal, f_ori))
         # pub.sendMessage('STATUS_MESSAGE', msg=msg)
 
-        # determine the orientation of the second line
+        # the orientation of the second line
         if f_ori == HORIZONTAL:
             if abs(dy) > 0:
                 s_ori = VERTICAL

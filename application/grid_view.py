@@ -19,7 +19,7 @@ from application import CHARACTER, COMPONENT, LINE, MAG_LINE, DIR_LINE, OBJECTS,
 from application import MARK_CHAR
 from application import TEXT, TEXT_BLOCK
 from application.pos import Pos
-from application.selection import Selection, SelectionLine, SelectionCol, SelectionRow, SelectionRect
+from application.selection import Selection, SelectionCol, SelectionRow, SelectionRect
 from application.symbol import Character, Text, Line, MagLine, DirLine, Rect
 
 import gi
@@ -278,12 +278,15 @@ class GridView(Gtk.Frame):
 
     def on_draw_mag_line(self):
         self._selection = Selection(item=MAG_LINE)
+        self._symbol = MagLine(Pos(0, 0), Pos(1, 1), self._grid.cell)
 
     def on_draw_dir_line(self, type):
         self._selection = Selection(item=DIR_LINE)
+        self._symbol = DirLine(Pos(0, 0), Pos(1, 1))
 
     def on_draw_line(self, type):
-        self._selection = SelectionLine(item=LINE, type=type)
+        self._selection = Selection(item=LINE)
+        self._symbol = Line(Pos(0, 0), Pos(1, 1), type=type)
 
     def on_draw_rect(self):
         self._selection = Selection(item=DRAW_RECT)
@@ -455,16 +458,13 @@ class GridView(Gtk.Frame):
                 self.mark_all_objects(ctx)
                 self._selection.draw(ctx)
 
-            elif self._selection.item == MAG_LINE:
-                symbol = MagLine(self._selection.startpos.grid_rc(), self._selection.endpos.grid_rc(), self._grid.cell)
-                symbol.draw(ctx)
+            elif self._selection.item in (MAG_LINE, LINE, DIR_LINE):
+                self._symbol.startpos = self._selection.startpos.grid_rc()
+                self._symbol.endpos = self._selection.endpos.grid_rc()
+                self._symbol.draw(ctx)
 
             elif self._selection.item == DRAW_RECT:
                 symbol = Rect(self._selection.startpos.grid_rc(), self._selection.endpos.grid_rc())
-                symbol.draw(ctx)
-
-            elif self._selection.item == LINE:
-                symbol = Line(self._selection.startpos.grid_rc(), self._selection.endpos.grid_rc(), type=self._selection.type)
                 symbol.draw(ctx)
 
             elif self._selection.item:
@@ -673,16 +673,13 @@ class GridView(Gtk.Frame):
             pub.sendMessage('SELECTION_CHANGED', selected=True)
 
         elif self._selection.item == LINE:
-
             if self._drag_dir == HORIZONTAL:
                 endpos.y = startpos.y
             elif self._drag_dir == VERTICAL:
                 endpos.x = startpos.x
-            print("PASTE_LINE start:", startpos, " end:", endpos)
-            pub.sendMessage("PASTE_LINE", startpos=startpos, endpos=endpos, type=self._selection.type)
+            pub.sendMessage("PASTE_LINE", startpos=startpos, endpos=endpos, type=self._symbol.type)
 
         elif self._selection.item == MAG_LINE:
-            print("PASTE_MAG_LINE start:", startpos, " end:", endpos)
             pub.sendMessage("PASTE_MAG_LINE", startpos=startpos, endpos=endpos)
 
         elif self._selection.item == DIR_LINE:
