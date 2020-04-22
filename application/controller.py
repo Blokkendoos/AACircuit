@@ -475,10 +475,12 @@ class Controller(object):
 
     def on_select_rect(self):
         """Select multiple objects."""
+        pub.sendMessage('NOTHING_SELECTED')
         pub.sendMessage('SELECTING_RECT', objects=self.objects)
 
     def on_select_objects(self):
         """Select individual objects."""
+        pub.sendMessage('NOTHING_SELECTED')
         pub.sendMessage('SELECTING_OBJECTS', objects=self.objects)
 
     # file open/save

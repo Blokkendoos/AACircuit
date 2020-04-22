@@ -138,7 +138,7 @@ class MainWindow(Gtk.Window):
         self.btn_rect.connect('pressed', self.on_rect)
         self.btn_rect.set_tooltip_text(_("draw a rectangle"))
 
-        # insert/remove rows or columns
+        # insert/remove grid rows or columns
         self.btn_stretch1 = self.builder.get_object('stretch1')
         self.btn_stretch2 = self.builder.get_object('stretch2')
         self.btn_stretch3 = self.builder.get_object('stretch3')
@@ -300,6 +300,8 @@ class MainWindow(Gtk.Window):
             action = INSERT
         else:
             action = REMOVE
+
+        pub.sendMessage('NOTHING_SELECTED')
         pub.sendMessage('SELECTING_COL', action=action)
 
     def on_selecting_row(self, button):
@@ -308,6 +310,7 @@ class MainWindow(Gtk.Window):
             action = INSERT
         else:
             action = REMOVE
+        pub.sendMessage('NOTHING_SELECTED')
         pub.sendMessage('SELECTING_ROW', action=action)
 
     def on_clipboard(self, button):

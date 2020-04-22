@@ -64,6 +64,9 @@ class MenuBar(object):
         self.menu_rotate.connect('activate', self.on_menu_symbol)
         self.menu_mirror.connect('activate', self.on_menu_symbol)
 
+        self.menu_rotate.set_sensitive(False)
+        self.menu_mirror.set_sensitive(False)
+
         # view menu
         self.menu_grid_size = [
             builder.get_object('grid_size_1'),
@@ -75,6 +78,7 @@ class MenuBar(object):
 
         pub.subscribe(self.on_file_opened, 'FILE_OPENED')
         pub.subscribe(self.on_nothing_selected, 'NOTHING_SELECTED')
+        pub.subscribe(self.on_symbol_selected, 'SYMBOL_SELECTED')
         pub.subscribe(self.on_selection_changed, 'SELECTION_CHANGED')
         pub.subscribe(self.on_undo_changed, 'UNDO_CHANGED')
         pub.subscribe(self.on_redo_changed, 'REDO_CHANGED')
@@ -125,6 +129,13 @@ class MenuBar(object):
 
     def on_nothing_selected(self):
         self.on_selection_changed()
+        self.menu_rotate.set_sensitive(False)
+        self.menu_mirror.set_sensitive(False)
+
+    def on_symbol_selected(self, symbol):
+        # enable the Symbol menu options only when a symbol has been selected
+        self.menu_rotate.set_sensitive(True)
+        self.menu_mirror.set_sensitive(True)
 
     def on_selection_changed(self, selected=False):
         # enable the cut and copy menu only when one or more objects are selected
