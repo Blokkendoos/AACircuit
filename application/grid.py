@@ -268,3 +268,21 @@ class Grid(object):
         for r in self._grid:
             r.insert(col, CELL_NEW)
         self._dirty = True
+
+    def resize(self, cols, rows):
+
+        if self.nr_cols < cols:
+            for cnt in range(cols - self.nr_cols):
+                self.insert_col(self.nr_cols)
+
+        elif self.nr_cols > cols:
+            for cnt in range(self.nr_cols - cols):
+                self.remove_col(self.nr_cols - 1)
+
+        if self.nr_rows < rows:
+            for cnt in range(rows - self.nr_rows):
+                self.insert_row(self.nr_rows)
+
+        elif self.nr_rows > rows:
+            for cnt in range(self.nr_rows - rows):
+                self.remove_row(self.nr_rows - 1)

@@ -57,6 +57,15 @@ class MenuBar(object):
         for option in self.menu_grid:
             option.connect('activate', self.on_menu_grid)
 
+        # view menu
+        self.menu_grid_size = [
+            builder.get_object('grid_size_1'),
+            builder.get_object('grid_size_2'),
+            builder.get_object('grid_size_3'),
+            builder.get_object('grid_size_4')]
+        for option in self.menu_grid_size:
+            option.connect('activate', self.on_menu_grid_size)
+
         pub.subscribe(self.on_file_opened, 'FILE_OPENED')
         pub.subscribe(self.on_nothing_selected, 'NOTHING_SELECTED')
         pub.subscribe(self.on_selection_changed, 'SELECTION_CHANGED')
@@ -85,6 +94,23 @@ class MenuBar(object):
         # strip prefix
         name = name.replace('menu_', '')
         pub.sendMessage(name.upper())
+
+    def on_menu_grid_size(self, item):
+        name = Gtk.Buildable.get_name(item)
+        # get the grid_size option sequence number
+        nr = int(name[-1])
+        if nr == 1:
+            cols, rows = (72, 36)
+        elif nr == 2:
+            cols, rows = (72, 49)
+        elif nr == 3:
+            cols, rows = (100, 49)
+        elif nr == 4:
+            cols, rows = (200, 70)
+        else:
+            # default, catch all
+            cols, rows = (72, 36)
+        pub.sendMessage(name.upper(), cols=cols, rows=rows)
 
     def on_nothing_selected(self):
         self.on_selection_changed()

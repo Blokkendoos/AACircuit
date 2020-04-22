@@ -88,6 +88,12 @@ class Controller(object):
         pub.subscribe(self.on_cut, 'CUT')
         pub.subscribe(self.on_copy, 'COPY')
 
+        # grid size
+        pub.subscribe(self.on_grid_size, 'GRID_SIZE_1')
+        pub.subscribe(self.on_grid_size, 'GRID_SIZE_2')
+        pub.subscribe(self.on_grid_size, 'GRID_SIZE_3')
+        pub.subscribe(self.on_grid_size, 'GRID_SIZE_4')
+
         # open/save grid from/to file
         pub.subscribe(self.on_read_from_file, 'READ_FROM_FILE')
         pub.subscribe(self.on_write_to_file, 'WRITE_TO_FILE')
@@ -244,6 +250,9 @@ class Controller(object):
         pub.sendMessage('OBJECTS_SELECTED', objects=self.selected_objects)
 
     # grid manipulation
+
+    def on_grid_size(self, cols, rows):
+        self.grid.resize(cols, rows)
 
     def on_grid_col(self, col, action):
 
