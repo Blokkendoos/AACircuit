@@ -19,8 +19,8 @@ from application import CHARACTER, COMPONENT, LINE, MAG_LINE, DIR_LINE, OBJECTS,
 from application import MARK_CHAR
 from application import TEXT, TEXT_BLOCK
 from application.pos import Pos
+from application.symbol import Text, Line, MagLine, DirLine, Rect
 from application.selection import Selection, SelectionCol, SelectionRow, SelectionRect
-from application.symbol import Character, Text, Line, MagLine, DirLine, Rect
 
 import gi
 gi.require_version('Gtk', '3.0')
@@ -657,13 +657,6 @@ class GridView(Gtk.Frame):
         self._selection.state = SELECTED
 
         if self._selection.item == DRAW_RECT:
-
-            # TODO move this to the Symbol class?
-            if startpos > endpos:
-                tmp = endpos
-                endpos = startpos
-                startpos = tmp
-
             pub.sendMessage('PASTE_RECT', startpos=startpos, endpos=endpos)
 
         elif self._selection.item == RECT:

@@ -691,6 +691,11 @@ class Rect(Symbol):
 
     def __init__(self, startpos, endpos):
 
+        if startpos > endpos:
+            tmp = endpos
+            endpos = startpos
+            startpos = tmp
+
         super(Rect, self).__init__(startpos=startpos, endpos=endpos)
 
         self._representation()
