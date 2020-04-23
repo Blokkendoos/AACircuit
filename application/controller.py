@@ -231,13 +231,13 @@ class Controller(object):
         self.find_selected(rect)
 
         action = []
-        for sel in self.selected_objects:
+        for obj in self.selected_objects:
 
-            act = Action(action=REMOVE, symbol=sel.symbol)
+            act = Action(action=REMOVE, symbol=obj.symbol)
             action.append(act)
 
-            sel.symbol.remove(self.grid)
-            self.remove_from_objects(sel.symbol)
+            obj.symbol.remove(self.grid)
+            self.remove_from_objects(obj.symbol)
 
         self.latest_action += action
 
@@ -295,9 +295,6 @@ class Controller(object):
         if len(self.selected_objects) == 0:
             self.symbol.rotate()
             pub.sendMessage('SYMBOL_SELECTED', symbol=self.symbol)
-        # else:
-        #     for sel in self.selected_objects:
-        #         sel.symbol.grid_next()
 
     def on_mirror_symbol(self):
         self.symbol.mirrored = 1 - self.symbol.mirrored  # toggle 0/1
@@ -349,12 +346,12 @@ class Controller(object):
 
         action = []
 
-        for sel in self.selected_objects:
+        for obj in self.selected_objects:
 
-            offset = pos - sel.startpos
+            offset = pos - obj.startpos
 
-            # TODO make the position translation a Symbol method
-            symbol = sel.symbol.copy()
+            # TODO make the position translation a Symbol method?
+            symbol = obj.symbol.copy()
             symbol.startpos += offset
             symbol.endpos += offset
 
