@@ -7,10 +7,6 @@ import cairo
 import time
 from pubsub import pub
 
-# https://pypi.org/project/profilehooks/
-# from profilehooks import coverage
-# from profilehooks import timecall
-
 from application import _
 from application import FONTSIZE, GRIDSIZE_W, GRIDSIZE_H
 from application import HORIZONTAL, VERTICAL
@@ -392,8 +388,6 @@ class GridView(Gtk.Frame):
             if y >= self.surface.get_height():
                 break
 
-    # @coverage
-    # @timecall
     def draw_selection(self, ctx):
 
         ctx.save()
