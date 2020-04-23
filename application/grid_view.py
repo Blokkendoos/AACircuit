@@ -429,6 +429,7 @@ class GridView(Gtk.Frame):
     def draw_selecting_state(self, ctx):
         if self._selection.item == OBJECTS:
             self.mark_all_objects(ctx)
+            self.draw_cursor(ctx)
 
         elif self._selection.item in (TEXT, TEXT_BLOCK):
             self.draw_cursor(ctx)
@@ -447,10 +448,8 @@ class GridView(Gtk.Frame):
                 self._selection.startpos = self._hover_pos
             else:
                 self._selection.startpos = self._drag_startpos
-
             self._selection.endpos = self._drag_currentpos
             self._selection.maxpos = self.max_pos_grid
-            self._selection.direction = self._drag_dir
 
             if self._selection.item == RECT:
                 self.mark_all_objects(ctx)
@@ -590,15 +589,12 @@ class GridView(Gtk.Frame):
 
         elif self._selection.item == OBJECTS:
 
-            # FIXME this is a hack (switching from one to another Selection subclass)
-
-            # and select the object within this rect
+            # the object within the cursor rect
             self._selection = SelectionRect()
             self._selection.state = SELECTED
 
-            # create a small rect (one cell in all directions)
-            ul = pos - Pos(GRIDSIZE_W, GRIDSIZE_H)
-            br = pos + Pos(2 * GRIDSIZE_W, GRIDSIZE_H)
+            ul = pos
+            br = ul + Pos(GRIDSIZE_W, GRIDSIZE_H)
 
             self._drag_startpos = ul
             self._drag_endpos = br
