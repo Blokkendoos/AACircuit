@@ -125,6 +125,8 @@ class MenuBar(object):
         else:
             # default, catch all
             cols, rows = (72, 36)
+        # strip the sequence nr
+        name = name[:-2]
         pub.sendMessage(name.upper(), cols=cols, rows=rows)
 
     def on_nothing_selected(self):

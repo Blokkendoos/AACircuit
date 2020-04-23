@@ -89,10 +89,7 @@ class Controller(object):
         pub.subscribe(self.on_copy, 'COPY')
 
         # grid size
-        pub.subscribe(self.on_grid_size, 'GRID_SIZE_1')
-        pub.subscribe(self.on_grid_size, 'GRID_SIZE_2')
-        pub.subscribe(self.on_grid_size, 'GRID_SIZE_3')
-        pub.subscribe(self.on_grid_size, 'GRID_SIZE_4')
+        pub.subscribe(self.on_grid_size, 'GRID_SIZE')
 
         # open/save grid from/to file
         pub.subscribe(self.on_read_from_file, 'READ_FROM_FILE')
