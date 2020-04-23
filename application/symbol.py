@@ -799,10 +799,10 @@ class Column(Symbol):
 
     def __init__(self, col, action):
 
+        super(Column, self).__init__(id=col, startpos=Pos(col, 0))
+
         self._col = col
         self._action = action
-
-        super(Column, self).__init__(id=col, startpos=Pos(col, 0))
 
     @property
     def col(self):
@@ -817,15 +817,18 @@ class Column(Symbol):
         str += "{0}:{1}".format(COL, self.col)
         return str
 
+    def copy(self):
+        return Column(self._col, self._action)
+
 
 class Row(Symbol):
 
     def __init__(self, row, action):
 
+        super(Row, self).__init__(id=row, startpos=Pos(0, row))
+
         self._row = row
         self._action = action
-
-        super(Row, self).__init__(id=row, startpos=Pos(0, row))
 
     @property
     def row(self):
@@ -839,3 +842,6 @@ class Row(Symbol):
 
         str += "{0}:{1}".format(ROW, self.row)
         return str
+
+    def copy(self):
+        return Row(self._row, self._action)
