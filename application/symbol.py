@@ -91,7 +91,8 @@ class Symbol(object):
         for row in self.grid:
             pos.x = self._startpos.x
             for char in row:
-                self._repr[pos] = char
+                if char != ' ':
+                    self._repr[pos] = char
                 pos += incr
             pos += Pos(0, 1)
 
