@@ -370,27 +370,6 @@ class Controller(object):
         pub.sendMessage('NOTHING_SELECTED')
         pub.sendMessage('UNDO_CHANGED', undo=True)
 
-    def on_cut_objects(self, rect):
-
-        action = []
-
-        for sel in self.selected_objects:
-
-            act = Action(action=REMOVE, symbol=sel.symbol)
-            action.append(act)
-
-            self.remove_from_objects(sel.symbol)
-
-            grid = self.symbol.grid
-            dummy, rect = grid.rect()
-
-            self.grid.erase_rect(rect)
-
-        self.latest_action += action
-
-        pub.sendMessage('NOTHING_SELECTED')
-        pub.sendMessage('UNDO_CHANGED', undo=True)
-
     # lines
 
     def on_paste_line(self, startpos, endpos, type):
