@@ -5,9 +5,7 @@ AACircuit
 2020-03-02 JvO
 """
 
-import pickle
 import xerox
-from pubsub import pub
 
 from application import _
 from application import CELL_DEFAULT, CELL_EMPTY, CELL_NEW
@@ -27,17 +25,6 @@ class Grid(object):
         for r in self._grid:
             str += "{0}\n".format(r)
         return str
-
-    # PRIVATE
-
-    # TODO remove grid 'undo' functionality
-    def _push_grid(self):
-        """Use (Pickle) serialization to implement a simple undo functionality."""
-        self._undo_stack.append(pickle.dumps(self._grid))
-        pub.sendMessage('UNDO_CHANGED', undo=True)
-
-    def _pop_grid(self, str):
-        self._grid = pickle.loads(str)
 
     # PUBLIC
 
@@ -70,22 +57,6 @@ class Grid(object):
             column.append(r[col])
         return column
 
-    def undo(self):
-
-        print("Grid.undo: Deprecated method")
-
-        # FIXME grid viewport is not resized when the gridsize has been changed (by this undo)
-        if len(self._undo_stack) > 0:
-            self._pop_grid(self._undo_stack.pop())
-        if len(self._undo_stack) == 0:
-            pub.sendMessage('UNDO_CHANGED', undo=False)
-
-    def to_str(self):
-        return pickle.dumps(self._grid)
-
-    def from_str(self, str):
-        self._grid = pickle.loads(str)
-
     # clipboard
 
     def copy_to_clipboard(self):
@@ -111,8 +82,6 @@ class Grid(object):
         ASCII lines, terminated by CR, are interpreted as rows.
         """
         print("Deprecated method")
-
-        self._push_grid()
 
         grid = []
         first_line = True
@@ -196,8 +165,6 @@ class Grid(object):
         :param rect: rectangle upper-left corner and bottom-right corner (row, column) tuple
         """
 
-        self._push_grid()
-
         c_start, r_start, c_end, r_end = self.rect_to_rc(rect)
 
         # truncate
@@ -220,8 +187,6 @@ class Grid(object):
         """
         if len(content) == 0:
             return
-
-        self._push_grid()
 
         c_start, r_start = pos.xy
         x_max = self.nr_cols
@@ -246,25 +211,21 @@ class Grid(object):
     def remove_row(self, row):
         # assert row >= 0 and row < self.nr_rows
         if row >= 0 and row < self.nr_rows:
-            self._push_grid()
             del self._grid[row]
             self._dirty = True
 
     def remove_col(self, col):
         # assert col >= 0 and col < self.nr_cols
         if col >= 0 and col < self.nr_cols:
-            self._push_grid()
             for r in self._grid:
                 del r[col]
             self._dirty = True
 
     def insert_row(self, row):
-        self._push_grid()
         self._grid.insert(row, [CELL_NEW] * self.nr_cols)
         self._dirty = True
 
     def insert_col(self, col):
-        self._push_grid()
         for r in self._grid:
             r.insert(col, CELL_NEW)
         self._dirty = True
