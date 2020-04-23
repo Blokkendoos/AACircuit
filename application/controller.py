@@ -253,6 +253,7 @@ class Controller(object):
 
     def on_grid_size(self, cols, rows):
         self.grid.resize(cols, rows)
+        pub.sendMessage('GRID_SIZE_CHANGED')
 
     def on_grid_col(self, col, action):
 

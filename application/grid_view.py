@@ -96,6 +96,7 @@ class GridView(Gtk.Frame):
         # subscriptions
 
         pub.subscribe(self.set_grid, 'GRID')
+        pub.subscribe(self.gridsize_changed, 'GRID_SIZE_CHANGED')
 
         pub.subscribe(self.on_add_text, 'ADD_TEXT')
         pub.subscribe(self.on_add_textblock, 'ADD_TEXTBLOCK')
