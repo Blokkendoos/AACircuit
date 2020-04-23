@@ -584,7 +584,7 @@ class GridView(Gtk.Frame):
 
         elif self._selection.item == OBJECTS:
 
-            # the object within the cursor rect
+            # select the object within the cursor rect
             self._selection = SelectionRect()
             self._selection.state = SELECTED
 

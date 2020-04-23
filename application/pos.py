@@ -99,8 +99,8 @@ class Pos(object):
         :return True if the point lies within the rect, otherwise False
         """
         (ul, br) = rect
-        if (self._x >= ul.x and self._x <= br.x and  # noqa W503
-                self._y >= ul.y and self._y <= br.y):
+        if (self._x >= ul.x and self._x < br.x and  # noqa W503
+                self._y >= ul.y and self._y < br.y):
             return True
         else:
             return False
