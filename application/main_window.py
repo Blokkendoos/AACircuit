@@ -88,7 +88,6 @@ class MainWindow(Gtk.Window):
             self.builder.get_object('cursor2'),
             self.builder.get_object('cursor3'),
             self.builder.get_object('cursor4')]
-        self.btn_cur[0].set_active(True)
 
         self.text_entry = self.builder.get_object('text_entry')
 
