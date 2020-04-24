@@ -78,6 +78,8 @@ class MainWindow(Gtk.Window):
         self.label_ypos = self.builder.get_object('y_pos')
         self.msg = self.builder.get_object('statusbar1')
 
+        # the GUI signals are handled by this class
+        # NB change signals (in Glade) when changing (handler) method names
         self.builder.connect_signals(self)
 
         # cursor buttons
@@ -86,97 +88,11 @@ class MainWindow(Gtk.Window):
             self.builder.get_object('cursor2'),
             self.builder.get_object('cursor3'),
             self.builder.get_object('cursor4')]
-
         self.btn_cur[0].set_active(True)
 
-        for btn in self.btn_cur:
-            btn.connect('toggled', self.on_toggled_cursor)
-
-        # manipulate symbol
-        self.btn_rotate = self.builder.get_object("rotate")
-        self.btn_rotate.connect('pressed', self.on_rotate)
-        self.btn_rotate.set_tooltip_text(_("rotate the symbol clockwise"))
-
-        self.btn_mirror = self.builder.get_object('mirror')
-        self.btn_mirror.connect('pressed', self.on_mirror)
-        self.btn_mirror.set_tooltip_text(_("mirror the symbol vertically"))
-
-        # text entry
-        self.btn_add_text = self.builder.get_object('add_text')
-        self.btn_add_textblock = self.builder.get_object('add_textblock')
         self.text_entry = self.builder.get_object('text_entry')
 
-        self.btn_add_text.set_tooltip_text(_("write text"))
-        self.btn_add_textblock.set_tooltip_text(_("insert text"))
-
-        self.btn_add_text.connect('pressed', self.on_add_text)
-        self.btn_add_textblock.connect('pressed', self.on_add_textblock)
-
-        # line drawing
-        self.btn_mag_line = self.builder.get_object('draw_mag_line')
-        self.btn_line0 = self.builder.get_object('draw_line0')
-        self.btn_line1 = self.builder.get_object('draw_line1')
-        self.btn_line2 = self.builder.get_object('draw_line2')
-        self.btn_line3 = self.builder.get_object('draw_line3')
-        self.btn_line4 = self.builder.get_object('draw_line4')
-
-        self.btn_mag_line.connect('pressed', self.on_mag_line)
-        self.btn_line0.connect('pressed', self.on_line)
-        self.btn_line1.connect('pressed', self.on_line)
-        self.btn_line2.connect('pressed', self.on_line)
-        self.btn_line3.connect('pressed', self.on_line)
-        self.btn_line4.connect('pressed', self.on_line)
-
-        self.btn_mag_line.set_tooltip_text(_("MagLine"))
-        self.btn_line0.set_tooltip_text(_("free line"))
-        self.btn_line1.set_tooltip_text(_("straight line"))
-        self.btn_line2.set_tooltip_text(_("line with start and end point 'o'"))
-        self.btn_line3.set_tooltip_text(_("line with start and end point '+'"))
-        self.btn_line4.set_tooltip_text(_("line with end terminals"))
-
-        self.btn_rect = self.builder.get_object('draw_rect')
-        self.btn_rect.connect('pressed', self.on_rect)
-        self.btn_rect.set_tooltip_text(_("draw a rectangle"))
-
-        # insert/remove grid rows or columns
-        self.btn_stretch1 = self.builder.get_object('stretch1')
-        self.btn_stretch2 = self.builder.get_object('stretch2')
-        self.btn_stretch3 = self.builder.get_object('stretch3')
-        self.btn_stretch4 = self.builder.get_object('stretch4')
-
-        self.btn_stretch1.connect('pressed', self.on_selecting_row)
-        self.btn_stretch2.connect('pressed', self.on_selecting_row)
-        self.btn_stretch3.connect('pressed', self.on_selecting_col)
-        self.btn_stretch4.connect('pressed', self.on_selecting_col)
-
-        self.btn_stretch1.set_tooltip_text(_("insert rows"))
-        self.btn_stretch2.set_tooltip_text(_("remove rows"))
-        self.btn_stretch3.set_tooltip_text(_("insert columns"))
-        self.btn_stretch4.set_tooltip_text(_("remove columns"))
-
-        self.btn_select_rect = self.builder.get_object("select_rect")
-        self.btn_select_rect.connect('pressed', self.on_select_rect)
-
-        self.btn_select_obj = self.builder.get_object("select_components")
-        self.btn_select_obj.connect('pressed', self.on_select_objects)
-        self.btn_select_obj.set_tooltip_text(_("Move or delete symbol, shortcut: [DEL]"))
-
-        # clipboard
-        self.btn_clipboard = [
-            self.builder.get_object('copy_grid'),
-            self.builder.get_object('paste_grid'),
-            self.builder.get_object('load_and_paste_grid')]
-        for btn in self.btn_clipboard:
-            btn.connect('pressed', self.on_clipboard)
-
-        self.btn_clipboard[0].set_tooltip_text(_("copy grid to clipboard"))
-        self.btn_clipboard[1].set_tooltip_text(_("paste grid from clipboard"))
-        self.btn_clipboard[2].set_tooltip_text(_("load file and paste into grid"))
-
-        # Quit menu
         self.connect('destroy', lambda w: Gtk.main_quit())
-        menu_close = self.builder.get_object('quit')
-        menu_close.connect('activate', self.on_close_clicked)
 
         self.init_grid()
         self.init_cursors()
@@ -185,16 +101,8 @@ class MainWindow(Gtk.Window):
 
         self.menubar = MenuBar(self.builder, self.grid_view)
 
-        self.on_nothing_selected()
-
-        # subscriptions
-
         pub.subscribe(self.on_pointer_moved, 'POINTER_MOVED')
         pub.subscribe(self.on_message, 'STATUS_MESSAGE')
-
-        pub.subscribe(self.on_symbol_selected, 'SYMBOL_SELECTED')
-        pub.subscribe(self.on_paste_symbol, 'PASTE_SYMBOL')
-        pub.subscribe(self.on_nothing_selected, 'NOTHING_SELECTED')
 
     def init_components(self):
         component_canvas = ComponentView(self.builder)  # noqa F841
@@ -225,21 +133,6 @@ class MainWindow(Gtk.Window):
         id = self.msg.get_context_id(msg)
         self.msg.push(id, msg)
 
-    def on_paste_symbol(self, pos):
-        self.on_nothing_selected()
-
-    def on_nothing_selected(self):
-        # de-activate symbol manipulation
-        self.btn_rotate.set_sensitive(False)
-        self.btn_mirror.set_sensitive(False)
-
-    def on_symbol_selected(self, symbol):
-        """Update the symbol manipulation buttons."""
-
-        # activate symbol manipulation
-        self.btn_rotate.set_sensitive(True)
-        self.btn_mirror.set_sensitive(True)
-
     def on_add_text(self, button):
         pub.sendMessage('ADD_TEXT')
 
@@ -265,7 +158,7 @@ class MainWindow(Gtk.Window):
     def on_rect(self, button):
         pub.sendMessage('DRAW_RECT')
 
-    def on_toggled_cursor(self, button):
+    def on_cursor_toggled(self, button):
 
         if button.get_active():
 

@@ -278,6 +278,7 @@
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
+                        <signal name="activate" handler="on_close_clicked" swapped="no"/>
                         <accelerator key="q" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                     </child>
@@ -649,7 +650,9 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <property name="tooltip_text" translatable="yes">write text</property>
                 <property name="image">image15</property>
+                <signal name="clicked" handler="on_add_text" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -665,7 +668,9 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <property name="tooltip_text" translatable="yes">insert text</property>
                 <property name="image">image14</property>
+                <signal name="clicked" handler="on_add_textblock" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -724,7 +729,9 @@
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
+                                <property name="tooltip_text" translatable="yes">load file and paste into grid</property>
                                 <property name="image">image33</property>
+                                <signal name="clicked" handler="on_clipboard" swapped="no"/>
                               </object>
                               <packing>
                                 <property name="top_attach">2</property>
@@ -736,7 +743,9 @@
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
+                                <property name="tooltip_text" translatable="yes">paste grid from clipboard</property>
                                 <property name="image">image32</property>
+                                <signal name="clicked" handler="on_clipboard" swapped="no"/>
                               </object>
                               <packing>
                                 <property name="top_attach">1</property>
@@ -748,7 +757,9 @@
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
+                                <property name="tooltip_text" translatable="yes">copy grid to clipboard</property>
                                 <property name="image">image31</property>
+                                <signal name="clicked" handler="on_clipboard" swapped="no"/>
                               </object>
                             </child>
                           </object>
@@ -868,6 +879,7 @@
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
                                 <property name="image">image10</property>
+                                <signal name="toggled" handler="on_cursor_toggled" swapped="no"/>
                               </object>
                               <packing>
                                 <property name="top_attach">3</property>
@@ -880,6 +892,7 @@
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
                                 <property name="image">image11</property>
+                                <signal name="toggled" handler="on_cursor_toggled" swapped="no"/>
                               </object>
                               <packing>
                                 <property name="top_attach">2</property>
@@ -892,6 +905,7 @@
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
                                 <property name="image">image12</property>
+                                <signal name="toggled" handler="on_cursor_toggled" swapped="no"/>
                               </object>
                               <packing>
                                 <property name="top_attach">1</property>
@@ -904,6 +918,7 @@
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
                                 <property name="image">image13</property>
+                                <signal name="toggled" handler="on_cursor_toggled" swapped="no"/>
                               </object>
                             </child>
                           </object>
@@ -969,7 +984,9 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
+                            <property name="tooltip_text" translatable="yes">rotate the symbol clockwise</property>
                             <property name="image">image16</property>
+                            <signal name="clicked" handler="on_rotate" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -982,7 +999,9 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
+                            <property name="tooltip_text" translatable="yes">mirror the symbol vertically</property>
                             <property name="image">image17</property>
+                            <signal name="clicked" handler="on_mirror" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -1007,7 +1026,9 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
+                            <property name="tooltip_text" translatable="yes">draw automatic line</property>
                             <property name="image">image18</property>
+                            <signal name="clicked" handler="on_mag_line" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -1020,7 +1041,9 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
+                            <property name="tooltip_text" translatable="yes">free line</property>
                             <property name="image">image19</property>
+                            <signal name="clicked" handler="on_line" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -1033,7 +1056,9 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
+                            <property name="tooltip_text" translatable="yes">straight line</property>
                             <property name="image">image20</property>
+                            <signal name="clicked" handler="on_line" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -1046,7 +1071,9 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
+                            <property name="tooltip_text" translatable="yes">line with start and end point 'o'</property>
                             <property name="image">image21</property>
+                            <signal name="clicked" handler="on_line" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -1059,7 +1086,9 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
+                            <property name="tooltip_text" translatable="yes">line with start and end point '+'</property>
                             <property name="image">image22</property>
+                            <signal name="clicked" handler="on_line" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -1072,7 +1101,9 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
+                            <property name="tooltip_text" translatable="yes">line with end terminals</property>
                             <property name="image">image23</property>
+                            <signal name="clicked" handler="on_line" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -1085,7 +1116,9 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
+                            <property name="tooltip_text" translatable="yes">draw a rectangle</property>
                             <property name="image">image24</property>
+                            <signal name="clicked" handler="on_rect" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -1110,7 +1143,9 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
+                            <property name="tooltip_text" translatable="yes">move or delete symbol, shortcut: [DEL]</property>
                             <property name="image">image25</property>
+                            <signal name="clicked" handler="on_select_objects" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -1123,7 +1158,9 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
+                            <property name="tooltip_text" translatable="yes">selection rectangle</property>
                             <property name="image">image26</property>
+                            <signal name="clicked" handler="on_select_rect" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -1148,7 +1185,9 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
+                            <property name="tooltip_text" translatable="yes">insert rows</property>
                             <property name="image">image35</property>
+                            <signal name="clicked" handler="on_selecting_row" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -1161,7 +1200,9 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
+                            <property name="tooltip_text" translatable="yes">insert columns</property>
                             <property name="image">image28</property>
+                            <signal name="clicked" handler="on_selecting_col" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -1186,7 +1227,9 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
+                            <property name="tooltip_text" translatable="yes">remove rows</property>
                             <property name="image">image29</property>
+                            <signal name="clicked" handler="on_selecting_row" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -1199,7 +1242,9 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
+                            <property name="tooltip_text" translatable="yes">remove columns</property>
                             <property name="image">image30</property>
+                            <signal name="clicked" handler="on_selecting_col" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">False</property>
