@@ -368,7 +368,7 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Copy grid</property>
                         <property name="use_underline">True</property>
-                        <signal name="activate" handler="on_menu_grid" swapped="no"/>
+                        <signal name="activate" handler="on_copy_grid" swapped="no"/>
                       </object>
                     </child>
                     <child>
@@ -377,7 +377,7 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Paste grid</property>
                         <property name="use_underline">True</property>
-                        <signal name="activate" handler="on_menu_grid" swapped="no"/>
+                        <signal name="activate" handler="on_paste_grid" swapped="no"/>
                       </object>
                     </child>
                     <child>
@@ -386,7 +386,7 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Load and paste ASCII</property>
                         <property name="use_underline">True</property>
-                        <signal name="activate" handler="on_menu_grid" swapped="no"/>
+                        <signal name="activate" handler="on_load_and_paste_grid" swapped="no"/>
                       </object>
                     </child>
                   </object>
@@ -750,7 +750,7 @@
                                 <property name="receives_default">True</property>
                                 <property name="tooltip_text" translatable="yes">load file and paste into grid</property>
                                 <property name="image">image33</property>
-                                <signal name="clicked" handler="on_clipboard" swapped="no"/>
+                                <signal name="clicked" handler="on_load_and_paste_grid" swapped="no"/>
                               </object>
                               <packing>
                                 <property name="top_attach">2</property>
@@ -764,7 +764,7 @@
                                 <property name="receives_default">True</property>
                                 <property name="tooltip_text" translatable="yes">paste grid from clipboard</property>
                                 <property name="image">image32</property>
-                                <signal name="clicked" handler="on_clipboard" swapped="no"/>
+                                <signal name="clicked" handler="on_paste_grid" swapped="no"/>
                               </object>
                               <packing>
                                 <property name="top_attach">1</property>
@@ -778,7 +778,7 @@
                                 <property name="receives_default">True</property>
                                 <property name="tooltip_text" translatable="yes">copy grid to clipboard</property>
                                 <property name="image">image31</property>
-                                <signal name="clicked" handler="on_clipboard" swapped="no"/>
+                                <signal name="clicked" handler="on_copy_grid" swapped="no"/>
                               </object>
                             </child>
                           </object>

@@ -236,9 +236,14 @@ class MainWindow(Gtk.Window):
         pub.sendMessage('NOTHING_SELECTED')
         pub.sendMessage('SELECTING_ROW', action=action)
 
-    def on_clipboard(self, button):
-        name = Gtk.Buildable.get_name(button)
-        pub.sendMessage(name.upper())
+    def on_copy_grid(self, item):
+        pub.sendMessage('COPY_GRID')
+
+    def on_paste_grid(self, item):
+        pub.sendMessage('PASTE_GRID')
+
+    def on_load_and_paste_grid(self, item):
+        pub.sendMessage('LOAD_AND_PASTE_GRID')
 
     def custom_cursor(self, btn):
         display = self.get_root_window().get_display()
@@ -268,12 +273,6 @@ class MainWindow(Gtk.Window):
         ul, br = self.grid_view.drag_rect
 
         pub.sendMessage(name.upper(), rect=(ul, br))
-
-    def on_menu_grid(self, button):
-        name = Gtk.Buildable.get_name(button)
-        # strip prefix
-        name = name.replace('menu_', '')
-        pub.sendMessage(name.upper())
 
     def on_menu_symbol(self, item):
         name = Gtk.Buildable.get_name(item)
