@@ -11,7 +11,6 @@ import locale
 from locale import gettext as _
 
 from application import INSERT, REMOVE
-from application.menubar import MenuBar
 from application.grid_view import GridView
 from application.component_view import ComponentView
 
@@ -32,6 +31,7 @@ class MainWindow(Gtk.Window):
         this class.
         """
         app_path = os.path.dirname(__file__)
+
         try:
             # https://askubuntu.com/questions/140552/how-to-make-glade-load-translations-from-opt
             # For this particular case the locale module needs to be used instead of gettext.
@@ -91,6 +91,30 @@ class MainWindow(Gtk.Window):
 
         self.text_entry = self.builder.get_object('text_entry')
 
+        # file menu
+        self.menu_save = builder.get_object('save_file')
+        self.menu_save.set_sensitive(False)
+
+        # edit menu
+        self.menu_copy = builder.get_object('copy')
+        self.menu_cut = builder.get_object('cut')
+        self.menu_paste = builder.get_object('paste')
+        self.menu_undo = builder.get_object('undo')
+        self.menu_redo = builder.get_object('redo')
+
+        self.menu_copy.set_sensitive(False)
+        self.menu_cut.set_sensitive(False)
+        self.menu_paste.set_sensitive(False)
+        self.menu_undo.set_sensitive(False)
+        self.menu_redo.set_sensitive(False)
+
+        # symbol menu
+        self.menu_rotate = builder.get_object('rotate_symbol')
+        self.menu_mirror = builder.get_object('mirror_symbol')
+
+        self.menu_rotate.set_sensitive(False)
+        self.menu_mirror.set_sensitive(False)
+
         self.connect('destroy', lambda w: Gtk.main_quit())
 
         self.init_grid()
@@ -98,10 +122,15 @@ class MainWindow(Gtk.Window):
         self.init_components()
         self.init_char_buttons()
 
-        self.menubar = MenuBar(self.builder, self.grid_view)
-
         pub.subscribe(self.on_pointer_moved, 'POINTER_MOVED')
         pub.subscribe(self.on_message, 'STATUS_MESSAGE')
+
+        pub.subscribe(self.on_file_opened, 'FILE_OPENED')
+        pub.subscribe(self.on_nothing_selected, 'NOTHING_SELECTED')
+        pub.subscribe(self.on_symbol_selected, 'SYMBOL_SELECTED')
+        pub.subscribe(self.on_selection_changed, 'SELECTION_CHANGED')
+        pub.subscribe(self.on_undo_changed, 'UNDO_CHANGED')
+        pub.subscribe(self.on_redo_changed, 'REDO_CHANGED')
 
     def init_components(self):
         component_canvas = ComponentView(self.builder)  # noqa F841
@@ -218,3 +247,78 @@ class MainWindow(Gtk.Window):
 
         widget = self.grid_view._drawing_area
         widget.get_window().set_cursor(cursor)
+
+    # MENU handling
+
+    def on_menu_file(self, item):
+        name = Gtk.Buildable.get_name(item).upper()
+        pub.sendMessage(name)
+
+    def on_file_opened(self):
+        # enable File menu 'save' when a file has been opened
+        self.menu_save.set_sensitive(True)
+
+    def on_menu_edit(self, item):
+        # cut|copy|paste
+        name = Gtk.Buildable.get_name(item)
+
+        # get the rectangle (ul and br have been set in drag begin/end)
+        ul, br = self.grid_view.drag_rect
+
+        pub.sendMessage(name.upper(), rect=(ul, br))
+
+    def on_menu_grid(self, button):
+        name = Gtk.Buildable.get_name(button)
+        # strip prefix
+        name = name.replace('menu_', '')
+        pub.sendMessage(name.upper())
+
+    def on_menu_symbol(self, item):
+        name = Gtk.Buildable.get_name(item)
+        pub.sendMessage(name.upper())
+
+    def on_menu_grid_size(self, item):
+        name = Gtk.Buildable.get_name(item)
+        # the grid_size option sequence number
+        nr = int(name[-1])
+        if nr == 1:
+            cols, rows = (72, 36)
+        elif nr == 2:
+            cols, rows = (72, 49)
+        elif nr == 3:
+            cols, rows = (100, 49)
+        elif nr == 4:
+            cols, rows = (200, 70)
+        else:
+            # default, catch all
+            cols, rows = (72, 36)
+        # strip the sequence nr
+        name = name[:-2]
+        pub.sendMessage(name.upper(), cols=cols, rows=rows)
+
+    def on_nothing_selected(self):
+        self.on_selection_changed()
+        self.menu_rotate.set_sensitive(False)
+        self.menu_mirror.set_sensitive(False)
+
+    def on_symbol_selected(self, symbol):
+        # enable the Symbol menu options only when a symbol has been selected
+        self.menu_rotate.set_sensitive(True)
+        self.menu_mirror.set_sensitive(True)
+
+    def on_selection_changed(self, selected=False):
+        # enable the cut and copy menu only when one or more objects are selected
+        self.menu_copy.set_sensitive(selected)
+        self.menu_cut.set_sensitive(selected)
+
+    def on_undo_changed(self, undo=False):
+        # enable undo only if the undo-stack is not empty
+        self.menu_undo.set_sensitive(undo)
+
+    def on_redo_changed(self, redo=False):
+        # enable redo only if the redo-stack is not empty
+        self.menu_redo.set_sensitive(redo)
+
+    def on_undo(self, button):
+        name = Gtk.Buildable.get_name(button)
+        pub.sendMessage(name.upper())

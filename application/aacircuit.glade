@@ -216,6 +216,7 @@
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
+                        <signal name="activate" handler="on_menu_file" swapped="no"/>
                         <accelerator key="n" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                     </child>
@@ -226,6 +227,7 @@
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
+                        <signal name="activate" handler="on_menu_file" swapped="no"/>
                         <accelerator key="o" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                     </child>
@@ -236,6 +238,7 @@
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
+                        <signal name="activate" handler="on_menu_file" swapped="no"/>
                         <accelerator key="s" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                     </child>
@@ -246,6 +249,7 @@
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
+                        <signal name="activate" handler="on_menu_file" swapped="no"/>
                         <accelerator key="s" signal="activate" modifiers="GDK_SHIFT_MASK | GDK_CONTROL_MASK"/>
                       </object>
                     </child>
@@ -262,6 +266,7 @@
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
+                        <signal name="activate" handler="on_menu_file" swapped="no"/>
                         <accelerator key="p" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                     </child>
@@ -303,6 +308,7 @@
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
+                        <signal name="activate" handler="on_menu_edit" swapped="no"/>
                         <accelerator key="x" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                     </child>
@@ -313,6 +319,7 @@
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
+                        <signal name="activate" handler="on_menu_edit" swapped="no"/>
                         <accelerator key="c" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                     </child>
@@ -323,6 +330,7 @@
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
+                        <signal name="activate" handler="on_menu_edit" swapped="no"/>
                         <accelerator key="v" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                     </child>
@@ -333,6 +341,7 @@
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
+                        <signal name="activate" handler="on_undo" swapped="no"/>
                         <accelerator key="z" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                     </child>
@@ -343,6 +352,7 @@
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
+                        <signal name="activate" handler="on_undo" swapped="no"/>
                         <accelerator key="z" signal="activate" modifiers="GDK_SHIFT_MASK | GDK_CONTROL_MASK"/>
                       </object>
                     </child>
@@ -358,6 +368,7 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Copy grid</property>
                         <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_menu_grid" swapped="no"/>
                       </object>
                     </child>
                     <child>
@@ -366,6 +377,7 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Paste grid</property>
                         <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_menu_grid" swapped="no"/>
                       </object>
                     </child>
                     <child>
@@ -374,6 +386,7 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Load and paste ASCII</property>
                         <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_menu_grid" swapped="no"/>
                       </object>
                     </child>
                   </object>
@@ -396,6 +409,7 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Grid size 72x36</property>
                         <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_menu_grid_size" swapped="no"/>
                       </object>
                     </child>
                     <child>
@@ -404,6 +418,7 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Grid size 72x49</property>
                         <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_menu_grid_size" swapped="no"/>
                       </object>
                     </child>
                     <child>
@@ -412,6 +427,7 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Grid size 100x49</property>
                         <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_menu_grid_size" swapped="no"/>
                       </object>
                     </child>
                     <child>
@@ -420,6 +436,7 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Grid size 200x70</property>
                         <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_menu_grid_size" swapped="no"/>
                       </object>
                     </child>
                   </object>
@@ -442,6 +459,7 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Rotate 90° clockwise</property>
                         <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_menu_symbol" swapped="no"/>
                       </object>
                     </child>
                     <child>
@@ -450,6 +468,7 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Mirror vertically</property>
                         <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_menu_symbol" swapped="no"/>
                       </object>
                     </child>
                   </object>
