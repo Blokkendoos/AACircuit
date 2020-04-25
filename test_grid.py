@@ -10,13 +10,17 @@ if __name__ == "__main__":
     i = 0
     for r in range(g.nr_rows):
         for c in range(g.nr_cols):
-            g.set_cell(r, c, i)
+            pos = Pos(c, r)
+            g.set_cell(pos, i)
             i += 1
 
     print(g)
 
-    print("RECT (1,1): {0}".format(g.rect(Pos(1, 1), (2, 2))))
-    print("RECT (4,4): {0}".format(g.rect(Pos(4, 4), (4, 4))))
+    rect = (Pos(1, 1), Pos(1, 1))
+    print("RECT (1,1): {0}".format(g.rect(rect)))
+
+    rect = (Pos(4, 4), Pos(4, 4))
+    print("RECT (4,4): {0}".format(g.rect(rect)))
 
     c = [["A", "B"], ["C", "D"]]
     g.fill_rect(Pos(0, 0), c)
@@ -25,7 +29,8 @@ if __name__ == "__main__":
     g.fill_rect(Pos(3, 3), c)
     print(g)
 
-    g.erase_rect(Pos(1, 1), (2, 2))
+    rect = (Pos(1, 1), Pos(2, 2))
+    g.erase_rect(rect)
     print(g)
 
     # exit(0)

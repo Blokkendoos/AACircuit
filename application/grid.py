@@ -20,8 +20,7 @@ class Grid(object):
         self._dirty = False
 
     def __str__(self):
-        str = _("number of rows: {0} columns: {1}").format(self.nr_rows, self.nr_cols)
-        str += "dirty: {0}\n".format(self.dirty)
+        str = _("number of rows: {0} columns: {1} dirty: {2}\n").format(self.nr_rows, self.nr_cols, self.dirty)
         for r in self._grid:
             str += "{0}\n".format(r)
         return str
@@ -125,14 +124,15 @@ class Grid(object):
             self._grid[row][col] = value
 
     def rect_to_rc(self, rect):
-        """Convert the rect view (x,y) coordinates to colum and row start/end values.
+        """Convert the rect to colum and row start/end values.
         :param rect: (tuple) position (Pos) of the upper left corner (row, column) of the rectangle
         :returns the start and end column and row
         """
         ul = rect[0]
         br = rect[1]
         c_start, r_start = ul.xy
-        c_end, r_end = br.xy
+        c_end = br.x + 1
+        r_end = br.y + 1
         return (c_start, r_start, c_end, r_end)
 
     def rect(self, rect):
