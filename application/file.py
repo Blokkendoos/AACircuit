@@ -52,7 +52,6 @@ class FileChooserWindow(Gtk.Window):
         dialog.destroy()
 
     def action(self):
-        # print(_("File selected: %s") % self.filename)
         if self.open:
             pub.sendMessage('READ_FROM_FILE', filename=self.filename)
         else:

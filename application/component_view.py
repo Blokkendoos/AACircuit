@@ -27,12 +27,7 @@ class ComponentView():
 
         view = builder.get_object('treeview1')
 
-        # when a row is selected
         view.get_selection().connect('changed', self.on_changed)
-
-        # the label we use to show the selection
-        # self.component_label = Gtk.Label()
-        # self.component_label.set_text("")
 
         for i, column in enumerate(self.columns):
             # cellrenderer to render the text
@@ -49,14 +44,10 @@ class ComponentView():
             self.listmodel.append((label,))
 
     def on_changed(self, selection):
-        # get the model and the iterator that points at the data in the model
         (model, iter) = selection.get_selected()
-
         if iter is not None:
             label = model[iter][0]
         else:
             label = DEFAULT_COMPONENT_KEY
-
         pub.sendMessage('COMPONENT_CHANGED', label=label)
-
         return True

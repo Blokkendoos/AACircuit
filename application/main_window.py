@@ -29,6 +29,8 @@ class MainWindow(Gtk.Window):
         In order for this to work correctly, the class of the main
         window in the Glade UI file must be the same as the name of
         this class.
+
+        https://eeperry.wordpress.com/2013/01/05/pygtk-new-style-python-class-using-builder/
         """
         app_path = os.path.dirname(__file__)
 

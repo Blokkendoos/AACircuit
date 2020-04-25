@@ -191,13 +191,11 @@ class GridView(Gtk.Frame):
 
     # printing
 
-    # def on_begin_print(self, operation, print_ctx, print_data):
     def on_begin_print(self, parms):
         operation, print_ctx = parms
 
         operation.set_n_pages(1)
 
-    # def on_draw_page(self, operation, print_ctx, page_num, print_data):
     def on_draw_page(self, parms):
         operation, print_ctx, page_num = parms
 
@@ -213,9 +211,6 @@ class GridView(Gtk.Frame):
 
         ctx.scale(0.5, 0.5)
         self.draw_content(ctx)
-
-        # msg = "Finished..."
-        # pub.sendMessage('STATUS_MESSAGE', msg=msg)
 
     # drawing
 

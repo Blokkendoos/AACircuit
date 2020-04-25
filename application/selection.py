@@ -177,5 +177,3 @@ class SelectionTextBlock(SelectionText):
 
     def __init__(self, text=""):
         super(SelectionTextBlock, self).__init__(text=text, item=TEXT_BLOCK)
-
-        self._text = text

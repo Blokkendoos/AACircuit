@@ -51,8 +51,6 @@ class ComponentLibrary(object):
         :param key: the component name
         :returns the symbol id
         """
-        # TODO separate range (other than comp) for chars
-
         if len(key) == 1:
             # single character id is its (decimal) ASCII value
             id = ord(key)
@@ -84,7 +82,7 @@ class ComponentLibrary(object):
         return the id and grid for the symbol that represents the given component.
 
         :param key: the component name
-        :returns the symbol id and grid
+        :returns the symbol
         """
 
         grid = self.get_grid(key)
@@ -98,7 +96,7 @@ class ComponentLibrary(object):
         return the id and grid for the symbol that represents the given component.
 
         :param key: the component name
-        :returns the symbol id and grid
+        :returns the symbol
         """
         try:
             idx = int(id)

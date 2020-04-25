@@ -26,8 +26,6 @@ class Grid(object):
             str += "{0}\n".format(r)
         return str
 
-    # PUBLIC
-
     @property
     def grid(self):
         return self._grid
@@ -140,9 +138,12 @@ class Grid(object):
     def rect(self, rect):
         """
         Return the content of the given rectangle.
-        :param rect: the canvas position (Pos) of the upper left corner (row, column) and bottom-rigth corner of the rectangle
+        :param rect: the canvas position (Pos) of the upper left corner (row, column) and bottom-right corner of the rectangle
         :returns the content of the given rectangle
         """
+
+        print("obsolete method: Rect.rect()")
+
         content = []
 
         c_start, r_start, c_end, r_end = self.rect_to_rc(rect)
@@ -165,6 +166,8 @@ class Grid(object):
         :param rect: rectangle upper-left corner and bottom-right corner (row, column) tuple
         """
 
+        print("obsolete method: Rect.erase_rect()")
+
         c_start, r_start, c_end, r_end = self.rect_to_rc(rect)
 
         # truncate
@@ -185,6 +188,9 @@ class Grid(object):
         :param pos: rectangle upper left corner (row, column) tuple
         :param content: 2D array
         """
+
+        print("obsolete method: Rect.fill_rect()")
+
         if len(content) == 0:
             return
 

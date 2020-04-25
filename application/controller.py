@@ -27,8 +27,6 @@ class Controller(object):
 
     def __init__(self):
 
-        # setup MVC
-
         self.grid = Grid(72, 36)  # the ASCII grid
 
         self.gui = MainWindow()
@@ -417,8 +415,6 @@ class Controller(object):
         pub.sendMessage('OBJECTS_SELECTED', objects=self.selected_objects)
 
     def on_load_and_paste_grid(self):
-        # self.grid.load_and_paste_from_clipboard()
-        # pub.sendMessage('GRID', grid=self.grid)
         dialog = AsciiFileChooserWindow()  # noqa: F841
 
     def on_load_ascii_from_file(self, filename):
@@ -505,7 +501,6 @@ class Controller(object):
                 msg = "%s" % filename
 
             pub.sendMessage('STATUS_MESSAGE', msg=msg)
-
             pub.sendMessage('FILE_OPENED')
 
         except (IOError, UnicodeDecodeError):
@@ -535,10 +530,6 @@ class Controller(object):
 
     def play_m1(self, m):
 
-        # print("regexp groups:")
-        # for grp in m.groups():
-        #     print(grp)
-
         skip = 0
         type = m.group(1)
 
@@ -550,8 +541,6 @@ class Controller(object):
 
             x, y = m.group(5, 6)
             pos = Pos(x, y)
-
-            # print("MEMO: {0} pos: ({1},{2})".format(item, x, y))
 
             self.symbol = self.components.get_symbol_byid(id)
             self.symbol.ori = orientation
