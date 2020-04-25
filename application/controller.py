@@ -11,10 +11,10 @@ from pubsub import pub
 
 from application import _
 from application import REMOVE, INSERT
-from application import COMPONENT, CHARACTER, TEXT, COL, ROW, DRAW_RECT, LINE, MAG_LINE, DIR_LINE
+from application import ERASER, COMPONENT, CHARACTER, TEXT, COL, ROW, DRAW_RECT, LINE, MAG_LINE, DIR_LINE
 from application.grid import Grid
 from application.pos import Pos
-from application.symbol import Symbol, Character, Text, Line, MagLine, DirLine, Rect, Row, Column
+from application.symbol import Eraser, Symbol, Character, Text, Line, MagLine, DirLine, Rect, Row, Column
 from application.main_window import MainWindow
 from application.component_library import ComponentLibrary
 from application.file import FileChooserWindow, AsciiFileChooserWindow, PrintOperation
@@ -65,6 +65,7 @@ class Controller(object):
         pub.subscribe(self.on_undo, 'UNDO')
         pub.subscribe(self.on_redo, 'REDO')
 
+        pub.subscribe(self.on_eraser_selected, 'ERASER')
         pub.subscribe(self.on_select_rect, 'SELECT_RECT')
         pub.subscribe(self.on_select_objects, 'SELECT_OBJECTS')
 
@@ -443,6 +444,12 @@ class Controller(object):
 
     # other
 
+    def on_eraser_selected(self, size):
+        """Select eraser of the given size."""
+        self.selected_objects = []
+        self.symbol = Eraser(size)
+        pub.sendMessage('SYMBOL_SELECTED', symbol=self.symbol)
+
     def on_select_rect(self):
         """Select multiple objects."""
         pub.sendMessage('NOTHING_SELECTED')
@@ -513,7 +520,7 @@ class Controller(object):
 
         for item in memo:
 
-            m1 = re.search('(^comp|^char|^rect|^line|^magl|^dirl):(\d+),(\d+),(\d+),?(\d*),?(\d*),?(\d*)', item)  # noqa W605
+            m1 = re.search('(^eras|^comp|^char|^rect|^line|^magl|^dirl):(\d+),(\d+),(\d+),?(\d*),?(\d*),?(\d*)', item)  # noqa W605
             m2 = re.search('(^d|^i)(row|col):(\d+)', item)  # noqa W605
             m3 = re.search('(^text):(\d+),(\d+),(.*)', item)  # noqa W605
 
@@ -533,7 +540,20 @@ class Controller(object):
         skip = 0
         type = m.group(1)
 
-        if type == COMPONENT:
+        if type == ERASER:
+
+            w = int(m.group(2))
+            h = int(m.group(3))
+            size = (w, h)
+
+            x, y = m.group(4, 5)
+            pos = Pos(x, y)
+
+            self.symbol = Eraser(size)
+
+            self.on_paste_symbol(pos)
+
+        elif type == COMPONENT:
 
             id = m.group(2)
             orientation = int(m.group(3))

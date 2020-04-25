@@ -121,7 +121,12 @@ class Grid(object):
         row = pos.y
         col = pos.x
         if row < self.nr_rows and col < self.nr_cols:
-            self._grid[row][col] = value
+            # hex zero 'erases' content
+            if value == 0x00:
+                self._grid[row][col] = CELL_EMPTY
+            # space character is 'transparent'
+            elif value != ' ':
+                self._grid[row][col] = value
 
     def rect_to_rc(self, rect):
         """Convert the rect to colum and row start/end values.
@@ -202,8 +207,11 @@ class Grid(object):
         for row in content:
             x = c_start
             for char in row:
-                # TODO crude OR (sybol grid OR grid) by ignoring space char
-                if char != " ":
+                # hex zero 'erases' content
+                if char == 0x00:
+                    self._grid[y][x] = CELL_EMPTY
+                # space character is 'transparent'
+                elif char != ' ':
                     self._grid[y][x] = char
                 x += 1
                 if x >= x_max:

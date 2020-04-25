@@ -213,6 +213,25 @@ class MainWindow(Gtk.Window):
     def on_select_rect(self, button):
         pub.sendMessage('SELECT_RECT')
 
+    def on_select_eraser(self, button):
+        name = Gtk.Buildable.get_name(button)
+        # the sequence number defines the eraser size
+        nr = int(name[-1])
+        if nr == 1:
+            size = (3, 3)
+        elif nr == 2:
+            size = (5, 5)
+        elif nr == 3:
+            size = (7, 7)
+        elif nr == 4:
+            size = (9, 9)
+        else:
+            # default, catch all
+            size = (3, 3)
+        # strip the sequence nr and forward msg
+        name = name[:-1]
+        pub.sendMessage(name.upper(), size=size)
+
     def on_select_objects(self, button):
         pub.sendMessage('SELECT_OBJECTS')
 

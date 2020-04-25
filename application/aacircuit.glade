@@ -817,10 +817,11 @@
                             <property name="can_focus">False</property>
                             <property name="n_rows">4</property>
                             <child>
-                              <object class="GtkButton" id="button20">
+                              <object class="GtkButton" id="eraser4">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
+                                <signal name="clicked" handler="on_select_eraser" swapped="no"/>
                               </object>
                               <packing>
                                 <property name="top_attach">3</property>
@@ -828,10 +829,11 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkButton" id="button19">
+                              <object class="GtkButton" id="eraser3">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
+                                <signal name="clicked" handler="on_select_eraser" swapped="no"/>
                               </object>
                               <packing>
                                 <property name="top_attach">2</property>
@@ -839,10 +841,11 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkButton" id="button18">
+                              <object class="GtkButton" id="eraser2">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
+                                <signal name="clicked" handler="on_select_eraser" swapped="no"/>
                               </object>
                               <packing>
                                 <property name="top_attach">1</property>
@@ -850,11 +853,12 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkButton" id="button17">
+                              <object class="GtkButton" id="eraser1">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
                                 <property name="image">image34</property>
+                                <signal name="clicked" handler="on_select_eraser" swapped="no"/>
                               </object>
                             </child>
                           </object>

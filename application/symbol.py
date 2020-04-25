@@ -17,7 +17,7 @@ from application import INSERT, COL, ROW
 from application import HORIZONTAL, VERTICAL, LONGEST_FIRST
 from application import LINE_HOR, LINE_VERT
 from application import TERMINAL_TYPE
-from application import COMPONENT, CHARACTER, TEXT, DRAW_RECT, LINE, MAG_LINE, DIR_LINE
+from application import ERASER, COMPONENT, CHARACTER, TEXT, DRAW_RECT, LINE, MAG_LINE, DIR_LINE
 
 
 # TODO how to get this into an 'utility' source
@@ -224,6 +224,61 @@ class Symbol(object):
             mir_grid.append(rev)
 
         return mir_grid
+
+
+class Eraser(Symbol):
+
+    def __init__(self, size, startpos=None):
+        """
+        Erase a part of the grid.
+
+        :param size: the size (in cols, rows) of the grid area to be erased
+        :param startpos: the upper-left corner (col,row) coordinate of the area to be erased
+        """
+
+        # arbitrary id chosen for the eraser symbol
+        super(Eraser, self).__init__(grid=None, startpos=startpos)
+        self._size = size
+
+        self._representation()
+
+    def _representation(self):
+
+        self._repr = dict()
+        value = 0x00
+
+        pos = self._startpos
+        incr = Pos(1, 0)
+
+        for row in range(self._size[1]):
+            pos.x = self._startpos.x
+            for col in range(self._size[0]):
+                self._repr[pos] = value
+                pos += incr
+            pos += Pos(0, 1)
+
+    def draw(self, ctx, pos=None):
+        """
+        The Eraser is shown with 'x' characters.
+        :param ctx: the Cairo context
+        :param pos: target position in grid canvas (x,y) coordinates
+        """
+
+        self._representation()
+        char = 'x'
+
+        offset = pos - self._startpos.view_xy()
+        for pos in self._repr.keys():
+            grid_pos = pos.view_xy() + offset
+            show_text(ctx, grid_pos.x, grid_pos.y, char)
+
+    def memo(self):
+        """Return entry for the actions as recorded in the memo."""
+        str = "{0}:{1},{2},{3}".format(ERASER, self._size[0], self._size[1], self._startpos)
+        return str
+
+    def copy(self):
+        return Eraser(size=self._size, startpos=self._startpos)
 
 
 class Character(Symbol):
