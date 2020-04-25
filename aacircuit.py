@@ -13,6 +13,7 @@ Gtk 3
 bresenham
 cairo
 gettext
+json
 numpy
 pickle
 pubsub

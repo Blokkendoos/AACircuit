@@ -116,6 +116,7 @@ class Symbol(object):
 
     @mirrored.setter
     def mirrored(self, value):
+        """Set to True to show the symbol vertically mirrored, otherwise False."""
         self._mirrored = value
 
     @property
@@ -147,6 +148,10 @@ class Symbol(object):
 
     @property
     def repr(self):
+        """
+        The representation in ASCII characters of the symbol on a grid.
+        :returns a dictionary of positions in grid (col,row) coordinates and the character to be shown on each position.
+        """
         return self._repr
 
     def memo(self):
@@ -192,9 +197,9 @@ class Symbol(object):
             show_text(ctx, grid_pos.x, grid_pos.y, char)
 
     def paste(self, grid):
+        """Paste the symbol in the target grid at its start position."""
         self._representation()
 
-        """Paste symbol into the target grid."""
         for pos, value in self._repr.items():
             grid.set_cell(pos, value)
 
@@ -204,6 +209,8 @@ class Symbol(object):
             grid.set_cell(pos, CELL_EMPTY)
 
     def mirror(self, grid):
+        """Return the symbol grid vertically mirrored."""
+
         # mirror specific characters
         switcher = {'/': '\\',
                     '\\': '/',
