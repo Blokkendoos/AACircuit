@@ -264,7 +264,7 @@ class Eraser(Symbol):
                 pos += incr
             pos += Pos(0, 1)
 
-    def draw(self, ctx, pos=None):
+    def draw_char(self, ctx, pos=None):
         """
         The Eraser is shown with 'x' characters.
         :param ctx: the Cairo context
@@ -278,6 +278,30 @@ class Eraser(Symbol):
         for pos in self._repr.keys():
             grid_pos = pos.view_xy() + offset
             show_text(ctx, grid_pos.x, grid_pos.y, char)
+
+    def draw(self, ctx, pos=None):
+        """
+        :param ctx: the Cairo context
+        :param pos: target position in grid canvas (x,y) coordinates
+        """
+
+        ctx.save()
+
+        ctx.set_source_rgb(0.75, 0.75, 0.75)
+
+        x_start, y_start = pos.xy
+        # x_end, y_end = self.endpos_capped.xy
+        # w = x_end - x_start
+        # h = y_end - y_start
+
+        # size from grid (col,row) to view (x,y) coordinates
+        size = Pos(self._size[0], self._size[1]).view_xy()
+        width = size.x
+        height = size.y
+        ctx.rectangle(x_start, y_start, width, height)
+        ctx.fill()
+
+        ctx.restore()
 
     def memo(self):
         """Return entry for the actions as recorded in the memo."""

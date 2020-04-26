@@ -85,8 +85,6 @@ class SelectionRect(Selection):
         super(SelectionRect, self).__init__(item=item)
 
     def draw(self, ctx):
-        ctx.new_path()
-
         x_start, y_start = self._startpos.xy
         x_end, y_end = self.endpos_capped.xy
 
