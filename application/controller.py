@@ -238,7 +238,7 @@ class Controller(object):
         self.latest_action += action
 
         pub.sendMessage('UNDO_CHANGED', undo=True)
-        pub.sendMessage('NOTHING_SELECTED')
+        pub.sendMessage('OBJECTS_SELECTED', objects=self.selected_objects)
 
     def on_copy(self, rect):
         """Select all symbols that are located within the selection rectangle."""
