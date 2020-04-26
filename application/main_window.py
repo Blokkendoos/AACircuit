@@ -297,6 +297,15 @@ class MainWindow(Gtk.Window):
         name = Gtk.Buildable.get_name(item)
         pub.sendMessage(name.upper())
 
+    def on_menu_about(self, item):
+        builder = Gtk.Builder()
+        app_path = os.path.dirname(__file__)
+        builder.add_from_file(os.path.join(app_path, 'about_dialog.glade'))
+        builder.connect_signals(self)
+        about = builder.get_object('about')
+        about.run()
+        about.hide()
+
     def on_menu_grid_size(self, item):
         name = Gtk.Buildable.get_name(item)
         # the grid_size option sequence number
