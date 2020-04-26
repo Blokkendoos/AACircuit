@@ -12,7 +12,7 @@ from math import pi, radians, atan
 from application import _
 from application.pos import Pos
 from application import FONTSIZE
-from application import CELL_EMPTY, UPPER_CORNER, LOWER_CORNER, CROSSING
+from application import CELL_ERASE, UPPER_CORNER, LOWER_CORNER, CROSSING
 from application import INSERT, COL, ROW
 from application import HORIZONTAL, VERTICAL, LONGEST_FIRST
 from application import LINE_HOR, LINE_VERT
@@ -206,7 +206,7 @@ class Symbol(object):
     def remove(self, grid):
         """Remove the symbol from the target grid."""
         for pos in self._repr.keys():
-            grid.set_cell(pos, CELL_EMPTY)
+            grid.set_cell(pos, CELL_ERASE)
 
     def mirror(self, grid):
         """Return the symbol grid vertically mirrored."""
@@ -252,7 +252,6 @@ class Eraser(Symbol):
     def _representation(self):
 
         self._repr = dict()
-        value = 0x00
 
         pos = self._startpos
         incr = Pos(1, 0)
@@ -260,7 +259,7 @@ class Eraser(Symbol):
         for row in range(self._size[1]):
             pos.x = self._startpos.x
             for col in range(self._size[0]):
-                self._repr[pos] = value
+                self._repr[pos] = CELL_ERASE
                 pos += incr
             pos += Pos(0, 1)
 

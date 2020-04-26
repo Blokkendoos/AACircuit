@@ -8,7 +8,7 @@ AACircuit
 import xerox
 
 from application import _
-from application import CELL_DEFAULT, CELL_EMPTY, CELL_NEW
+from application import CELL_DEFAULT, CELL_EMPTY, CELL_NEW, CELL_ERASE
 
 
 class Grid(object):
@@ -122,7 +122,7 @@ class Grid(object):
         col = pos.x
         if row < self.nr_rows and col < self.nr_cols:
             # hex zero 'erases' content
-            if value == 0x00:
+            if value == CELL_ERASE:
                 self._grid[row][col] = CELL_EMPTY
             # space character is 'transparent'
             elif value != ' ':
@@ -208,7 +208,7 @@ class Grid(object):
             x = c_start
             for char in row:
                 # hex zero 'erases' content
-                if char == 0x00:
+                if char == CELL_ERASE:
                     self._grid[y][x] = CELL_EMPTY
                 # space character is 'transparent'
                 elif char != ' ':
