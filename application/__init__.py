@@ -26,6 +26,9 @@ CELL_NEW = CELL_DEFAULT
 CELL_EMPTY = CELL_DEFAULT
 CELL_ERASE = 0x00
 
+# draw selection by dragging or click and second-click
+SELECTION_DRAG = False
+
 # selection action
 REMOVE = 'remove'
 INSERT = 'insert'

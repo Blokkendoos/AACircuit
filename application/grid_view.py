@@ -10,7 +10,7 @@ from pubsub import pub
 from application import _
 from application import FONTSIZE, GRIDSIZE_W, GRIDSIZE_H
 from application import HORIZONTAL, VERTICAL
-from application import IDLE, SELECTING, SELECTED
+from application import SELECTION_DRAG, IDLE, SELECTING, SELECTED
 from application import CHARACTER, COMPONENT, LINE, MAG_LINE, DIR_LINE, OBJECTS, COL, ROW, RECT, DRAW_RECT
 from application import MARK_CHAR
 from application import TEXT, TEXT_BLOCK
@@ -80,10 +80,11 @@ class GridView(Gtk.Frame):
         self._drawing_area.add_events(Gdk.EventMask.KEY_PRESS_MASK)
         self._drawing_area.connect('key-press-event', self.on_key_press)
 
-        self._gesture_drag = Gtk.GestureDrag.new(self._drawing_area)
-        self._gesture_drag.connect('drag-begin', self.on_drag_begin)
-        self._gesture_drag.connect('drag-end', self.on_drag_end)
-        self._gesture_drag.connect('drag-update', self.on_drag_update)
+        if SELECTION_DRAG:
+            self._gesture_drag = Gtk.GestureDrag.new(self._drawing_area)
+            self._gesture_drag.connect('drag-begin', self.on_drag_begin)
+            self._gesture_drag.connect('drag-end', self.on_drag_end)
+            self._gesture_drag.connect('drag-update', self.on_drag_update)
 
         self._drawing_area.add_events(Gdk.EventMask.POINTER_MOTION_MASK)
         self._drawing_area.connect('motion-notify-event', self.on_hover)
@@ -524,7 +525,17 @@ class GridView(Gtk.Frame):
         pos = self.calc_position(event.x, event.y)
         pub.sendMessage('POINTER_MOVED', pos=pos.grid_rc())
 
-        if self._selection.state == SELECTING:
+        if not SELECTION_DRAG \
+                and self._selection.item in (DRAW_RECT, RECT, LINE, MAG_LINE, DIR_LINE):
+
+            if self._selection.state == IDLE:
+                self.on_drag_begin(None, event.x, event.y)
+
+            elif self._selection.state == SELECTING:
+                offset = Pos(event.x, event.y) - self._drag_startpos
+                self.on_drag_end(None, offset.x, offset.y)
+
+        elif self._selection.state == SELECTING:
             self.selecting_state(pos)
 
         elif self._selection.state == SELECTED:
@@ -629,9 +640,7 @@ class GridView(Gtk.Frame):
             return
 
         offset = self.calc_position(x_offset, y_offset)
-
         self._drag_endpos = self._drag_startpos + offset
-        # self._drag_endpos.snap_to_grid()
 
         # position to grid (col, row) coordinates
         startpos = self._drag_startpos.grid_rc()
@@ -719,5 +728,11 @@ class GridView(Gtk.Frame):
     def on_hover(self, widget, event):
         self._hover_pos = self.calc_position(event.x, event.y)
         pub.sendMessage('POINTER_MOVED', pos=self._hover_pos.grid_rc())
+
+        if not SELECTION_DRAG \
+                and self._selection.state == SELECTING \
+                and self._selection.item in (DRAW_RECT, RECT, LINE, MAG_LINE, DIR_LINE):
+            offset = Pos(event.x, event.y) - self._drag_startpos
+            self.on_drag_update(None, offset.x, offset.y)
 
         widget.queue_resize()
