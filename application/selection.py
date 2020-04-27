@@ -4,6 +4,7 @@ AACircuit
 """
 
 from application import GRIDSIZE_W, GRIDSIZE_H
+from application import INSERT
 from application import IDLE, SELECTING, SELECTED, DRAG
 from application import TEXT, TEXT_BLOCK, COL, ROW, RECT
 from application.pos import Pos
@@ -108,7 +109,13 @@ class SelectionCol(Selection):
         return self._action
 
     def draw(self, ctx):
-        # highlight the selected column
+        """Highlight the selected column.  Green or red color when inserting respectively deleting a column."""
+
+        if self._action == INSERT:
+            ctx.set_source_rgb(0, 1, 0)
+        else:
+            ctx.set_source_rgb(1, 0, 0)
+
         x = self._startpos.x
         if x <= self._maxpos.x:
             ctx.new_path()
@@ -132,7 +139,13 @@ class SelectionRow(Selection):
         return self._action
 
     def draw(self, ctx):
-        # highlight the selected row
+        """Highlight the selected row. Green or red color when inserting respectively deleting a row."""
+
+        if self._action == INSERT:
+            ctx.set_source_rgb(0, 1, 0)
+        else:
+            ctx.set_source_rgb(1, 0, 0)
+
         y = self._startpos.y
         if y <= self._maxpos.y:
             ctx.new_path()
