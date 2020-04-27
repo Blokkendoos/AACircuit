@@ -106,6 +106,7 @@ class Controller(object):
         # all objects on the grid
         self.objects = []
 
+        self.symbol = None
         self.selected_objects = []
 
     def show_all(self):
@@ -510,6 +511,7 @@ class Controller(object):
 
             pub.sendMessage('STATUS_MESSAGE', msg=msg)
             pub.sendMessage('FILE_OPENED')
+            pub.sendMessage('NOTHING_SELECTED')
 
         except (IOError, UnicodeDecodeError):
             msg = _("Unable to open file for reading: %s" % filename)
