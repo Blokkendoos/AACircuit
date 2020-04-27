@@ -35,6 +35,11 @@ For the ASCII representation, use copy or "Save ASCII". Use a monospaced font in
 Library: every symbol has to be created for each of the four directions.
 
 
+Usage
+=====
+Download the zip-file, unzip, go to the AACircuit directory and run: python aacircuit.py
+
+
 +++ THIS IS NOT A FINISHED APPLICATION +++
 
 !!! WORK IN PROGRESS !!!
