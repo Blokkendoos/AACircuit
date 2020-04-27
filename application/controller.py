@@ -91,8 +91,9 @@ class Controller(object):
         pub.subscribe(self.on_read_from_file, 'READ_FROM_FILE')
         pub.subscribe(self.on_write_to_file, 'WRITE_TO_FILE')
 
-        # grid size
+        # grid
         pub.subscribe(self.on_grid_size, 'GRID_SIZE')
+        pub.subscribe(self.on_redraw_grid, 'REDRAW_GRID')
 
         pub.subscribe(self.on_load_ascii_from_file, 'LOAD_ASCII_FROM_FILE')
 
@@ -249,6 +250,11 @@ class Controller(object):
     def on_grid_size(self, cols, rows):
         self.grid.resize(cols, rows)
         pub.sendMessage('GRID_SIZE_CHANGED')
+
+    def on_redraw_grid(self):
+        self.grid.erase()
+        for symbol in self.objects:
+            symbol.paste(self.grid)
 
     def on_grid_col(self, col, action):
 

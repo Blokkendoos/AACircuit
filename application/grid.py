@@ -13,11 +13,8 @@ from application import CELL_DEFAULT, CELL_EMPTY, CELL_NEW, CELL_ERASE
 
 class Grid(object):
 
-    def __init__(self, rows=5, cols=5):
-        self._undo_stack = []
-        self._grid = [[CELL_DEFAULT] * rows for i in range(cols)]
-        # set to True when the grid has been changed
-        self._dirty = False
+    def __init__(self, cols=5, rows=5):
+        self._grid = [[CELL_DEFAULT] * cols for i in range(rows)]
 
     def __str__(self):
         str = _("number of rows: {0} columns: {1} dirty: {2}\n").format(self.nr_rows, self.nr_cols, self.dirty)
@@ -28,14 +25,6 @@ class Grid(object):
     @property
     def grid(self):
         return self._grid
-
-    @property
-    def dirty(self):
-        return self._dirty
-
-    @dirty.setter
-    def dirty(self, value):
-        self._dirty = value
 
     @property
     def nr_rows(self):
@@ -139,6 +128,12 @@ class Grid(object):
         c_end = br.x + 1
         r_end = br.y + 1
         return (c_start, r_start, c_end, r_end)
+
+    def erase(self):
+        """Erase all grid content."""
+        rows = self.nr_rows
+        cols = self.nr_cols
+        self._grid = [[CELL_DEFAULT] * cols for i in range(rows)]
 
     def rect(self, rect):
         """

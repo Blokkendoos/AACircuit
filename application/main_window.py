@@ -352,6 +352,9 @@ class MainWindow(Gtk.Window):
         name = name[:-2]
         pub.sendMessage(name.upper(), cols=cols, rows=rows)
 
+    def on_redraw_grid(self, item):
+        pub.sendMessage('REDRAW_GRID')
+
     def on_nothing_selected(self):
         self.on_selection_changed()
         self.menu_rotate.set_sensitive(False)

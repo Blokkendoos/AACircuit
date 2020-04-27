@@ -440,6 +440,22 @@
                         <signal name="activate" handler="on_menu_grid_size" swapped="no"/>
                       </object>
                     </child>
+                    <child>
+                      <object class="GtkSeparatorMenuItem">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="redraw">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Redraw schema</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_redraw_grid" swapped="no"/>
+                        <accelerator key="F5" signal="activate"/>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>
