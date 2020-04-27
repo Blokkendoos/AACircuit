@@ -40,6 +40,8 @@ class FileChooserWindow(Gtk.Window):
                                         option,
                                         Gtk.ResponseType.OK))
         dialog.set_default_size(640, 480)
+        if not self.open:
+            dialog.props.do_overwrite_confirmation = True
 
         self.add_filters(dialog)
 

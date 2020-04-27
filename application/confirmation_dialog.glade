@@ -8,7 +8,7 @@
     <property name="message_type">question</property>
     <property name="buttons">yes-no</property>
     <property name="text" translatable="yes">Really close the program?</property>
-    <property name="secondary_text" translatable="yes">The current document has been changed</property>
+    <property name="secondary_text" translatable="yes">The current schema has been changed</property>
     <child type="titlebar">
       <placeholder/>
     </child>
