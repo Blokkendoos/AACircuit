@@ -27,7 +27,10 @@ class Controller(object):
 
     def __init__(self):
 
-        self.grid = Grid(72, 36)  # the ASCII grid
+        # the ASCII grid
+        self._rows = 36
+        self._cols = 72
+        self.grid = Grid(self._cols, self._rows)
 
         self.gui = MainWindow()
 
@@ -248,11 +251,13 @@ class Controller(object):
     # grid manipulation
 
     def on_grid_size(self, cols, rows):
+        self._rows = rows
+        self._cols = cols
         self.grid.resize(cols, rows)
         pub.sendMessage('GRID_SIZE_CHANGED')
 
     def on_redraw_grid(self):
-        self.grid.erase()
+        self.grid = Grid(self._cols, self._rows)
         for symbol in self.objects:
             symbol.paste(self.grid)
 
@@ -260,11 +265,7 @@ class Controller(object):
 
         symbol = Column(col, action)
         self.objects.append(symbol)
-
-        if action == INSERT:
-            self.grid.insert_col(col)
-        else:
-            self.grid.remove_col(col)
+        symbol.paste(self.grid)
 
         self.push_latest_action(symbol, action)
 
@@ -272,11 +273,7 @@ class Controller(object):
 
         symbol = Row(row, action)
         self.objects.append(symbol)
-
-        if action == INSERT:
-            self.grid.insert_row(row)
-        else:
-            self.grid.remove_row(row)
+        symbol.paste(self.grid)
 
         self.push_latest_action(symbol, action)
 

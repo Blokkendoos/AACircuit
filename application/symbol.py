@@ -894,6 +894,12 @@ class Column(Symbol):
     def col(self):
         return self._col
 
+    def paste(self, grid):
+        if self._action == INSERT:
+            grid.insert_col(self.col)
+        else:
+            grid.remove_col(self.col)
+
     def memo(self):
         if self._action == INSERT:
             str = "i"
@@ -919,6 +925,12 @@ class Row(Symbol):
     @property
     def row(self):
         return self._row
+
+    def paste(self, grid):
+        if self._action == INSERT:
+            grid.insert_row(self.row)
+        else:
+            grid.remove_row(self.row)
 
     def memo(self):
         if self._action == INSERT:
