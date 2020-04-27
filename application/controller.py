@@ -178,11 +178,9 @@ class Controller(object):
     # File menu
 
     def on_new(self):
-        self.init_stack()
-
         self.grid = Grid(72, 36)
+        self.init_stack()
         pub.sendMessage('GRID', grid=self.grid)
-
         pub.sendMessage('NOTHING_SELECTED')
 
     def on_open(self):
@@ -488,7 +486,10 @@ class Controller(object):
             file = open(filename, 'r')
             str = file.readlines()
 
+            # start with a fresh grid
+            self.grid = Grid(72, 36)
             self.init_stack()
+            pub.sendMessage('GRID', grid=self.grid)
 
             memo = []
             for line in str:
@@ -496,11 +497,11 @@ class Controller(object):
 
             file.close()
 
-            # start with a fresh grid
-            self.grid = Grid(72, 36)
-            pub.sendMessage('GRID', grid=self.grid)
-
             skipped = self.play_memo(memo)
+
+            # empty the undo stack (from the played memo actions)
+            self.latest_action = []
+            pub.sendMessage('UNDO_CHANGED', undo=False)
 
             if skipped > 0:
                 msg = _("{0} lines skipped in {1}".format(skipped, filename))

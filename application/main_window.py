@@ -117,12 +117,15 @@ class MainWindow(Gtk.Window):
         self.menu_rotate.set_sensitive(False)
         self.menu_mirror.set_sensitive(False)
 
+        self.connect('delete_event', self.on_delete_window)
         self.connect('destroy', lambda w: Gtk.main_quit())
 
         self.init_grid()
         self.init_cursors()
         self.init_components()
         self.init_char_buttons()
+
+        self._undo_stack_empty = True
 
         pub.subscribe(self.on_pointer_moved, 'POINTER_MOVED')
         pub.subscribe(self.on_message, 'STATUS_MESSAGE')
@@ -206,9 +209,33 @@ class MainWindow(Gtk.Window):
         char = button.get_label()
         pub.sendMessage('CHARACTER_CHANGED', char=char)
 
-    def on_close_clicked(self, button):
-        print(_("Closing application"))
-        self.destroy()
+    def on_delete_window(self, window, event):
+        return not self.on_close_clicked()
+
+    def on_close_clicked(self, item=None):
+
+        if self._undo_stack_empty or self.show_confirmation_dlg():
+            print(_("Closing application"))
+            Gtk.main_quit()
+        else:
+            return False
+
+    def show_confirmation_dlg(self):
+
+        # https://bytes.com/topic/python/answers/873799-how-click-close-window-dont-close-gtk-window
+        builder = Gtk.Builder()
+        app_path = os.path.dirname(__file__)
+        builder.add_from_file(os.path.join(app_path, 'confirmation_dialog.glade'))
+
+        builder.connect_signals(self)
+        confirm = builder.get_object('confirm')
+        result = confirm.run()
+        confirm.destroy()
+
+        if result == Gtk.ResponseType.YES:
+            return True
+        else:
+            return False
 
     def on_select_rect(self, button):
         pub.sendMessage('SELECT_RECT')
@@ -341,6 +368,7 @@ class MainWindow(Gtk.Window):
         self.menu_cut.set_sensitive(selected)
 
     def on_undo_changed(self, undo=False):
+        self._undo_stack_empty = not undo
         # enable undo only if the undo-stack is not empty
         self.menu_undo.set_sensitive(undo)
 
