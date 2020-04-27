@@ -17,7 +17,7 @@ class Grid(object):
         self._grid = [[CELL_DEFAULT] * cols for i in range(rows)]
 
     def __str__(self):
-        str = _("number of rows: {0} columns: {1} dirty: {2}\n").format(self.nr_rows, self.nr_cols, self.dirty)
+        str = _("number of rows: {0} columns: {1}\n").format(self.nr_rows, self.nr_cols)
         for r in self._grid:
             str += "{0}\n".format(r)
         return str
@@ -90,8 +90,6 @@ class Grid(object):
             grid.append(dict)
 
         self._grid = grid
-
-        self._dirty = True
 
     def load_and_paste_from_clipboard(self):
         print("Not yet implemented")
@@ -180,8 +178,6 @@ class Grid(object):
             for c in range(c_start, c_end):
                 self._grid[r][c] = CELL_EMPTY
 
-        self._dirty = True
-
     def fill_rect(self, pos, content):
         """
         Fill a rectangle.
@@ -215,29 +211,23 @@ class Grid(object):
             if y >= y_max:
                 break
 
-        self._dirty = True
-
     def remove_row(self, row):
         # assert row >= 0 and row < self.nr_rows
         if row >= 0 and row < self.nr_rows:
             del self._grid[row]
-            self._dirty = True
 
     def remove_col(self, col):
         # assert col >= 0 and col < self.nr_cols
         if col >= 0 and col < self.nr_cols:
             for r in self._grid:
                 del r[col]
-            self._dirty = True
 
     def insert_row(self, row):
         self._grid.insert(row, [CELL_NEW] * self.nr_cols)
-        self._dirty = True
 
     def insert_col(self, col):
         for r in self._grid:
             r.insert(col, CELL_NEW)
-        self._dirty = True
 
     def resize(self, cols, rows):
 
