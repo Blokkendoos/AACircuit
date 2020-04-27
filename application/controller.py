@@ -74,25 +74,25 @@ class Controller(object):
         pub.subscribe(self.on_grid_row, 'GRID_ROW')
 
         # clipboard
+        pub.subscribe(self.on_cut, 'CUT')
+        pub.subscribe(self.on_copy, 'COPY')
         pub.subscribe(self.on_copy_grid, 'COPY_GRID')
         pub.subscribe(self.on_paste_grid, 'PASTE_GRID')
         pub.subscribe(self.on_load_and_paste_grid, 'LOAD_AND_PASTE_GRID')
 
+        # file
         pub.subscribe(self.on_new, 'NEW_FILE')
         pub.subscribe(self.on_open, 'OPEN_FILE')
         pub.subscribe(self.on_save, 'SAVE_FILE')
         pub.subscribe(self.on_save_as, 'SAVE_AS_FILE')
         pub.subscribe(self.on_print_file, 'PRINT_FILE')
 
-        pub.subscribe(self.on_cut, 'CUT')
-        pub.subscribe(self.on_copy, 'COPY')
-
-        # grid size
-        pub.subscribe(self.on_grid_size, 'GRID_SIZE')
-
         # open/save grid from/to file
         pub.subscribe(self.on_read_from_file, 'READ_FROM_FILE')
         pub.subscribe(self.on_write_to_file, 'WRITE_TO_FILE')
+
+        # grid size
+        pub.subscribe(self.on_grid_size, 'GRID_SIZE')
 
         pub.subscribe(self.on_load_ascii_from_file, 'LOAD_ASCII_FROM_FILE')
 
