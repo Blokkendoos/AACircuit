@@ -11,6 +11,7 @@ from pubsub import pub
 
 from application import _
 from application import REMOVE, INSERT
+from application import DEFAULT_COLS, DEFAULT_ROWS
 from application import ERASER, COMPONENT, CHARACTER, TEXT, COL, ROW, DRAW_RECT, LINE, MAG_LINE, DIR_LINE
 from application.grid import Grid
 from application.pos import Pos
@@ -27,16 +28,12 @@ class Controller(object):
 
     def __init__(self):
 
-        # the ASCII grid
-        self._rows = 36
-        self._cols = 72
-        self.grid = Grid(self._cols, self._rows)
-
         self.gui = MainWindow()
-
         self.components = ComponentLibrary()
         self.symbol = Symbol()
+
         self.init_stack()
+        self.init_grid()
 
         all_components = [key for key in self.components.get_dict()]
         if self.components.nr_libraries() == 1:
@@ -46,7 +43,6 @@ class Controller(object):
                                                                                     self.components.nr_components())
         pub.sendMessage('STATUS_MESSAGE', msg=msg)
         pub.sendMessage('ALL_COMPONENTS', list=all_components)
-        pub.sendMessage('GRID', grid=self.grid)
 
         # subscriptions
 
@@ -113,6 +109,12 @@ class Controller(object):
         self.symbol = None
         self.selected_objects = []
 
+    def init_grid(self, cols=DEFAULT_COLS, rows=DEFAULT_ROWS):
+        self._cols = cols
+        self._rows = rows
+        self.grid = Grid(self._cols, self._rows)
+        pub.sendMessage('NEW_GRID', grid=self.grid)
+
     def show_all(self):
         self.gui.show_all()
 
@@ -127,6 +129,8 @@ class Controller(object):
             symbol.paste(self.grid)
 
         action = None
+        symbol = None
+
         if len(stack) > 0:
 
             action, symbol = stack.pop()
@@ -183,9 +187,8 @@ class Controller(object):
     # File menu
 
     def on_new(self):
-        self.grid = Grid(72, 36)
+        self.init_grid()
         self.init_stack()
-        pub.sendMessage('GRID', grid=self.grid)
         pub.sendMessage('NOTHING_SELECTED')
 
     def on_open(self):
@@ -257,7 +260,9 @@ class Controller(object):
         pub.sendMessage('GRID_SIZE_CHANGED')
 
     def on_redraw_grid(self):
-        self.grid = Grid(self._cols, self._rows)
+        rows = self._rows
+        cols = self._cols
+        self.init_grid(cols, rows)
         for symbol in self.objects:
             symbol.paste(self.grid)
 
@@ -491,9 +496,10 @@ class Controller(object):
             str = file.readlines()
 
             # start with a fresh grid
-            self.grid = Grid(72, 36)
             self.init_stack()
-            pub.sendMessage('GRID', grid=self.grid)
+
+            self.grid = Grid(72, 36)
+            pub.sendMessage('NEW_GRID', grid=self.grid)
 
             memo = []
             for line in str:
