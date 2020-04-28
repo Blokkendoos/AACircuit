@@ -10,6 +10,7 @@ import collections
 from pubsub import pub
 
 from application import _
+from application.preferences import Preferences
 from application import REMOVE, INSERT
 from application import DEFAULT_COLS, DEFAULT_ROWS
 from application import ERASER, COMPONENT, CHARACTER, TEXT, COL, ROW, DRAW_RECT, LINE, MAG_LINE, DIR_LINE
@@ -27,6 +28,8 @@ Action = collections.namedtuple('Action', ['action', 'symbol'])
 class Controller(object):
 
     def __init__(self):
+
+        self.prefs = Preferences()
 
         self.gui = MainWindow()
         self.components = ComponentLibrary()

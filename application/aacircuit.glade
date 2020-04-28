@@ -201,6 +201,46 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <child>
+              <object class="GtkMenuItem" id="menuitem4">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">AACircuit</property>
+                <property name="use_underline">True</property>
+                <child type="submenu">
+                  <object class="GtkMenu" id="menu3">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <child>
+                      <object class="GtkImageMenuItem" id="imagemenuitem10">
+                        <property name="label" translatable="yes">About</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="use_underline">True</property>
+                        <property name="use_stock">True</property>
+                        <signal name="activate" handler="on_menu_about" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSeparatorMenuItem">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">_Preferences</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_menu_preferences" swapped="no"/>
+                        <accelerator key="comma" signal="activate"/>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
               <object class="GtkMenuItem" id="menuitem1">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
@@ -464,7 +504,7 @@
               <object class="GtkMenuItem" id="symbol">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Symbol</property>
+                <property name="label" translatable="yes">_Symbol</property>
                 <property name="use_underline">True</property>
                 <child type="submenu">
                   <object class="GtkMenu">
@@ -486,30 +526,6 @@
                         <property name="label" translatable="yes">Mirror vertically</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="on_menu_symbol" swapped="no"/>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkMenuItem" id="menuitem4">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="label" translatable="yes">_Help</property>
-                <property name="use_underline">True</property>
-                <child type="submenu">
-                  <object class="GtkMenu" id="menu3">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <child>
-                      <object class="GtkImageMenuItem" id="imagemenuitem10">
-                        <property name="label">gtk-about</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="use_underline">True</property>
-                        <property name="use_stock">True</property>
-                        <signal name="activate" handler="on_menu_about" swapped="no"/>
                       </object>
                     </child>
                   </object>

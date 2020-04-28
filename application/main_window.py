@@ -11,6 +11,7 @@ import locale
 from locale import gettext as _
 
 from application import INSERT, REMOVE
+from application.preferences import PreferencesDialog
 from application.grid_view import GridView
 from application.component_view import ComponentView
 
@@ -332,6 +333,16 @@ class MainWindow(Gtk.Window):
         about = builder.get_object('about')
         about.run()
         about.hide()
+
+    def on_menu_preferences(self, item):
+        dialog = PreferencesDialog()
+        result = dialog.run()
+        dialog.hide()
+        print("result:", result)
+        if result == Gtk.ResponseType.OK:
+            print("Ok")
+        else:
+            print("Cancel")
 
     def on_menu_grid_size(self, item):
         name = Gtk.Buildable.get_name(item)
