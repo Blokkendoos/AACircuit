@@ -560,7 +560,7 @@ class Controller(object):
 
             m1 = re.search('(^eras|^comp|^char|^rect|^line|^magl|^dirl):(\d+),(\d+),(\d+),?(\d*),?(\d*),?(\d*)', item)  # noqa W605
             m2 = re.search('(^d|^i)(row|col):(\d+)', item)  # noqa W605
-            m3 = re.search('(^text):(\d+),(\d+),(.*)', item)  # noqa W605
+            m3 = re.search('(^text):(\d+),(\d+),(\d+),(.*)', item)  # noqa W605
 
             if m1 is not None:
                 skipped += self.play_m1(m1)
@@ -695,13 +695,16 @@ class Controller(object):
 
         if type == TEXT:
 
-            x, y = m.group(2, 3)
+            orientation = int(m.group(2))
+
+            x, y = m.group(3, 4)
             startpos = Pos(x, y)
 
-            str = m.group(4)
+            str = m.group(5)
             text = json.loads(str)
 
-            self.on_paste_text(startpos, text)
+            symbol = Text(startpos, text, orientation)
+            self.on_paste_text(symbol)
 
         else:
             skip = 1

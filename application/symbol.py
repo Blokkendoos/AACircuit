@@ -344,7 +344,7 @@ class Character(Symbol):
 
 class Text(Symbol):
 
-    def __init__(self, pos, text, ori=None):
+    def __init__(self, pos, text, ori=0):
 
         grid = {"N": [['?']]}
         super(Text, self).__init__(grid=grid, ori=ori, startpos=pos)
@@ -395,13 +395,13 @@ class Text(Symbol):
 
     def memo(self):
         jstext = json.dumps(self._text)
-        str = "{0}:{1},{2}".format(TEXT, self._startpos, jstext)
+        str = "{0}:{1},{2},{3}".format(TEXT, self._ori, self._startpos, jstext)
         return str
 
     def copy(self):
         startpos = copy.deepcopy(self._startpos)
         ori = copy.deepcopy(self._ori)
-        return Text(pos=startpos, ori=ori, text=self._text)
+        return Text(pos=startpos, text=self._text, ori=ori)
 
 
 class Line(Symbol):
