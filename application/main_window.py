@@ -338,11 +338,8 @@ class MainWindow(Gtk.Window):
         dialog = PreferencesDialog()
         result = dialog.run()
         dialog.hide()
-        print("result:", result)
         if result == Gtk.ResponseType.OK:
-            print("Ok")
-        else:
-            print("Cancel")
+            pub.sendMessage('SAVE_PREFERENCES')
 
     def on_menu_grid_size(self, item):
         name = Gtk.Buildable.get_name(item)

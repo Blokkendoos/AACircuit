@@ -76,8 +76,10 @@ class Controller(object):
         pub.subscribe(self.on_cut, 'CUT')
         pub.subscribe(self.on_copy, 'COPY')
         pub.subscribe(self.on_copy_grid, 'COPY_GRID')
+
         pub.subscribe(self.on_paste_grid, 'PASTE_GRID')
         pub.subscribe(self.on_load_and_paste_grid, 'LOAD_AND_PASTE_GRID')
+        pub.subscribe(self.on_load_ascii_from_file, 'LOAD_ASCII_FROM_FILE')
 
         # file
         pub.subscribe(self.on_new, 'NEW_FILE')
@@ -94,7 +96,7 @@ class Controller(object):
         pub.subscribe(self.on_grid_size, 'GRID_SIZE')
         pub.subscribe(self.on_redraw_grid, 'REDRAW_GRID')
 
-        pub.subscribe(self.on_load_ascii_from_file, 'LOAD_ASCII_FROM_FILE')
+        pub.subscribe(self.on_save_preferences, 'SAVE_PREFERENCES')
 
     def init_stack(self):
         # action stack with the last cut/pasted symbol(s)
@@ -476,6 +478,24 @@ class Controller(object):
     # file open/save
 
     # TODO naar eigen file of class zetten
+
+    def on_save_preferences(self):
+
+        prefs = Preferences()
+        filename = 'aacircuit.ini'
+
+        try:
+            fout = open(filename, 'w')
+            str = prefs.get_all_prefs()
+            fout.write(str)
+            fout.close()
+
+            msg = _("Preferences have been saved in: %s" % filename)
+            pub.sendMessage('STATUS_MESSAGE', msg=msg)
+
+        except IOError:
+            msg = _("Unable to open file for writing: %s" % filename)
+            pub.sendMessage('STATUS_MESSAGE', msg=msg)
 
     def on_write_to_file(self, filename):
         try:
