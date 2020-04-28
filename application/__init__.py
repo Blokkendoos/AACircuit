@@ -65,8 +65,6 @@ DIR_LINE = 'dirl'
 
 DEFAULT_COMPONENT_KEY = 'Resistor'
 MARK_CHAR = 'X'
-JUMP_CHAR = ')'
-ML_BEND_CHAR = '+'
 
 # lines
 LINE_HOR = '-'

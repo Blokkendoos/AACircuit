@@ -347,9 +347,6 @@ class Controller(object):
         :param pos: the target position in grid (col, row) coordinates.
         """
 
-        def classname(x):
-            return type(x).__name__
-
         action = []
 
         for obj in self.selected_objects:
