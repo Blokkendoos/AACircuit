@@ -8,14 +8,14 @@ import time
 from pubsub import pub
 
 from application import _
-from application import FONTSIZE, GRIDSIZE_W, GRIDSIZE_H
 from application import HORIZONTAL, VERTICAL
-from application import SELECTION_DRAG, IDLE, SELECTING, SELECTED
+from application import IDLE, SELECTING, SELECTED
 from application import CHARACTER, COMPONENT, LINE, MAG_LINE, DIR_LINE, OBJECTS, COL, ROW, RECT, DRAW_RECT
 from application import MARK_CHAR
 from application import TEXT, TEXT_BLOCK
 from application.pos import Pos
 from application.symbol import Text, Line, MagLine, DirLine, Rect
+from application.preferences import Preferences
 from application.selection import Selection, SelectionCol, SelectionRow, SelectionRect
 
 import gi
@@ -30,7 +30,7 @@ def show_text(ctx, x, y, text):
     """Show text on a canvas position taking into account the Cairo glyph origin."""
 
     # the Cairo text glyph origin is its left-bottom corner
-    y += FONTSIZE
+    y += Preferences.values['FONTSIZE']
 
     ctx.move_to(x, y)
     ctx.show_text(text)
@@ -38,6 +38,8 @@ def show_text(ctx, x, y, text):
 
 
 class GridView(Gtk.Frame):
+
+    prefs = Preferences()
 
     def __init__(self):
 
@@ -80,7 +82,7 @@ class GridView(Gtk.Frame):
         self._drawing_area.add_events(Gdk.EventMask.KEY_PRESS_MASK)
         self._drawing_area.connect('key-press-event', self.on_key_press)
 
-        if SELECTION_DRAG:
+        if Preferences.values['SELECTION_DRAG']:
             self._gesture_drag = Gtk.GestureDrag.new(self._drawing_area)
             self._gesture_drag.connect('drag-begin', self.on_drag_begin)
             self._gesture_drag.connect('drag-end', self.on_drag_end)
@@ -133,8 +135,8 @@ class GridView(Gtk.Frame):
 
     def set_viewport_size(self):
         # https://stackoverflow.com/questions/11546395/how-to-put-gtk-drawingarea-into-gtk-layout
-        width = self._grid.nr_cols * GRIDSIZE_W
-        height = self._grid.nr_rows * GRIDSIZE_H
+        width = self._grid.nr_cols * Preferences.values['GRIDSIZE_W']
+        height = self._grid.nr_rows * Preferences.values['GRIDSIZE_H']
         self.set_size_request(width, height)
 
     def init_surface(self, area):
@@ -155,8 +157,8 @@ class GridView(Gtk.Frame):
 
     @property
     def max_pos_grid(self):
-        x_max = self._grid.nr_cols * GRIDSIZE_W
-        y_max = self._grid.nr_rows * GRIDSIZE_H
+        x_max = self._grid.nr_cols * Preferences.values['GRIDSIZE_W']
+        y_max = self._grid.nr_rows * Preferences.values['GRIDSIZE_H']
         return Pos(x_max, y_max)
 
     @property
@@ -342,11 +344,11 @@ class GridView(Gtk.Frame):
         ctx.set_line_join(cairo.LINE_JOIN_ROUND)
 
         x_max, y_max = self.max_pos.xy
-        x_incr = GRIDSIZE_W
-        y_incr = GRIDSIZE_H
+        x_incr = Preferences.values['GRIDSIZE_W']
+        y_incr = Preferences.values['GRIDSIZE_H']
 
         # horizontal lines
-        y = GRIDSIZE_H
+        y = Preferences.values['GRIDSIZE_H']
         while y <= y_max:
             ctx.new_path()
             ctx.move_to(0, y)
@@ -368,7 +370,7 @@ class GridView(Gtk.Frame):
         if self._grid is None:
             return
 
-        ctx.set_font_size(FONTSIZE)
+        ctx.set_font_size(Preferences.values['FONTSIZE'])
         ctx.set_source_rgb(0.1, 0.1, 0.1)
         ctx.select_font_face("monospace", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
 
@@ -379,9 +381,9 @@ class GridView(Gtk.Frame):
             x = 0
             for c in r:
                 show_text(ctx, x, y, str(c))
-                x += GRIDSIZE_W
+                x += Preferences.values['GRIDSIZE_W']
 
-            y += GRIDSIZE_H
+            y += Preferences.values['GRIDSIZE_H']
             if y >= self.surface.get_height():
                 break
 
@@ -429,7 +431,7 @@ class GridView(Gtk.Frame):
             self._symbol.draw(ctx)
 
         else:
-            ctx.set_font_size(FONTSIZE)
+            ctx.set_font_size(Preferences.values['FONTSIZE'])
             ctx.set_source_rgb(0.5, 0.5, 0.75)
             ctx.set_line_width(0.5)
             ctx.set_tolerance(0.1)
@@ -469,7 +471,7 @@ class GridView(Gtk.Frame):
 
         x, y = self._hover_pos.xy  # TODO meelopen met de tekst (blijft nu aan 't begin staan)
 
-        ctx.rectangle(x, y, GRIDSIZE_W, GRIDSIZE_H)
+        ctx.rectangle(x, y, Preferences.values['GRIDSIZE_W'], Preferences.values['GRIDSIZE_H'])
         ctx.stroke()
 
         ctx.restore()
@@ -525,7 +527,7 @@ class GridView(Gtk.Frame):
         pos = self.calc_position(event.x, event.y)
         pub.sendMessage('POINTER_MOVED', pos=pos.grid_rc())
 
-        if not SELECTION_DRAG \
+        if not Preferences.values['SELECTION_DRAG'] \
                 and self._selection.item in (DRAW_RECT, RECT, LINE, MAG_LINE, DIR_LINE):
 
             if self._selection.state == IDLE:
@@ -595,7 +597,7 @@ class GridView(Gtk.Frame):
             self._selection.state = SELECTED
 
             ul = pos
-            br = ul + Pos(GRIDSIZE_W, GRIDSIZE_H)
+            br = ul + Pos(Preferences.values['GRIDSIZE_W'], Preferences.values['GRIDSIZE_H'])
 
             self._drag_startpos = ul
             self._drag_endpos = br
@@ -729,7 +731,7 @@ class GridView(Gtk.Frame):
         self._hover_pos = self.calc_position(event.x, event.y)
         pub.sendMessage('POINTER_MOVED', pos=self._hover_pos.grid_rc())
 
-        if not SELECTION_DRAG \
+        if not Preferences.values['SELECTION_DRAG'] \
                 and self._selection.state == SELECTING \
                 and self._selection.item in (DRAW_RECT, RECT, LINE, MAG_LINE, DIR_LINE):
             offset = Pos(event.x, event.y) - self._drag_startpos

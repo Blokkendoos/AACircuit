@@ -3,12 +3,14 @@ AACircuit
 2020-03-02 JvO
 """
 
-from application import GRIDSIZE_W, GRIDSIZE_H
 from math import sqrt
+from application.preferences import Preferences
 
 
 class Pos(object):
     """A position on the grid (canvas)."""
+
+    prefs = Preferences()
 
     def __init__(self, x, y):
         self._x = int(x)
@@ -72,23 +74,23 @@ class Pos(object):
     def snap_to_grid(self):
         """Set position to the nearest (canvas) grid coordinate."""
         (x, y) = (self._x, self._y)
-        x -= x % GRIDSIZE_W
-        y -= y % GRIDSIZE_H
+        x -= x % self.prefs.get_value('GRIDSIZE_W')
+        y -= y % self.prefs.get_value('GRIDSIZE_H')
         self._x = x
         self._y = y
 
     def grid_rc(self):
         """Map canvas (x,y) position to grid (col,row) coordinates."""
         (x, y) = (self._x, self._y)
-        x /= GRIDSIZE_W
-        y /= GRIDSIZE_H
+        x /= self.prefs.get_value('GRIDSIZE_W')
+        y /= self.prefs.get_value('GRIDSIZE_H')
         return Pos(x, y)
 
     def view_xy(self):
         """Map grid (col,row) coordinates to canvas (x,y) position."""
         (x, y) = (self._x, self._y)
-        x *= GRIDSIZE_W
-        y *= GRIDSIZE_H
+        x *= self.prefs.get_value('GRIDSIZE_W')
+        y *= self.prefs.get_value('GRIDSIZE_H')
         return Pos(x, y)
 
     def in_rect(self, rect):

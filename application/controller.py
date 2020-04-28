@@ -12,7 +12,6 @@ from pubsub import pub
 from application import _
 from application.preferences import Preferences
 from application import REMOVE, INSERT
-from application import DEFAULT_COLS, DEFAULT_ROWS
 from application import ERASER, COMPONENT, CHARACTER, TEXT, COL, ROW, DRAW_RECT, LINE, MAG_LINE, DIR_LINE
 from application.grid import Grid
 from application.pos import Pos
@@ -28,8 +27,6 @@ Action = collections.namedtuple('Action', ['action', 'symbol'])
 class Controller(object):
 
     def __init__(self):
-
-        self.prefs = Preferences()
 
         self.gui = MainWindow()
         self.components = ComponentLibrary()
@@ -112,9 +109,18 @@ class Controller(object):
         self.symbol = None
         self.selected_objects = []
 
-    def init_grid(self, cols=DEFAULT_COLS, rows=DEFAULT_ROWS):
-        self._cols = cols
-        self._rows = rows
+    def init_grid(self, cols=None, rows=None):
+
+        if cols is None:
+            self._cols = Preferences.values['DEFAULT_COLS']
+        else:
+            self._cols = cols
+
+        if rows is None:
+            self._rows = Preferences.values['DEFAULT_ROWS']
+        else:
+            self._rows = rows
+
         self.grid = Grid(self._cols, self._rows)
         pub.sendMessage('NEW_GRID', grid=self.grid)
 

@@ -16,47 +16,46 @@ from gi.repository import Gtk, Gdk  # noqa: E402
 
 class Preferences(object):
 
-    prefs = dict()
+    values = dict()
 
-    # default dimensions
-    prefs['DEFAULT_ROWS'] = 36
-    prefs['DEFAULT_COLS'] = 72
+    values['DEFAULT_ROWS'] = 36
+    values['DEFAULT_COLS'] = 72
 
-    prefs['FONTSIZE'] = 12
-    prefs['GRIDSIZE_W'] = 10
-    prefs['GRIDSIZE_H'] = 16
+    values['FONTSIZE'] = 12
+    values['GRIDSIZE_W'] = 10
+    values['GRIDSIZE_H'] = 16
 
     # draw selection by dragging or click and second-click
-    prefs['SELECTION_DRAG'] = False
+    values['SELECTION_DRAG'] = False
 
-    LINE_HOR = '-'
-    LINE_VERT = '|'
-    CROSSING = ')'
+    values['LINE_HOR'] = '-'
+    values['LINE_VERT'] = '|'
+    values['CROSSING'] = ')'
 
-    LOWER_CORNER = "'"
-    UPPER_CORNER = '.'
+    values['LOWER_CORNER'] = "'"
+    values['UPPER_CORNER'] = '.'
 
-    TERMINAL1 = None
-    TERMINAL2 = 'o'
-    TERMINAL3 = '+'
-    TERMINAL4 = "'"
+    values['TERMINAL1'] = None
+    values['TERMINAL2'] = 'o'
+    values['TERMINAL3'] = '+'
+    values['TERMINAL4'] = "'"
 
     def __init__(self, prefs=None):
         if prefs:
-            self.prefs = json.loads(prefs)
+            self.values = json.loads(prefs)
 
     def get_all_prefs(self):
-        return json.dumps(self.prefs)
+        return json.dumps(self.values)
 
     def get_value(self, name):
         try:
-            return self.prefs[name]
+            return self.values[name]
         except KeyError:
             print("Unknown preference name", name)
             raise KeyError
 
     def set_pref(self, name, value):
-        self.prefs[name] = value
+        self.values[name] = value
 
 
 class NumberEntry(Gtk.Entry):
@@ -79,7 +78,7 @@ class SingleCharEntry(Gtk.Entry):
     def set_text(self, str):
         if str is None:
             str = 'None'
-        super().set_text(str)
+        super(SingleCharEntry, self).set_text(str)
 
     def on_changed(self, *args):
         text = self.get_text().strip()
@@ -252,7 +251,7 @@ class PreferencesDialog(Gtk.Dialog):
         grid.attach(label, 0, row, 1, 1)
 
         entry = SingleCharEntry()
-        entry.set_text(self.prefs.LINE_HOR)
+        entry.set_text(self.prefs.get_value('LINE_HOR'))
         grid.attach(entry, 1, row, 1, 1)
 
         row += 1
@@ -262,7 +261,7 @@ class PreferencesDialog(Gtk.Dialog):
         grid.attach(label, 0, row, 1, 1)
 
         entry = SingleCharEntry()
-        entry.set_text(self.prefs.LINE_VERT)
+        entry.set_text(self.prefs.get_value('LINE_VERT'))
         grid.attach(entry, 1, row, 1, 1)
 
         row += 1
@@ -272,7 +271,7 @@ class PreferencesDialog(Gtk.Dialog):
         grid.attach(label, 0, row, 1, 1)
 
         entry = SingleCharEntry()
-        entry.set_text(self.prefs.CROSSING)
+        entry.set_text(self.prefs.get_value('CROSSING'))
         grid.attach(entry, 1, row, 1, 1)
 
         row += 1
@@ -282,7 +281,7 @@ class PreferencesDialog(Gtk.Dialog):
         grid.attach(label, 0, row, 1, 1)
 
         entry = SingleCharEntry()
-        entry.set_text(self.prefs.TERMINAL1)
+        entry.set_text(self.prefs.get_value('TERMINAL1'))
         grid.attach(entry, 1, row, 1, 1)
 
         row += 1
@@ -292,7 +291,7 @@ class PreferencesDialog(Gtk.Dialog):
         grid.attach(label, 0, row, 1, 1)
 
         entry = SingleCharEntry()
-        entry.set_text(self.prefs.TERMINAL2)
+        entry.set_text(self.prefs.get_value('TERMINAL2'))
         grid.attach(entry, 1, row, 1, 1)
 
         row += 1
@@ -302,7 +301,7 @@ class PreferencesDialog(Gtk.Dialog):
         grid.attach(label, 0, row, 1, 1)
 
         entry = SingleCharEntry()
-        entry.set_text(self.prefs.TERMINAL3)
+        entry.set_text(self.prefs.get_value('TERMINAL3'))
         grid.attach(entry, 1, row, 1, 1)
 
         row += 1
@@ -312,7 +311,7 @@ class PreferencesDialog(Gtk.Dialog):
         grid.attach(label, 0, row, 1, 1)
 
         entry = SingleCharEntry()
-        entry.set_text(self.prefs.TERMINAL4)
+        entry.set_text(self.prefs.get_value('TERMINAL4'))
         grid.attach(entry, 1, row, 1, 1)
 
     def init_magic_line_prefs(self, frame):
@@ -329,7 +328,7 @@ class PreferencesDialog(Gtk.Dialog):
         grid.attach(label, 0, row, 1, 1)
 
         entry = SingleCharEntry()
-        entry.set_text(self.prefs.CROSSING)
+        entry.set_text(self.prefs.get_value('CROSSING'))
         grid.attach(entry, 1, row, 1, 1)
 
         row += 1
@@ -339,7 +338,7 @@ class PreferencesDialog(Gtk.Dialog):
         grid.attach(label, 0, row, 1, 1)
 
         entry = SingleCharEntry()
-        entry.set_text(self.prefs.UPPER_CORNER)
+        entry.set_text(self.prefs.get_value('UPPER_CORNER'))
         grid.attach(entry, 1, row, 1, 1)
 
         row += 1
@@ -349,5 +348,5 @@ class PreferencesDialog(Gtk.Dialog):
         grid.attach(label, 0, row, 1, 1)
 
         entry = SingleCharEntry()
-        entry.set_text(self.prefs.LOWER_CORNER)
+        entry.set_text(self.prefs.get_value('LOWER_CORNER'))
         grid.attach(entry, 1, row, 1, 1)

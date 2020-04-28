@@ -10,13 +10,11 @@ from bresenham import bresenham
 from math import pi, radians, atan
 
 from application import _
+from application.preferences import Preferences
 from application.pos import Pos
-from application import FONTSIZE
-from application import CELL_ERASE, UPPER_CORNER, LOWER_CORNER, CROSSING
+from application import CELL_ERASE
 from application import INSERT, COL, ROW
 from application import HORIZONTAL, VERTICAL, LONGEST_FIRST
-from application import LINE_HOR, LINE_VERT
-from application import TERMINAL_TYPE
 from application import ERASER, COMPONENT, CHARACTER, TEXT, DRAW_RECT, LINE, MAG_LINE, DIR_LINE
 
 
@@ -27,7 +25,7 @@ def show_text(ctx, x, y, text):
     """Show text on a canvas position taking into account the Cairo glyph origin."""
 
     # the Cairo text glyph origin is its left-bottom corner
-    y += FONTSIZE
+    y += Preferences.values['FONTSIZE']
 
     ctx.move_to(x, y)
     ctx.show_text(text)
@@ -400,6 +398,12 @@ class Text(Symbol):
 class Line(Symbol):
     """A horizontal or verical line from start to end position."""
 
+    TERMINAL_TYPE = {0: None,
+                     1: Preferences.values['TERMINAL1'],
+                     2: Preferences.values['TERMINAL2'],
+                     3: Preferences.values['TERMINAL3'],
+                     4: Preferences.values['TERMINAL4']}
+
     def __init__(self, startpos, endpos, type=None):
 
         super(Line, self).__init__(id=type, startpos=startpos, endpos=endpos)
@@ -408,7 +412,7 @@ class Line(Symbol):
             self._type = 0
         else:
             self._type = type
-        self._terminal = TERMINAL_TYPE[self._type]
+        self._terminal = self.TERMINAL_TYPE[self._type]
 
         self._representation()
 
@@ -436,11 +440,11 @@ class Line(Symbol):
             end = start
 
         if self._dir == HORIZONTAL:
-            line_char = LINE_HOR
+            line_char = Preferences.values['LINE_HOR']
             incr = Pos(1, 0)
 
         elif self._dir == VERTICAL:
-            line_char = LINE_VERT
+            line_char = Preferences.values['LINE_VERT']
             incr = Pos(0, 1)
 
         else:
@@ -710,9 +714,9 @@ class MagLine(Line):
         dy = endpos.y - startpos.y
 
         if (dy >= 0) ^ (ori != VERTICAL):
-            corner_char = LOWER_CORNER
+            corner_char = Preferences.values['LOWER_CORNER']
         else:
-            corner_char = UPPER_CORNER
+            corner_char = Preferences.values['UPPER_CORNER']
 
         top = 0
         left = 0
@@ -736,10 +740,10 @@ class MagLine(Line):
         if abs(dx) > 1:
             for temp in range(endv - startv):
                 pos = Pos(startv + temp, top)
-                if self.cell(pos) == LINE_VERT:
-                    char = CROSSING
+                if self.cell(pos) == Preferences.values['LINE_VERT']:
+                    char = Preferences.values['CROSSING']
                 else:
-                    char = LINE_HOR
+                    char = Preferences.values['LINE_HOR']
                 self._repr[pos] = char
 
         # vertical line
@@ -753,10 +757,10 @@ class MagLine(Line):
         if abs(dy) > 1:
             for temp in range(endv - startv):
                 pos = Pos(left, startv + temp)
-                if self.cell(pos) == LINE_HOR:
-                    char = CROSSING
+                if self.cell(pos) == Preferences.values['LINE_HOR']:
+                    char = Preferences.values['CROSSING']
                 else:
-                    char = LINE_VERT
+                    char = Preferences.values['LINE_VERT']
                 self._repr[pos] = char
 
         # corner character, if there is a corner

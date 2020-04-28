@@ -16,22 +16,11 @@ try:
 except Exception as e:
     _ = gettext.gettext
 
-# grid
-FONTSIZE = 12
-GRIDSIZE_W = 10
-GRIDSIZE_H = 16
-
-# default dimensions
-DEFAULT_ROWS = 36
-DEFAULT_COLS = 72
-
+# grid cells
 CELL_DEFAULT = ' '
 CELL_NEW = CELL_DEFAULT
 CELL_EMPTY = CELL_DEFAULT
 CELL_ERASE = 0x00
-
-# draw selection by dragging or click and second-click
-SELECTION_DRAG = False
 
 # selection action
 REMOVE = 'remove'
@@ -65,17 +54,3 @@ DIR_LINE = 'dirl'
 
 DEFAULT_COMPONENT_KEY = 'Resistor'
 MARK_CHAR = 'X'
-
-# lines
-LINE_HOR = '-'
-LINE_VERT = '|'
-CROSSING = ')'
-
-LOWER_CORNER = "'"
-UPPER_CORNER = '.'
-
-TERMINAL1 = None
-TERMINAL2 = 'o'
-TERMINAL3 = '+'
-TERMINAL4 = "'"
-TERMINAL_TYPE = {0: None, 1: TERMINAL1, 2: TERMINAL2, 3: TERMINAL3, 4: TERMINAL4}

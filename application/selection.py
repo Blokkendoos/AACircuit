@@ -3,8 +3,8 @@ AACircuit
 2020-03-02 JvO
 """
 
-from application import GRIDSIZE_W, GRIDSIZE_H
 from application import INSERT
+from application.preferences import Preferences
 from application import IDLE, SELECTING, SELECTED, DRAG
 from application import TEXT, TEXT_BLOCK, COL, ROW, RECT
 from application.pos import Pos
@@ -121,8 +121,8 @@ class SelectionCol(Selection):
             ctx.new_path()
             ctx.move_to(x, 0)
             ctx.line_to(x, self._maxpos.y)
-            ctx.move_to(x + GRIDSIZE_W, 0)
-            ctx.line_to(x + GRIDSIZE_W, self._maxpos.y)
+            ctx.move_to(x + Preferences.values['GRIDSIZE_W'], 0)
+            ctx.line_to(x + Preferences.values['GRIDSIZE_W'], self._maxpos.y)
             ctx.stroke()
 
 
@@ -151,8 +151,8 @@ class SelectionRow(Selection):
             ctx.new_path()
             ctx.move_to(0, y)
             ctx.line_to(self._maxpos.x, y)
-            ctx.move_to(0, y + GRIDSIZE_H)
-            ctx.line_to(self._maxpos.x, y + GRIDSIZE_H)
+            ctx.move_to(0, y + Preferences.values['GRIDSIZE_H'])
+            ctx.line_to(self._maxpos.x, y + Preferences.values['GRIDSIZE_H'])
             ctx.stroke()
 
 
@@ -178,10 +178,10 @@ class SelectionText(Selection):
         for line in str:
             x = self._startpos.x
             for char in line:
-                x += GRIDSIZE_W
+                x += Preferences.values['GRIDSIZE_W']
                 ctx.move_to(x, y)
                 ctx.show_text(char)
-            y += GRIDSIZE_H  # TODO check max?
+            y += Preferences.values['GRIDSIZE_H']  # TODO check max?
 
 
 class SelectionTextBlock(SelectionText):
