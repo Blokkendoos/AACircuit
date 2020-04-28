@@ -344,10 +344,10 @@ class Character(Symbol):
 
 class Text(Symbol):
 
-    def __init__(self, pos, text):
+    def __init__(self, pos, text, ori=None):
 
         grid = {"N": [['?']]}
-        super(Text, self).__init__(grid=grid, startpos=pos)
+        super(Text, self).__init__(grid=grid, ori=ori, startpos=pos)
 
         self._text = text
         self._representation()
@@ -358,16 +358,28 @@ class Text(Symbol):
 
         startpos = self._startpos
         pos = self._startpos
-        incr = Pos(1, 0)
 
         str = self._text.split('\n')
-        for line in str:
-            pos.x = startpos.x
-            for char in line:
-                if char != ' ':
-                    self._repr[pos] = char
-                pos += incr
-            pos += Pos(0, 1)
+
+        if self._ori == 0 or self._ori == 2:
+
+            for line in str:
+                pos.x = startpos.x
+                for char in line:
+                    if char != ' ':
+                        self._repr[pos] = char
+                    pos += Pos(1, 0)
+                pos += Pos(0, 1)
+
+        elif self._ori == 1 or self._ori == 3:
+
+            for line in str:
+                pos.y = startpos.y
+                for char in line:
+                    if char != ' ':
+                        self._repr[pos] = char
+                    pos += Pos(0, 1)
+                pos += Pos(1, 0)
 
     @property
     def grid(self):
@@ -388,11 +400,8 @@ class Text(Symbol):
 
     def copy(self):
         startpos = copy.deepcopy(self._startpos)
-        return Text(pos=startpos, text=self._text)
-
-    def rotate(self):
-        # raise NotImplementedError
-        return
+        ori = copy.deepcopy(self._ori)
+        return Text(pos=startpos, ori=ori, text=self._text)
 
 
 class Line(Symbol):

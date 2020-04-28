@@ -538,7 +538,7 @@ class GridView(Gtk.Frame):
                 self.on_drag_end(None, offset.x, offset.y)
 
         elif self._selection.state == SELECTING:
-            self.selecting_state(pos)
+            self.selecting_state(pos, event)
 
         elif self._selection.state == SELECTED:
             self.selected_state(event)
@@ -570,7 +570,7 @@ class GridView(Gtk.Frame):
             if button == 1:
                 pub.sendMessage('PASTE_OBJECTS', pos=pos)
 
-    def selecting_state(self, pos):
+    def selecting_state(self, pos, event):
 
         if self._selection.item == ROW:
             row = pos.grid_rc().y
@@ -582,13 +582,16 @@ class GridView(Gtk.Frame):
             pub.sendMessage('GRID_COL', col=col, action=self._selection.action)
             self.gridsize_changed()
 
-        elif self._selection.item == TEXT:
-            self._selection.state = SELECTED
-            pub.sendMessage('PASTE_TEXT', pos=pos.grid_rc(), text=self._symbol.text)
-
-        elif self._selection.item == TEXT_BLOCK:
-            self._selection.state = SELECTED
-            pub.sendMessage('PASTE_TEXTBLOCK', pos=pos.grid_rc(), text=self._symbol.text)
+        elif self._selection.item in (TEXT, TEXT_BLOCK):
+            button = event.button
+            if button == 1:
+                # left button
+                self._selection.state = SELECTED
+                self._symbol.startpos = pos.grid_rc()
+                pub.sendMessage('PASTE_TEXT', symbol=self._symbol)
+            elif button == 3:
+                # right button
+                self._symbol.rotate()
 
         elif self._selection.item == OBJECTS:
 

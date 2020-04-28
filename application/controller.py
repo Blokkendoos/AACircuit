@@ -338,9 +338,9 @@ class Controller(object):
 
         pub.sendMessage('UNDO_CHANGED', undo=True)
 
-    def on_paste_text(self, pos, text):
+    def on_paste_text(self, symbol):
 
-        self.symbol = Text(pos, text)
+        self.symbol = symbol
 
         self.objects.append(self.symbol)
         self.symbol.paste(self.grid)
