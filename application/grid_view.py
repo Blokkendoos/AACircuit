@@ -39,8 +39,6 @@ def show_text(ctx, x, y, text):
 
 class GridView(Gtk.Frame):
 
-    prefs = Preferences()
-
     def __init__(self):
 
         super(GridView, self).__init__()

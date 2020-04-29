@@ -28,7 +28,7 @@ class Controller(object):
 
     def __init__(self):
 
-        self.on_read_preferences()
+        self.read_preferences()
 
         self.gui = MainWindow()
         self.components = ComponentLibrary()
@@ -481,7 +481,7 @@ class Controller(object):
 
     # TODO naar eigen file of class zetten
 
-    def on_read_preferences(self):
+    def read_preferences(self):
 
         filename = 'aacircuit.ini'
 
