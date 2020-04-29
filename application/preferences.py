@@ -6,11 +6,15 @@ AACircuit
 import os
 import sys
 import locale
+import collections
 from locale import gettext as _
 
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk  # noqa: E402
+
+
+PreferenceSetting = collections.namedtuple('PreferenceSetting', ['type', 'entry'])
 
 
 class Preferences(object):
@@ -25,7 +29,7 @@ class Preferences(object):
     values['GRIDSIZE_H'] = 16
 
     # draw selection by dragging or click and second-click
-    values['SELECTION_DRAG'] = False
+    values['SELECTION_DRAG'] = True
 
     values['LINE_HOR'] = '-'
     values['LINE_VERT'] = '|'
@@ -163,7 +167,8 @@ class PreferencesDialog(Gtk.Dialog):
         value = str(Preferences.values[name])
         entry.set_text(value)
         container.attach(entry, 1, row, 1, 1)
-        self.entries[name] = entry
+
+        self.entries[name] = PreferenceSetting('str', entry)
 
     def entry_dimension(self, container, row, label_txt, name):
 
@@ -175,16 +180,21 @@ class PreferencesDialog(Gtk.Dialog):
         value = str(Preferences.values[name])
         entry.set_text(value)
         container.attach(entry, 1, row, 1, 1)
-        self.entries[name] = entry
 
-    def entry_bool(self, container, label_txt, name, value):
+        self.entries[name] = PreferenceSetting('dim', entry)
+
+    def entry_bool(self, container, row, label_txt, name):
 
         label = Gtk.Label(label_txt)
-        container.pack_start(label, False, True, 0)
+        label.set_alignment(0, 0)
+        container.attach(label, 0, row, 1, 1)
 
         entry = Gtk.CheckButton()
-        container.pack_start(entry, False, True, 0)
-        entry.active = value
+        value = Preferences.values[name]
+        entry.set_active(value)
+        container.attach(entry, 1, row, 1, 1)
+
+        self.entries[name] = PreferenceSetting('bool', entry)
 
     def init_grid_prefs(self, frame):
 
@@ -203,6 +213,9 @@ class PreferencesDialog(Gtk.Dialog):
         self.entry_dimension(grid, row, _("cell height"), 'GRIDSIZE_H')
         row += 1
         self.entry_dimension(grid, row, _("Font size"), 'FONTSIZE')
+        row += 1
+        # in effect after closing/opening application
+        self.entry_bool(grid, row, _("Drag selection"), 'SELECTION_DRAG')
 
     def init_lines_prefs(self, frame):
 
@@ -240,11 +253,15 @@ class PreferencesDialog(Gtk.Dialog):
 
     def on_ok_clicked(self, item):
 
-        for key, entry in self.entries.items():
+        for key, setting in self.entries.items():
 
-            # we assume that we have either integer or string values
-            value = entry.get_text()
-            if value.isdigit():
-                value = int(value)
+            if setting.type == 'str':
+                value = setting.entry.get_text()
+
+            elif setting.type == 'dim':
+                value = int(setting.entry.get_text())
+
+            elif setting.type == 'bool':
+                value = setting.entry.get_active()
 
             Preferences.values[key] = value
