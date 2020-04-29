@@ -480,6 +480,7 @@ class Controller(object):
     # TODO naar eigen file of class zetten
 
     def on_write_to_file(self, filename):
+
         try:
             fout = open(filename, 'w')
 
@@ -490,7 +491,9 @@ class Controller(object):
 
             fout.close()
 
-            msg = _("Schema has been saved in: %s" % filename)
+            self.filename = filename
+
+            msg = _("Schema has been saved in: %s" % self.filename)
             pub.sendMessage('STATUS_MESSAGE', msg=msg)
 
         except IOError:
@@ -498,7 +501,9 @@ class Controller(object):
             pub.sendMessage('STATUS_MESSAGE', msg=msg)
 
     def on_read_from_file(self, filename):
+
         self.filename = filename
+
         try:
             file = open(filename, 'r')
             str = file.readlines()
