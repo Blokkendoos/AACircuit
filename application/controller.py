@@ -581,11 +581,13 @@ class Controller(object):
         elif type == COMPONENT:
 
             id = m.group(2)
-            orientation = int(m.group(3))
-            mirrored = int(m.group(4))
 
-            x, y = m.group(5, 6)
+            orientation = int(m.group(3))
+
+            x, y = m.group(4, 5)
             pos = Pos(x, y)
+
+            mirrored = int(m.group(6))
 
             self.symbol = self.components.get_symbol_byid(id)
             self.symbol.ori = orientation
