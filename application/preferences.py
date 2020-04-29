@@ -5,7 +5,6 @@ AACircuit
 
 import os
 import sys
-import json
 import locale
 from locale import gettext as _
 
@@ -40,14 +39,13 @@ class Preferences(object):
     values['TERMINAL3'] = '+'
     values['TERMINAL4'] = "'"
 
-    def __init__(self, prefs=None):
-        if prefs:
-            self.values = json.loads(prefs)
-
-    def get_all_prefs(self):
-        return json.dumps(self.values)
+    def __init__(self):
+        return
 
     def get_value(self, name):
+
+        print("Deprecated method: ", self.get_value.__name__)
+
         try:
             return self.values[name]
         except KeyError:
@@ -142,6 +140,7 @@ class PreferencesDialog(Gtk.Dialog):
                                              Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
         self.prefs = Preferences()
+        self.entries = dict()
 
         frame = builder.get_object('grid')
         self.init_grid_prefs(frame)
@@ -154,15 +153,29 @@ class PreferencesDialog(Gtk.Dialog):
 
         self.show_all()
 
-    def entry_dimension(self, container, label_txt, name, value):
+    def entry_string(self, container, row, label_txt, name):
 
         label = Gtk.Label(label_txt)
-        label.set_justify(Gtk.JUSTIFY_LEFT)
-        container.pack_start(label, False, True, 0)
+        label.set_alignment(0, 0)
+        container.attach(label, 0, row, 1, 1)
+
+        entry = Gtk.Entry()
+        value = str(Preferences.values[name])
+        entry.set_text(value)
+        container.attach(entry, 1, row, 1, 1)
+        self.entries[name] = entry
+
+    def entry_dimension(self, container, row, label_txt, name):
+
+        label = Gtk.Label(label_txt)
+        label.set_alignment(0, 0)
+        container.attach(label, 0, row, 1, 1)
 
         entry = NumberEntry()
-        container.pack_start(entry, False, True, 0)
-        entry.set_text(str(value))
+        value = str(Preferences.values[name])
+        entry.set_text(value)
+        container.attach(entry, 1, row, 1, 1)
+        self.entries[name] = entry
 
     def entry_bool(self, container, label_txt, name, value):
 
@@ -173,33 +186,6 @@ class PreferencesDialog(Gtk.Dialog):
         container.pack_start(entry, False, True, 0)
         entry.active = value
 
-    def init_grid_prefs_1(self, builder):
-
-        grid = builder.get_object('grid')
-        hbox = Gtk.HBox(spacing=6)
-        grid.add(hbox)
-
-        vbox = Gtk.VBox(spacing=6)
-        grid.add(vbox)
-
-        box = Gtk.Box(spacing=6)
-        vbox.add(box)
-        self.entry_dimension(box, _("Number of rows"), 'DEFAULT_ROWS', 36)
-        self.entry_dimension(box, _("columns"), 'DEFAULT_COLS', 72)
-
-        box = Gtk.Box(spacing=6)
-        vbox.add(box)
-        self.entry_dimension(box, _("Cell width"), 'GRIDSIZE_W', 10)
-        self.entry_dimension(box, _("height"), 'GRIDSIZE_H', 16)
-
-        box = Gtk.Box(spacing=6)
-        vbox.add(box)
-        self.entry_dimension(box, _("Font size"), 'FONTSIZE', 12)
-
-        box = Gtk.Box(spacing=6)
-        vbox.add(box)
-        self.entry_bool(box, _("Select by dragging"), 'SELECTION_DRAG', False)
-
     def init_grid_prefs(self, frame):
 
         grid = Gtk.Grid()
@@ -208,34 +194,15 @@ class PreferencesDialog(Gtk.Dialog):
         frame.add(grid)
 
         row = 0
-
-        label = Gtk.Label(_("Number of rows"))
-        label.set_alignment(0, 0)
-        grid.attach(label, 0, row, 1, 1)
-
-        entry = NumberEntry()
-        entry.set_text(str(36))
-        grid.attach(entry, 1, row, 1, 1)
-
+        self.entry_dimension(grid, row, _("Number of rows"), 'DEFAULT_ROWS')
         row += 1
-
-        label = Gtk.Label(_("Number of columns"))
-        label.set_alignment(0, 0)
-        grid.attach(label, 0, 1, 1, 1)
-
-        entry = NumberEntry()
-        entry.set_text(str(72))
-        grid.attach(entry, 1, row, 1, 1)
-
+        self.entry_dimension(grid, row, _("Number of columns"), 'DEFAULT_COLS')
         row += 1
-
-        label = Gtk.Label(_("Font size"))
-        label.set_alignment(0, 0)
-        grid.attach(label, 0, row, 1, 1)
-
-        entry = NumberEntry()
-        entry.set_text(str(12))
-        grid.attach(entry, 1, row, 1, 1)
+        self.entry_dimension(grid, row, _("cell width"), 'GRIDSIZE_W')
+        row += 1
+        self.entry_dimension(grid, row, _("cell height"), 'GRIDSIZE_H')
+        row += 1
+        self.entry_dimension(grid, row, _("Font size"), 'FONTSIZE')
 
     def init_lines_prefs(self, frame):
 
@@ -245,74 +212,17 @@ class PreferencesDialog(Gtk.Dialog):
         frame.add(grid)
 
         row = 0
-
-        label = Gtk.Label(_("Horizontal line char"))
-        label.set_alignment(0, 0)
-        grid.attach(label, 0, row, 1, 1)
-
-        entry = SingleCharEntry()
-        entry.set_text(self.prefs.get_value('LINE_HOR'))
-        grid.attach(entry, 1, row, 1, 1)
-
+        self.entry_string(grid, row, _("Horizontal line char"), 'LINE_HOR')
         row += 1
-
-        label = Gtk.Label(_("Vertical line char"))
-        label.set_alignment(0, 0)
-        grid.attach(label, 0, row, 1, 1)
-
-        entry = SingleCharEntry()
-        entry.set_text(self.prefs.get_value('LINE_VERT'))
-        grid.attach(entry, 1, row, 1, 1)
-
+        self.entry_string(grid, row, _("Vertical line char"), 'LINE_VERT')
         row += 1
-
-        label = Gtk.Label(_("Crossing char"))
-        label.set_alignment(0, 0)
-        grid.attach(label, 0, row, 1, 1)
-
-        entry = SingleCharEntry()
-        entry.set_text(self.prefs.get_value('CROSSING'))
-        grid.attach(entry, 1, row, 1, 1)
-
+        self.entry_string(grid, row, _("Terminal char 1"), 'TERMINAL1')
         row += 1
-
-        label = Gtk.Label(_("Terminal char 1"))
-        label.set_alignment(0, 0)
-        grid.attach(label, 0, row, 1, 1)
-
-        entry = SingleCharEntry()
-        entry.set_text(self.prefs.get_value('TERMINAL1'))
-        grid.attach(entry, 1, row, 1, 1)
-
+        self.entry_string(grid, row, _("Terminal char 2"), 'TERMINAL2')
         row += 1
-
-        label = Gtk.Label(_("Terminal char 2"))
-        label.set_alignment(0, 0)
-        grid.attach(label, 0, row, 1, 1)
-
-        entry = SingleCharEntry()
-        entry.set_text(self.prefs.get_value('TERMINAL2'))
-        grid.attach(entry, 1, row, 1, 1)
-
+        self.entry_string(grid, row, _("Terminal char 3"), 'TERMINAL3')
         row += 1
-
-        label = Gtk.Label(_("Terminal char 3"))
-        label.set_alignment(0, 0)
-        grid.attach(label, 0, row, 1, 1)
-
-        entry = SingleCharEntry()
-        entry.set_text(self.prefs.get_value('TERMINAL3'))
-        grid.attach(entry, 1, row, 1, 1)
-
-        row += 1
-
-        label = Gtk.Label(_("Terminal char 4"))
-        label.set_alignment(0, 0)
-        grid.attach(label, 0, row, 1, 1)
-
-        entry = SingleCharEntry()
-        entry.set_text(self.prefs.get_value('TERMINAL4'))
-        grid.attach(entry, 1, row, 1, 1)
+        self.entry_string(grid, row, _("Terminal char 4"), 'TERMINAL4')
 
     def init_magic_line_prefs(self, frame):
 
@@ -322,31 +232,19 @@ class PreferencesDialog(Gtk.Dialog):
         frame.add(grid)
 
         row = 0
-
-        label = Gtk.Label(_("Crossing char"))
-        label.set_alignment(0, 0)
-        grid.attach(label, 0, row, 1, 1)
-
-        entry = SingleCharEntry()
-        entry.set_text(self.prefs.get_value('CROSSING'))
-        grid.attach(entry, 1, row, 1, 1)
-
+        self.entry_string(grid, row, _("Crossing char"), 'CROSSING')
         row += 1
-
-        label = Gtk.Label(_("Upper corner char"))
-        label.set_alignment(0, 0)
-        grid.attach(label, 0, row, 1, 1)
-
-        entry = SingleCharEntry()
-        entry.set_text(self.prefs.get_value('UPPER_CORNER'))
-        grid.attach(entry, 1, row, 1, 1)
-
+        self.entry_string(grid, row, _("Upper corner char"), 'UPPER_CORNER')
         row += 1
+        self.entry_string(grid, row, _("Lower corner char"), 'LOWER_CORNER')
 
-        label = Gtk.Label(_("Lower corner char"))
-        label.set_alignment(0, 0)
-        grid.attach(label, 0, row, 1, 1)
+    def on_ok_clicked(self, item):
 
-        entry = SingleCharEntry()
-        entry.set_text(self.prefs.get_value('LOWER_CORNER'))
-        grid.attach(entry, 1, row, 1, 1)
+        for key, entry in self.entries.items():
+
+            # we assume that we have either integer or string values
+            value = entry.get_text()
+            if value.isdigit():
+                value = int(value)
+
+            Preferences.values[key] = value

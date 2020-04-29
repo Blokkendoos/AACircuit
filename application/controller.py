@@ -28,6 +28,8 @@ class Controller(object):
 
     def __init__(self):
 
+        self.on_read_preferences()
+
         self.gui = MainWindow()
         self.components = ComponentLibrary()
         self.symbol = Symbol()
@@ -479,14 +481,33 @@ class Controller(object):
 
     # TODO naar eigen file of class zetten
 
+    def on_read_preferences(self):
+
+        filename = 'aacircuit.ini'
+
+        try:
+            file = open(filename, 'r')
+            str = file.read()
+            file.close()
+
+            Preferences.values = json.loads(str)
+
+            msg = _("Preferences read from: %s" % filename)
+            # pub.sendMessage('STATUS_MESSAGE', msg=msg)
+            print(msg)
+
+        except IOError:
+            return
+
     def on_save_preferences(self):
 
-        prefs = Preferences()
         filename = 'aacircuit.ini'
 
         try:
             fout = open(filename, 'w')
-            str = prefs.get_all_prefs()
+
+            str = json.dumps(Preferences.values)
+
             fout.write(str)
             fout.close()
 

@@ -74,23 +74,23 @@ class Pos(object):
     def snap_to_grid(self):
         """Set position to the nearest (canvas) grid coordinate."""
         (x, y) = (self._x, self._y)
-        x -= x % self.prefs.get_value('GRIDSIZE_W')
-        y -= y % self.prefs.get_value('GRIDSIZE_H')
+        x -= x % Preferences.values['GRIDSIZE_W']
+        y -= y % Preferences.values['GRIDSIZE_H']
         self._x = x
         self._y = y
 
     def grid_rc(self):
         """Map canvas (x,y) position to grid (col,row) coordinates."""
         (x, y) = (self._x, self._y)
-        x /= self.prefs.get_value('GRIDSIZE_W')
-        y /= self.prefs.get_value('GRIDSIZE_H')
+        x /= Preferences.values['GRIDSIZE_W']
+        y /= Preferences.values['GRIDSIZE_H']
         return Pos(x, y)
 
     def view_xy(self):
         """Map grid (col,row) coordinates to canvas (x,y) position."""
         (x, y) = (self._x, self._y)
-        x *= self.prefs.get_value('GRIDSIZE_W')
-        y *= self.prefs.get_value('GRIDSIZE_H')
+        x *= Preferences.values['GRIDSIZE_W']
+        y *= Preferences.values['GRIDSIZE_H']
         return Pos(x, y)
 
     def in_rect(self, rect):
