@@ -172,7 +172,7 @@ class Symbol(object):
             return self._grid[self.ORIENTATION[self._ori]]
 
     def rotate(self):
-        """Return the grid with the next (90° clockwise rotated) orientation for this symbol."""
+        """Return the grid with the next (90 degrees clockwise rotated) orientation for this symbol."""
         self._ori += 1
         self._ori %= 4
 
