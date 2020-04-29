@@ -10,8 +10,6 @@ from application.preferences import Preferences
 class Pos(object):
     """A position on the grid (canvas)."""
 
-    prefs = Preferences()
-
     def __init__(self, x, y):
         self._x = int(x)
         self._y = int(y)

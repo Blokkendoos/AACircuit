@@ -10,11 +10,11 @@ import collections
 from pubsub import pub
 
 from application import _
-from application.preferences import Preferences
 from application import REMOVE, INSERT
 from application import ERASER, COMPONENT, CHARACTER, TEXT, COL, ROW, DRAW_RECT, LINE, MAG_LINE, DIR_LINE
 from application.grid import Grid
 from application.pos import Pos
+from application.preferences import Preferences
 from application.symbol import Eraser, Symbol, Character, Text, Line, MagLine, DirLine, Rect, Row, Column
 from application.main_window import MainWindow
 from application.component_library import ComponentLibrary
@@ -28,7 +28,7 @@ class Controller(object):
 
     def __init__(self):
 
-        self.read_preferences()
+        self.prefs = Preferences()
 
         self.gui = MainWindow()
         self.components = ComponentLibrary()
@@ -97,8 +97,6 @@ class Controller(object):
         # grid
         pub.subscribe(self.on_grid_size, 'GRID_SIZE')
         pub.subscribe(self.on_redraw_grid, 'REDRAW_GRID')
-
-        pub.subscribe(self.on_save_preferences, 'SAVE_PREFERENCES')
 
     def init_stack(self):
         # action stack with the last cut/pasted symbol(s)
@@ -480,43 +478,6 @@ class Controller(object):
     # file open/save
 
     # TODO naar eigen file of class zetten
-
-    def read_preferences(self):
-
-        filename = 'aacircuit.ini'
-
-        try:
-            file = open(filename, 'r')
-            str = file.read()
-            file.close()
-
-            Preferences.values = json.loads(str)
-
-            msg = _("Preferences read from: %s" % filename)
-            # pub.sendMessage('STATUS_MESSAGE', msg=msg)
-            print(msg)
-
-        except IOError:
-            return
-
-    def on_save_preferences(self):
-
-        filename = 'aacircuit.ini'
-
-        try:
-            fout = open(filename, 'w')
-
-            str = json.dumps(Preferences.values)
-
-            fout.write(str)
-            fout.close()
-
-            msg = _("Preferences have been saved in: %s" % filename)
-            pub.sendMessage('STATUS_MESSAGE', msg=msg)
-
-        except IOError:
-            msg = _("Unable to open file for writing: %s" % filename)
-            pub.sendMessage('STATUS_MESSAGE', msg=msg)
 
     def on_write_to_file(self, filename):
         try:

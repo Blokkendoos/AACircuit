@@ -11,7 +11,7 @@ import locale
 from locale import gettext as _
 
 from application import INSERT, REMOVE
-from application.preferences import PreferencesDialog
+from application.preferences import Preferences, PreferencesDialog
 from application.grid_view import GridView
 from application.component_view import ComponentView
 
@@ -336,10 +336,8 @@ class MainWindow(Gtk.Window):
 
     def on_menu_preferences(self, item):
         dialog = PreferencesDialog()
-        result = dialog.run()
+        dialog.run()
         dialog.hide()
-        if result == Gtk.ResponseType.OK:
-            pub.sendMessage('SAVE_PREFERENCES')
 
     def on_menu_grid_size(self, item):
         name = Gtk.Buildable.get_name(item)
@@ -355,7 +353,7 @@ class MainWindow(Gtk.Window):
             cols, rows = (200, 70)
         else:
             # default, catch all
-            cols, rows = (72, 36)
+            cols, rows = (Preferences.values['DEFAULT_COLS'], Preferences.values['DEFAULT_ROWS'])
         # strip the sequence nr
         name = name[:-2]
         pub.sendMessage(name.upper(), cols=cols, rows=rows)

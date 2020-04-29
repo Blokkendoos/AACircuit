@@ -6,7 +6,9 @@ AACircuit
 import os
 import sys
 import locale
+import json
 import collections
+from pubsub import pub
 from locale import gettext as _
 
 import gi
@@ -21,6 +23,8 @@ class Preferences(object):
 
     values = dict()
 
+    # default preference values
+
     values['DEFAULT_ROWS'] = 36
     values['DEFAULT_COLS'] = 72
 
@@ -28,8 +32,8 @@ class Preferences(object):
     values['GRIDSIZE_W'] = 10
     values['GRIDSIZE_H'] = 16
 
-    # draw selection by dragging or click and second-click
-    values['SELECTION_DRAG'] = True
+    # draw selection by dragging (True) or click and second-click (False)
+    values['SELECTION_DRAG'] = False
 
     values['LINE_HOR'] = '-'
     values['LINE_VERT'] = '|'
@@ -44,7 +48,11 @@ class Preferences(object):
     values['TERMINAL4'] = "'"
 
     def __init__(self):
-        return
+
+        self._filename = 'aacircuit.ini'
+        self.read_preferences()
+
+        pub.subscribe(self.on_save_preferences, 'SAVE_PREFERENCES')
 
     def get_value(self, name):
 
@@ -58,6 +66,39 @@ class Preferences(object):
 
     def set_pref(self, name, value):
         self.values[name] = value
+
+    def read_preferences(self):
+
+        try:
+            file = open(self._filename, 'r')
+            str = file.read()
+            file.close()
+
+            Preferences.values = json.loads(str)
+
+            msg = _("Preferences have been read from: %s" % self._filename)
+            # pub.sendMessage('STATUS_MESSAGE', msg=msg)
+            print(msg)
+
+        except IOError:
+            return
+
+    def on_save_preferences(self):
+
+        try:
+            fout = open(self._filename, 'w')
+
+            str = json.dumps(Preferences.values)
+
+            fout.write(str)
+            fout.close()
+
+            msg = _("Preferences have been saved in: %s" % self._filename)
+            pub.sendMessage('STATUS_MESSAGE', msg=msg)
+
+        except IOError:
+            msg = _("Unable to open file for writing: %s" % self._filename)
+            pub.sendMessage('STATUS_MESSAGE', msg=msg)
 
 
 class NumberEntry(Gtk.Entry):
@@ -143,7 +184,6 @@ class PreferencesDialog(Gtk.Dialog):
         styleContext.add_provider_for_screen(screen, cssProvider,
                                              Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
-        self.prefs = Preferences()
         self.entries = dict()
 
         frame = builder.get_object('grid')
@@ -265,3 +305,5 @@ class PreferencesDialog(Gtk.Dialog):
                 value = setting.entry.get_active()
 
             Preferences.values[key] = value
+
+        pub.sendMessage('SAVE_PREFERENCES')
