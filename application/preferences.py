@@ -47,24 +47,45 @@ class Preferences(object):
     values['TERMINAL3'] = '+'
     values['TERMINAL4'] = "'"
 
-    def __init__(self):
+    def __init__(self, filename='aacircuit.ini'):
 
-        self._filename = 'aacircuit.ini'
+        self._filename = filename
         self.read_preferences()
 
         pub.subscribe(self.on_save_preferences, 'SAVE_PREFERENCES')
 
+    def has_value(self, name):
+        """Verify whether we have a preference value with this name."""
+
+        try:
+            value = self.values[name]  # noqa F841
+            return True
+
+        except KeyError:
+            return False
+
+    def nr_values(self):
+        """Return the number of preference settings."""
+        return len(self.values)
+
     def get_value(self, name):
+        """
+        Return value with the given preference name.
+        Deprecated method.
+        Use the class dictionary instead: value = Preferences.values['name']
+        """
 
         print("Deprecated method: ", self.get_value.__name__)
 
         try:
             return self.values[name]
+
         except KeyError:
             print("Unknown preference name", name)
             raise KeyError
 
     def set_pref(self, name, value):
+        """Set the value for preference with the given name."""
         self.values[name] = value
 
     def read_preferences(self):
@@ -81,7 +102,9 @@ class Preferences(object):
             print(msg)
 
         except IOError:
-            return
+            msg = _("Preferences file not found: %s, default preferences are being used" % self._filename)
+            # pub.sendMessage('STATUS_MESSAGE', msg=msg)
+            print(msg)
 
     def on_save_preferences(self):
 
