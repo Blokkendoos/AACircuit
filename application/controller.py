@@ -220,7 +220,9 @@ class Controller(object):
 
     def remove_from_objects(self, symbol):
         for idx, sym in enumerate(self.objects):
-            if id(sym) == id(symbol):
+            # the id's differ as instances are copied before being added to the selection list
+            # if id(sym) == id(symbol):
+            if sym.startpos == symbol.startpos and sym.id == symbol.id:
                 del self.objects[idx]
                 break
 
