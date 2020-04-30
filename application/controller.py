@@ -15,10 +15,10 @@ from application import ERASER, COMPONENT, CHARACTER, TEXT, COL, ROW, DRAW_RECT,
 from application.pos import Pos
 from application.grid import Grid
 from application.preferences import Preferences
-from application.symbol import Eraser, Symbol, Character, Text, Line, MagLine, DirLine, Rect, Row, Column
 from application.main_window import MainWindow
 from application.component_library import ComponentLibrary
 from application.file import FileChooserWindow, AsciiFileChooserWindow, PrintOperation
+from application.symbol import Eraser, Character, Text, Line, MagLine, DirLine, Rect, Row, Column
 
 SelectedObjects = collections.namedtuple('SelectedObjects', ['startpos', 'symbol'])
 Action = collections.namedtuple('Action', ['action', 'symbol'])
@@ -32,7 +32,6 @@ class Controller(object):
 
         self.gui = MainWindow()
         self.components = ComponentLibrary()
-        self.symbol = Symbol()
 
         self.init_stack()
         self.init_grid()
@@ -54,8 +53,6 @@ class Controller(object):
         pub.subscribe(self.on_rotate_symbol, 'ROTATE_SYMBOL')
         pub.subscribe(self.on_mirror_symbol, 'MIRROR_SYMBOL')
 
-        pub.subscribe(self.on_paste_character, 'PASTE_CHARACTER')
-        pub.subscribe(self.on_paste_symbol, 'PASTE_SYMBOL')
         pub.subscribe(self.on_paste_objects, 'PASTE_OBJECTS')
         pub.subscribe(self.on_paste_mag_line, 'PASTE_MAG_LINE')
         pub.subscribe(self.on_paste_dir_line, 'PASTE_DIR_LINE')
@@ -108,7 +105,6 @@ class Controller(object):
         # all objects on the grid
         self.objects = []
 
-        self.symbol = None
         self.selected_objects = []
 
     def init_grid(self, cols=None, rows=None):
@@ -195,6 +191,10 @@ class Controller(object):
 
         pub.sendMessage('REDO_CHANGED', redo=True)
 
+    def add_selected_object(self, symbol):
+        obj = SelectedObjects(symbol.startpos, symbol)
+        self.selected_objects.append(obj)
+
     # File menu
 
     def on_new(self):
@@ -219,9 +219,8 @@ class Controller(object):
     # Edit menu
 
     def remove_from_objects(self, symbol):
-        """"Remove the symbol(s) at the given position."""
         for idx, sym in enumerate(self.objects):
-            if sym.startpos == symbol.startpos:
+            if id(sym) == id(symbol):
                 del self.objects[idx]
                 break
 
@@ -238,6 +237,21 @@ class Controller(object):
                 copy = symbol.copy()
                 selection = SelectedObjects(startpos=ul, symbol=copy)
                 selected.append(selection)
+
+        # TODO Only one of multiple objects sharing the same position will be selected
+        if len(selected) > 0:
+            selected.sort(key=lambda x: x.startpos)
+            selected_unique = []
+            positions = set()
+            for sel in selected:
+                if sel.symbol.startpos in positions:
+                    # print("Duplicates")
+                    msg = _("More than one item at position: %s !" % sel.symbol.startpos)
+                    pub.sendMessage('STATUS_MESSAGE', msg=msg)
+                else:
+                    positions.add(sel.symbol.startpos)
+                    selected_unique.append(sel)
+            selected = selected_unique
 
         self.selected_objects = selected
 
@@ -298,66 +312,40 @@ class Controller(object):
     # character/component symbol
 
     def on_character_changed(self, char):
-        self.symbol = Character(char)
-        pub.sendMessage('CHARACTER_SELECTED', char=self.symbol)
+        symbol = Character(char)
+        self.selected_objects = []
+        self.add_selected_object(symbol)
+        pub.sendMessage('CHARACTER_SELECTED', char=symbol)
 
     def on_component_changed(self, label):
+        symbol = self.components.get_symbol(label)
         self.selected_objects = []
-        self.symbol = self.components.get_symbol(label)
-        pub.sendMessage('SYMBOL_SELECTED', symbol=self.symbol)
+        self.add_selected_object(symbol)
+        pub.sendMessage('SYMBOL_SELECTED', symbol=symbol)
 
     def on_rotate_symbol(self):
-        # FIXME merge selected_objects and self.symbol
-        if len(self.selected_objects) == 0:
-            # only components can be rotated
-            self.symbol.rotate()
-            pub.sendMessage('SYMBOL_SELECTED', symbol=self.symbol)
-        else:
-            for obj in self.selected_objects:
-                obj.symbol.rotate()
+        for obj in self.selected_objects:
+            obj.symbol.rotate()
 
     def on_mirror_symbol(self):
-        self.symbol.mirrored = 1 - self.symbol.mirrored  # toggle 0/1
-        pub.sendMessage('SYMBOL_SELECTED', symbol=self.symbol)
-
-    def on_paste_symbol(self, pos):
-
-        symbol = self.symbol.copy()
-        symbol.startpos = pos
-
-        self.objects.append(symbol)
-        symbol.paste(self.grid)
-
-        self.push_latest_action(symbol)
-
-        pub.sendMessage('UNDO_CHANGED', undo=True)
-
-    def on_paste_character(self, pos):
-
-        symbol = self.symbol.copy()
-        symbol.startpos = pos
-
-        self.objects.append(symbol)
-        symbol.paste(self.grid)
-
-        self.push_latest_action(symbol)
-
-        pub.sendMessage('UNDO_CHANGED', undo=True)
+        for obj in self.selected_objects:
+            obj.symbol.mirrored = 1 - obj.symbol.mirrored  # toggle 0/1
 
     def on_paste_text(self, symbol):
 
-        self.symbol = symbol
+        self.selected_objects = []
+        self.add_selected_object(symbol)
 
-        self.objects.append(self.symbol)
-        self.symbol.paste(self.grid)
+        self.objects.append(symbol)
+        symbol.paste(self.grid)
 
-        self.push_latest_action(self.symbol)
+        self.push_latest_action(symbol)
 
         pub.sendMessage('UNDO_CHANGED', undo=True)
 
     def on_paste_objects(self, pos):
         """
-        Paste multiple selection.
+        Paste selection.
         :param pos: the target position in grid (col, row) coordinates.
         """
 
@@ -387,28 +375,44 @@ class Controller(object):
     # lines
 
     def on_paste_line(self, startpos, endpos, type):
-        self.symbol = Line(startpos, endpos, type)
-        self.objects.append(self.symbol)
-        self.symbol.paste(self.grid)
-        self.push_latest_action(self.symbol)
+        symbol = Line(startpos, endpos, type)
+
+        self.selected_objects = []
+        self.add_selected_object(symbol)
+
+        self.objects.append(symbol)
+        symbol.paste(self.grid)
+        self.push_latest_action(symbol)
 
     def on_paste_dir_line(self, startpos, endpos):
-        self.symbol = DirLine(startpos, endpos)
-        self.objects.append(self.symbol)
-        self.symbol.paste(self.grid)
-        self.push_latest_action(self.symbol)
+        symbol = DirLine(startpos, endpos)
+
+        self.selected_objects = []
+        self.add_selected_object(symbol)
+
+        self.objects.append(symbol)
+        symbol.paste(self.grid)
+        self.push_latest_action(symbol)
 
     def on_paste_mag_line(self, startpos, endpos):
-        self.symbol = MagLine(startpos, endpos, self.grid.cell)
-        self.objects.append(self.symbol)
-        self.symbol.paste(self.grid)
-        self.push_latest_action(self.symbol)
+        symbol = MagLine(startpos, endpos, self.grid.cell)
+
+        self.selected_objects = []
+        self.add_selected_object(symbol)
+
+        self.objects.append(symbol)
+        symbol.paste(self.grid)
+        self.push_latest_action(symbol)
 
     def on_paste_rect(self, startpos, endpos):
-        self.symbol = Rect(startpos, endpos)
-        self.objects.append(self.symbol)
-        self.symbol.paste(self.grid)
-        self.push_latest_action(self.symbol)
+        symbol = Rect(startpos, endpos)
+
+        self.selected_objects = []
+        self.add_selected_object(symbol)
+
+        self.objects.append(symbol)
+        symbol.paste(self.grid)
+        self.push_latest_action(symbol)
 
     # clipboard
 
@@ -469,14 +473,20 @@ class Controller(object):
 
     def on_eraser_selected(self, size):
         """Select eraser of the given size."""
+        symbol = Eraser(size)
+
         self.selected_objects = []
-        self.symbol = Eraser(size)
-        pub.sendMessage('SYMBOL_SELECTED', symbol=self.symbol)
+        self.add_selected_object(symbol)
+
+        pub.sendMessage('SYMBOL_SELECTED', symbol=symbol)
 
     def on_select_rect(self):
         """Select multiple objects."""
         pub.sendMessage('NOTHING_SELECTED')
         pub.sendMessage('SELECTING_RECT', objects=self.objects)
+
+        msg = _("Selecting rectangle...")
+        pub.sendMessage('STATUS_MESSAGE', msg=msg)
 
     def on_select_objects(self):
         """Select individual objects."""
@@ -588,9 +598,12 @@ class Controller(object):
             x, y = m.group(4, 5)
             pos = Pos(x, y)
 
-            self.symbol = Eraser(size)
+            symbol = Eraser(size)
 
-            self.on_paste_symbol(pos)
+            self.selected_objects = []
+            self.add_selected_object(symbol)
+
+            self.on_paste_objects(pos)
 
         elif type == COMPONENT:
 
@@ -602,11 +615,14 @@ class Controller(object):
             x, y = m.group(5, 6)
             pos = Pos(x, y)
 
-            self.symbol = self.components.get_symbol_byid(id)
-            self.symbol.ori = orientation
-            self.symbol.mirrored = mirrored
+            symbol = self.components.get_symbol_byid(id)
+            symbol.ori = orientation
+            symbol.mirrored = mirrored
 
-            self.on_paste_symbol(pos)
+            self.selected_objects = []
+            self.add_selected_object(symbol)
+
+            self.on_paste_objects(pos)
 
         elif type == CHARACTER:
 
@@ -616,8 +632,12 @@ class Controller(object):
             x, y = m.group(3, 4)
             pos = Pos(x, y)
 
-            self.symbol = Character(char)
-            self.on_paste_character(pos)
+            symbol = Character(char)
+
+            self.selected_objects = []
+            self.add_selected_object(symbol)
+
+            self.on_paste_objects(pos)
 
         elif type == LINE:
 
@@ -700,13 +720,17 @@ class Controller(object):
             orientation = int(m.group(2))
 
             x, y = m.group(3, 4)
-            startpos = Pos(x, y)
+            pos = Pos(x, y)
 
             str = m.group(5)
             text = json.loads(str)
 
-            symbol = Text(startpos, text, orientation)
-            self.on_paste_text(symbol)
+            symbol = Text(pos, text, orientation)
+
+            self.selected_objects = []
+            self.add_selected_object(symbol)
+
+            self.on_paste_objects(pos)
 
         else:
             skip = 1

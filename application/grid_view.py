@@ -548,25 +548,15 @@ class GridView(Gtk.Frame):
         pos = self._hover_pos
         pos = pos.grid_rc()
 
-        if self._selection.item == CHARACTER:
-            button = event.button
-            if button == 1:
-                pub.sendMessage('PASTE_CHARACTER', pos=pos)
-
-        elif self._selection.item == COMPONENT:
+        if self._selection.item in (CHARACTER, COMPONENT, OBJECTS):
             # https://stackoverflow.com/questions/6616270/right-click-menu-context-menu-using-pygtk
             button = event.button
             if button == 1:
                 # left button
-                pub.sendMessage('PASTE_SYMBOL', pos=pos)
+                pub.sendMessage('PASTE_OBJECTS', pos=pos)
             elif button == 3:
                 # right button
                 pub.sendMessage('ROTATE_SYMBOL')
-
-        elif self._selection.item == OBJECTS:
-            button = event.button
-            if button == 1:
-                pub.sendMessage('PASTE_OBJECTS', pos=pos)
 
     def selecting_state(self, pos, event):
 
