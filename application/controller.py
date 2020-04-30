@@ -234,7 +234,8 @@ class Controller(object):
 
             # select symbols of which the upper-left corner is within the selection rectangle
             if symbol.startpos.in_rect(rect):
-                selection = SelectedObjects(startpos=ul, symbol=symbol)
+                copy = symbol.copy()
+                selection = SelectedObjects(startpos=ul, symbol=copy)
                 selected.append(selection)
 
         self.selected_objects = selected
@@ -305,10 +306,14 @@ class Controller(object):
         pub.sendMessage('SYMBOL_SELECTED', symbol=self.symbol)
 
     def on_rotate_symbol(self):
-        # only components can be rotated
+        # FIXME merge selected_objects and self.symbol
         if len(self.selected_objects) == 0:
+            # only components can be rotated
             self.symbol.rotate()
             pub.sendMessage('SYMBOL_SELECTED', symbol=self.symbol)
+        else:
+            for obj in self.selected_objects:
+                obj.symbol.rotate()
 
     def on_mirror_symbol(self):
         self.symbol.mirrored = 1 - self.symbol.mirrored  # toggle 0/1
