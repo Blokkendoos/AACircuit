@@ -203,6 +203,8 @@ class Symbol(object):
 
     def remove(self, grid):
         """Remove the symbol from the target grid."""
+        self._representation()
+
         for pos in self._repr.keys():
             grid.set_cell(pos, CELL_ERASE)
 
@@ -478,7 +480,8 @@ class Line(Symbol):
 
     def rotate(self):
         # TODO enable to rotate (from HOR to VERT)?
-        raise NotImplementedError
+        # raise NotImplementedError
+        return
 
     def copy(self):
         startpos = copy.deepcopy(self._startpos)
