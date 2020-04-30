@@ -66,6 +66,7 @@ class PosTest(unittest.TestCase):
         self.assertEquals(b.y, 16)
 
         c = Pos(11, 17)
+
         tmp = c.grid_rc()
         self.assertEquals(tmp.x, 1)
         self.assertEquals(tmp.y, 1)

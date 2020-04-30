@@ -140,7 +140,7 @@ class Grid(object):
         :returns the content of the given rectangle
         """
 
-        print("obsolete method: Rect.rect()")
+        print("Obsolete method: ", self.rect.__name__)
 
         content = []
 
@@ -164,7 +164,7 @@ class Grid(object):
         :param rect: rectangle upper-left corner and bottom-right corner (row, column) tuple
         """
 
-        print("obsolete method: Rect.erase_rect()")
+        print("Obsolete method: ", self.erase_rect.__name__)
 
         c_start, r_start, c_end, r_end = self.rect_to_rc(rect)
 
@@ -185,7 +185,7 @@ class Grid(object):
         :param content: 2D array
         """
 
-        print("obsolete method: Rect.fill_rect()")
+        print("Obsolete method: ", self.fill_rect.__name__)
 
         if len(content) == 0:
             return
