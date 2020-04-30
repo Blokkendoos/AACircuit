@@ -58,4 +58,3 @@ class LinesTest(unittest.TestCase):
 
         filename = 'tmp/test_magic_line.aac'
         self.assertTrue(c.on_write_to_file(filename))
-
