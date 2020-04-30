@@ -32,6 +32,9 @@ class Preferences(object):
     values['GRIDSIZE_W'] = 10
     values['GRIDSIZE_H'] = 16
 
+    values['PANGO_FONT'] = False
+    values['FONT'] = 'monospace'
+
     # draw selection by dragging (True) or click and second-click (False)
     values['SELECTION_DRAG'] = False
 
@@ -246,6 +249,19 @@ class PreferencesDialog(Gtk.Dialog):
 
         self.entries[name] = PreferenceSetting('dim', entry)
 
+    def entry_font(self, container, row, label_txt, name):
+
+        label = Gtk.Label(label_txt)
+        label.set_alignment(0, 0)
+        container.attach(label, 0, row, 1, 1)
+
+        entry = Gtk.FontButton()
+        value = str(Preferences.values[name])
+        entry.set_font_name(value)
+        container.attach(entry, 1, row, 1, 1)
+
+        self.entries[name] = PreferenceSetting('font', entry)
+
     def entry_bool(self, container, row, label_txt, name):
 
         label = Gtk.Label(label_txt)
@@ -276,6 +292,10 @@ class PreferencesDialog(Gtk.Dialog):
         self.entry_dimension(grid, row, _("cell height"), 'GRIDSIZE_H')
         row += 1
         self.entry_dimension(grid, row, _("Font size"), 'FONTSIZE')
+        row += 1
+        self.entry_bool(grid, row, _("Use Pango font"), 'PANGO_FONT')
+        row += 1
+        self.entry_font(grid, row, _("Font"), 'FONT')
         row += 1
         # in effect after closing/opening application
         self.entry_bool(grid, row, _("Drag selection"), 'SELECTION_DRAG')
@@ -326,6 +346,9 @@ class PreferencesDialog(Gtk.Dialog):
 
             elif setting.type == 'bool':
                 value = setting.entry.get_active()
+
+            elif setting.type == 'font':
+                value = setting.entry.get_font_name()
 
             Preferences.values[key] = value
 

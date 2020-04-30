@@ -13,9 +13,9 @@ class PreferencesTest(unittest.TestCase):
         self.assertEquals(Preferences.values['FONTSIZE'], 14)
 
     def test_nr_settings(self):
-        # current number of settings in the preferences testfile: 15
+        # 2020-04-30 number of settings in the preferences testfile: 17
         p = Preferences()
-        self.assertEquals(p.nr_values(), 15)
+        self.assertEquals(p.nr_values(), 17)
 
     def test_has_value(self):
         p = Preferences()

@@ -19,22 +19,12 @@ from application.preferences import Preferences
 from application.selection import Selection, SelectionCol, SelectionRow, SelectionRect
 
 import gi
+
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GLib  # noqa: E402
 
-
-# TODO how to get this into an 'utility' source
-# TODO now has a duplicate in symbol.py
-
-def show_text(ctx, x, y, text):
-    """Show text on a canvas position taking into account the Cairo glyph origin."""
-
-    # the Cairo text glyph origin is its left-bottom corner
-    y += Preferences.values['FONTSIZE']
-
-    ctx.move_to(x, y)
-    ctx.show_text(text)
-    return
+gi.require_version('PangoCairo', '1.0')
+from gi.repository import Pango, PangoCairo  # noqa: E402
 
 
 class GridView(Gtk.Frame):
@@ -368,17 +358,34 @@ class GridView(Gtk.Frame):
         if self._grid is None:
             return
 
-        ctx.set_font_size(Preferences.values['FONTSIZE'])
         ctx.set_source_rgb(0.1, 0.1, 0.1)
-        ctx.select_font_face("monospace", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
 
-        # show_text(ctx, 0, 16, "HALLO")
+        use_pango_font = Preferences.values['PANGO_FONT']
+
+        if use_pango_font:
+            # https://sites.google.com/site/randomcodecollections/home/python-gtk-3-pango-cairo-example
+            layout = PangoCairo.create_layout(ctx)
+            desc = Pango.font_description_from_string(Preferences.values['FONT'])
+            layout.set_font_description(desc)
+        else:
+            ctx.set_font_size(Preferences.values['FONTSIZE'])
+            ctx.select_font_face("monospace", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
 
         y = 0
         for r in self._grid.grid:
+
             x = 0
             for c in r:
-                show_text(ctx, x, y, str(c))
+
+                if use_pango_font:
+                    ctx.move_to(x, y)
+                    layout.set_text(str(c), -1)
+                    PangoCairo.show_layout(ctx, layout)
+                else:
+                    # the Cairo text glyph origin is its left-bottom corner
+                    ctx.move_to(x, y + Preferences.values['FONTSIZE'])
+                    ctx.show_text(str(c))
+
                 x += Preferences.values['GRIDSIZE_W']
 
             y += Preferences.values['GRIDSIZE_H']
@@ -498,7 +505,12 @@ class GridView(Gtk.Frame):
             ctx.select_font_face("monospace", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
 
             pos = ref.startpos.view_xy()
-            show_text(ctx, pos.x, pos.y, MARK_CHAR)  # mark the upper-left corner
+
+            # the text glyph origin is its left-bottom corner
+            y_xbase = pos.y + Preferences.values['FONTSIZE']
+            ctx.move_to(pos.x, y_xbase)
+
+            ctx.show_text(MARK_CHAR)  # mark the upper-left corner
 
         ctx.restore()
 

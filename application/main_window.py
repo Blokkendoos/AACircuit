@@ -6,6 +6,7 @@ AACircuit
 import os
 import sys
 from pubsub import pub
+from threading import Timer
 
 import locale
 from locale import gettext as _
@@ -77,6 +78,7 @@ class MainWindow(Gtk.Window):
                                              Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
         # statusbar
+        self.timer_is_running = False
         self.label_xpos = self.builder.get_object('x_pos')
         self.label_ypos = self.builder.get_object('y_pos')
         self.msg = self.builder.get_object('statusbar1')
@@ -126,6 +128,8 @@ class MainWindow(Gtk.Window):
         self.init_components()
         self.init_char_buttons()
 
+        # self.start_timer()
+
         self._undo_stack_empty = True
 
         pub.subscribe(self.on_pointer_moved, 'POINTER_MOVED')
@@ -137,6 +141,23 @@ class MainWindow(Gtk.Window):
         pub.subscribe(self.on_selection_changed, 'SELECTION_CHANGED')
         pub.subscribe(self.on_undo_changed, 'UNDO_CHANGED')
         pub.subscribe(self.on_redo_changed, 'REDO_CHANGED')
+
+    def start_timer(self):
+        # FIXME Timer interferes with nosetest (lock.acquire() in shutdown)
+        if not self.timer_is_running:
+            self._timer = Timer(15, self._timer_event)
+            self._timer.start()
+            self.timer_is_running = True
+
+    def stop_timer(self):
+        self._timer.cancel()
+        self.timer_is_running = False
+
+    def _timer_event(self):
+        """Clear status message."""
+        self.timer_is_running = False
+        self.msg.push(0, '')
+        self.start_timer()
 
     def init_components(self):
         component_canvas = ComponentView(self.builder)  # noqa F841
@@ -211,6 +232,9 @@ class MainWindow(Gtk.Window):
         pub.sendMessage('CHARACTER_CHANGED', char=char)
 
     def on_delete_window(self, window, event):
+
+        # self.stop_timer()
+
         return not self.on_close_clicked()
 
     def on_close_clicked(self, item=None):
