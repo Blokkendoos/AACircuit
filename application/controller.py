@@ -12,8 +12,8 @@ from pubsub import pub
 from application import _
 from application import REMOVE, INSERT
 from application import ERASER, COMPONENT, CHARACTER, TEXT, COL, ROW, DRAW_RECT, LINE, MAG_LINE, DIR_LINE
-from application.grid import Grid
 from application.pos import Pos
+from application.grid import Grid
 from application.preferences import Preferences
 from application.symbol import Eraser, Symbol, Character, Text, Line, MagLine, DirLine, Rect, Row, Column
 from application.main_window import MainWindow
@@ -458,9 +458,11 @@ class Controller(object):
             file.close()
 
             pub.sendMessage('OBJECTS_SELECTED', objects=self.selected_objects)
+            return True
 
         except (IOError, UnicodeDecodeError):
             print(_("Unable to open file for reading: %s" % filename))
+            return False
 
     # other
 
@@ -501,9 +503,12 @@ class Controller(object):
             msg = _("Schema has been saved in: %s" % self.filename)
             pub.sendMessage('STATUS_MESSAGE', msg=msg)
 
+            return True
+
         except IOError:
             msg = _("Unable to open file for writing: %s" % filename)
             pub.sendMessage('STATUS_MESSAGE', msg=msg)
+            return False
 
     def on_read_from_file(self, filename):
 
@@ -540,9 +545,12 @@ class Controller(object):
             pub.sendMessage('FILE_OPENED')
             pub.sendMessage('NOTHING_SELECTED')
 
+            return True
+
         except (IOError, UnicodeDecodeError):
             msg = _("Unable to open file for reading: %s" % filename)
             pub.sendMessage('STATUS_MESSAGE', msg=msg)
+            return False
 
     def play_memo(self, memo):
 
