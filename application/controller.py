@@ -219,8 +219,9 @@ class Controller(object):
     # Edit menu
 
     def remove_from_objects(self, symbol):
+        """"Remove the symbol(s) at the given position."""
         for idx, sym in enumerate(self.objects):
-            if id(sym) == id(symbol):
+            if sym.startpos == symbol.startpos:
                 del self.objects[idx]
                 break
 
