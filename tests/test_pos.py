@@ -23,47 +23,57 @@ class PosTest(unittest.TestCase):
 
         a = Pos(10, 15)
         b = Pos(12, 21)
+        c = Pos(12, 21)
 
         self.assertTrue(a < b)
         self.assertFalse(a > b)
+
         self.assertTrue(a <= b)
         self.assertFalse(a >= b)
+
+        self.assertTrue(b == c)
+        self.assertFalse(a == b)
 
     def test_conversion(self):
 
         a = Pos(10, 15)
         b = Pos(12, 21)
 
-        print("a.grid_rc: {}".format(a.grid_rc()))
-        print("a.view_xy: {}".format(a.view_xy()))
+        tmp = a.grid_rc()
+        self.assertEquals(tmp.x, 1)
+        self.assertEquals(tmp.y, 0)
+
+        tmp = a.view_xy()
+        self.assertEquals(tmp.x, 100)
+        self.assertEquals(tmp.y, 240)
 
         a.snap_to_grid()
-        print("a.snap_to_grid: {}".format(a))
+        self.assertEquals(a.x, 10)
+        self.assertEquals(a.y, 0)
 
         b = Pos(10, 16)
-        print("b.grid_rc: {}".format(b.grid_rc()))
-        print("b.view_xy: {}".format(b.view_xy()))
+
+        tmp = b.grid_rc()
+        self.assertEquals(tmp.x, 1)
+        self.assertEquals(tmp.y, 1)
+
+        tmp = b.view_xy()
+        self.assertEquals(tmp.x, 100)
+        self.assertEquals(tmp.y, 256)
+
         b.snap_to_grid()
-        print("b.snap_to_grid: {}".format(b))
+        self.assertEquals(b.x, 10)
+        self.assertEquals(b.y, 16)
 
-        x = Pos(9, 15)
-        print("x:", x)
-        x.snap_to_grid()
-        print("x.snap_to_grid: {}".format(x))
-        print("x.grid_rc: {}".format(x.grid_rc()))
+        c = Pos(11, 17)
+        tmp = c.grid_rc()
+        self.assertEquals(tmp.x, 1)
+        self.assertEquals(tmp.y, 1)
 
-        x = Pos(11, 17)
-        print("x:", x)
-        x.snap_to_grid()
-        print("x.snap_to_grid: {}".format(x))
-        print("x.grid_rc: {}".format(x.grid_rc()))
+        tmp = c.view_xy()
+        self.assertEquals(tmp.x, 110)
+        self.assertEquals(tmp.y, 272)
 
-        x = Pos(21, 33)
-        print("x:", x)
-        x.snap_to_grid()
-        print("x.snap_to_grid: {}".format(x))
-        print("x.grid_rc: {}".format(x.grid_rc()))
-
-        c = b.grid_rc()
-        d = c.view_xy()
-        self.assertTrue(b == d)
+        c.snap_to_grid()
+        self.assertEquals(c.x, 10)
+        self.assertEquals(c.y, 16)
