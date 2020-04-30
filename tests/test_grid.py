@@ -1,8 +1,9 @@
+# NB to be run with nose, this .py should _not_ be executable (chmod -x)
+
 import unittest
 
-from application.preferences import Preferences
-from application.grid_view import Pos
 from application.grid import Grid
+from application.grid_view import Pos
 
 
 class GridTest(unittest.TestCase):
@@ -11,8 +12,8 @@ class GridTest(unittest.TestCase):
 
         g = Grid()
 
-        self.assertEquals(Preferences.values['DEFAULT_ROWS'], g.nr_rows)
-        self.assertEquals(Preferences.values['DEFAULT_COLS'], g.nr_cols)
+        self.assertEquals(g.nr_rows, 5)
+        self.assertEquals(g.nr_cols, 5)
 
     def test_content(self):
 
@@ -26,12 +27,12 @@ class GridTest(unittest.TestCase):
                 i += 1
 
         rect = (Pos(1, 1), Pos(1, 1))
-        value = g.rect(rect)[0]
-        self.assertEquals(value, 1)
+        value = g.rect(rect)[0][0]
+        self.assertEquals(value, 6)
 
         rect = (Pos(4, 4), Pos(4, 4))
-        value = g.rect(rect)[0]
-        self.assertEquals(value, 3)
+        value = g.rect(rect)[0][0]
+        self.assertEquals(value, 24)
 
     def test_fill(self):
 
@@ -81,10 +82,6 @@ class GridTest(unittest.TestCase):
         g.remove_row(2)
         print(g)
 
-        print("insert row 2:")
-        g.insert_row(2)
-        print(g)
-
         print("removed column 2:")
         g.remove_col(2)
         print(g)
@@ -104,10 +101,6 @@ class GridTest(unittest.TestCase):
         g.insert_col(2)
         print(g)
 
-        print("removed column 0:")
-        g.remove_col(0)
-        print(g)
-
-        print("removed column 2:")
-        g.remove_col(2)
+        print("insert row 2:")
+        g.insert_row(2)
         print(g)

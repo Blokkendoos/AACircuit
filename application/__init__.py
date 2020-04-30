@@ -13,7 +13,7 @@ try:
     local_lang = gettext.translation('aacircuit', localedir='locale', languages=[lang])
     local_lang.install()
     _ = local_lang.gettext
-except Exception as e:
+except Exception as e:  # noqa F841
     _ = gettext.gettext
 
 # grid cells
