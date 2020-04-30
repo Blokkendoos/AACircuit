@@ -51,7 +51,7 @@ class LinesTest(unittest.TestCase):
         # connect component to line
         c.on_paste_line(Pos(5, 2), Pos(31, 2), 1)
         c.on_component_changed('AND gate')
-        c.on_paste_symbol(Pos(25, 5))
+        c.on_paste_objects(Pos(25, 5))
 
         c.on_paste_mag_line(Pos(24, 6), Pos(15, 6))
         c.on_paste_mag_line(Pos(24, 8), Pos(20, 2))
