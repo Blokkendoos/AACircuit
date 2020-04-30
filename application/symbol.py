@@ -154,7 +154,7 @@ class Symbol(object):
 
     def memo(self):
         """Return entry for the actions as recorded in the memo."""
-        str = "{0}:{1},{2},{3},{4}".format(COMPONENT, self._id, self._ori, self._startpos, self._mirrored)
+        str = "{0}:{1},{2},{3},{4}".format(COMPONENT, self._id, self._ori, self._mirrored, self._startpos)
         return str
 
     def copy(self):
