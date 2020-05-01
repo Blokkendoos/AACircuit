@@ -123,11 +123,14 @@ class PrintOperation(object):
 
         self.parent = parent
         self.printop = Gtk.PrintOperation()
+        # w/o async closing the app stalls
+        self.printop.set_allow_async(False)
+        self.printop.set_n_pages(1)  # TODO set nr pages
 
         self.printop.set_embed_page_setup(True)
         self.printop.set_print_settings(self.settings)
 
-        self.printop.connect('begin-print', self.on_begin_print)
+        # self.printop.connect('begin-print', self.on_begin_print)
         self.printop.connect('draw-page', self.on_draw_page)
         # self.printop.connect('end-print', self.on_end_print)
 
