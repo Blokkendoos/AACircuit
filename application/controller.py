@@ -17,7 +17,7 @@ from application.grid import Grid
 from application.preferences import Preferences
 from application.main_window import MainWindow
 from application.component_library import ComponentLibrary
-from application.file import FileChooserWindow, AsciiFileChooserWindow, PrintOperation
+from application.file import InputFileChooser, AsciiFileChooser, OutputFileChooser, PrintOperation
 from application.symbol import Eraser, Character, Text, Line, MagLine, DirLine, Rect, Row, Column
 
 SelectedObjects = collections.namedtuple('SelectedObjects', ['startpos', 'symbol'])
@@ -85,7 +85,11 @@ class Controller(object):
         pub.subscribe(self.on_open, 'OPEN_FILE')
         pub.subscribe(self.on_save, 'SAVE_FILE')
         pub.subscribe(self.on_save_as, 'SAVE_AS_FILE')
+        pub.subscribe(self.on_export_as_pdf, 'EXPORT_AS_PDF')
+
+        # pub.subscribe(self.on_begin_print, 'BEGIN_PRINT')
         pub.subscribe(self.on_print_file, 'PRINT_FILE')
+        pub.subscribe(self.on_end_print, 'END_PRINT')
 
         # open/save grid from/to file
         pub.subscribe(self.on_read_from_file, 'READ_FROM_FILE')
@@ -203,17 +207,24 @@ class Controller(object):
         pub.sendMessage('NOTHING_SELECTED')
 
     def on_open(self):
-        dialog = FileChooserWindow(open=True)  # noqa: F841
+        dialog = InputFileChooser()  # noqa: F841
 
     def on_save(self):
         if self.filename is not None:
             self.on_write_to_file(self.filename)
 
     def on_save_as(self):
-        dialog = FileChooserWindow()  # noqa: F841
+        dialog = OutputFileChooser()  # noqa: F841
+
+    def on_export_as_pdf(self):
+        pass
+
+    def on_end_print(self):
+        msg = _("Finished printing")
+        pub.sendMessage('STATUS_MESSAGE', msg=msg)
 
     def on_print_file(self):
-        dialog = PrintOperation(self.gui)  # noqa: F841
+        dialog = PrintOperation()  # noqa: F841
         dialog.run()
 
     # Edit menu
@@ -443,7 +454,8 @@ class Controller(object):
         pub.sendMessage('OBJECTS_SELECTED', objects=self.selected_objects)
 
     def on_load_and_paste_grid(self):
-        dialog = AsciiFileChooserWindow()  # noqa: F841
+        self.selected_objects = []
+        dialog = AsciiFileChooser()  # noqa: F841
 
     def on_load_ascii_from_file(self, filename):
 

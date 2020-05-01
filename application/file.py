@@ -11,43 +11,19 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk  # noqa: E402
 
 
-class FileChooserWindow(Gtk.Window):
+class InputFileChooser():
 
-    def __init__(self, open=False):
+    def __init__(self):
+        dialog = Gtk.FileChooserDialog(title=_("Please choose a file"),
+                                       action=Gtk.FileChooserAction.SAVE,
+                                       buttons=(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
+                                                Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
 
-        self.open = open
-
-        if self.open:
-            title = _("Open file")
-        else:
-            title = _("Save file")
-
-        Gtk.Window.__init__(self, title=title)
-
-        self.on_file_clicked()
-
-    def on_file_clicked(self):
-
-        if self.open:
-            option = Gtk.STOCK_OPEN
-        else:
-            option = Gtk.STOCK_SAVE
-
-        dialog = Gtk.FileChooserDialog(_("Please choose a file"), self,
-                                       Gtk.FileChooserAction.SAVE,
-                                       (Gtk.STOCK_CANCEL,
-                                        Gtk.ResponseType.CANCEL,
-                                        option,
-                                        Gtk.ResponseType.OK))
         dialog.set_default_size(640, 480)
-        if not self.open:
-            dialog.props.do_overwrite_confirmation = True
-            dialog.set_current_name(_("Untitled_schema.aac"))
 
         self.add_filters(dialog)
 
         response = dialog.run()
-
         if response == Gtk.ResponseType.OK:
             self.filename = dialog.get_filename()
             self.action()
@@ -55,10 +31,7 @@ class FileChooserWindow(Gtk.Window):
         dialog.destroy()
 
     def action(self):
-        if self.open:
-            pub.sendMessage('READ_FROM_FILE', filename=self.filename)
-        else:
-            pub.sendMessage('WRITE_TO_FILE', filename=self.filename)
+        pub.sendMessage('READ_FROM_FILE', filename=self.filename)
 
     def add_filters(self, dialog):
         filter_aac = Gtk.FileFilter()
@@ -76,27 +49,53 @@ class FileChooserWindow(Gtk.Window):
         filter_any.add_pattern('*')
         dialog.add_filter(filter_any)
 
-    def on_folder_clicked(self, widget):
-        dialog = Gtk.FileChooserDialog(_("Please choose a folder"), self,
-                                       Gtk.FileChooserAction.SELECT_FOLDER,
-                                       (Gtk.STOCK_CANCEL,
-                                        Gtk.ResponseType.CANCEL,
-                                        _("Select"),
-                                        Gtk.ResponseType.OK))
+
+class OutputFileChooser():
+
+    def __init__(self):
+        dialog = Gtk.FileChooserDialog(title=_("Save as"),
+                                       action=Gtk.FileChooserAction.SAVE,
+                                       buttons=(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
+                                                Gtk.STOCK_SAVE, Gtk.ResponseType.OK))
+
         dialog.set_default_size(640, 480)
+        dialog.props.do_overwrite_confirmation = True
+        dialog.set_current_name(_("Untitled_schema.aac"))
+
+        self.add_filters(dialog)
 
         response = dialog.run()
+
         if response == Gtk.ResponseType.OK:
-            msg = _("Folder selected: %s") % dialog.get_filename()
-            pub.sendMessage('STATUS_MESSAGE', msg=msg)
+            self.filename = dialog.get_filename()
+            self.action()
 
         dialog.destroy()
 
+    def action(self):
+        pub.sendMessage('WRITE_TO_FILE', filename=self.filename)
 
-class AsciiFileChooserWindow(FileChooserWindow):
+    def add_filters(self, dialog):
+        filter_aac = Gtk.FileFilter()
+        filter_aac.set_name(_("AAC files"))
+        filter_aac.add_pattern('*.aac')
+        dialog.add_filter(filter_aac)
+
+        filter_text = Gtk.FileFilter()
+        filter_text.set_name(_("Text files"))
+        filter_text.add_mime_type('text/plain')
+        dialog.add_filter(filter_text)
+
+        filter_any = Gtk.FileFilter()
+        filter_any.set_name(_("All files"))
+        filter_any.add_pattern('*')
+        dialog.add_filter(filter_any)
+
+
+class AsciiFileChooser(InputFileChooser):
 
     def __init__(self):
-        super(AsciiFileChooserWindow, self).__init__(open=True)
+        super(AsciiFileChooser, self).__init__()
 
     def action(self):
         pub.sendMessage('LOAD_ASCII_FROM_FILE', filename=self.filename)
@@ -117,13 +116,13 @@ class PrintOperation(object):
 
     settings = Gtk.PrintSettings()
 
-    def __init__(self, parent):
+    def __init__(self):
 
         # https://askubuntu.com/questions/220350/how-to-add-a-print-dialog-to-an-application
         # https://stackoverflow.com/questions/28325525/python-gtk-printoperation-print-a-pdf
 
-        self.parent = parent
         self.printop = Gtk.PrintOperation()
+
         # w/o async closing the app stalls
         self.printop.set_allow_async(False)
         self.printop.set_n_pages(1)  # TODO set nr pages
@@ -133,12 +132,12 @@ class PrintOperation(object):
 
         # self.printop.connect('begin-print', self.on_begin_print)
         self.printop.connect('draw-page', self.on_draw_page)
-        # self.printop.connect('end-print', self.on_end_print)
+        self.printop.connect('end-print', self.on_end_print)
 
-    def run(self):
+    def run(self, parent=None):
 
         result = self.printop.run(Gtk.PrintOperationAction.PRINT_DIALOG,
-                                  self.parent)
+                                  parent)
 
         if result == Gtk.PrintOperationResult.ERROR:
             print(self.printop.get_error())
@@ -147,9 +146,12 @@ class PrintOperation(object):
             self.settings = self.printop.get_print_settings()
 
     def on_begin_print(self, operation, print_ctx):
-        parms = (operation, print_ctx)
-        pub.sendMessage('BEGIN_PRINT', parms=parms)
+        pub.sendMessage('BEGIN_PRINT')
 
     def on_draw_page(self, operation, print_ctx, page_num):
         parms = (operation, print_ctx, page_num)
         pub.sendMessage('DRAW_PAGE', parms=parms)
+
+    def on_end_print(self, operation, print_ctx):
+        pub.sendMessage('END_PRINT')
+
