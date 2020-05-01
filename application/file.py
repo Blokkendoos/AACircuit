@@ -52,7 +52,9 @@ class InputFileChooser():
 
 class OutputFileChooser():
 
-    def __init__(self):
+    def __init__(self, filename=_("Untitled_schema.aac")):
+        self.filename = filename
+
         dialog = Gtk.FileChooserDialog(title=_("Save as"),
                                        action=Gtk.FileChooserAction.SAVE,
                                        buttons=(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
@@ -60,7 +62,7 @@ class OutputFileChooser():
 
         dialog.set_default_size(640, 480)
         dialog.props.do_overwrite_confirmation = True
-        dialog.set_current_name(_("Untitled_schema.aac"))
+        dialog.set_current_name(self.filename)
 
         self.add_filters(dialog)
 
@@ -90,6 +92,20 @@ class OutputFileChooser():
         filter_any.set_name(_("All files"))
         filter_any.add_pattern('*')
         dialog.add_filter(filter_any)
+
+
+class PDFFileChooser(OutputFileChooser):
+    def __init__(self):
+        super(PDFFileChooser, self).__init__(filename=_("Untitled.pdf"))
+
+    def action(self):
+        pub.sendMessage('DRAW_PDF', filename=self.filename)
+
+    def add_filters(self, dialog):
+        filter_aac = Gtk.FileFilter()
+        filter_aac.set_name(_("PDF files"))
+        filter_aac.add_pattern('*.pdf')
+        dialog.add_filter(filter_aac)
 
 
 class AsciiFileChooser(InputFileChooser):
@@ -154,4 +170,3 @@ class PrintOperation(object):
 
     def on_end_print(self, operation, print_ctx):
         pub.sendMessage('END_PRINT')
-

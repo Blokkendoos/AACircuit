@@ -115,6 +115,7 @@ class GridView(Gtk.Frame):
         # printing
         pub.subscribe(self.on_begin_print, 'BEGIN_PRINT')
         pub.subscribe(self.on_draw_page, 'DRAW_PAGE')
+        pub.subscribe(self.on_draw_pdf, 'DRAW_PDF')
 
     def set_grid(self, grid):
         self._grid = grid
@@ -126,16 +127,6 @@ class GridView(Gtk.Frame):
         width = self._grid.nr_cols * Preferences.values['GRIDSIZE_W']
         height = self._grid.nr_rows * Preferences.values['GRIDSIZE_H']
         self.set_size_request(width, height)
-
-    def init_surface(self, area):
-        """Initialize Cairo surface."""
-        if self.surface is not None:
-            # destroy previous buffer
-            self.surface.finish()
-            self.surface = None
-
-        # create a new buffer
-        self.surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, area.get_allocated_width(), area.get_allocated_height())
 
     @property
     def max_pos(self):
@@ -165,6 +156,16 @@ class GridView(Gtk.Frame):
 
         return ul, br
 
+    def init_surface(self, area):
+        """Initialize Cairo surface."""
+        if self.surface is not None:
+            # destroy previous buffer
+            self.surface.finish()
+            self.surface = None
+
+        # create a new buffer
+        self.surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, area.get_allocated_width(), area.get_allocated_height())
+
     def on_configure(self, area, event, data=None):
         self.init_surface(self._drawing_area)
         context = cairo.Context(self.surface)
@@ -172,10 +173,10 @@ class GridView(Gtk.Frame):
         self.surface.flush()
         return False
 
-    def on_draw(self, area, context):
+    def on_draw(self, area, ctx):
         if self.surface is not None:
-            context.set_source_surface(self.surface, 0.0, 0.0)
-            context.paint()
+            ctx.set_source_surface(self.surface, 0.0, 0.0)
+            ctx.paint()
         else:
             print(_("Invalid surface"))
         return False
@@ -202,6 +203,25 @@ class GridView(Gtk.Frame):
 
         ctx.scale(0.5, 0.5)
         self.draw_content(ctx)
+
+    def on_draw_pdf(self, filename):
+
+        w = self._drawing_area.get_allocated_width()
+        h = self._drawing_area.get_allocated_height()
+
+        surface = cairo.PDFSurface(filename, w, h)
+        ctx = cairo.Context(surface)
+
+        ctx.set_source_rgb(0.75, 0.75, 0.75)
+        ctx.set_line_width(0.25)
+
+        ctx.rectangle(w*0.1, h*0.1, w*0.8, h*0.8)  # noqa E226
+        ctx.stroke()
+
+        ctx.scale(0.5, 0.5)
+        self.draw_content(ctx)
+
+        surface.finish()
 
     # drawing
 
@@ -364,6 +384,7 @@ class GridView(Gtk.Frame):
 
         if use_pango_font:
             # https://sites.google.com/site/randomcodecollections/home/python-gtk-3-pango-cairo-example
+            # https://developer.gnome.org/pango/stable/pango-Cairo-Rendering.html
             layout = PangoCairo.create_layout(ctx)
             desc = Pango.font_description_from_string(Preferences.values['FONT'])
             layout.set_font_description(desc)

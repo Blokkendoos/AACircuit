@@ -17,7 +17,7 @@ from application.grid import Grid
 from application.preferences import Preferences
 from application.main_window import MainWindow
 from application.component_library import ComponentLibrary
-from application.file import InputFileChooser, AsciiFileChooser, OutputFileChooser, PrintOperation
+from application.file import InputFileChooser, AsciiFileChooser, OutputFileChooser, PDFFileChooser, PrintOperation
 from application.symbol import Eraser, Character, Text, Line, MagLine, DirLine, Rect, Row, Column
 
 SelectedObjects = collections.namedtuple('SelectedObjects', ['startpos', 'symbol'])
@@ -217,7 +217,7 @@ class Controller(object):
         dialog = OutputFileChooser()  # noqa: F841
 
     def on_export_as_pdf(self):
-        pass
+        dialog = PDFFileChooser()  # noqa: F841
 
     def on_end_print(self):
         msg = _("Finished printing")

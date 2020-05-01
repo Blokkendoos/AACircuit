@@ -301,6 +301,21 @@
                       </object>
                     </child>
                     <child>
+                      <object class="GtkMenuItem" id="export_as_pdf">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Export as PDF</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_menu_file" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSeparatorMenuItem">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                      </object>
+                    </child>
+                    <child>
                       <object class="GtkImageMenuItem" id="print_file">
                         <property name="label">gtk-print</property>
                         <property name="visible">True</property>
