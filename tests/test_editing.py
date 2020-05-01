@@ -6,55 +6,55 @@ from application.pos import Pos
 from application.controller import Controller
 
 
-class LinesTest(unittest.TestCase):
+class EditingTest(unittest.TestCase):
 
-    def test_lines(self):
-
-        c = Controller()
-        c.on_new()
-
-        start = Pos(5, 5)
-        end = Pos(15, 5)
-
-        for type in range(1, 5):
-            c.on_paste_line(start, end, type)
-            start += Pos(0, 5)
-            end += Pos(0, 5)
-
-        filename = 'tmp/test_lines.aac'
-        self.assertTrue(c.on_write_to_file(filename))
-
-    def test_rect(self):
+    def test_insert_remove(self):
 
         c = Controller()
         c.on_new()
 
-        start = Pos(5, 5)
-        end = Pos(15, 15)
-
-        c.on_paste_rect(start, end)
-
-        filename = 'tmp/test_rect.aac'
-        self.assertTrue(c.on_write_to_file(filename))
-
-    def test_magic_line(self):
-
-        c = Controller()
-        c.on_new()
-
-        # connect rectangle sides
-        start = Pos(5, 5)
-        end = Pos(15, 15)
-        c.on_paste_rect(start, end)
-        c.on_paste_mag_line(Pos(8, 5), Pos(15, 10))
-
-        # connect component to line
-        c.on_paste_line(Pos(5, 2), Pos(31, 2), 1)
         c.on_component_changed('AND gate')
-        c.on_paste_objects(Pos(25, 5))
+        c.on_paste_objects(Pos(4, 2))
 
-        c.on_paste_mag_line(Pos(24, 6), Pos(15, 6))
-        c.on_paste_mag_line(Pos(24, 8), Pos(20, 2))
+        c.on_component_changed('NAND gate')
+        c.on_paste_objects(Pos(14, 2))
 
-        filename = 'tmp/test_magic_line.aac'
+        filename = 'tmp/test_edit_insert.aac'
+        self.assertTrue(c.on_write_to_file(filename))
+
+        rect = (Pos(4, 2), Pos(5, 3))
+        c.on_cut(rect)
+
+        filename = 'tmp/test_edit_remove.aac'
+        self.assertTrue(c.on_write_to_file(filename))
+
+    def test_erase(self):
+
+        c = Controller()
+        c.on_new()
+
+        c.on_component_changed('AND gate')
+        c.on_paste_objects(Pos(4, 2))
+
+        c.on_eraser_selected((5, 5))
+        c.on_paste_objects(Pos(5, 2))
+
+        filename = 'tmp/test_edit_erase.aac'
+        self.assertTrue(c.on_write_to_file(filename))
+
+    def test_duplicate(self):
+
+        c = Controller()
+        c.on_new()
+
+        c.on_component_changed('AND gate')
+        c.on_paste_objects(Pos(4, 2))
+
+        c.on_component_changed('NAND gate')
+        c.on_paste_objects(Pos(4, 2))
+
+        rect = (Pos(4, 2), Pos(5, 3))
+        c.on_cut(rect)
+
+        filename = 'tmp/test_edit_duplicate.aac'
         self.assertTrue(c.on_write_to_file(filename))
