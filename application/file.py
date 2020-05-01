@@ -42,6 +42,7 @@ class FileChooserWindow(Gtk.Window):
         dialog.set_default_size(640, 480)
         if not self.open:
             dialog.props.do_overwrite_confirmation = True
+            dialog.set_current_name(_("Untitled_schema.aac"))
 
         self.add_filters(dialog)
 
