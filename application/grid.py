@@ -51,7 +51,7 @@ class Grid(object):
             line = ""
             for c in r:
                 line += c
-            content +=  (line + "\n")
+            content += (line + "\n")
 
         content += _("(created by AACircuit.py © 2020 JvO)")
 

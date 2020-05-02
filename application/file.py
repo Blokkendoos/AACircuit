@@ -53,6 +53,7 @@ class InputFileChooser():
 class OutputFileChooser():
 
     def __init__(self, filename=_("Untitled_schema.aac")):
+
         self.filename = filename
 
         dialog = Gtk.FileChooserDialog(title=_("Save as"),
@@ -95,8 +96,10 @@ class OutputFileChooser():
 
 
 class OutputFilePDF(OutputFileChooser):
-    def __init__(self):
-        super(OutputFilePDF, self).__init__(filename=_("Untitled.pdf"))
+
+    def __init__(self, filename):
+        # filename is set in the Gtk PDF writer
+        super(OutputFilePDF, self).__init__(filename)
 
     def action(self):
         pub.sendMessage('DRAW_PDF', filename=self.filename)

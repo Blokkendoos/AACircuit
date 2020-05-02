@@ -218,8 +218,8 @@ class Controller(object):
     def on_save_as(self):
         dialog = OutputFileChooser()  # noqa: F841
 
-    def on_export_as_pdf(self):
-        dialog = OutputFilePDF()  # noqa: F841
+    def on_export_as_pdf(self, filename=_("Untitled.pdf")):
+        dialog = OutputFilePDF(filename)  # noqa: F841
 
     def on_export_as_ascii(self):
         dialog = OutputFileAscii()  # noqa: F841

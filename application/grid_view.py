@@ -194,6 +194,7 @@ class GridView(Gtk.Frame):
         ctx = print_ctx.get_cairo_context()
         w = print_ctx.get_width()
         h = print_ctx.get_height()
+        # print("width: {} height:{})".format(w, h))
 
         ctx.set_source_rgb(0.75, 0.75, 0.75)
         ctx.set_line_width(0.25)
@@ -206,8 +207,11 @@ class GridView(Gtk.Frame):
 
     def on_draw_pdf(self, filename):
 
-        w = self._drawing_area.get_allocated_width()
-        h = self._drawing_area.get_allocated_height()
+        # don't use the drawing_area, so that this method can be run from (nose) test method (w/o GUI)
+        # w = self._drawing_area.get_allocated_width()
+        # h = self._drawing_area.get_allocated_height()
+        # FIXME Set Portrait or Landscape dimensions based upon prefs or printer settings
+        w, h = (560, 784)
 
         surface = cairo.PDFSurface(filename, w, h)
         ctx = cairo.Context(surface)
@@ -413,8 +417,9 @@ class GridView(Gtk.Frame):
                 x += Preferences.values['GRIDSIZE_W']
 
             y += Preferences.values['GRIDSIZE_H']
-            if y >= self.surface.get_height():
-                break
+            # no reference to surface dimension, to allow to be run from (nose) test (w/o GUI)
+            # if y >= self.surface.get_height():
+            #     break
 
     def draw_selection(self, ctx):
 

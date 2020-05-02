@@ -18,7 +18,7 @@ class FileTest(unittest.TestCase):
         filename = 'tmp/test_all.aac'
         self.assertTrue(c.on_write_to_file(filename))
 
-    def test_ascii(self):
+    def test_read_ascii(self):
 
         c = Controller()
 
@@ -32,3 +32,26 @@ class FileTest(unittest.TestCase):
 
         filename = 'tmp/test_ascii.aac'
         self.assertTrue(c.on_write_to_file(filename))
+
+    def test_export_ascii(self):
+
+        c = Controller()
+
+        filename = 'tests/files/test_all.aac'
+        self.assertTrue(c.on_read_from_file(filename))
+
+        filename = 'tmp/test_all.txt'
+        self.assertTrue(c.on_write_to_ascii_file(filename))
+
+    def test_export_pdf(self):
+
+        c = Controller()
+
+        filename = 'tests/files/test_all.aac'
+        self.assertTrue(c.on_read_from_file(filename))
+
+        # FIXME to avoid using grid_view methods, use the controller to pass to grid_view
+        # with the disadvantage of not being able to check the outcome here.
+        # Instead, visually check the existence and content of the PDF file
+        filename = 'tmp/test_all.pdf'
+        c.on_export_as_pdf(filename)

@@ -294,7 +294,6 @@ class MainWindow(Gtk.Window):
             action = INSERT
         else:
             action = REMOVE
-
         pub.sendMessage('NOTHING_SELECTED')
         pub.sendMessage('SELECTING_COL', action=action)
 
