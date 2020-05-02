@@ -53,7 +53,7 @@ class MainWindow(Gtk.Window):
             print(_("Failed to load XML GUI file aacircuit.glade"))
             sys.exit(1)
 
-        new_object = builder.get_object('window1')
+        new_object = builder.get_object('main_window')
         new_object.finish_initializing(builder)
 
         return new_object

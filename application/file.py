@@ -35,7 +35,7 @@ class InputFileChooser():
 
     def add_filters(self, dialog):
         filter_aac = Gtk.FileFilter()
-        filter_aac.set_name(_("AAC files"))
+        filter_aac.set_name(_("Circuit files"))
         filter_aac.add_pattern('*.aac')
         dialog.add_filter(filter_aac)
 
@@ -79,7 +79,7 @@ class OutputFileChooser():
 
     def add_filters(self, dialog):
         filter_aac = Gtk.FileFilter()
-        filter_aac.set_name(_("AAC files"))
+        filter_aac.set_name(_("Circuit files"))
         filter_aac.add_pattern('*.aac')
         dialog.add_filter(filter_aac)
 
@@ -94,9 +94,9 @@ class OutputFileChooser():
         dialog.add_filter(filter_any)
 
 
-class PDFFileChooser(OutputFileChooser):
+class OutputFilePDF(OutputFileChooser):
     def __init__(self):
-        super(PDFFileChooser, self).__init__(filename=_("Untitled.pdf"))
+        super(OutputFilePDF, self).__init__(filename=_("Untitled.pdf"))
 
     def action(self):
         pub.sendMessage('DRAW_PDF', filename=self.filename)
@@ -108,10 +108,30 @@ class PDFFileChooser(OutputFileChooser):
         dialog.add_filter(filter_aac)
 
 
-class AsciiFileChooser(InputFileChooser):
+class OutputFileAscii(OutputFileChooser):
 
     def __init__(self):
-        super(AsciiFileChooser, self).__init__()
+        super(OutputFileAscii, self).__init__(filename=_("Untitled_schema.txt"))
+
+    def action(self):
+        pub.sendMessage('WRITE_TO_ASCII_FILE', filename=self.filename)
+
+    def add_filters(self, dialog):
+        filter_text = Gtk.FileFilter()
+        filter_text.set_name(_("Text files"))
+        filter_text.add_mime_type('text/plain')
+        dialog.add_filter(filter_text)
+
+        filter_any = Gtk.FileFilter()
+        filter_any.set_name(_("All files"))
+        filter_any.add_pattern('*')
+        dialog.add_filter(filter_any)
+
+
+class InputFileAscii(InputFileChooser):
+
+    def __init__(self):
+        super(InputFileAscii, self).__init__()
 
     def action(self):
         pub.sendMessage('LOAD_ASCII_FROM_FILE', filename=self.filename)

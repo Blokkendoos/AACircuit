@@ -215,13 +215,16 @@ class GridView(Gtk.Frame):
         ctx.set_source_rgb(0.75, 0.75, 0.75)
         ctx.set_line_width(0.25)
 
-        ctx.rectangle(w*0.1, h*0.1, w*0.8, h*0.8)  # noqa E226
+        ctx.rectangle(w*0.01, h*0.01, w*0.99, h*0.99)  # noqa E226
         ctx.stroke()
 
         ctx.scale(0.5, 0.5)
         self.draw_content(ctx)
 
         surface.finish()
+
+        msg = _("PDF Exported to {}").format(filename)
+        pub.sendMessage('STATUS_MESSAGE', msg=msg)
 
     # drawing
 

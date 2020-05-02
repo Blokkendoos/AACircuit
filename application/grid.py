@@ -45,22 +45,24 @@ class Grid(object):
 
     # clipboard
 
+    def content_as_str(self):
+        content = ""
+        for r in self._grid:
+            line = ""
+            for c in r:
+                line += c
+            content +=  (line + "\n")
+
+        content += _("(created by AACircuit.py © 2020 JvO)")
+
+        return content
+
     def copy_to_clipboard(self):
         """
         Copy the content of the grid to the clipboard.
         The rows are copied as ASCII lines, terminated by CR.
         """
-        content = ""
-
-        for r in self._grid:
-            line = ""
-            for c in r:
-                line += c
-            content += (line + "\n")
-
-        content += _("(created by AACircuit.py © 2020 JvO)")
-
-        xerox.copy(content)
+        xerox.copy(self.content_as_str())
 
     def paste_from_clipboard(self):
         """

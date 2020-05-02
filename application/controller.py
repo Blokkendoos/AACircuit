@@ -17,7 +17,7 @@ from application.grid import Grid
 from application.preferences import Preferences
 from application.main_window import MainWindow
 from application.component_library import ComponentLibrary
-from application.file import InputFileChooser, AsciiFileChooser, OutputFileChooser, PDFFileChooser, PrintOperation
+from application.file import InputFileChooser, InputFileAscii, OutputFileChooser, OutputFileAscii, OutputFilePDF, PrintOperation
 from application.symbol import Eraser, Character, Text, Line, MagLine, DirLine, Rect, Row, Column
 
 SelectedObjects = collections.namedtuple('SelectedObjects', ['startpos', 'symbol'])
@@ -86,6 +86,7 @@ class Controller(object):
         pub.subscribe(self.on_save, 'SAVE_FILE')
         pub.subscribe(self.on_save_as, 'SAVE_AS_FILE')
         pub.subscribe(self.on_export_as_pdf, 'EXPORT_AS_PDF')
+        pub.subscribe(self.on_export_as_ascii, 'EXPORT_AS_ASCII')
 
         # pub.subscribe(self.on_begin_print, 'BEGIN_PRINT')
         pub.subscribe(self.on_print_file, 'PRINT_FILE')
@@ -94,6 +95,7 @@ class Controller(object):
         # open/save grid from/to file
         pub.subscribe(self.on_read_from_file, 'READ_FROM_FILE')
         pub.subscribe(self.on_write_to_file, 'WRITE_TO_FILE')
+        pub.subscribe(self.on_write_to_ascii_file, 'WRITE_TO_ASCII_FILE')
 
         # grid
         pub.subscribe(self.on_grid_size, 'GRID_SIZE')
@@ -217,7 +219,10 @@ class Controller(object):
         dialog = OutputFileChooser()  # noqa: F841
 
     def on_export_as_pdf(self):
-        dialog = PDFFileChooser()  # noqa: F841
+        dialog = OutputFilePDF()  # noqa: F841
+
+    def on_export_as_ascii(self):
+        dialog = OutputFileAscii()  # noqa: F841
 
     def on_end_print(self):
         msg = _("Finished printing")
@@ -455,7 +460,7 @@ class Controller(object):
 
     def on_load_and_paste_grid(self):
         self.selected_objects = []
-        dialog = AsciiFileChooser()  # noqa: F841
+        dialog = InputFileAscii()  # noqa: F841
 
     def on_load_ascii_from_file(self, filename):
 
@@ -526,6 +531,28 @@ class Controller(object):
             self.filename = filename
 
             msg = _("Schema has been saved in: %s" % self.filename)
+            pub.sendMessage('STATUS_MESSAGE', msg=msg)
+
+            return True
+
+        except IOError:
+            msg = _("Unable to open file for writing: %s" % filename)
+            pub.sendMessage('STATUS_MESSAGE', msg=msg)
+            return False
+
+    def on_write_to_ascii_file(self, filename):
+
+        try:
+            fout = open(filename, 'w')
+
+            str = self.grid.content_as_str()
+            fout.write(str)
+
+            fout.close()
+
+            self.filename = filename
+
+            msg = _("ASCII Schema has been saved in: %s" % self.filename)
             pub.sendMessage('STATUS_MESSAGE', msg=msg)
 
             return True
