@@ -10,7 +10,6 @@ import json
 
 from application import _
 from application.symbol import Symbol
-from application import DEFAULT_COMPONENT_KEY
 
 
 class ComponentLibrary(object):
@@ -66,7 +65,6 @@ class ComponentLibrary(object):
         :param key: the component name
         :return the symbol grid
         """
-        self._dir = dir
         self._key = key
 
         if len(key) == 1:
@@ -93,23 +91,22 @@ class ComponentLibrary(object):
 
     def get_symbol_byid(self, id):
         """
-        return the id and grid for the symbol that represents the given component.
+        Return the symbol having the given id.
 
         :param key: the component name
         :returns the symbol
         """
-        try:
-            idx = int(id)
-            idx -= 1  # index start at zero
-            keys = list(self._dict)
-            key = keys[idx]
+        found = None
+        for label, symbol in self._dict.items():
+            if symbol['id'] == id:
+                found = symbol['id']
+                grid = symbol['grid']
+                break
 
-        except IndexError:
-            key = DEFAULT_COMPONENT_KEY
-
-        symbol = self.get_symbol(key)
-
-        return symbol
+        if found:
+            return Symbol(id=found, grid=grid)
+        else:
+            return Symbol()
 
     def nr_components(self):
         return len(self._dict)

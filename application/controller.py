@@ -648,7 +648,7 @@ class Controller(object):
 
         elif type == COMPONENT:
 
-            id = m.group(2)
+            id = int(m.group(2))
 
             orientation = int(m.group(3))
             mirrored = int(m.group(4))
