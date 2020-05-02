@@ -290,7 +290,7 @@ class MainWindow(Gtk.Window):
     def on_selecting_col(self, button):
         # https://stackoverflow.com/questions/3489520/python-gtk-widget-name
         name = Gtk.Buildable.get_name(button)
-        if name == 'stretch3':
+        if name == 'insert_col':
             action = INSERT
         else:
             action = REMOVE
@@ -299,7 +299,7 @@ class MainWindow(Gtk.Window):
 
     def on_selecting_row(self, button):
         name = Gtk.Buildable.get_name(button)
-        if name == 'stretch1':
+        if name == 'insert_row':
             action = INSERT
         else:
             action = REMOVE

@@ -900,9 +900,7 @@ class Rect(Symbol):
 class Column(Symbol):
 
     def __init__(self, col, action):
-
         super(Column, self).__init__(id=col, startpos=Pos(col, 0))
-
         self._col = col
         self._action = action
 
@@ -915,6 +913,13 @@ class Column(Symbol):
             grid.insert_col(self.col)
         else:
             grid.remove_col(self.col)
+
+    def remove(self, grid):
+        """Revert the action."""
+        if self._action == INSERT:
+            grid.remove_col(self.col)
+        else:
+            grid.insert_col(self.col)
 
     def memo(self):
         if self._action == INSERT:
@@ -932,9 +937,7 @@ class Column(Symbol):
 class Row(Symbol):
 
     def __init__(self, row, action):
-
         super(Row, self).__init__(id=row, startpos=Pos(0, row))
-
         self._row = row
         self._action = action
 
@@ -947,6 +950,13 @@ class Row(Symbol):
             grid.insert_row(self.row)
         else:
             grid.remove_row(self.row)
+
+    def remove(self, grid):
+        """Revert the action."""
+        if self._action == INSERT:
+            grid.remove_row(self.row)
+        else:
+            grid.insert_row(self.row)
 
     def memo(self):
         if self._action == INSERT:

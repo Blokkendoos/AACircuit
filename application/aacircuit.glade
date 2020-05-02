@@ -1262,7 +1262,7 @@
                         <property name="can_focus">False</property>
                         <property name="homogeneous">True</property>
                         <child>
-                          <object class="GtkButton" id="stretch1">
+                          <object class="GtkButton" id="insert_row">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
@@ -1277,7 +1277,7 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkButton" id="stretch3">
+                          <object class="GtkButton" id="insert_col">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
@@ -1304,7 +1304,7 @@
                         <property name="can_focus">False</property>
                         <property name="homogeneous">True</property>
                         <child>
-                          <object class="GtkButton" id="stretch2">
+                          <object class="GtkButton" id="remove_row">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
@@ -1319,7 +1319,7 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkButton" id="stretch4">
+                          <object class="GtkButton" id="remove_col">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>

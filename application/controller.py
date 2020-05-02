@@ -312,20 +312,20 @@ class Controller(object):
             symbol.paste(self.grid)
 
     def on_grid_col(self, col, action):
-
+        # don't mistake the symbol action for the edit action
         symbol = Column(col, action)
         self.objects.append(symbol)
         symbol.paste(self.grid)
 
-        self.push_latest_action(symbol, action)
+        self.push_latest_action(symbol)
 
     def on_grid_row(self, row, action):
-
+        # don't mistake the symbol action for the edit action
         symbol = Row(row, action)
         self.objects.append(symbol)
         symbol.paste(self.grid)
 
-        self.push_latest_action(symbol, action)
+        self.push_latest_action(symbol)
 
     # character/component symbol
 
