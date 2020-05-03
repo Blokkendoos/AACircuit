@@ -166,8 +166,8 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkEntry">
-                                <property name="name">start_char</property>
+                              <object class="GtkEntry" id="start_character">
+                                <property name="name">start_character</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <signal name="changed" handler="on_start_character_changed" swapped="no"/>

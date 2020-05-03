@@ -70,14 +70,16 @@ class MagicLineSettingsDialog(Gtk.Dialog):
         # Add any other initialization here
 
         self.line_matching_data = MagLine.LMD
-        self.matrix_nr = 0
+        self.matrix_nr = 1
 
         self.init_matrix_view(builder)
-        self.init_start_ori(builder)
+        self.init_start_orientation(builder)
+        self.init_start_character(builder)
+        self.update_line_matching_data()
 
         self.show_all()
 
-    def init_start_ori(self, builder):
+    def init_start_orientation(self, builder):
 
         # TODO use literals
         ori_store = Gtk.ListStore(int, str)
@@ -93,11 +95,17 @@ class MagicLineSettingsDialog(Gtk.Dialog):
         combobox.pack_start(cell, True)
         combobox.add_attribute(cell, 'text', 1)
         combobox.set_model(ori_store)
+        self._start_ori_combo = combobox
+
+    def init_start_character(self, builder):
+        self._start_character = builder.get_object('start_character')
+
+    def update_line_matching_data(self):
+        lmd = self.line_matching_data[self.matrix_nr]
+        self._start_character.set_text(lmd.char)
 
         lmd = self.line_matching_data[self.matrix_nr]
-        combobox.set_active(lmd.ori)
-
-        self._start_ori_combo = combobox
+        self._start_ori_combo.set_active(lmd.ori)
 
     def init_matrix_view(self, builder):
         frame = builder.get_object('matrix_frame')
@@ -112,6 +120,7 @@ class MagicLineSettingsDialog(Gtk.Dialog):
         self.matrix_nr += 1
         self.matrix_nr %= len(self.line_matching_data)
 
+        self.update_line_matching_data()
         pub.sendMessage('MATCHING_DATA_CHANGED',
                         lmd=self.line_matching_data[self.matrix_nr])
 
@@ -120,11 +129,13 @@ class MagicLineSettingsDialog(Gtk.Dialog):
             self.matrix_nr -= 1
         else:
             self.matrix_nr = len(self.line_matching_data) - 1
+
+        self.update_line_matching_data()
         pub.sendMessage('MATCHING_DATA_CHANGED',
                         lmd=self.line_matching_data[self.matrix_nr])
 
     def on_start_direction_changed(self, item):
-        print("ori changed")
+        print("Not yet implemented")
         tree_iter = item.get_active_iter()
         if tree_iter is not None:
             model = item.get_model()
@@ -197,9 +208,12 @@ class MatrixView(Gtk.Frame):
 
     def on_configure(self, area, event, data=None):
         self.init_surface(self._drawing_area)
+
         context = cairo.Context(self._surface)
+
         self.do_drawing(context)
         self._surface.flush()
+
         return False
 
     def on_matching_data_changed(self, lmd):
