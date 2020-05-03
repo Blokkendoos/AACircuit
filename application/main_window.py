@@ -12,9 +12,10 @@ import locale
 from locale import gettext as _
 
 from application import INSERT, REMOVE
-from application.preferences import Preferences, PreferencesDialog
 from application.grid_view import GridView
 from application.component_view import ComponentView
+from application.preferences import Preferences, PreferencesDialog
+from application.magic_line_settings import MagicLineSettingsDialog
 
 import gi
 gi.require_version('Gtk', '3.0')
@@ -359,6 +360,11 @@ class MainWindow(Gtk.Window):
 
     def on_menu_preferences(self, item):
         dialog = PreferencesDialog()
+        dialog.run()
+        dialog.hide()
+
+    def on_menu_magic_line_settings(self, item):
+        dialog = MagicLineSettingsDialog()
         dialog.run()
         dialog.hide()
 
