@@ -68,22 +68,21 @@ class MagicLineSettingsDialog(Gtk.Dialog):
 
         # Add any other initialization here
 
-        # https://stackoverflow.com/questions/14983385/why-css-style-dont-work-on-gtkbutton
-        cssProvider = Gtk.CssProvider()
-        cssProvider.load_from_path('application/style.css')
-        screen = Gdk.Screen.get_default()
-        styleContext = Gtk.StyleContext()
-        # With the others GTK_STYLE_PROVIDER_PRIORITY values get the same result
-        styleContext.add_provider_for_screen(screen, cssProvider,
-                                             Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
-
         self.line_matching_data = MagLine.LMD
+        self.matrix_nr = 2
+
         self.init_matrix(builder)
 
         self.show_all()
 
     def init_matrix(self, builder):
-        frame = builder.get_object('matrix_viewport')
+        frame = builder.get_object('matrix_frame')
+        # frame.set_shadow_type(Gtk.ShadowType.IN)
+
+        view = builder.get_object('matrix_viewport')
+        self.matrix_view = MatrixView(self.line_matching_data[self.matrix_nr])
+
+        view.add(self.matrix_view)
 
     def on_previous_matrix(self, item):
         print("Not yet implemented")
@@ -109,15 +108,16 @@ class MagicLineSettingsDialog(Gtk.Dialog):
 
 class MatrixView(Gtk.Frame):
 
-    def __init__(self):
+    def __init__(self, matrix):
 
         super(MatrixView, self).__init__()
 
-        self.set_border_width(0)
-
-        self.surface = None
-        self._grid = None
+        self._surface = None
         self._hover_pos = Pos(0, 0)
+
+        self._matrix = matrix.pattern
+        self._start_char = matrix.char
+        self._start_ori = matrix.ori
 
         # https://athenajc.gitbooks.io/python-gtk-3-api/content/gtk-group/gtkdrawingarea.html
         self._drawing_area = Gtk.DrawingArea()
@@ -141,91 +141,92 @@ class MatrixView(Gtk.Frame):
 
     def init_surface(self, area):
         """Initialize Cairo surface."""
-        if self.surface is not None:
+        if self._surface is not None:
             # destroy previous buffer
-            self.surface.finish()
-            self.surface = None
+            self._surface.finish()
+            self._surface = None
 
         # create a new buffer
-        self.surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, area.get_allocated_width(), area.get_allocated_height())
-
-    @property
-    def max_pos_grid(self):
-        # the decision matrix dimensions are 3x3
-        x_max = 3 * Preferences.values['GRIDSIZE_W']
-        y_max = 3 * Preferences.values['GRIDSIZE_H']
-        return Pos(x_max, y_max)
+        self._surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, area.get_allocated_width(), area.get_allocated_height())
 
     def on_configure(self, area, event, data=None):
         self.init_surface(self._drawing_area)
-        context = cairo.Context(self.surface)
+        context = cairo.Context(self._surface)
         self.do_drawing(context)
-        self.surface.flush()
+        self._surface.flush()
         return False
 
+    def on_button_press(self, button):
+        print("Not yet implemented")
+
+    def on_key_press(self, button):
+        print("Not yet implemented")
+
+    def on_hover(self, button):
+        print("Not yet implemented")
+
     def on_draw(self, area, ctx):
-        if self.surface is not None:
-            ctx.set_source_surface(self.surface, 0.0, 0.0)
+        if self._surface is not None:
+            ctx.set_source_surface(self._surface, 0.0, 0.0)
             ctx.paint()
         else:
             print(_("Invalid surface"))
         return False
 
     def do_drawing(self, ctx):
-        self.draw_background(ctx)
         self.draw_gridlines(ctx)
         self.draw_content(ctx)
-        self.draw_selection(ctx)
         self.queue_draw()
 
-    def draw_background(self, ctx):
-        """Draw a background with the size of the grid."""
+    def draw_gridlines(self, ctx):
+        grid_w = Preferences.values['GRIDSIZE_W']
+        grid_h = Preferences.values['GRIDSIZE_H']
 
+        # draw a background
         ctx.set_source_rgb(0.95, 0.95, 0.85)
         ctx.set_line_width(0.5)
         ctx.set_tolerance(0.1)
         ctx.set_line_join(cairo.LINE_JOIN_ROUND)
 
-        x_max, y_max = self.max_pos_grid.xy
-
         ctx.new_path()
-        ctx.rectangle(0, 0, x_max, y_max)
+        ctx.rectangle(grid_w, grid_h, 3 * grid_w, 3 * grid_h)
         ctx.fill()
 
-    def draw_gridlines(self, ctx):
-
+        # draw the gridlines
         # TODO use CSS for uniform colors?
         ctx.set_source_rgb(0.75, 0.75, 0.75)
         ctx.set_line_width(0.5)
         ctx.set_tolerance(0.1)
         ctx.set_line_join(cairo.LINE_JOIN_ROUND)
 
-        x_max, y_max = self.max_pos.xy
-        x_incr = Preferences.values['GRIDSIZE_W']
-        y_incr = Preferences.values['GRIDSIZE_H']
+        x_max = 4 * grid_w
+        y_max = 4 * grid_h
 
         # horizontal lines
-        y = Preferences.values['GRIDSIZE_H']
-        while y <= y_max:
+        y = grid_h
+        for count in range(4):
             ctx.new_path()
-            ctx.move_to(0, y)
+            ctx.move_to(grid_w, y)
             ctx.line_to(x_max, y)
             ctx.stroke()
-            y += y_incr
+            y += grid_h
 
         # vertical lines
-        x = 0
-        while x <= x_max:
+        x = grid_w
+        for count in range(4):
             ctx.new_path()
-            ctx.move_to(x, 0)
+            ctx.move_to(x, grid_h)
             ctx.line_to(x, y_max)
             ctx.stroke()
-            x += x_incr
+            x += grid_w
 
     def draw_content(self, ctx):
 
-        if self._grid is None:
+        if self._matrix is None:
             return
+
+        grid_w = Preferences.values['GRIDSIZE_W']
+        grid_h = Preferences.values['GRIDSIZE_H']
 
         ctx.set_source_rgb(0.1, 0.1, 0.1)
 
@@ -241,10 +242,10 @@ class MatrixView(Gtk.Frame):
             ctx.set_font_size(Preferences.values['FONTSIZE'])
             ctx.select_font_face("monospace", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
 
-        y = 0
-        for r in self._grid.grid:
+        y = grid_h
+        for r in self._matrix:
 
-            x = 0
+            x = grid_w
             for c in r:
 
                 if use_pango_font:

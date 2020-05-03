@@ -81,14 +81,13 @@
                 <property name="can_focus">False</property>
                 <property name="spacing">10</property>
                 <child>
-                  <object class="GtkFrame">
+                  <object class="GtkFrame" id="matrix_frame">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="label_xalign">0</property>
                     <property name="shadow_type">none</property>
                     <child>
-                      <object class="GtkAlignment">
-                        <property name="name">matrix_viewport</property>
+                      <object class="GtkAlignment" id="matrix_viewport">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="left_padding">12</property>
@@ -215,7 +214,6 @@
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
                             <property name="use_stock">True</property>
-                            <property name="always_show_image">True</property>
                             <signal name="clicked" handler="on_previous_matrix" swapped="no"/>
                           </object>
                           <packing>
@@ -226,14 +224,12 @@
                         </child>
                         <child>
                           <object class="GtkButton">
-                            <property name="label">gtk-go-forward</property>
+                            <property name="label">button</property>
                             <property name="name">next_matrix</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
-                            <property name="use_stock">True</property>
                             <property name="image_position">right</property>
-                            <property name="always_show_image">True</property>
                             <signal name="clicked" handler="on_next_matrix" swapped="no"/>
                           </object>
                           <packing>
@@ -260,7 +256,7 @@
                       </object>
                       <packing>
                         <property name="expand">False</property>
-                        <property name="fill">True</property>
+                        <property name="fill">False</property>
                         <property name="pack_type">end</property>
                         <property name="position">0</property>
                       </packing>
@@ -276,7 +272,7 @@
                       </object>
                       <packing>
                         <property name="expand">False</property>
-                        <property name="fill">True</property>
+                        <property name="fill">False</property>
                         <property name="padding">10</property>
                         <property name="pack_type">end</property>
                         <property name="position">1</property>
