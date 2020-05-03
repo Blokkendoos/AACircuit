@@ -123,7 +123,8 @@
                         <property name="can_focus">False</property>
                         <property name="left_padding">12</property>
                         <child>
-                          <object class="GtkBox">
+                          <object class="GtkBox" id="start_box">
+                            <property name="name">start_box</property>
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="orientation">vertical</property>
@@ -156,8 +157,7 @@
                               <object class="GtkLabel">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">character
-</property>
+                                <property name="label" translatable="yes">character</property>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
@@ -166,17 +166,7 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkEntry" id="start_character">
-                                <property name="name">start_character</property>
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <signal name="changed" handler="on_start_character_changed" swapped="no"/>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">True</property>
-                                <property name="position">3</property>
-                              </packing>
+                              <placeholder/>
                             </child>
                           </object>
                         </child>
@@ -288,7 +278,7 @@
               </object>
               <packing>
                 <property name="expand">False</property>
-                <property name="fill">True</property>
+                <property name="fill">False</property>
                 <property name="position">1</property>
               </packing>
             </child>

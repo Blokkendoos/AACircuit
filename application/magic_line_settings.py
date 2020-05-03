@@ -98,7 +98,11 @@ class MagicLineSettingsDialog(Gtk.Dialog):
         self._start_ori_combo = combobox
 
     def init_start_character(self, builder):
-        self._start_character = builder.get_object('start_character')
+        start_box = builder.get_object('start_box')
+        start_character = SingleCharEntry()
+        start_box.add(start_character)
+        # self._start_character = builder.get_object('start_character')
+        self._start_character = start_character
 
     def update_line_matching_data(self):
         lmd = self.line_matching_data[self.matrix_nr]
