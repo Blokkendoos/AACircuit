@@ -201,15 +201,6 @@ class PreferencesDialog(Gtk.Dialog):
 
         # Add any other initialization here
 
-        # https://stackoverflow.com/questions/14983385/why-css-style-dont-work-on-gtkbutton
-        cssProvider = Gtk.CssProvider()
-        cssProvider.load_from_path('application/style.css')
-        screen = Gdk.Screen.get_default()
-        styleContext = Gtk.StyleContext()
-        # With the others GTK_STYLE_PROVIDER_PRIORITY values get the same result
-        styleContext.add_provider_for_screen(screen, cssProvider,
-                                             Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
-
         self.entries = dict()
 
         frame = builder.get_object('grid')

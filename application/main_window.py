@@ -70,13 +70,15 @@ class MainWindow(Gtk.Window):
         # Add any other initialization here
 
         # https://stackoverflow.com/questions/14983385/why-css-style-dont-work-on-gtkbutton
-        cssProvider = Gtk.CssProvider()
-        cssProvider.load_from_path('application/style.css')
+        css_provider = Gtk.CssProvider()
+
+        # https://stackoverflow.com/questions/16740949/gtk-cssprovider-how-do-id-based-selectors-work-in-gtk3
+        css_provider.load_from_path('application/style.css')
+
         screen = Gdk.Screen.get_default()
-        styleContext = Gtk.StyleContext()
-        # With the others GTK_STYLE_PROVIDER_PRIORITY values get the same result
-        styleContext.add_provider_for_screen(screen, cssProvider,
-                                             Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+        style_context = Gtk.StyleContext()
+        style_context.add_provider_for_screen(screen, css_provider,
+                                              Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
         # statusbar
         self.timer_is_running = False

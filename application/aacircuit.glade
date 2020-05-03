@@ -578,6 +578,9 @@
             <property name="can_focus">False</property>
             <child>
               <object class="GtkTable" id="char_table">
+                <style>
+                  <class name="char_buttons"/>
+                </style>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="n_columns">12</property>
