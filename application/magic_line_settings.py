@@ -4,6 +4,7 @@ AACircuit
 """
 
 import cairo
+from pubsub import pub
 
 from application.pos import Pos
 from application.symbol import MagLine
@@ -69,13 +70,36 @@ class MagicLineSettingsDialog(Gtk.Dialog):
         # Add any other initialization here
 
         self.line_matching_data = MagLine.LMD
-        self.matrix_nr = 2
+        self.matrix_nr = 0
 
-        self.init_matrix(builder)
+        self.init_matrix_view(builder)
+        self.init_start_ori(builder)
 
         self.show_all()
 
-    def init_matrix(self, builder):
+    def init_start_ori(self, builder):
+
+        # TODO use literals
+        ori_store = Gtk.ListStore(int, str)
+        ori_store.append([0, _("Horizontal")])
+        ori_store.append([1, _("Vertical")])
+        ori_store.append([2, _("Longest first")])
+
+        # https://python-gtk-3-tutorial.readthedocs.io/en/latest/combobox.html
+        combobox = builder.get_object('start_direction')
+
+        # https://stackoverflow.com/questions/9983469/gtk3-combobox-shows-parent-items-from-a-treestore
+        cell = Gtk.CellRendererText()
+        combobox.pack_start(cell, True)
+        combobox.add_attribute(cell, 'text', 1)
+        combobox.set_model(ori_store)
+
+        lmd = self.line_matching_data[self.matrix_nr]
+        combobox.set_active(lmd.ori)
+
+        self._start_ori_combo = combobox
+
+    def init_matrix_view(self, builder):
         frame = builder.get_object('matrix_frame')
         # frame.set_shadow_type(Gtk.ShadowType.IN)
 
@@ -85,13 +109,30 @@ class MagicLineSettingsDialog(Gtk.Dialog):
         view.add(self.matrix_view)
 
     def on_previous_matrix(self, item):
-        print("Not yet implemented")
+        self.matrix_nr += 1
+        self.matrix_nr %= len(self.line_matching_data)
+
+        pub.sendMessage('MATCHING_DATA_CHANGED',
+                        lmd=self.line_matching_data[self.matrix_nr])
 
     def on_next_matrix(self, item):
-        print("Not yet implemented")
+        if self.matrix_nr > 0:
+            self.matrix_nr -= 1
+        else:
+            self.matrix_nr = len(self.line_matching_data) - 1
+        pub.sendMessage('MATCHING_DATA_CHANGED',
+                        lmd=self.line_matching_data[self.matrix_nr])
 
     def on_start_direction_changed(self, item):
-        print("Not yet implemented")
+        print("ori changed")
+        tree_iter = item.get_active_iter()
+        if tree_iter is not None:
+            model = item.get_model()
+            row_id, ori = model[tree_iter][:2]
+            print("Selected: ORI=%d, descr=%s" % (row_id, ori))
+        else:
+            entry = item.get_child()
+            print("Entered: %s" % entry.get_text())
 
     def on_start_character_changed(self, item):
         print("Not yet implemented")
@@ -108,16 +149,14 @@ class MagicLineSettingsDialog(Gtk.Dialog):
 
 class MatrixView(Gtk.Frame):
 
-    def __init__(self, matrix):
+    def __init__(self, lmd):
 
         super(MatrixView, self).__init__()
 
         self._surface = None
         self._hover_pos = Pos(0, 0)
 
-        self._matrix = matrix.pattern
-        self._start_char = matrix.char
-        self._start_ori = matrix.ori
+        self.init_line_matching_data(lmd)
 
         # https://athenajc.gitbooks.io/python-gtk-3-api/content/gtk-group/gtkdrawingarea.html
         self._drawing_area = Gtk.DrawingArea()
@@ -139,6 +178,8 @@ class MatrixView(Gtk.Frame):
         self._drawing_area.add_events(Gdk.EventMask.POINTER_MOTION_MASK)
         self._drawing_area.connect('motion-notify-event', self.on_hover)
 
+        pub.subscribe(self.on_matching_data_changed, 'MATCHING_DATA_CHANGED')
+
     def init_surface(self, area):
         """Initialize Cairo surface."""
         if self._surface is not None:
@@ -149,12 +190,21 @@ class MatrixView(Gtk.Frame):
         # create a new buffer
         self._surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, area.get_allocated_width(), area.get_allocated_height())
 
+    def init_line_matching_data(self, lmd):
+        self._matrix = lmd.pattern
+        self._start_char = lmd.char
+        self._start_ori = lmd.ori
+
     def on_configure(self, area, event, data=None):
         self.init_surface(self._drawing_area)
         context = cairo.Context(self._surface)
         self.do_drawing(context)
         self._surface.flush()
         return False
+
+    def on_matching_data_changed(self, lmd):
+        self.init_line_matching_data(lmd)
+        self.queue_draw()
 
     def on_button_press(self, button):
         print("Not yet implemented")
@@ -182,6 +232,9 @@ class MatrixView(Gtk.Frame):
         grid_w = Preferences.values['GRIDSIZE_W']
         grid_h = Preferences.values['GRIDSIZE_H']
 
+        x_offset = (self._surface.get_width() - 3 * grid_w) / 2
+        y_offset = (self._surface.get_height() - 3 * grid_h) / 2
+
         # draw a background
         ctx.set_source_rgb(0.95, 0.95, 0.85)
         ctx.set_line_width(0.5)
@@ -189,7 +242,7 @@ class MatrixView(Gtk.Frame):
         ctx.set_line_join(cairo.LINE_JOIN_ROUND)
 
         ctx.new_path()
-        ctx.rectangle(grid_w, grid_h, 3 * grid_w, 3 * grid_h)
+        ctx.rectangle(x_offset, y_offset, 3 * grid_w, 3 * grid_h)
         ctx.fill()
 
         # draw the gridlines
@@ -199,23 +252,23 @@ class MatrixView(Gtk.Frame):
         ctx.set_tolerance(0.1)
         ctx.set_line_join(cairo.LINE_JOIN_ROUND)
 
-        x_max = 4 * grid_w
-        y_max = 4 * grid_h
+        x_max = x_offset + 3 * grid_w
+        y_max = y_offset + 3 * grid_h
 
         # horizontal lines
-        y = grid_h
+        y = y_offset
         for count in range(4):
             ctx.new_path()
-            ctx.move_to(grid_w, y)
+            ctx.move_to(x_offset, y)
             ctx.line_to(x_max, y)
             ctx.stroke()
             y += grid_h
 
         # vertical lines
-        x = grid_w
+        x = x_offset
         for count in range(4):
             ctx.new_path()
-            ctx.move_to(x, grid_h)
+            ctx.move_to(x, y_offset)
             ctx.line_to(x, y_max)
             ctx.stroke()
             x += grid_w
@@ -227,6 +280,9 @@ class MatrixView(Gtk.Frame):
 
         grid_w = Preferences.values['GRIDSIZE_W']
         grid_h = Preferences.values['GRIDSIZE_H']
+
+        x_offset = (self._surface.get_width() - 3 * grid_w) / 2
+        y_offset = (self._surface.get_height() - 3 * grid_h) / 2
 
         ctx.set_source_rgb(0.1, 0.1, 0.1)
 
@@ -242,10 +298,10 @@ class MatrixView(Gtk.Frame):
             ctx.set_font_size(Preferences.values['FONTSIZE'])
             ctx.select_font_face("monospace", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
 
-        y = grid_h
+        y = y_offset
         for r in self._matrix:
 
-            x = grid_w
+            x = x_offset
             for c in r:
 
                 if use_pango_font:
