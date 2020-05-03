@@ -4,6 +4,7 @@ AACircuit
 """
 
 import cairo
+import time
 from pubsub import pub
 
 from application.pos import Pos
@@ -17,7 +18,7 @@ from locale import gettext as _
 
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Gdk  # noqa: E402
+from gi.repository import Gtk, Gdk, GLib  # noqa: E402
 
 gi.require_version('PangoCairo', '1.0')
 from gi.repository import Pango, PangoCairo  # noqa: E402
@@ -193,6 +194,13 @@ class MatrixView(Gtk.Frame):
         self._drawing_area.add_events(Gdk.EventMask.POINTER_MOTION_MASK)
         self._drawing_area.connect('motion-notify-event', self.on_hover)
 
+        self._cursor_on = True
+        self._hover_pos = Pos(0, 0)
+
+        # https://developer.gnome.org/gtk3/stable/GtkWidget.html#gtk-widget-add-tick-callback
+        self.start_time = time.time()
+        self.cursor_callback = self._drawing_area.add_tick_callback(self.toggle_cursor)
+
         pub.subscribe(self.on_matching_data_changed, 'MATCHING_DATA_CHANGED')
 
     def init_surface(self, area):
@@ -222,16 +230,17 @@ class MatrixView(Gtk.Frame):
 
     def on_matching_data_changed(self, lmd):
         self.init_line_matching_data(lmd)
-        self.queue_draw()
 
-    def on_button_press(self, button):
+    def on_button_press(self, widget, event):
         print("Not yet implemented")
 
     def on_key_press(self, button):
         print("Not yet implemented")
 
-    def on_hover(self, button):
-        print("Not yet implemented")
+    def on_hover(self, widget, event):
+        self._hover_pos = self.calc_position(event.x, event.y)
+        # offset = Pos(event.x, event.y) - self._drag_startpos
+        self.queue_resize()
 
     def on_draw(self, area, ctx):
         if self._surface is not None:
@@ -244,7 +253,7 @@ class MatrixView(Gtk.Frame):
     def do_drawing(self, ctx):
         self.draw_gridlines(ctx)
         self.draw_content(ctx)
-        self.queue_draw()
+        self.draw_cursor(ctx)
 
     def draw_gridlines(self, ctx):
         grid_w = Preferences.values['GRIDSIZE_W']
@@ -334,3 +343,42 @@ class MatrixView(Gtk.Frame):
                 x += Preferences.values['GRIDSIZE_W']
 
             y += Preferences.values['GRIDSIZE_H']
+
+    def draw_cursor(self, ctx):
+
+        ctx.save()
+
+        ctx.set_line_width(1.5)
+        ctx.set_line_join(cairo.LINE_JOIN_ROUND)
+
+        if self._cursor_on:
+            ctx.set_source_rgb(0.75, 0.75, 0.75)
+        else:
+            ctx.set_source_rgb(0.5, 0.5, 0.5)
+
+        x = self._hover_pos.x
+        y = self._hover_pos.y
+
+        ctx.rectangle(x, y, Preferences.values['GRIDSIZE_W'], Preferences.values['GRIDSIZE_H'])
+        ctx.stroke()
+
+        ctx.restore()
+
+    def toggle_cursor(self, widget, frame_clock, user_data=None):
+
+        now = time.time()
+        elapsed = now - self.start_time
+
+        if elapsed > 0.5:
+            self.start_time = now
+            self._cursor_on = not self._cursor_on
+
+        self._drawing_area.queue_resize()
+
+        return GLib.SOURCE_CONTINUE
+
+    def calc_position(self, x, y):
+        """Calculate the grid view position."""
+        pos = Pos(x, y)
+        pos.snap_to_grid()
+        return pos
