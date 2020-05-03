@@ -131,6 +131,7 @@ class NumberEntry(Gtk.Entry):
 
     def __init__(self):
         Gtk.Entry.__init__(self)
+        self.set_alignment(0.5)  # center
         self.connect('changed', self.on_changed)
 
     def on_changed(self, *args):
@@ -142,6 +143,8 @@ class SingleCharEntry(Gtk.Entry):
 
     def __init__(self):
         Gtk.Entry.__init__(self)
+        # self.set_width_chars(2)
+        self.set_alignment(0.5)  # center
         self.connect('changed', self.on_changed)
 
     def set_text(self, str):
@@ -220,7 +223,7 @@ class PreferencesDialog(Gtk.Dialog):
         label.set_alignment(0, 0)
         container.attach(label, 0, row, 1, 1)
 
-        entry = Gtk.Entry()
+        entry = SingleCharEntry()
         value = str(Preferences.values[name])
         entry.set_text(value)
         container.attach(entry, 1, row, 1, 1)
@@ -236,6 +239,7 @@ class PreferencesDialog(Gtk.Dialog):
         entry = NumberEntry()
         value = str(Preferences.values[name])
         entry.set_text(value)
+
         container.attach(entry, 1, row, 1, 1)
 
         self.entries[name] = PreferenceSetting('dim', entry)
