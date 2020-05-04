@@ -32,46 +32,6 @@ LineMatchingData = collections.namedtuple('line_matching_data', ['pattern', 'ori
 class MagicLineSettings(object):
 
     LMD = []
-    LMD.append(LineMatchingData(
-        [[' ', ' ', ' '],
-         [' ', ' ', ' '],
-         [' ', ' ', ' ']], LONGEST_FIRST, 'o'))
-    LMD.append(LineMatchingData(
-        [['x', 'x', 'x'],
-         ['-', 'x', '-'],
-         ['x', 'x', 'x']], VERTICAL, 'o'))
-    LMD.append(LineMatchingData(
-        [['x', '|', 'x'],
-         ['x', 'x', 'x'],
-         ['x', '|', 'x']], HORIZONTAL, 'o'))
-    LMD.append(LineMatchingData(
-        [['x', 'x', 'x'],
-         ['x', 'x', '-'],
-         ['x', 'x', 'x']], HORIZONTAL, '-'))
-    LMD.append(LineMatchingData(
-        [['x', 'x', 'x'],
-         ['-', 'x', 'x'],
-         ['x', 'x', 'x']], HORIZONTAL, '-'))
-    LMD.append(LineMatchingData(
-        [['x', 'x', 'x'],
-         ['x', 'x', 'x'],
-         [' ', '|', ' ']], VERTICAL, '|'))
-    LMD.append(LineMatchingData(
-        [[' ', '|', ' '],
-         ['x', 'x', 'x'],
-         ['x', 'x', 'x']], VERTICAL, '|'))
-    LMD.append(LineMatchingData(
-        [['x', 'x', 'x'],
-         ['x', 'x', 'x'],
-         ['x', '|', 'x']], HORIZONTAL, '.'))
-    LMD.append(LineMatchingData(
-        [['x', '|', 'x'],
-         ['x', 'x', 'x'],
-         ['x', 'x', 'x']], HORIZONTAL, "'"))
-    LMD.append(LineMatchingData(
-        [['x', 'x', 'x'],
-         ['x', '|', 'x'],
-         ['x', 'x', 'x']], VERTICAL, '|'))
 
     def __init__(self, filename='magic_line.ini'):
 
@@ -81,21 +41,20 @@ class MagicLineSettings(object):
         self.read_settings()
 
         pub.subscribe(self.on_save_settings, 'SAVE_MAGIC_LINE_SETTINGS')
+        pub.subscribe(self.load_default_settings, 'RESTORE_DEFAULT_MAGIC_LINE_SETTINGS')
 
     def read_settings(self):
 
         try:
             file = open(self._filename, 'r')
-
-            str = file.read()
-            self.de_serialize_settings(str)
-
+            self.load_settings_from_str(file.read())
             file.close()
 
             msg = _("Magic_line settings have been read from: %s" % self._filename)
             print(msg)
 
         except IOError:
+            self.load_default_settings()
             msg = _("Magic line default settings are being used")
             # pub.sendMessage('STATUS_MESSAGE', msg=msg)
             print(msg)
@@ -104,10 +63,7 @@ class MagicLineSettings(object):
 
         try:
             fout = open(self._filename, 'w')
-
-            str = self.serialize_settings()
-            fout.write(str)
-
+            fout.write(self.settings_to_str())
             fout.close()
 
             msg = _("Magic line settings have been saved in: %s" % self._filename)
@@ -117,7 +73,7 @@ class MagicLineSettings(object):
             msg = _("Unable to open file for writing: %s" % self._filename)
             pub.sendMessage('STATUS_MESSAGE', msg=msg)
 
-    def serialize_settings(self):
+    def settings_to_str(self):
 
         str = ""
 
@@ -130,14 +86,61 @@ class MagicLineSettings(object):
 
         return str
 
-    def de_serialize_settings(self, str):
+    def load_settings_from_str(self, str):
 
-        self.LMD = []
+        MagicLineSettings.LMD = []
 
         for line in str.splitlines():
             item = json.loads(line)
             lmd = LineMatchingData(item['pattern'], item['ori'], item['char'])
-            self.LMD.append(lmd)
+            MagicLineSettings.LMD.append(lmd)
+
+    def load_default_settings(self):
+
+        lmd = []
+
+        lmd.append(LineMatchingData(
+            [[' ', ' ', ' '],
+             [' ', ' ', ' '],
+             [' ', ' ', ' ']], LONGEST_FIRST, 'o'))
+        lmd.append(LineMatchingData(
+            [['x', 'x', 'x'],
+             ['-', 'x', '-'],
+             ['x', 'x', 'x']], VERTICAL, 'o'))
+        lmd.append(LineMatchingData(
+            [['x', '|', 'x'],
+             ['x', 'x', 'x'],
+             ['x', '|', 'x']], HORIZONTAL, 'o'))
+        lmd.append(LineMatchingData(
+            [['x', 'x', 'x'],
+             ['x', 'x', '-'],
+             ['x', 'x', 'x']], HORIZONTAL, '-'))
+        lmd.append(LineMatchingData(
+            [['x', 'x', 'x'],
+             ['-', 'x', 'x'],
+             ['x', 'x', 'x']], HORIZONTAL, '-'))
+        lmd.append(LineMatchingData(
+            [['x', 'x', 'x'],
+             ['x', 'x', 'x'],
+             [' ', '|', ' ']], VERTICAL, '|'))
+        lmd.append(LineMatchingData(
+            [[' ', '|', ' '],
+             ['x', 'x', 'x'],
+             ['x', 'x', 'x']], VERTICAL, '|'))
+        lmd.append(LineMatchingData(
+            [['x', 'x', 'x'],
+             ['x', 'x', 'x'],
+             ['x', '|', 'x']], HORIZONTAL, '.'))
+        lmd.append(LineMatchingData(
+            [['x', '|', 'x'],
+             ['x', 'x', 'x'],
+             ['x', 'x', 'x']], HORIZONTAL, "'"))
+        lmd.append(LineMatchingData(
+            [['x', 'x', 'x'],
+             ['x', '|', 'x'],
+             ['x', 'x', 'x']], VERTICAL, '|'))
+
+        MagicLineSettings.LMD = lmd
 
 
 class MagicLineSettingsDialog(Gtk.Dialog):
@@ -277,6 +280,13 @@ class MagicLineSettingsDialog(Gtk.Dialog):
     def on_save_clicked(self, item):
         pub.sendMessage('SAVE_MAGIC_LINE_SETTINGS')
 
+    def on_restore_defaults_clicked(self, item):
+        pub.sendMessage('RESTORE_DEFAULT_MAGIC_LINE_SETTINGS')
+
+        self.update_line_matching_data()
+        pub.sendMessage('MATCHING_DATA_CHANGED',
+                        lmd=self.line_matching_data[self.matrix_nr])
+
 
 class MatrixView(Gtk.DrawingArea):
 
@@ -296,7 +306,7 @@ class MatrixView(Gtk.DrawingArea):
         self.connect('configure-event', self.on_configure)
 
         self.add_events(Gdk.EventMask.BUTTON_PRESS_MASK)
-        # self._drawing_area.connect('button-press-event', self.on_button_press)
+        self.connect('button-press-event', self.on_button_press)
 
         # https://stackoverflow.com/questions/44098084/how-do-i-handle-keyboard-events-in-gtk3
         self.add_events(Gdk.EventMask.KEY_PRESS_MASK)
@@ -353,6 +363,9 @@ class MatrixView(Gtk.DrawingArea):
     def on_matching_data_changed(self, lmd):
         self.set_line_matching_data(lmd)
 
+    def on_button_press(self, button, event):
+        return True
+
     def on_key_press(self, widget, event):
 
         # TODO Will this work in other locale too?
@@ -387,7 +400,7 @@ class MatrixView(Gtk.DrawingArea):
 
         grid_pos = self._hover_pos - self._offset
         grid_pos.snap_to_grid()
-        grid_pos = grid_pos.grid_cr() + Pos(1, 0)
+        grid_pos = grid_pos.grid_cr()
 
         # shift = (event.state & Gdk.ModifierType.SHIFT_MASK)
         # modifiers = Gdk.Accelerator.get_default_mod_mask()

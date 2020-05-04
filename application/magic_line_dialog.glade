@@ -18,6 +18,21 @@
             <property name="can_focus">False</property>
             <property name="layout_style">end</property>
             <child>
+              <object class="GtkButton" id="restore_defaults">
+                <property name="label" translatable="yes">Restore defaults</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <signal name="clicked" handler="on_restore_defaults_clicked" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+                <property name="non_homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
               <object class="GtkButton" id="cancel">
                 <property name="label" translatable="yes">Cancel</property>
                 <property name="name">cancel</property>
@@ -28,7 +43,7 @@
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
-                <property name="position">0</property>
+                <property name="position">1</property>
               </packing>
             </child>
             <child>
@@ -43,7 +58,7 @@
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
-                <property name="position">1</property>
+                <property name="position">2</property>
               </packing>
             </child>
           </object>
@@ -60,7 +75,7 @@
             <property name="can_focus">False</property>
             <property name="orientation">vertical</property>
             <child>
-              <object class="GtkTextView">
+              <object class="GtkTextView" id="header_text">
                 <property name="name">header_text</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
@@ -90,7 +105,6 @@
                       <object class="GtkAlignment" id="matrix_viewport">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="left_padding">12</property>
                         <child>
                           <placeholder/>
                         </child>
@@ -202,6 +216,7 @@
                             <property name="name">previous_matrix</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
+                            <property name="receives_default">False</property>
                             <property name="use_stock">True</property>
                             <property name="always_show_image">True</property>
                             <signal name="clicked" handler="on_previous_matrix" swapped="no"/>
@@ -218,6 +233,7 @@
                             <property name="name">next_matrix</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
+                            <property name="receives_default">False</property>
                             <property name="use_stock">True</property>
                             <property name="image_position">right</property>
                             <property name="always_show_image">True</property>
