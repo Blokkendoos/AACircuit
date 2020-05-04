@@ -6,6 +6,7 @@ AACircuit
 import cairo
 import time
 import json
+import copy
 import collections
 from pubsub import pub
 
@@ -189,8 +190,8 @@ class MagicLineSettingsDialog(Gtk.Dialog):
 
         # Add any other initialization here
 
-        self.line_matching_data = MagicLineSettings.LMD
         self.matrix_nr = 0
+        self.lmd = copy.deepcopy(MagicLineSettings.LMD)
 
         self.init_matrix_view(builder)
         self.init_start_orientation(builder)
@@ -202,6 +203,7 @@ class MagicLineSettingsDialog(Gtk.Dialog):
     def init_start_orientation(self, builder):
 
         # TODO use literals
+        # orientation and description
         ori_store = Gtk.ListStore(int, str)
         ori_store.append([0, _("Horizontal")])
         ori_store.append([1, _("Vertical")])
@@ -223,25 +225,24 @@ class MagicLineSettingsDialog(Gtk.Dialog):
         start_box.add(start_character)
         # self._start_character = builder.get_object('start_character')
         self._start_character = start_character
+        self._start_character.connect('changed', self.on_start_character_changed)
+        # self._start_character.connect('insert_text', self.on_start_character_changed)
+        # self._start_character.connect('insert_at_cursor', self.on_start_character_changed)
+        # self._start_character.get_buffer().connect('inserted_text', self.on_start_character_changed)
 
     def update_line_matching_data(self):
-        lmd = self.line_matching_data[self.matrix_nr]
+        lmd = self.lmd[self.matrix_nr]
         self._start_character.set_text(lmd.char)
-
-        lmd = self.line_matching_data[self.matrix_nr]
         self._start_ori_combo.set_active(lmd.ori)
 
     def init_matrix_view(self, builder):
-        # frame = builder.get_object('matrix_frame')
-        # frame.set_shadow_type(Gtk.ShadowType.IN)
         view = builder.get_object('matrix_viewport')
-
-        self.matrix_view = MatrixView(self.matrix_nr)
+        self.matrix_view = MatrixView(self.lmd, self.matrix_nr)
         view.add(self.matrix_view)
 
     def on_previous_matrix(self, item):
         self.matrix_nr += 1
-        self.matrix_nr %= len(self.line_matching_data)
+        self.matrix_nr %= len(self.lmd)
 
         self.update_line_matching_data()
         pub.sendMessage('MATCHING_DATA_CHANGED', mnr=self.matrix_nr)
@@ -250,24 +251,28 @@ class MagicLineSettingsDialog(Gtk.Dialog):
         if self.matrix_nr > 0:
             self.matrix_nr -= 1
         else:
-            self.matrix_nr = len(self.line_matching_data) - 1
+            self.matrix_nr = len(self.lmd) - 1
 
         self.update_line_matching_data()
         pub.sendMessage('MATCHING_DATA_CHANGED', mnr=self.matrix_nr)
 
     def on_start_direction_changed(self, item):
-        print("Not yet implemented")
         tree_iter = item.get_active_iter()
         if tree_iter is not None:
             model = item.get_model()
-            row_id, ori = model[tree_iter][:2]
-            print("Selected: ORI=%d, descr=%s" % (row_id, ori))
-        else:
-            entry = item.get_child()
-            print("Entered: %s" % entry.get_text())
+            ori, description = model[tree_iter][:2]
+            # print("Selected: ori=%d, descr=%s" % (ori, description))
+
+            lmd = self.lmd[self.matrix_nr]
+            lmd_new = LineMatchingData(lmd.pattern, ori, lmd.char)
+            self.lmd[self.matrix_nr] = lmd_new
 
     def on_start_character_changed(self, item):
-        print("Not yet implemented")
+        char = item.get_text()
+        lmd = self.lmd[self.matrix_nr]
+        if lmd.char != char:
+            lmd_new = LineMatchingData(lmd.pattern, lmd.ori, char)
+            self.lmd[self.matrix_nr] = lmd_new
 
     def on_create_new_matrix(self, item):
         print("Not yet implemented")
@@ -276,6 +281,7 @@ class MagicLineSettingsDialog(Gtk.Dialog):
         print("Not yet implemented")
 
     def on_save_clicked(self, item):
+        MagicLineSettings.LMD = self.lmd
         pub.sendMessage('SAVE_MAGIC_LINE_SETTINGS')
 
     def on_restore_defaults_clicked(self, item):
@@ -286,7 +292,7 @@ class MagicLineSettingsDialog(Gtk.Dialog):
 
 class MatrixView(Gtk.DrawingArea):
 
-    def __init__(self, mnr=0):
+    def __init__(self, lmd, mnr=0):
 
         super(MatrixView, self).__init__()
 
@@ -312,6 +318,8 @@ class MatrixView(Gtk.DrawingArea):
         self._cursor_on = True
         self._hover_pos = Pos(0, 0)
 
+        # line matching data
+        self._lmd = lmd
         self._matrix_nr = mnr
         self.set_line_matching_data()
 
@@ -332,7 +340,7 @@ class MatrixView(Gtk.DrawingArea):
         self._surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, area.get_allocated_width(), area.get_allocated_height())
 
     def set_line_matching_data(self):
-        lmd = MagicLineSettings.LMD[self._matrix_nr]
+        lmd = self._lmd[self._matrix_nr]
         self._matrix = lmd.pattern
         self._start_char = lmd.char
         self._start_ori = lmd.ori
