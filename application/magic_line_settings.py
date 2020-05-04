@@ -355,6 +355,7 @@ class MatrixView(Gtk.DrawingArea):
         y_offset = round((self._surface.get_height() - 3 * grid_h) / 2)
 
         self._offset = Pos(x_offset, y_offset)
+        self._offset.snap_to_grid()
 
     def on_configure(self, area, event, data=None):
         self.init_surface(self)
