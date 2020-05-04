@@ -278,7 +278,7 @@ class MagicLineSettingsDialog(Gtk.Dialog):
         pub.sendMessage('SAVE_MAGIC_LINE_SETTINGS')
 
 
-class MatrixView(Gtk.Frame):
+class MatrixView(Gtk.DrawingArea):
 
     def __init__(self, lmd):
 
@@ -289,32 +289,28 @@ class MatrixView(Gtk.Frame):
 
         self.set_line_matching_data(lmd)
 
-        # https://athenajc.gitbooks.io/python-gtk-3-api/content/gtk-group/gtkdrawingarea.html
-        self._drawing_area = Gtk.DrawingArea()
-        self.add(self._drawing_area)
+        self.set_can_focus(True)
+        self.set_focus_on_click(True)
 
-        self._drawing_area.set_can_focus(True)
-        self._drawing_area.set_focus_on_click(True)
+        self.connect('draw', self.on_draw)
+        self.connect('configure-event', self.on_configure)
 
-        self._drawing_area.connect('draw', self.on_draw)
-        self._drawing_area.connect('configure-event', self.on_configure)
-
-        self._drawing_area.add_events(Gdk.EventMask.BUTTON_PRESS_MASK)
+        self.add_events(Gdk.EventMask.BUTTON_PRESS_MASK)
         # self._drawing_area.connect('button-press-event', self.on_button_press)
 
         # https://stackoverflow.com/questions/44098084/how-do-i-handle-keyboard-events-in-gtk3
-        self._drawing_area.add_events(Gdk.EventMask.KEY_PRESS_MASK)
-        self._drawing_area.connect('key-press-event', self.on_key_press)
+        self.add_events(Gdk.EventMask.KEY_PRESS_MASK)
+        self.connect('key-press-event', self.on_key_press)
 
-        self._drawing_area.add_events(Gdk.EventMask.POINTER_MOTION_MASK)
-        self._drawing_area.connect('motion-notify-event', self.on_hover)
+        self.add_events(Gdk.EventMask.POINTER_MOTION_MASK)
+        self.connect('motion-notify-event', self.on_hover)
 
         self._cursor_on = True
         self._hover_pos = Pos(0, 0)
 
         # https://developer.gnome.org/gtk3/stable/GtkWidget.html#gtk-widget-add-tick-callback
         self.start_time = time.time()
-        self.cursor_callback = self._drawing_area.add_tick_callback(self.toggle_cursor)
+        self.cursor_callback = self.add_tick_callback(self.toggle_cursor)
 
         pub.subscribe(self.on_matching_data_changed, 'MATCHING_DATA_CHANGED')
 
@@ -344,7 +340,7 @@ class MatrixView(Gtk.Frame):
         self._offset = Pos(x_offset, y_offset)
 
     def on_configure(self, area, event, data=None):
-        self.init_surface(self._drawing_area)
+        self.init_surface(self)
         self.calc_offset()
 
         context = cairo.Context(self._surface)
@@ -558,6 +554,6 @@ class MatrixView(Gtk.Frame):
             self.start_time = now
             self._cursor_on = not self._cursor_on
 
-        self._drawing_area.queue_resize()
+        self.queue_resize()
 
         return GLib.SOURCE_CONTINUE

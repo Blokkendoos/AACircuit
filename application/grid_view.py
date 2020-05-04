@@ -27,22 +27,16 @@ gi.require_version('PangoCairo', '1.0')
 from gi.repository import Pango, PangoCairo  # noqa: E402
 
 
-class GridView(Gtk.Frame):
+class GridView(Gtk.DrawingArea):
 
     def __init__(self):
 
         super(GridView, self).__init__()
 
-        self.set_border_width(0)
-
         self.surface = None
         self._grid = None
         self._objects = None
         self._hover_pos = Pos(0, 0)
-
-        # https://athenajc.gitbooks.io/python-gtk-3-api/content/gtk-group/gtkdrawingarea.html
-        self._drawing_area = Gtk.DrawingArea()
-        self.add(self._drawing_area)
 
         self._selection = Selection(None)
 
@@ -57,31 +51,31 @@ class GridView(Gtk.Frame):
         self._cursor_on = True
         self._text = ""
 
-        self._drawing_area.set_can_focus(True)
+        self.set_can_focus(True)
 
-        self._drawing_area.connect('draw', self.on_draw)
-        self._drawing_area.connect('configure-event', self.on_configure)
+        self.connect('draw', self.on_draw)
+        self.connect('configure-event', self.on_configure)
 
-        self._drawing_area.add_events(Gdk.EventMask.BUTTON_PRESS_MASK)
-        self._drawing_area.connect('button-press-event', self.on_button_press)
+        self.add_events(Gdk.EventMask.BUTTON_PRESS_MASK)
+        self.connect('button-press-event', self.on_button_press)
 
         # https://stackoverflow.com/questions/44098084/how-do-i-handle-keyboard-events-in-gtk3
-        self._drawing_area.add_events(Gdk.EventMask.KEY_PRESS_MASK)
-        self._drawing_area.connect('key-press-event', self.on_key_press)
+        self.add_events(Gdk.EventMask.KEY_PRESS_MASK)
+        self.connect('key-press-event', self.on_key_press)
 
         if Preferences.values['SELECTION_DRAG']:
-            self._gesture_drag = Gtk.GestureDrag.new(self._drawing_area)
+            self._gesture_drag = Gtk.GestureDrag.new(self)
             self._gesture_drag.connect('drag-begin', self.on_drag_begin)
             self._gesture_drag.connect('drag-end', self.on_drag_end)
             self._gesture_drag.connect('drag-update', self.on_drag_update)
 
-        self._drawing_area.add_events(Gdk.EventMask.POINTER_MOTION_MASK)
-        self._drawing_area.connect('motion-notify-event', self.on_hover)
+        self.add_events(Gdk.EventMask.POINTER_MOTION_MASK)
+        self.connect('motion-notify-event', self.on_hover)
 
         # https://developer.gnome.org/gtk3/stable/GtkWidget.html#gtk-widget-add-tick-callback
         self.start_time = time.time()
-        self.cursor_callback = self._drawing_area.add_tick_callback(self.toggle_cursor)
-        # self._drawing_area.remove_tick_callback(self.cursor_callback)
+        self.cursor_callback = self.add_tick_callback(self.toggle_cursor)
+        # self.remove_tick_callback(self.cursor_callback)
 
         # subscriptions
 
@@ -165,7 +159,7 @@ class GridView(Gtk.Frame):
         self.surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, area.get_allocated_width(), area.get_allocated_height())
 
     def on_configure(self, area, event, data=None):
-        self.init_surface(self._drawing_area)
+        self.init_surface(self)
         context = cairo.Context(self.surface)
         self.do_drawing(context)
         self.surface.flush()
@@ -206,8 +200,8 @@ class GridView(Gtk.Frame):
     def on_draw_pdf(self, filename):
 
         # don't use the drawing_area, so that this method can be run from (nose) test method (w/o GUI)
-        # w = self._drawing_area.get_allocated_width()
-        # h = self._drawing_area.get_allocated_height()
+        # w = self.get_allocated_width()
+        # h = self.get_allocated_height()
         # FIXME Set Portrait or Landscape dimensions based upon prefs or printer settings
         w, h = (560, 784)
 
@@ -249,7 +243,7 @@ class GridView(Gtk.Frame):
         self._selection = Selection(item=TEXT, state=SELECTING)
         self._text = ""
         self._symbol = Text(Pos(0, 0), self._text)
-        self._drawing_area.grab_focus()
+        self.grab_focus()
 
     def on_add_textblock(self, text):
         self._selection = Selection(item=TEXT_BLOCK, state=SELECTING)
@@ -516,7 +510,7 @@ class GridView(Gtk.Frame):
             self.start_time = now
             self._cursor_on = not self._cursor_on
 
-        self._drawing_area.queue_resize()
+        self.queue_resize()
 
         return GLib.SOURCE_CONTINUE
 
