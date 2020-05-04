@@ -236,7 +236,7 @@ class MagicLineSettingsDialog(Gtk.Dialog):
         # frame.set_shadow_type(Gtk.ShadowType.IN)
         view = builder.get_object('matrix_viewport')
 
-        self.matrix_view = MatrixView(self.line_matching_data[self.matrix_nr])
+        self.matrix_view = MatrixView(self.matrix_nr)
         view.add(self.matrix_view)
 
     def on_previous_matrix(self, item):
@@ -244,8 +244,7 @@ class MagicLineSettingsDialog(Gtk.Dialog):
         self.matrix_nr %= len(self.line_matching_data)
 
         self.update_line_matching_data()
-        pub.sendMessage('MATCHING_DATA_CHANGED',
-                        lmd=self.line_matching_data[self.matrix_nr])
+        pub.sendMessage('MATCHING_DATA_CHANGED', mnr=self.matrix_nr)
 
     def on_next_matrix(self, item):
         if self.matrix_nr > 0:
@@ -254,8 +253,7 @@ class MagicLineSettingsDialog(Gtk.Dialog):
             self.matrix_nr = len(self.line_matching_data) - 1
 
         self.update_line_matching_data()
-        pub.sendMessage('MATCHING_DATA_CHANGED',
-                        lmd=self.line_matching_data[self.matrix_nr])
+        pub.sendMessage('MATCHING_DATA_CHANGED', mnr=self.matrix_nr)
 
     def on_start_direction_changed(self, item):
         print("Not yet implemented")
@@ -282,22 +280,18 @@ class MagicLineSettingsDialog(Gtk.Dialog):
 
     def on_restore_defaults_clicked(self, item):
         pub.sendMessage('RESTORE_DEFAULT_MAGIC_LINE_SETTINGS')
-
         self.update_line_matching_data()
-        pub.sendMessage('MATCHING_DATA_CHANGED',
-                        lmd=self.line_matching_data[self.matrix_nr])
+        pub.sendMessage('MATCHING_DATA_CHANGED', mnr=self.matrix_nr)
 
 
 class MatrixView(Gtk.DrawingArea):
 
-    def __init__(self, lmd):
+    def __init__(self, mnr=0):
 
         super(MatrixView, self).__init__()
 
         self._surface = None
         self._hover_pos = Pos(0, 0)
-
-        self.set_line_matching_data(lmd)
 
         self.set_can_focus(True)
         self.set_focus_on_click(True)
@@ -318,6 +312,9 @@ class MatrixView(Gtk.DrawingArea):
         self._cursor_on = True
         self._hover_pos = Pos(0, 0)
 
+        self._matrix_nr = mnr
+        self.set_line_matching_data()
+
         # https://developer.gnome.org/gtk3/stable/GtkWidget.html#gtk-widget-add-tick-callback
         self.start_time = time.time()
         self.cursor_callback = self.add_tick_callback(self.toggle_cursor)
@@ -334,7 +331,8 @@ class MatrixView(Gtk.DrawingArea):
         # create a new buffer
         self._surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, area.get_allocated_width(), area.get_allocated_height())
 
-    def set_line_matching_data(self, lmd):
+    def set_line_matching_data(self):
+        lmd = MagicLineSettings.LMD[self._matrix_nr]
         self._matrix = lmd.pattern
         self._start_char = lmd.char
         self._start_ori = lmd.ori
@@ -360,8 +358,9 @@ class MatrixView(Gtk.DrawingArea):
 
         return False
 
-    def on_matching_data_changed(self, lmd):
-        self.set_line_matching_data(lmd)
+    def on_matching_data_changed(self, mnr):
+        self._matrix_nr = mnr
+        self.set_line_matching_data()
 
     def on_button_press(self, button, event):
         return True
