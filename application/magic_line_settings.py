@@ -286,6 +286,7 @@ class MagicLineSettingsDialog(Gtk.Dialog):
 
     def on_restore_defaults_clicked(self, item):
         pub.sendMessage('RESTORE_DEFAULT_MAGIC_LINE_SETTINGS')
+        self.lmd = copy.deepcopy(MagicLineSettings.LMD)
         self.update_line_matching_data()
         pub.sendMessage('MATCHING_DATA_CHANGED', mnr=self.matrix_nr)
 
