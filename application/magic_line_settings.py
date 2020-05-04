@@ -5,10 +5,12 @@ AACircuit
 
 import cairo
 import time
+import json
+import collections
 from pubsub import pub
 
+from application import LONGEST_FIRST, HORIZONTAL, VERTICAL
 from application.pos import Pos
-from application.symbol import MagLine
 from application.preferences import Preferences, SingleCharEntry
 
 import os
@@ -22,6 +24,120 @@ from gi.repository import Gtk, Gdk, GLib  # noqa: E402
 
 gi.require_version('PangoCairo', '1.0')
 from gi.repository import Pango, PangoCairo  # noqa: E402
+
+
+LineMatchingData = collections.namedtuple('line_matching_data', ['pattern', 'ori', 'char'])
+
+
+class MagicLineSettings(object):
+
+    LMD = []
+    LMD.append(LineMatchingData(
+        [[' ', ' ', ' '],
+         [' ', ' ', ' '],
+         [' ', ' ', ' ']], LONGEST_FIRST, 'o'))
+    LMD.append(LineMatchingData(
+        [['x', 'x', 'x'],
+         ['-', 'x', '-'],
+         ['x', 'x', 'x']], VERTICAL, 'o'))
+    LMD.append(LineMatchingData(
+        [['x', '|', 'x'],
+         ['x', 'x', 'x'],
+         ['x', '|', 'x']], HORIZONTAL, 'o'))
+    LMD.append(LineMatchingData(
+        [['x', 'x', 'x'],
+         ['x', 'x', '-'],
+         ['x', 'x', 'x']], HORIZONTAL, '-'))
+    LMD.append(LineMatchingData(
+        [['x', 'x', 'x'],
+         ['-', 'x', 'x'],
+         ['x', 'x', 'x']], HORIZONTAL, '-'))
+    LMD.append(LineMatchingData(
+        [['x', 'x', 'x'],
+         ['x', 'x', 'x'],
+         [' ', '|', ' ']], VERTICAL, '|'))
+    LMD.append(LineMatchingData(
+        [[' ', '|', ' '],
+         ['x', 'x', 'x'],
+         ['x', 'x', 'x']], VERTICAL, '|'))
+    LMD.append(LineMatchingData(
+        [['x', 'x', 'x'],
+         ['x', 'x', 'x'],
+         ['x', '|', 'x']], HORIZONTAL, '.'))
+    LMD.append(LineMatchingData(
+        [['x', '|', 'x'],
+         ['x', 'x', 'x'],
+         ['x', 'x', 'x']], HORIZONTAL, "'"))
+    LMD.append(LineMatchingData(
+        [['x', 'x', 'x'],
+         ['x', '|', 'x'],
+         ['x', 'x', 'x']], VERTICAL, '|'))
+
+    def __init__(self, filename='magic_line.ini'):
+
+        # TODO platform indepent path
+        # lib_path = os.path.dirname(__file__)
+        self._filename = filename
+        self.read_settings()
+
+        pub.subscribe(self.on_save_settings, 'SAVE_MAGIC_LINE_SETTINGS')
+
+    def read_settings(self):
+
+        try:
+            file = open(self._filename, 'r')
+
+            str = file.read()
+            self.de_serialize_settings(str)
+
+            file.close()
+
+            msg = _("Magic_line settings have been read from: %s" % self._filename)
+            print(msg)
+
+        except IOError:
+            msg = _("Magic line default settings are being used")
+            # pub.sendMessage('STATUS_MESSAGE', msg=msg)
+            print(msg)
+
+    def on_save_settings(self):
+
+        try:
+            fout = open(self._filename, 'w')
+
+            str = self.serialize_settings()
+            fout.write(str)
+
+            fout.close()
+
+            msg = _("Magic line settings have been saved in: %s" % self._filename)
+            pub.sendMessage('STATUS_MESSAGE', msg=msg)
+
+        except IOError:
+            msg = _("Unable to open file for writing: %s" % self._filename)
+            pub.sendMessage('STATUS_MESSAGE', msg=msg)
+
+    def serialize_settings(self):
+
+        str = ""
+
+        for lmd in self.LMD:
+            lmd_dict = dict()
+            lmd_dict['pattern'] = lmd.pattern
+            lmd_dict['ori'] = lmd.ori
+            lmd_dict['char'] = lmd.char
+            str += json.dumps(lmd_dict) + '\n'
+
+        return str
+
+    def de_serialize_settings(self, str):
+
+        self.LMD = []
+
+        for line in str.splitlines():
+            item = json.loads(line)
+            lmd = LineMatchingData(item['pattern'], item['ori'], item['char'])
+            self.LMD.append(lmd)
 
 
 class MagicLineSettingsDialog(Gtk.Dialog):
@@ -70,8 +186,8 @@ class MagicLineSettingsDialog(Gtk.Dialog):
 
         # Add any other initialization here
 
-        self.line_matching_data = MagLine.LMD
-        self.matrix_nr = 1
+        self.line_matching_data = MagicLineSettings.LMD
+        self.matrix_nr = 0
 
         self.init_matrix_view(builder)
         self.init_start_orientation(builder)
@@ -115,10 +231,9 @@ class MagicLineSettingsDialog(Gtk.Dialog):
     def init_matrix_view(self, builder):
         # frame = builder.get_object('matrix_frame')
         # frame.set_shadow_type(Gtk.ShadowType.IN)
-
         view = builder.get_object('matrix_viewport')
-        self.matrix_view = MatrixView(self.line_matching_data[self.matrix_nr])
 
+        self.matrix_view = MatrixView(self.line_matching_data[self.matrix_nr])
         view.add(self.matrix_view)
 
     def on_previous_matrix(self, item):
@@ -160,7 +275,7 @@ class MagicLineSettingsDialog(Gtk.Dialog):
         print("Not yet implemented")
 
     def on_save_clicked(self, item):
-        print("Not yet implemented")
+        pub.sendMessage('SAVE_MAGIC_LINE_SETTINGS')
 
 
 class MatrixView(Gtk.Frame):
@@ -172,19 +287,20 @@ class MatrixView(Gtk.Frame):
         self._surface = None
         self._hover_pos = Pos(0, 0)
 
-        self.init_line_matching_data(lmd)
+        self.set_line_matching_data(lmd)
 
         # https://athenajc.gitbooks.io/python-gtk-3-api/content/gtk-group/gtkdrawingarea.html
         self._drawing_area = Gtk.DrawingArea()
         self.add(self._drawing_area)
 
         self._drawing_area.set_can_focus(True)
+        self._drawing_area.set_focus_on_click(True)
 
         self._drawing_area.connect('draw', self.on_draw)
         self._drawing_area.connect('configure-event', self.on_configure)
 
         self._drawing_area.add_events(Gdk.EventMask.BUTTON_PRESS_MASK)
-        self._drawing_area.connect('button-press-event', self.on_button_press)
+        # self._drawing_area.connect('button-press-event', self.on_button_press)
 
         # https://stackoverflow.com/questions/44098084/how-do-i-handle-keyboard-events-in-gtk3
         self._drawing_area.add_events(Gdk.EventMask.KEY_PRESS_MASK)
@@ -212,7 +328,7 @@ class MatrixView(Gtk.Frame):
         # create a new buffer
         self._surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, area.get_allocated_width(), area.get_allocated_height())
 
-    def init_line_matching_data(self, lmd):
+    def set_line_matching_data(self, lmd):
         self._matrix = lmd.pattern
         self._start_char = lmd.char
         self._start_ori = lmd.ori
@@ -239,10 +355,7 @@ class MatrixView(Gtk.Frame):
         return False
 
     def on_matching_data_changed(self, lmd):
-        self.init_line_matching_data(lmd)
-
-    def on_button_press(self, widget, event):
-        print("Not yet implemented")
+        self.set_line_matching_data(lmd)
 
     def on_key_press(self, widget, event):
 
@@ -279,6 +392,12 @@ class MatrixView(Gtk.Frame):
         grid_pos = self._hover_pos - self._offset
         grid_pos.snap_to_grid()
         grid_pos = grid_pos.grid_cr() + Pos(1, 0)
+
+        # shift = (event.state & Gdk.ModifierType.SHIFT_MASK)
+        # modifiers = Gdk.Accelerator.get_default_mod_mask()
+        shift = event.state & Gdk.ModifierType.SHIFT_MASK
+        if shift:
+            return True
 
         if value == Gdk.KEY_Left or value == Gdk.KEY_BackSpace:
             previous_char()
@@ -408,6 +527,9 @@ class MatrixView(Gtk.Frame):
             y += grid_h
 
     def draw_cursor(self, ctx):
+
+        if not self.has_focus:
+            return
 
         ctx.save()
 

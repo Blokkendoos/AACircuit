@@ -14,6 +14,7 @@ from application import REMOVE, INSERT
 from application import ERASER, COMPONENT, CHARACTER, TEXT, COL, ROW, DRAW_RECT, LINE, MAG_LINE, DIR_LINE
 from application.pos import Pos
 from application.grid import Grid
+from application.magic_line_settings import MagicLineSettings
 from application.preferences import Preferences
 from application.main_window import MainWindow
 from application.component_library import ComponentLibrary
@@ -29,6 +30,7 @@ class Controller(object):
     def __init__(self):
 
         self.prefs = Preferences()
+        self.ml_settings = MagicLineSettings()
 
         self.gui = MainWindow()
         self.components = ComponentLibrary()

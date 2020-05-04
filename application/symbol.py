@@ -5,12 +5,12 @@ AACircuit
 
 import copy
 import json
-import collections
 from bresenham import bresenham
 from math import pi, radians, atan
 
 from application import _
 from application.preferences import Preferences
+from application.magic_line_settings import MagicLineSettings
 from application.pos import Pos
 from application import CELL_ERASE
 from application import INSERT, COL, ROW
@@ -562,52 +562,6 @@ class DirLine(Line):
 class MagLine(Line):
     """A square bend from start to end position."""
 
-    # TODO move to preferences
-
-    LineMatchingData = collections.namedtuple('line_matching_data', ['pattern', 'ori', 'char'])
-
-    LMD = []
-    LMD.append(LineMatchingData(
-        [[' ', ' ', ' '],
-         [' ', ' ', ' '],
-         [' ', ' ', ' ']], LONGEST_FIRST, 'o'))
-    LMD.append(LineMatchingData(
-        [['x', 'x', 'x'],
-         ['-', 'x', '-'],
-         ['x', 'x', 'x']], VERTICAL, 'o'))
-    LMD.append(LineMatchingData(
-        [['x', '|', 'x'],
-         ['x', 'x', 'x'],
-         ['x', '|', 'x']], HORIZONTAL, 'o'))
-    LMD.append(LineMatchingData(
-        [['x', 'x', 'x'],
-         ['x', 'x', '-'],
-         ['x', 'x', 'x']], HORIZONTAL, '-'))
-    LMD.append(LineMatchingData(
-        [['x', 'x', 'x'],
-         ['-', 'x', 'x'],
-         ['x', 'x', 'x']], HORIZONTAL, '-'))
-    LMD.append(LineMatchingData(
-        [['x', 'x', 'x'],
-         ['x', 'x', 'x'],
-         [' ', '|', ' ']], VERTICAL, '|'))
-    LMD.append(LineMatchingData(
-        [[' ', '|', ' '],
-         ['x', 'x', 'x'],
-         ['x', 'x', 'x']], VERTICAL, '|'))
-    LMD.append(LineMatchingData(
-        [['x', 'x', 'x'],
-         ['x', 'x', 'x'],
-         ['x', '|', 'x']], HORIZONTAL, '.'))
-    LMD.append(LineMatchingData(
-        [['x', '|', 'x'],
-         ['x', 'x', 'x'],
-         ['x', 'x', 'x']], HORIZONTAL, "'"))
-    LMD.append(LineMatchingData(
-        [['x', 'x', 'x'],
-         ['x', '|', 'x'],
-         ['x', 'x', 'x']], VERTICAL, '|'))
-
     def __init__(self, startpos, endpos, cell_callback=None):
 
         self.cell = cell_callback
@@ -629,7 +583,7 @@ class MagLine(Line):
         :return char: corner character
 
         """
-        lmd = self.LMD[idx]
+        lmd = MagicLineSettings.LMD[idx]
 
         result = True
         m_ori = None
@@ -671,7 +625,7 @@ class MagLine(Line):
         s_ori = HORIZONTAL
 
         # determine the terminal of the first line
-        for i in range(len(self.LMD)):
+        for i in range(len(MagicLineSettings.LMD)):
             match, f_ori, f_terminal = self._line_match(i, None, startpos)
             if match:
                 self._repr[startpos] = f_terminal
@@ -704,7 +658,7 @@ class MagLine(Line):
             else:
                 s_ori = VERTICAL
 
-        for i in range(len(self.LMD)):
+        for i in range(len(MagicLineSettings.LMD)):
             match, m_ori, m_terminal = self._line_match(i, s_ori, endpos)
             if match:
                 # the end-terminal of the second line
