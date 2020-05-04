@@ -77,7 +77,7 @@ class Pos(object):
         self._x = x
         self._y = y
 
-    def grid_rc(self):
+    def grid_cr(self):
         """Map canvas (x,y) position to grid (col,row) coordinates."""
         (x, y) = (self._x, self._y)
         x /= Preferences.values['GRIDSIZE_W']

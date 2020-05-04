@@ -62,7 +62,6 @@ class GridView(Gtk.Frame):
         self._drawing_area.connect('draw', self.on_draw)
         self._drawing_area.connect('configure-event', self.on_configure)
 
-        # https://www.programcreek.com/python/example/84675/gi.repository.Gtk.DrawingArea
         self._drawing_area.add_events(Gdk.EventMask.BUTTON_PRESS_MASK)
         self._drawing_area.connect('button-press-event', self.on_button_press)
 
@@ -150,8 +149,8 @@ class GridView(Gtk.Frame):
             ul = self._drag_endpos
             br = self._drag_startpos
 
-        ul = ul.grid_rc()
-        br = br.grid_rc()
+        ul = ul.grid_cr()
+        br = br.grid_cr()
 
         return ul, br
 
@@ -458,7 +457,7 @@ class GridView(Gtk.Frame):
 
         elif self._selection.item in (TEXT, TEXT_BLOCK):
             self.draw_cursor(ctx)
-            self._symbol.startpos = self._hover_pos.grid_rc()
+            self._symbol.startpos = self._hover_pos.grid_cr()
             self._symbol.text = self._text
             self._symbol.draw(ctx)
 
@@ -481,8 +480,8 @@ class GridView(Gtk.Frame):
                 self._selection.draw(ctx)
 
             elif self._selection.item in (MAG_LINE, LINE, DIR_LINE, DRAW_RECT):
-                self._symbol.startpos = self._selection.startpos.grid_rc()
-                self._symbol.endpos = self._selection.endpos.grid_rc()
+                self._symbol.startpos = self._selection.startpos.grid_cr()
+                self._symbol.endpos = self._selection.endpos.grid_cr()
                 self._symbol.draw(ctx)
 
             elif self._selection.item:
@@ -562,7 +561,7 @@ class GridView(Gtk.Frame):
     def on_button_press(self, widget, event):
 
         pos = self.calc_position(event.x, event.y)
-        pub.sendMessage('POINTER_MOVED', pos=pos.grid_rc())
+        pub.sendMessage('POINTER_MOVED', pos=pos.grid_cr())
 
         if not Preferences.values['SELECTION_DRAG'] \
                 and self._selection.item in (DRAW_RECT, RECT, LINE, MAG_LINE, DIR_LINE):
@@ -585,7 +584,7 @@ class GridView(Gtk.Frame):
     def selected_state(self, event):
 
         pos = self._hover_pos
-        pos = pos.grid_rc()
+        pos = pos.grid_cr()
 
         if self._selection.item in (CHARACTER, COMPONENT, OBJECTS):
             # https://stackoverflow.com/questions/6616270/right-click-menu-context-menu-using-pygtk
@@ -600,12 +599,12 @@ class GridView(Gtk.Frame):
     def selecting_state(self, pos, event):
 
         if self._selection.item == ROW:
-            row = pos.grid_rc().y
+            row = pos.grid_cr().y
             pub.sendMessage('GRID_ROW', row=row, action=self._selection.action)
             self.gridsize_changed()
 
         elif self._selection.item == COL:
-            col = pos.grid_rc().x
+            col = pos.grid_cr().x
             pub.sendMessage('GRID_COL', col=col, action=self._selection.action)
             self.gridsize_changed()
 
@@ -614,7 +613,7 @@ class GridView(Gtk.Frame):
             if button == 1:
                 # left button
                 self._selection.state = SELECTED
-                self._symbol.startpos = pos.grid_rc()
+                self._symbol.startpos = pos.grid_cr()
                 pub.sendMessage('PASTE_TEXT', symbol=self._symbol)
             elif button == 3:
                 # right button
@@ -675,8 +674,8 @@ class GridView(Gtk.Frame):
         self._drag_endpos = self._drag_startpos + offset
 
         # position to grid (col, row) coordinates
-        startpos = self._drag_startpos.grid_rc()
-        endpos = self._drag_endpos.grid_rc()
+        startpos = self._drag_startpos.grid_cr()
+        endpos = self._drag_endpos.grid_cr()
 
         self._selection.state = SELECTED
 
@@ -759,7 +758,7 @@ class GridView(Gtk.Frame):
 
     def on_hover(self, widget, event):
         self._hover_pos = self.calc_position(event.x, event.y)
-        pub.sendMessage('POINTER_MOVED', pos=self._hover_pos.grid_rc())
+        pub.sendMessage('POINTER_MOVED', pos=self._hover_pos.grid_cr())
 
         if not Preferences.values['SELECTION_DRAG'] \
                 and self._selection.state == SELECTING \

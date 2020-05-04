@@ -39,7 +39,7 @@ class PosTest(unittest.TestCase):
         a = Pos(10, 15)
         b = Pos(12, 21)
 
-        tmp = a.grid_rc()
+        tmp = a.grid_cr()
         self.assertEquals(tmp.x, 1)
         self.assertEquals(tmp.y, 0)
 
@@ -53,7 +53,7 @@ class PosTest(unittest.TestCase):
 
         b = Pos(10, 16)
 
-        tmp = b.grid_rc()
+        tmp = b.grid_cr()
         self.assertEquals(tmp.x, 1)
         self.assertEquals(tmp.y, 1)
 
@@ -67,7 +67,7 @@ class PosTest(unittest.TestCase):
 
         c = Pos(11, 17)
 
-        tmp = c.grid_rc()
+        tmp = c.grid_cr()
         self.assertEquals(tmp.x, 1)
         self.assertEquals(tmp.y, 1)
 
