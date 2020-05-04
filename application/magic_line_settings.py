@@ -113,7 +113,7 @@ class MagicLineSettingsDialog(Gtk.Dialog):
         self._start_ori_combo.set_active(lmd.ori)
 
     def init_matrix_view(self, builder):
-        frame = builder.get_object('matrix_frame')
+        # frame = builder.get_object('matrix_frame')
         # frame.set_shadow_type(Gtk.ShadowType.IN)
 
         view = builder.get_object('matrix_viewport')
@@ -183,7 +183,6 @@ class MatrixView(Gtk.Frame):
         self._drawing_area.connect('draw', self.on_draw)
         self._drawing_area.connect('configure-event', self.on_configure)
 
-        # https://www.programcreek.com/python/example/84675/gi.repository.Gtk.DrawingArea
         self._drawing_area.add_events(Gdk.EventMask.BUTTON_PRESS_MASK)
         self._drawing_area.connect('button-press-event', self.on_button_press)
 
@@ -218,8 +217,19 @@ class MatrixView(Gtk.Frame):
         self._start_char = lmd.char
         self._start_ori = lmd.ori
 
+    def calc_offset(self):
+        """Calculate the upper left coordinate where the matrix will be drawn."""
+        grid_w = Preferences.values['GRIDSIZE_W']
+        grid_h = Preferences.values['GRIDSIZE_H']
+
+        x_offset = round((self._surface.get_width() - 3 * grid_w) / 2)
+        y_offset = round((self._surface.get_height() - 3 * grid_h) / 2)
+
+        self._offset = Pos(x_offset, y_offset)
+
     def on_configure(self, area, event, data=None):
         self.init_surface(self._drawing_area)
+        self.calc_offset()
 
         context = cairo.Context(self._surface)
 
@@ -234,12 +244,66 @@ class MatrixView(Gtk.Frame):
     def on_button_press(self, widget, event):
         print("Not yet implemented")
 
-    def on_key_press(self, button):
-        print("Not yet implemented")
+    def on_key_press(self, widget, event):
+
+        # TODO Will this work in other locale too?
+        def filter_non_printable(ascii):
+            char = ''
+            if (ascii > 31 and ascii < 255) or ascii == 9:
+                char = chr(ascii)
+            return char
+
+        def valid_index(pos):
+            if pos.x >= 0 and pos.x < 3 and pos.y >= 0 and pos.y < 3:
+                return True
+            else:
+                return False
+
+        def next_char():
+            # move to the next character or the next line
+            if grid_pos.x < 2:
+                self._hover_pos += Pos(1, 0).view_xy()
+            elif grid_pos.y < 2:
+                self._hover_pos += Pos(-2, 1).view_xy()
+
+        def previous_char():
+            # move to the previous character or the previous line
+            if grid_pos.x > 0:
+                if grid_pos.x <= 2:
+                    self._hover_pos -= Pos(1, 0).view_xy()
+            elif grid_pos.y > 0:
+                self._hover_pos += Pos(2, -1).view_xy()
+
+        value = event.keyval
+
+        grid_pos = self._hover_pos - self._offset
+        grid_pos.snap_to_grid()
+        grid_pos = grid_pos.grid_cr() + Pos(1, 0)
+
+        if value == Gdk.KEY_Left or value == Gdk.KEY_BackSpace:
+            previous_char()
+
+        elif value == Gdk.KEY_Right:
+            next_char()
+
+        elif value == Gdk.KEY_Up:
+            self._hover_pos -= Pos(0, 1).view_xy()
+
+        elif value == Gdk.KEY_Down:
+            self._hover_pos += Pos(0, 1).view_xy()
+
+        elif value & 255 != 13:  # enter
+
+            if valid_index(grid_pos):
+                str = filter_non_printable(value)
+                self._matrix[grid_pos.y][grid_pos.x] = str
+                next_char()
+
+        return True
 
     def on_hover(self, widget, event):
-        self._hover_pos = self.calc_position(event.x, event.y)
-        # offset = Pos(event.x, event.y) - self._drag_startpos
+        self._hover_pos = Pos(event.x, event.y)
+        self._hover_pos.snap_to_grid()
         self.queue_resize()
 
     def on_draw(self, area, ctx):
@@ -256,11 +320,11 @@ class MatrixView(Gtk.Frame):
         self.draw_cursor(ctx)
 
     def draw_gridlines(self, ctx):
+
         grid_w = Preferences.values['GRIDSIZE_W']
         grid_h = Preferences.values['GRIDSIZE_H']
 
-        x_offset = (self._surface.get_width() - 3 * grid_w) / 2
-        y_offset = (self._surface.get_height() - 3 * grid_h) / 2
+        offset = self._offset
 
         # draw a background
         ctx.set_source_rgb(0.95, 0.95, 0.85)
@@ -269,7 +333,7 @@ class MatrixView(Gtk.Frame):
         ctx.set_line_join(cairo.LINE_JOIN_ROUND)
 
         ctx.new_path()
-        ctx.rectangle(x_offset, y_offset, 3 * grid_w, 3 * grid_h)
+        ctx.rectangle(offset.x, offset.y, 3 * grid_w, 3 * grid_h)
         ctx.fill()
 
         # draw the gridlines
@@ -279,23 +343,23 @@ class MatrixView(Gtk.Frame):
         ctx.set_tolerance(0.1)
         ctx.set_line_join(cairo.LINE_JOIN_ROUND)
 
-        x_max = x_offset + 3 * grid_w
-        y_max = y_offset + 3 * grid_h
+        x_max = offset.x + 3 * grid_w
+        y_max = offset.y + 3 * grid_h
 
         # horizontal lines
-        y = y_offset
+        y = offset.y
         for count in range(4):
             ctx.new_path()
-            ctx.move_to(x_offset, y)
+            ctx.move_to(offset.x, y)
             ctx.line_to(x_max, y)
             ctx.stroke()
             y += grid_h
 
         # vertical lines
-        x = x_offset
+        x = offset.x
         for count in range(4):
             ctx.new_path()
-            ctx.move_to(x, y_offset)
+            ctx.move_to(x, offset.y)
             ctx.line_to(x, y_max)
             ctx.stroke()
             x += grid_w
@@ -308,8 +372,7 @@ class MatrixView(Gtk.Frame):
         grid_w = Preferences.values['GRIDSIZE_W']
         grid_h = Preferences.values['GRIDSIZE_H']
 
-        x_offset = (self._surface.get_width() - 3 * grid_w) / 2
-        y_offset = (self._surface.get_height() - 3 * grid_h) / 2
+        offset = self._offset
 
         ctx.set_source_rgb(0.1, 0.1, 0.1)
 
@@ -325,10 +388,10 @@ class MatrixView(Gtk.Frame):
             ctx.set_font_size(Preferences.values['FONTSIZE'])
             ctx.select_font_face("monospace", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
 
-        y = y_offset
+        y = offset.y
         for r in self._matrix:
 
-            x = x_offset
+            x = offset.x
             for c in r:
 
                 if use_pango_font:
@@ -340,9 +403,9 @@ class MatrixView(Gtk.Frame):
                     ctx.move_to(x, y + Preferences.values['FONTSIZE'])
                     ctx.show_text(str(c))
 
-                x += Preferences.values['GRIDSIZE_W']
+                x += grid_w
 
-            y += Preferences.values['GRIDSIZE_H']
+            y += grid_h
 
     def draw_cursor(self, ctx):
 
@@ -376,9 +439,3 @@ class MatrixView(Gtk.Frame):
         self._drawing_area.queue_resize()
 
         return GLib.SOURCE_CONTINUE
-
-    def calc_position(self, x, y):
-        """Calculate the grid view position."""
-        pos = Pos(x, y)
-        pos.snap_to_grid()
-        return pos

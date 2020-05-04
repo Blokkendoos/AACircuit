@@ -63,7 +63,7 @@
               <object class="GtkTextView">
                 <property name="name">header_text</property>
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
+                <property name="can_focus">False</property>
                 <property name="editable">False</property>
                 <property name="cursor_visible">False</property>
                 <property name="accepts_tab">False</property>
@@ -202,8 +202,8 @@
                             <property name="name">previous_matrix</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="receives_default">True</property>
                             <property name="use_stock">True</property>
+                            <property name="always_show_image">True</property>
                             <signal name="clicked" handler="on_previous_matrix" swapped="no"/>
                           </object>
                           <packing>
@@ -214,12 +214,13 @@
                         </child>
                         <child>
                           <object class="GtkButton">
-                            <property name="label">button</property>
+                            <property name="label">gtk-go-forward</property>
                             <property name="name">next_matrix</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="receives_default">True</property>
+                            <property name="use_stock">True</property>
                             <property name="image_position">right</property>
+                            <property name="always_show_image">True</property>
                             <signal name="clicked" handler="on_next_matrix" swapped="no"/>
                           </object>
                           <packing>

@@ -146,7 +146,7 @@ class MainWindow(Gtk.Window):
         pub.subscribe(self.on_redo_changed, 'REDO_CHANGED')
 
     def start_timer(self):
-        # FIXME Timer interferes with nosetest (lock.acquire() in shutdown)
+        # FIXME Timer interferes with test (lock.acquire() in shutdown)
         if not self.timer_is_running:
             self._timer = Timer(15, self._timer_event)
             self._timer.start()
