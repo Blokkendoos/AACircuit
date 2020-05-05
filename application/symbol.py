@@ -76,7 +76,7 @@ class Symbol(object):
             self._endpos = endpos
 
     def __str__(self):
-        str = _("symbol id: {0} orientation: {1}").format(self._id, self.ORIENTATION[self._ori])
+        str = _("Class: {0} id: {1} ori: {2} startpos: {3}").format(self.__class__.__name__, self._id, self.ORIENTATION[self._ori], self.startpos)
         return str
 
     def _representation(self):

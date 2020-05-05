@@ -579,9 +579,7 @@ class Controller(object):
 
             # start with a fresh grid
             self.init_stack()
-
-            self.grid = Grid(72, 36)
-            pub.sendMessage('NEW_GRID', grid=self.grid)
+            self.init_grid()
 
             memo = []
             for line in str:
