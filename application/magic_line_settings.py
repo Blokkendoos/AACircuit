@@ -186,7 +186,7 @@ class MagicLineSettingsDialog(Gtk.Dialog):
         Arguments pass in must be passed from __new__().
         """
         builder.connect_signals(self)
-        self.set_default_size(500, 225)
+        self.set_default_size(500, 200)
 
         # Add any other initialization here
 
@@ -546,7 +546,7 @@ class MatrixView(Gtk.DrawingArea):
 
     def draw_cursor(self, ctx):
 
-        if not self.has_focus:
+        if not self.has_focus():
             return
 
         ctx.save()
