@@ -130,6 +130,11 @@ class Controller(object):
         self.grid = Grid(self._cols, self._rows)
         pub.sendMessage('NEW_GRID', grid=self.grid)
 
+    def cell_callback(self, pos):
+        # prevent calling an old grid instance method
+        # FIXME better solution (than that this controller needs to know about a grid method)?
+        return self.grid.cell(pos)
+
     def show_all(self):
         self.gui.show_all()
 
@@ -415,7 +420,7 @@ class Controller(object):
         self.push_latest_action(symbol)
 
     def on_paste_mag_line(self, startpos, endpos):
-        symbol = MagLine(startpos, endpos, self.grid.cell)
+        symbol = MagLine(startpos, endpos, self.cell_callback )
 
         self.selected_objects = []
         self.add_selected_object(symbol)
