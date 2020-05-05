@@ -439,6 +439,10 @@ class MatrixView(Gtk.DrawingArea):
         return True
 
     def on_hover(self, widget, event):
+
+        if not self.has_focus():
+            self.grab_focus()
+
         self._hover_pos = Pos(event.x, event.y)
         self._hover_pos.snap_to_grid()
         self.queue_resize()
