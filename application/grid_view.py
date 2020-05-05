@@ -521,16 +521,18 @@ class GridView(Gtk.DrawingArea):
 
         for ref in self._objects:
 
-            ctx.set_source_rgb(1, 0, 0)
-            ctx.select_font_face("monospace", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+            if ref.symbol.show_pickpoint:
 
-            pos = ref.startpos.view_xy()
+                ctx.set_source_rgb(1, 0, 0)
+                ctx.select_font_face("monospace", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
 
-            # the text glyph origin is its left-bottom corner
-            y_xbase = pos.y + Preferences.values['FONTSIZE']
-            ctx.move_to(pos.x, y_xbase)
+                pos = ref.startpos.view_xy()
 
-            ctx.show_text(MARK_CHAR)  # mark the upper-left corner
+                # the text glyph origin is its left-bottom corner
+                y_xbase = pos.y + Preferences.values['FONTSIZE']
+                ctx.move_to(pos.x, y_xbase)
+
+                ctx.show_text(MARK_CHAR)  # mark the upper-left corner
 
         ctx.restore()
 

@@ -95,6 +95,10 @@ class Symbol(object):
             pos += Pos(0, 1)
 
     @property
+    def show_pickpoint(self):
+        return True
+
+    @property
     def id(self):
         return self._id
 
@@ -580,7 +584,7 @@ class MagLine(Line):
 
         :return result: True if a match was found, otherwise False
         :return ori: magic line orientation
-        :return char: corner character
+        :return char: terminal character
 
         """
         lmd = MagicLineSettings.LMD[idx]
@@ -641,7 +645,7 @@ class MagLine(Line):
             else:
                 f_ori = HORIZONTAL
 
-        # TODO Move this to view
+        # TODO Move this to view (by means of another call-back?)
         # msg = _("Start: D[{0}] char:{1} ori:{2}".format(i, f_terminal, f_ori))
         # pub.sendMessage('STATUS_MESSAGE', msg=msg)
 
@@ -859,6 +863,10 @@ class Column(Symbol):
         self._action = action
 
     @property
+    def show_pickpoint(self):
+        return False
+
+    @property
     def col(self):
         return self._col
 
@@ -894,6 +902,10 @@ class Row(Symbol):
         super(Row, self).__init__(id=row, startpos=Pos(0, row))
         self._row = row
         self._action = action
+
+    @property
+    def show_pickpoint(self):
+        return False
 
     @property
     def row(self):

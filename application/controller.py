@@ -506,10 +506,18 @@ class Controller(object):
 
         pub.sendMessage('SYMBOL_SELECTED', symbol=symbol)
 
+    def select_all_objects(self):
+        """Select all objects."""
+        selection = []
+        for symbol in self.objects:
+            sel = SelectedObjects(symbol.startpos, symbol)
+            selection.append(sel)
+        return selection
+
     def on_select_rect(self):
         """Select multiple objects."""
         pub.sendMessage('NOTHING_SELECTED')
-        pub.sendMessage('SELECTING_RECT', objects=self.objects)
+        pub.sendMessage('SELECTING_RECT', objects=self.select_all_objects())
 
         msg = _("Selecting rectangle...")
         pub.sendMessage('STATUS_MESSAGE', msg=msg)
@@ -517,7 +525,7 @@ class Controller(object):
     def on_select_objects(self):
         """Select individual objects."""
         pub.sendMessage('NOTHING_SELECTED')
-        pub.sendMessage('SELECTING_OBJECTS', objects=self.objects)
+        pub.sendMessage('SELECTING_OBJECTS', objects=self.select_all_objects())
 
     # file open/save
 
