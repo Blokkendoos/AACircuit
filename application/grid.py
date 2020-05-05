@@ -213,23 +213,47 @@ class Grid(object):
             if y >= y_max:
                 break
 
-    def remove_row(self, row):
+    def _remove_row(self, row):
         # assert row >= 0 and row < self.nr_rows
         if row >= 0 and row < self.nr_rows:
             del self._grid[row]
 
-    def remove_col(self, col):
+    def _remove_col(self, col):
         # assert col >= 0 and col < self.nr_cols
         if col >= 0 and col < self.nr_cols:
             for r in self._grid:
                 del r[col]
 
-    def insert_row(self, row):
+    def _insert_row(self, row):
         self._grid.insert(row, [CELL_NEW] * self.nr_cols)
 
-    def insert_col(self, col):
+    def _insert_col(self, col):
         for r in self._grid:
             r.insert(col, CELL_NEW)
+
+    def remove_row(self, row):
+        """Remove a row from the grid, without changing its dimensions."""
+        self._remove_row(row)
+        # maintain dimensions by adding a row at the bottom
+        self._insert_row(self.nr_rows)
+
+    def remove_col(self, col):
+        """Remove a column from the grid, without changing its dimensions."""
+        self._remove_col(col)
+        # maintain dimensions by inserting a column to the right
+        self._insert_col(self.nr_cols)
+
+    def insert_row(self, row):
+        """Remove a row from the grid, without changing its dimensions."""
+        self._insert_row(row)
+        # maintain dimensions by removing the bottom row
+        self._remove_row(self.nr_rows - 1)
+
+    def insert_col(self, col):
+        """Insert a column to the grid, without changing its dimensions."""
+        self._insert_col(col)
+        # maintain the grid dimensions by removing the right column
+        self._remove_col(self.nr_cols - 1)
 
     def resize(self, cols, rows):
 
