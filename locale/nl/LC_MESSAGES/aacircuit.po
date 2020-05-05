@@ -1,3 +1,24 @@
+# #-#-#-#-#  aacircuit.pot (PACKAGE VERSION)  #-#-#-#-#
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+# #-#-#-#-#  aacircuit.po  #-#-#-#-#
+# #-#-#-#-#  aacircuit.pot (PACKAGE VERSION)  #-#-#-#-#
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+# #-#-#-#-#  aacircuit.po  #-#-#-#-#
+# #-#-#-#-#  aacircuit.pot (PACKAGE VERSION)  #-#-#-#-#
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+# #-#-#-#-#  aacircuit.po  #-#-#-#-#
 # AACIRCUIT
 # Copyright (C) 2020 JvO
 # This file is distributed under the same license as the PACKAGE package.
@@ -7,34 +28,268 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-05 14:06+0200\n"
+"PO-Revision-Date: 2020-05-05 14:07+0200\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-05 13:44+0200\n"
+"PO-Revision-Date: 2020-05-05 13:51+0200\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-05 12:50+0200\n"
+"PO-Revision-Date: 2020-05-05 13:07+0200\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-05 12:58+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-05 12:58+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-05 12:58+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-05 12:58+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-05 12:58+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-05 12:58+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-05 12:58+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-05 12:58+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-05 12:58+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-05 12:58+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-03-24 12:49+0100\n"
 "PO-Revision-Date: 2020-03-24 21:45+0100\n"
-"Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 2.3\n"
-"Last-Translator: \n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Language: nl\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+
+#: ../application/aacircuit.glade:207
+msgid "AACircuit"
+msgstr ""
+
+#: ../application/aacircuit.glade:233
+msgid "_Preferences"
+msgstr "_Voorkeuren"
+
+#: ../application/aacircuit.glade:243
+msgid "_Magic-line settings"
+msgstr "_Magic-line voorkeuren"
 
 # GUI
-
 #: application/aacircuit.glade:198
 msgid "_File"
 msgstr "_Bestand"
+
+#: ../application/aacircuit.glade:316
+msgid "Export as ASCII..."
+msgstr "Exporteer naar ASCII…"
+
+#: ../application/aacircuit.glade:325
+msgid "Export as PDF..."
+msgstr "Exporteer naar PDF…"
 
 #: application/aacircuit.glade:268
 msgid "_Edit"
 msgstr "_Bewerken"
 
+#: ../application/aacircuit.glade:443
+msgid "Copy grid"
+msgstr "_Kopieer rooster"
+
+#: ../application/aacircuit.glade:452
+msgid "Paste grid"
+msgstr "_Plak rooster"
+
+#: ../application/aacircuit.glade:461
+msgid "Load and paste ASCII"
+msgstr "Laad en plak ASCII"
+
 #: application/aacircuit.glade:331
 msgid "_View"
 msgstr "_Beeld"
 
-#: application/aacircuit.glade:339
-msgid "_Help"
-msgstr "_Hulp"
+#: ../application/aacircuit.glade:484
+msgid "Grid size 72x36"
+msgstr "Rooster bxl 72x36"
+
+#: ../application/aacircuit.glade:493
+msgid "Grid size 72x49"
+msgstr "Rooster bxl 72x49"
+
+#: ../application/aacircuit.glade:502
+msgid "Grid size 100x49"
+msgstr "Rooster bxl 100x49"
+
+#: ../application/aacircuit.glade:511
+msgid "Grid size 200x70"
+msgstr "Rooster bxl 200x70"
+
+#: ../application/aacircuit.glade:526
+msgid "Redraw schema"
+msgstr "Schema opnieuw tekenen"
+
+#: ../application/aacircuit.glade:540
+msgid "_Symbol"
+msgstr "_Symbool"
+
+#: ../application/aacircuit.glade:550
+msgid "Rotate 90° clockwise"
+msgstr "Draai 90° met de klok mee"
+
+#: ../application/aacircuit.glade:559
+msgid "Mirror vertically"
+msgstr "Spiegel vertikaal"
+
+#: ../application/aacircuit.glade:589
+msgid "+"
+msgstr ""
+
+#: ../application/aacircuit.glade:597
+msgid "o"
+msgstr ""
+
+#: ../application/aacircuit.glade:609
+msgid "#"
+msgstr ""
+
+#: ../application/aacircuit.glade:621
+msgid "/"
+msgstr ""
+
+#: ../application/aacircuit.glade:633
+msgid "\\"
+msgstr ""
+
+#: ../application/aacircuit.glade:645
+msgid "|"
+msgstr ""
+
+#: ../application/aacircuit.glade:657
+msgid "-"
+msgstr ""
+
+#: ../application/aacircuit.glade:669
+msgid "("
+msgstr ""
+
+#: ../application/aacircuit.glade:681
+msgid ")"
+msgstr ""
+
+#: ../application/aacircuit.glade:693
+msgid "'"
+msgstr ""
+
+#: ../application/aacircuit.glade:705
+msgid "."
+msgstr ""
+
+#: ../application/aacircuit.glade:717
+msgid " "
+msgstr ""
+
+#: ../application/aacircuit.glade:742
+msgid "write text"
+msgstr "schrijf tekst"
+
+#: ../application/aacircuit.glade:760
+msgid "insert text"
+msgstr "voeg tekst in"
+
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:192
+msgid "load file and paste into grid"
+msgstr "plak rooster van bestand"
+
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:191
+msgid "paste grid from clipboard"
+msgstr "plak het rooster van het prikbord"
+
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:190
+msgid "copy grid to clipboard"
+msgstr "kopieer het rooster naar het prikbord"
 
 #: application/aacircuit.glade:642
 msgid "<b>Clipb.</b>"
@@ -48,114 +303,6 @@ msgstr "Gum"
 msgid "<b>Curs.</b>"
 msgstr "Muispijl"
 
-# COMPONENT_LIBRARY
-
-#: application/component_library.py:35
-#, python-brace-format
-msgid "Failed to load component library {0} due to I/O error {1}: {2}"
-msgstr "Kan de componentbibliotheek {0} niet laden als gevolg van i/o-fout {1}: {2}"
-
-#: application/component_library.py:88
-#, python-brace-format
-msgid "Number of libraries loaded: {0}"
-msgstr "Aantal geladen bibliotheken: {0}"
-
-# COMPONENT_VIEW
-
-#: application/component_view.py:17
-msgid "Description"
-msgstr "Omschrijving"
-
-# CONTROLLER
-
-#: application/controller.py:32
-#, python-brace-format
-msgid "One library loaded, total number of components: {0}"
-msgstr "Eén bibliotheek geladen, totaal aantal onderdelen: {0}"
-
-#: application/controller.py:34
-#, python-brace-format
-msgid "{0} libraries loaded, total number of components: {1}"
-msgstr "{0} geladen bibliotheken, totaal aantal onderdelen: {1}"
-
-#: application/controller.py:183
-#, python-format
-msgid "Unable to open file for writing: %s"
-msgstr "Kan bestand niet openen voor schrijven: %s"
-
-#: application/controller.py:199
-#, python-format
-msgid "Unable to open file for reading: %s"
-msgstr "Kan bestand niet openen om te lezen: %s"
-
-# FILE
-
-#: application/file.py:22
-msgid "Open file"
-msgstr "Bestand openen"
-
-#: application/file.py:24
-msgid "Save file"
-msgstr "Bestand opslaan"
-
-#: application/file.py:37
-msgid "Please choose a file"
-msgstr "Kies een bestand"
-
-#: application/file.py:51
-#, python-format
-msgid "File selected: %s"
-msgstr "Bestand geselecteerd: %s"
-
-#: application/file.py:59 application/file.py:87
-msgid "Cancel clicked"
-msgstr "Afgebroken"
-
-#: application/file.py:65
-msgid "Any files"
-msgstr "Alle bestanden"
-
-#: application/file.py:70
-msgid "Text files"
-msgstr "Tekstbestanden"
-
-#: application/file.py:75
-msgid "Please choose a folder"
-msgstr "Kies een map"
-
-#: application/file.py:79
-msgid "Select"
-msgstr "Selecteer"
-
-#: application/file.py:85
-#, python-format
-msgid "Folder selected: %s"
-msgstr "Geselecteerde map: %s"
-
-# GRID_VIEW
-
-#: application/grid_view.py:167
-msgid "Invalid surface"
-msgstr "Ongeldig canvas"
-
-# GRID
-
-#: application/grid.py:27
-#, python-brace-format
-msgid "number of rows: {0} columns: {1}"
-msgstr "aantal rijen: {0} kolommen: {1}"
-
-#: application/grid.py:98
-msgid "(created by AACircuit.py © 2020 JvO)"
-msgstr "(gemaakt met AACircuit.py © 2020 JvO)"
-
-# MAIN_WINDOW
-
-#: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:49
-msgid "Failed to load XML GUI file aacircuit.glade"
-msgstr "De XML GUI aacircuit.glade kon niet worden geladen"
-
 #: /Users/johan/Documents/Programmeren/Python/AACircuit
 #: Python/aacircuit/application/main_window.py:127
 msgid "rotate the symbol clockwise"
@@ -166,10 +313,9 @@ msgstr "draai symbool met de klok mee"
 msgid "mirror the symbol vertically"
 msgstr "spiegel symbool verticaal"
 
-#: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:148
-msgid "MagLine"
-msgstr "Automatische lijn"
+#: ../application/aacircuit.glade:1122
+msgid "draw automatic line"
+msgstr "teken automatische lijn"
 
 #: /Users/johan/Documents/Programmeren/Python/AACircuit
 #: Python/aacircuit/application/main_window.py:149
@@ -201,6 +347,14 @@ msgstr "lijn met start en eindpunt"
 msgid "draw a rectangle"
 msgstr "teken een rechthoek"
 
+#: ../application/aacircuit.glade:1239
+msgid "move or delete symbol, shortcut: [DEL]"
+msgstr "knip en plak symbolen"
+
+#: ../application/aacircuit.glade:1254
+msgid "selection rectangle"
+msgstr "selekteer rechthoek"
+
 #: /Users/johan/Documents/Programmeren/Python/AACircuit
 #: Python/aacircuit/application/main_window.py:170
 msgid "insert rows"
@@ -221,26 +375,377 @@ msgstr "verwijder rijen"
 msgid "remove columns"
 msgstr "verwijder kolommen"
 
-#: application/main_window.py:180
-msgid "Move or delete symbol, shortcut: [DEL]"
-msgstr "Symbool verplaatsen of verwijderen, sneltoets: [DEL]"
+#: ../application/aacircuit.glade:1407
+msgid "y"
+msgstr ""
 
-#: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:190
-msgid "copy grid to clipboard"
-msgstr "kopieer het rooster naar het prikbord"
+#: ../application/aacircuit.glade:1477
+msgid "x"
+msgstr ""
 
-#: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:191
-msgid "paste grid from clipboard"
-msgstr "plak het rooster van het prikbord"
+#: ../application/about_dialog.glade:8
+msgid "© 2020 Johan van Oostrum"
+msgstr ""
 
+#: ../application/about_dialog.glade:9
+msgid ""
+"This is a Python version,\n"
+"derived from the original AACircuit by Andreas Weber."
+msgstr ""
+"Dit is een Python versie,\n"
+"afgeleid van het originele AACircuit programma van Andreas Weber."
+
+# COMPONENT_LIBRARY
+#: application/component_library.py:35
+#, python-brace-format
+msgid "Failed to load component library {0} due to I/O error {1}: {2}"
+msgstr "Kan de componentbibliotheek {0} niet laden als gevolg van i/o-fout {1}: {2}"
+
+#: application/component_library.py:88
+#, python-brace-format
+msgid "Number of libraries loaded: {0}"
+msgstr "Aantal geladen bibliotheken: {0}"
+
+# COMPONENT_VIEW
+#: application/component_view.py:17
+msgid "Description"
+msgstr "Omschrijving"
+
+#: ../application/confirmation_dialog.glade:10
+msgid "Really close the program?"
+msgstr "Programma sluiten?"
+
+#: ../application/confirmation_dialog.glade:11
+msgid "The current schema has been changed"
+msgstr "Het huidige schema is gewijzigd"
+
+# CONTROLLER
+#: application/controller.py:32
+#, python-brace-format
+msgid "One library loaded, total number of components: {0}"
+msgstr "Eén bibliotheek geladen, totaal aantal onderdelen: {0}"
+
+#: application/controller.py:34
+#, python-brace-format
+msgid "{0} libraries loaded, total number of components: {1}"
+msgstr "{0} geladen bibliotheken, totaal aantal onderdelen: {1}"
+
+#: ../application/controller.py:223
+msgid "Untitled.pdf"
+msgstr "Naamloos.pdf"
+
+#: ../application/controller.py:230
+msgid "Finished printing"
+msgstr "Klaar met printen"
+
+#: ../application/controller.py:269
+#, python-format
+msgid "More than one item at position: %s !"
+msgstr "Meerdere items op positie: %s!"
+
+#: application/controller.py:199
+#, python-format
+msgid "Unable to open file for reading: %s"
+msgstr "Kan bestand niet openen om te lezen: %s"
+
+#: ../application/controller.py:509
+msgid "Selecting rectangle..."
+msgstr "Rechthoek selecteren…"
+
+#: ../application/controller.py:535
+#, python-format
+msgid "Schema has been saved in: %s"
+msgstr "Het schema is bewaard in: %s"
+
+#: application/controller.py:183
+#, python-format
+msgid "Unable to open file for writing: %s"
+msgstr "Kan bestand niet openen voor schrijven: %s"
+
+#: ../application/controller.py:557
+#, python-format
+msgid "ASCII Schema has been saved in: %s"
+msgstr "Het ASCII schema is bewaard in: %s"
+
+#: ../application/controller.py:594
+#, python-brace-format
+msgid "{0} lines skipped in {1}"
+msgstr "{0} regels overgeslagen in {1}"
+
+#: application/file.py:37
+msgid "Please choose a file"
+msgstr "Kies een bestand"
+
+#: ../application/file.py:38 ../application/file.py:83
+msgid "Circuit files"
+msgstr "Schema bestanden"
+
+#: application/file.py:70
+msgid "Text files"
+msgstr "Tekstbestanden"
+
+#: ../application/file.py:48 ../application/file.py:93
+#: ../application/file.py:129 ../application/file.py:149
+msgid "All files"
+msgstr "Alle bestanden"
+
+#: ../application/file.py:55
+msgid "Untitled_schema.aac"
+msgstr "Naamloos.aac"
+
+#: ../application/file.py:59
+msgid "Save as"
+msgstr "Bewaar als"
+
+#: ../application/file.py:109
+msgid "PDF files"
+msgstr "PDF bestanden"
+
+#: ../application/file.py:117
+msgid "Untitled_schema.txt"
+msgstr "Naamloos.txt"
+
+#: ../application/grid.py:20
+#, python-brace-format
+msgid "number of rows: {0} columns: {1}\n"
+msgstr "Aantal rijen: {0} kolommen: {1}\n"
+
+#: application/grid.py:98
+msgid "(created by AACircuit.py © 2020 JvO)"
+msgstr "(gemaakt met AACircuit.py © 2020 JvO)"
+
+# GRID_VIEW
+#: application/grid_view.py:167
+msgid "Invalid surface"
+msgstr "Ongeldig canvas"
+
+#: ../application/grid_view.py:222
+msgid "PDF Exported to {}"
+msgstr "PDF geëxporteerd naar {}"
+
+#: ../application/magic_line_dialog.glade:22
+msgid "Restore defaults"
+msgstr "Herstel standaard"
+
+#: ../application/magic_line_dialog.glade:37
+msgid "Cancel"
+msgstr "Afbreken"
+
+#: ../application/magic_line_dialog.glade:51
+msgid "Save"
+msgstr "Bewaren"
+
+#: ../application/magic_line_dialog.glade:101
+msgid "decision matrix"
+msgstr "beslismatrix"
+
+#: ../application/magic_line_dialog.glade:123
+msgid "start direction"
+msgstr "startrichting"
+
+#: ../application/magic_line_dialog.glade:149
+msgid "start character"
+msgstr "startteken"
+
+#: ../application/magic_line_dialog.glade:221
+msgid "Create new"
+msgstr "Nieuwe matrix"
+
+#: ../application/magic_line_dialog.glade:237
+msgid "Refresh"
+msgstr "Teken opnieuw"
+
+#: ../application/magic_line_settings.py:54
+#, python-format
+msgid "Magic_line settings have been read from: %s"
+msgstr "Magic line instellingen gelezen van: %s"
+
+#: ../application/magic_line_settings.py:59
+msgid "Magic line default settings are being used"
+msgstr "Magic line standaard instellingen worden gebruikt"
+
+#: ../application/magic_line_settings.py:70
+#, python-format
+msgid "Magic line settings have been saved in: %s"
+msgstr "Magic line instellingen zijn bewaard in: %s"
+
+#: ../application/magic_line_settings.py:175 ../application/preferences.py:189
+msgid "Failed to load XML GUI file preferences_dialog.glade"
+msgstr "Kon XML GUI bestand preferences_dialog.glade niet laden"
+
+#: ../application/magic_line_settings.py:208
+msgid "Horizontal"
+msgstr "Horizontaal"
+
+#: ../application/magic_line_settings.py:209
+msgid "Vertical"
+msgstr "Vertikaal"
+
+#: ../application/magic_line_settings.py:210
+msgid "Longest first"
+msgstr "Langste eerst"
+
+# MAIN_WINDOW
 #: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:192
-msgid "load file and paste into grid"
-msgstr "plak rooster van bestand"
+#: Python/aacircuit/application/main_window.py:49
+msgid "Failed to load XML GUI file aacircuit.glade"
+msgstr "De XML GUI aacircuit.glade kon niet worden geladen"
 
 #: /Users/johan/Documents/Programmeren/Python/AACircuit
 #: Python/aacircuit/application/main_window.py:262
 msgid "Closing application"
 msgstr "Afsluiten programma"
+
+#: ../application/preferences.py:103
+#, python-format
+msgid "Preferences have been read from: %s"
+msgstr "Voorkeuren gelezen van: %s"
+
+#: ../application/preferences.py:108
+#, python-format
+msgid "Preferences file not found: %s, default preferences are being used"
+msgstr "Voorkeurenbestand niet gevonden: %s, standaard instellingen worden gebruikt"
+
+#: ../application/preferences.py:122
+#, python-format
+msgid "Preferences have been saved in: %s"
+msgstr "Voorkeuren zijn bewaard in: %s"
+
+#: ../application/preferences.py:281
+msgid "Number of rows"
+msgstr "Aantal rijen"
+
+#: ../application/preferences.py:283
+msgid "Number of columns"
+msgstr "Aantal kolommen"
+
+#: ../application/preferences.py:285
+msgid "cell width"
+msgstr "cel breedte"
+
+#: ../application/preferences.py:287
+msgid "cell height"
+msgstr "cel hoogte"
+
+#: ../application/preferences.py:289
+msgid "Font size"
+msgstr "Lettergrootte"
+
+#: ../application/preferences.py:291
+msgid "Use Pango font"
+msgstr "Gebruik Pango letters"
+
+#: ../application/preferences.py:293
+msgid "Font"
+msgstr "Lettertype"
+
+#: ../application/preferences.py:296
+msgid "Drag selection"
+msgstr "Sleep selectie"
+
+#: ../application/preferences.py:306
+msgid "Horizontal line char"
+msgstr "Horizontale lijn teken"
+
+#: ../application/preferences.py:308
+msgid "Vertical line char"
+msgstr "Vertikale lijn teken"
+
+#: ../application/preferences.py:310
+msgid "Terminal char 1"
+msgstr "Uiteinde teken 1"
+
+#: ../application/preferences.py:312
+msgid "Terminal char 2"
+msgstr "Uiteinde teken 2"
+
+#: ../application/preferences.py:314
+msgid "Terminal char 3"
+msgstr "Uiteinde teken 3"
+
+#: ../application/preferences.py:316
+msgid "Terminal char 4"
+msgstr "Uiteinde teken 4"
+
+#: ../application/preferences.py:326
+msgid "Crossing char"
+msgstr "Kruising teken"
+
+#: ../application/preferences.py:328
+msgid "Upper corner char"
+msgstr "Bovenste hoek teken"
+
+#: ../application/preferences.py:330
+msgid "Lower corner char"
+msgstr "Onderste hoek teken"
+
+#: ../application/preferences_dialog.glade:80
+msgid "Grid"
+msgstr "Rooster"
+
+#: ../application/preferences_dialog.glade:109
+msgid "Lines"
+msgstr "Lijnen"
+
+#: ../application/preferences_dialog.glade:138
+msgid "Magic line"
+msgstr ""
+
+#: ../application/symbol.py:79
+#, python-brace-format
+msgid "symbol id: {0} orientation: {1}"
+msgstr "Symbool id: {0} orientatie: {1}"
+
+#: application/aacircuit.glade:339
+msgid "_Help"
+msgstr "_Hulp"
+
+# FILE
+#: application/file.py:22
+msgid "Open file"
+msgstr "Bestand openen"
+
+#: application/file.py:24
+msgid "Save file"
+msgstr "Bestand opslaan"
+
+#: application/file.py:51
+#, python-format
+msgid "File selected: %s"
+msgstr "Bestand geselecteerd: %s"
+
+#: application/file.py:59 application/file.py:87
+msgid "Cancel clicked"
+msgstr "Afgebroken"
+
+#: application/file.py:65
+msgid "Any files"
+msgstr "Alle bestanden"
+
+#: application/file.py:75
+msgid "Please choose a folder"
+msgstr "Kies een map"
+
+#: application/file.py:79
+msgid "Select"
+msgstr "Selecteer"
+
+#: application/file.py:85
+#, python-format
+msgid "Folder selected: %s"
+msgstr "Geselecteerde map: %s"
+
+# GRID
+#: application/grid.py:27
+#, python-brace-format
+msgid "number of rows: {0} columns: {1}"
+msgstr "aantal rijen: {0} kolommen: {1}"
+
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:148
+msgid "MagLine"
+msgstr "Automatische lijn"
+
+#: application/main_window.py:180
+msgid "Move or delete symbol, shortcut: [DEL]"
+msgstr "Symbool verplaatsen of verwijderen, sneltoets: [DEL]"

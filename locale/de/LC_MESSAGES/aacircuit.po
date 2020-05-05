@@ -1,3 +1,10 @@
+# #-#-#-#-#  aacircuit.pot (PACKAGE VERSION)  #-#-#-#-#
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+# #-#-#-#-#  aacircuit.po  #-#-#-#-#
 # AACIRCUIT
 # Copyright (C) 2020 JvO
 # This file is distributed under the same license as the PACKAGE package.
@@ -7,16 +14,353 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-05 12:50+0200\n"
+"PO-Revision-Date: 2020-05-05 13:28+0200\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-05 12:58+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-05 12:58+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-05 12:58+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-05 12:58+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-05 12:58+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-05 12:58+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-05 12:58+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-05 12:58+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-05 12:58+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-05 12:58+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-03-24 12:49+0100\n"
 "PO-Revision-Date: 2020-03-25 11:00+0100\n"
-"Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 2.3\n"
-"Last-Translator: \n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Language: de\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+
+# COMPONENT_LIBRARY
+#: application/component_library.py:35
+#, python-brace-format
+msgid "Failed to load component library {0} due to I/O error {1}: {2}"
+msgstr "Komponentbibliothek {0} nicht geladen wegen i/o-fehler {1}: {2}"
+
+#: application/component_library.py:88
+#, python-brace-format
+msgid "Number of libraries loaded: {0}"
+msgstr "Anzahl Bibliotheken geladen: {0}"
+
+# COMPONENT_VIEW
+#: application/component_view.py:17
+msgid "Description"
+msgstr "Umschreibung"
+
+# CONTROLLER
+#: application/controller.py:32
+#, python-brace-format
+msgid "One library loaded, total number of components: {0}"
+msgstr "Eine Bibliothek geladen, Total zahl der Symbolen: {0}"
+
+#: application/controller.py:34
+#, python-brace-format
+msgid "{0} libraries loaded, total number of components: {1}"
+msgstr "{0} Bibliotheke geladen, Total zahl der Symbole: {1}"
+
+#: ../application/controller.py:223
+msgid "Untitled.pdf"
+msgstr "Namlos.pdf"
+
+#: ../application/controller.py:230
+msgid "Finished printing"
+msgstr "Drucken beendet"
+
+#: ../application/controller.py:269
+#, python-format
+msgid "More than one item at position: %s !"
+msgstr "Mehrere Symbole auf Positino: %s!"
+
+#: application/controller.py:199
+#, python-format
+msgid "Unable to open file for reading: %s"
+msgstr "Datei %s läßt sich nicht öffnen zum lesen"
+
+#: ../application/controller.py:509
+msgid "Selecting rectangle..."
+msgstr "Selektiere Rechtecke"
+
+#: ../application/controller.py:535
+#, python-format
+msgid "Schema has been saved in: %s"
+msgstr "Schaltplan gespeichert unter: %s"
+
+#: application/controller.py:183
+#, python-format
+msgid "Unable to open file for writing: %s"
+msgstr "Datei %s läßt sich nicht öffnen zum schreiben"
+
+#: ../application/controller.py:557
+#, python-format
+msgid "ASCII Schema has been saved in: %s"
+msgstr "ASCII Schaltplan gespeichert unter: %s"
+
+#: ../application/controller.py:594
+#, python-brace-format
+msgid "{0} lines skipped in {1}"
+msgstr "{0} Zeile übergeschlagen in {1}"
+
+#: application/file.py:37
+msgid "Please choose a file"
+msgstr "Wähle eine Datei"
+
+#: ../application/file.py:38 ../application/file.py:83
+msgid "Circuit files"
+msgstr "Schaltplan Dateien"
+
+#: application/file.py:70
+msgid "Text files"
+msgstr "Tekstdateien"
+
+#: ../application/file.py:48 ../application/file.py:93
+#: ../application/file.py:129 ../application/file.py:149
+msgid "All files"
+msgstr "Alle Dateien"
+
+#: ../application/file.py:55
+msgid "Untitled_schema.aac"
+msgstr "Namlos.aac"
+
+#: ../application/file.py:59
+msgid "Save as"
+msgstr "Speichern unter"
+
+#: ../application/file.py:109
+msgid "PDF files"
+msgstr "PDF Dateien"
+
+#: ../application/file.py:117
+msgid "Untitled_schema.txt"
+msgstr "Namlos.txt"
+
+#: ../application/grid.py:20
+#, python-brace-format
+msgid "number of rows: {0} columns: {1}\n"
+msgstr "Zahl der Reihen: {0} Kolumne: {1}\n"
+
+#: application/grid.py:98
+msgid "(created by AACircuit.py © 2020 JvO)"
+msgstr "(verfertigt mit AACircuit.py © 2020 JvO)"
+
+# GRID_VIEW
+#: application/grid_view.py:167
+msgid "Invalid surface"
+msgstr "Ungültiges Kanvas"
+
+#: ../application/grid_view.py:222
+msgid "PDF Exported to {}"
+msgstr "PDF Exportiert nach {0}"
+
+#: ../application/magic_line_settings.py:54
+#, python-format
+msgid "Magic_line settings have been read from: %s"
+msgstr "Magic Line Einstellungen eingelesen von: %s"
+
+#: ../application/magic_line_settings.py:59
+msgid "Magic line default settings are being used"
+msgstr "Magic Line Standardwerte werden verwendet"
+
+#: ../application/magic_line_settings.py:70
+#, python-format
+msgid "Magic line settings have been saved in: %s"
+msgstr "Magic Line Einstellungen sind gespeichert unter: %s"
+
+#: ../application/magic_line_settings.py:175 ../application/preferences.py:189
+msgid "Failed to load XML GUI file preferences_dialog.glade"
+msgstr "Die XML GUI Datei preferences_dialog.glade könnte nicht geladen worden"
+
+#: ../application/magic_line_settings.py:208
+msgid "Horizontal"
+msgstr "Horizontal"
+
+#: ../application/magic_line_settings.py:209
+msgid "Vertical"
+msgstr "Vertikal"
+
+#: ../application/magic_line_settings.py:210
+msgid "Longest first"
+msgstr "Längste geht vor"
+
+# MAIN_WINDOW
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:49
+msgid "Failed to load XML GUI file aacircuit.glade"
+msgstr "Die XML GUI Datei aacircuit.glade könnte nicht geladen worden"
+
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:262
+msgid "Closing application"
+msgstr "Programma beenden"
+
+#: ../application/preferences.py:103
+#, python-format
+msgid "Preferences have been read from: %s"
+msgstr "Einstellungen sind geladen von: %s"
+
+#: ../application/preferences.py:108
+#, python-format
+msgid "Preferences file not found: %s, default preferences are being used"
+msgstr "Der Einstellungen Datei: %s ist nicht gefunden worden, die Standartwerte werden verwendet"
+
+#: ../application/preferences.py:122
+#, python-format
+msgid "Preferences have been saved in: %s"
+msgstr "Einstellungen sind gespeichert unter: %s"
+
+#: ../application/preferences.py:281
+msgid "Number of rows"
+msgstr "Zahl der Reihe"
+
+#: ../application/preferences.py:283
+msgid "Number of columns"
+msgstr "Zahl der Kolumne"
+
+#: ../application/preferences.py:285
+msgid "cell width"
+msgstr "Zellbreite"
+
+#: ../application/preferences.py:287
+msgid "cell height"
+msgstr "Zellhöhe"
+
+#: ../application/preferences.py:289
+msgid "Font size"
+msgstr "Schriftgröße"
+
+#: ../application/preferences.py:291
+msgid "Use Pango font"
+msgstr "Verwende Pango Schrifte"
+
+#: ../application/preferences.py:293
+msgid "Font"
+msgstr "Schrift"
+
+#: ../application/preferences.py:296
+msgid "Drag selection"
+msgstr "Verschiebe Selektion"
+
+#: ../application/preferences.py:306
+msgid "Horizontal line char"
+msgstr "Horizontal Linie Zeichen"
+
+#: ../application/preferences.py:308
+msgid "Vertical line char"
+msgstr "Vertikale Linie Zeichen"
+
+#: ../application/preferences.py:310
+msgid "Terminal char 1"
+msgstr "Linie Ende Zeichen 1"
+
+#: ../application/preferences.py:312
+msgid "Terminal char 2"
+msgstr "Linie Ende Zeichen 2"
+
+#: ../application/preferences.py:314
+msgid "Terminal char 3"
+msgstr "Linie Ende Zeichen 3"
+
+#: ../application/preferences.py:316
+msgid "Terminal char 4"
+msgstr "Linie Ende Zeichen 4"
+
+#: ../application/preferences.py:326
+msgid "Crossing char"
+msgstr "Kreuzung Zeichen"
+
+#: ../application/preferences.py:328
+msgid "Upper corner char"
+msgstr "Obere Ecke Zeichen"
+
+#: ../application/preferences.py:330
+msgid "Lower corner char"
+msgstr "Untere Ecke Zeichen"
+
+#: ../application/symbol.py:79
+#, python-brace-format
+msgid "symbol id: {0} orientation: {1}"
+msgstr "Symbol id: {0} Richtung: {1}"
 
 # GUI
 #: application/aacircuit.glade:198
@@ -47,43 +391,6 @@ msgstr "Radierer"
 msgid "<b>Curs.</b>"
 msgstr "Zeiger"
 
-# COMPONENT_LIBRARY
-#: application/component_library.py:35
-#, python-brace-format
-msgid "Failed to load component library {0} due to I/O error {1}: {2}"
-msgstr "Komponentbibliothek {0} nicht geladen wegen i/o-fehler {1}: {2}"
-
-#: application/component_library.py:88
-#, python-brace-format
-msgid "Number of libraries loaded: {0}"
-msgstr "Anzahl Bibliotheken geladen: {0}"
-
-# COMPONENT_VIEW
-#: application/component_view.py:17
-msgid "Description"
-msgstr "Umschreibung"
-
-# CONTROLLER
-#: application/controller.py:32
-#, python-brace-format
-msgid "One library loaded, total number of components: {0}"
-msgstr "Eine Bibliothek geladen, Total zahl der Symbolen: {0}"
-
-#: application/controller.py:34
-#, python-brace-format
-msgid "{0} libraries loaded, total number of components: {1}"
-msgstr "{0} Bibliotheke geladen, Total zahl der Symbole: {1}"
-
-#: application/controller.py:183
-#, python-format
-msgid "Unable to open file for writing: %s"
-msgstr "Datei %s läßt sich nicht öffnen zum schreiben"
-
-#: application/controller.py:199
-#, python-format
-msgid "Unable to open file for reading: %s"
-msgstr "Datei %s läßt sich nicht öffnen zum lesen"
-
 # FILE
 #: application/file.py:22
 msgid "Open file..."
@@ -92,10 +399,6 @@ msgstr "Datei öffnen..."
 #: application/file.py:24
 msgid "Save file"
 msgstr "Datei speichern..."
-
-#: application/file.py:37
-msgid "Please choose a file"
-msgstr "Wähle eine Datei"
 
 #: application/file.py:51
 #, python-format
@@ -110,10 +413,6 @@ msgstr "Abgestürzt"
 msgid "Any files"
 msgstr "Alle Dateien"
 
-#: application/file.py:70
-msgid "Text files"
-msgstr "Tekstdateien"
-
 #: application/file.py:75
 msgid "Please choose a folder"
 msgstr "Wähle ein Ordner"
@@ -127,26 +426,11 @@ msgstr "Wähle"
 msgid "Folder selected: %s"
 msgstr "Gewählte Ordner: %s"
 
-# GRID_VIEW
-#: application/grid_view.py:167
-msgid "Invalid surface"
-msgstr "Ungültiges Kanvas"
-
 # GRID
 #: application/grid.py:27
 #, python-brace-format
 msgid "number of rows: {0} columns: {1}"
 msgstr "Reihen: {0} Kolumne: {1}"
-
-#: application/grid.py:98
-msgid "(created by AACircuit.py © 2020 JvO)"
-msgstr "(verfertigt mit AACircuit.py © 2020 JvO)"
-
-# MAIN_WINDOW
-#: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:49
-msgid "Failed to load XML GUI file aacircuit.glade"
-msgstr "Der XML GUI aacircuit.glade könnte nicht geladen worden"
 
 #: /Users/johan/Documents/Programmeren/Python/AACircuit
 #: Python/aacircuit/application/main_window.py:127
@@ -231,8 +515,3 @@ msgstr "fügt den Inhalt der Zwischenablage ein"
 #: Python/aacircuit/application/main_window.py:192
 msgid "load file and paste into grid"
 msgstr "ASCII aus einer Datei laden und in die Zeichnung einfügen"
-
-#: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:262
-msgid "Closing application"
-msgstr "Programma beenden"
