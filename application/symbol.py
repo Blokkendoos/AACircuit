@@ -5,6 +5,7 @@ AACircuit
 
 import copy
 import json
+from pubsub import pub
 from bresenham import bresenham
 from math import pi, radians, atan
 
@@ -792,6 +793,7 @@ class MagLineOld(MagLine):
         eckx = 0
         ecky = 0
 
+        se_status = ""
         se_count = 0
 
         # nichts drumherum
@@ -811,6 +813,7 @@ class MagLineOld(MagLine):
                 startc = line_hor
 
             se_count += 1
+            se_status = _("S:all free")
 
         # o/u = |, l/r frei
         if (self.cell(Pos(x1, y1 - 1)) == line_vert or self.cell(Pos(x1, y1 + 1)) == line_vert) \
@@ -830,7 +833,8 @@ class MagLineOld(MagLine):
                 if self.cell(Pos(x1, y1 + 1)) == line_vert:
                     startc = upper_corner
 
-                se_count += 1
+            se_count += 1
+            se_status = _("S:o/u; l/r=space")
 
         # oben .
         if self.cell(Pos(x1, y1 - 1)) == upper_corner \
@@ -847,6 +851,7 @@ class MagLineOld(MagLine):
                 startc = lower_corner
 
             se_count += 1
+            se_status = _("S:o{}; l/r/u=space".format(lower_corner))
 
         # unten '
         if self.cell(Pos(x1, y1 + 1)) == lower_corner \
@@ -863,6 +868,7 @@ class MagLineOld(MagLine):
                 startc = upper_corner
 
             se_count += 1
+            se_status = _("S:u{}; l/r/0=space".format(lower_corner))
 
         # oben -
         if self.cell(Pos(x1, y1 - 1)) == line_hor \
@@ -879,6 +885,7 @@ class MagLineOld(MagLine):
                 startc = line_hor
 
             se_count += 1
+            se_status = _("S:o{}; l/r/u=space".format(line_hor))
 
         # unten -
         if self.cell(Pos(x1, y1 + 1)) == line_hor \
@@ -895,6 +902,7 @@ class MagLineOld(MagLine):
                 startc = line_hor
 
             se_count += 1
+            se_status = _("S:u{}; l/r/u=space".format(line_hor))
 
         # l/r = -, o/u frei
         if (self.cell(Pos(x1 - 1, y1)) == line_hor or self.cell(Pos(x1 + 1, y1)) == line_hor) \
@@ -915,6 +923,7 @@ class MagLineOld(MagLine):
                 startc = lower_corner
 
             se_count += 1
+            se_status = _("S:l/r,o/u=space")
 
         # links und recht -, oben kein |
         if self.cell(Pos(x1 - 1, y1)) == line_hor \
@@ -923,6 +932,7 @@ class MagLineOld(MagLine):
             startr = 1  # oben/unten
             startc = connect_char
             se_count += 1
+            se_status = _("links und rechts {}; oben kein {}".format(line_hor, line_vert))
 
         # oben und unten |, links kein -
         if self.cell(Pos(x1, y1 - 1)) == line_vert \
@@ -931,6 +941,7 @@ class MagLineOld(MagLine):
             startr = 2  # oben/unten
             startc = connect_char
             se_count += 1
+            se_status = _("oben und unten {}; links kein".format(line_vert, line_hor))
 
         # links oder rechts o
         if self.cell(Pos(x1 - 1, y1)) == connect_char \
@@ -938,6 +949,7 @@ class MagLineOld(MagLine):
             startr = 2
             startc = line_hor
             se_count += 1
+            se_status = _("S:lVr=o;")
 
         # oben oder unten o
         if self.cell(Pos(x1, y1 - 1)) == connect_char \
@@ -945,6 +957,7 @@ class MagLineOld(MagLine):
             startr = 1
             startc = line_vert
             se_count += 1
+            se_status = _("S:oVu=o;")
 
         # End Char
         # nichts drumherum
@@ -959,13 +972,14 @@ class MagLineOld(MagLine):
                 else:
                     endc = line_hor
 
-            if startr == 2:  # Startrichtung linksrechts
+            if startr == 2:  # Startrichtung links / rechts
                 if y1 == y2:
                     endc = line_hor
                 else:
                     endc = line_vert
 
             se_count += 1
+            se_status = _("E:all free")
 
         # von oben oder unten
         if (self.cell(Pos(x2, y2 - 1)) == line_vert or self.cell(Pos(x2, y2 + 1)) == line_vert) \
@@ -985,6 +999,7 @@ class MagLineOld(MagLine):
                     endc = line_vert
 
             se_count += 1
+            se_status = _("E:o/u")
 
         # von links oder rechts
         if (self.cell(Pos(x2 - 1, y2)) == line_hor or self.cell(Pos(x2 + 1, y2)) == line_hor) \
@@ -1010,6 +1025,7 @@ class MagLineOld(MagLine):
                     endc = line_hor
 
             se_count += 1
+            se_status = _("END:l/r")
 
         # links UND rechts -
         if self.cell(Pos(x2 - 1, y2)) == line_hor \
@@ -1039,8 +1055,10 @@ class MagLineOld(MagLine):
             if startr == 2:
                 startc = line_hor
 
-        self._draw_line(eckx, ecky, endc, startc, startr)
+        msg = se_status + str(se_count)
+        pub.sendMessage('STATUS_MESSAGE', msg=msg)
 
+        self._draw_line(eckx, ecky, endc, startc, startr)
 
     def _draw_line(self, eckx, ecky, endc, startc, startr):
 
