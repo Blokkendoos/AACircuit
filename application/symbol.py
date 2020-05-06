@@ -329,6 +329,7 @@ class Character(Symbol):
         super(Character, self).__init__(id=id, grid=thegrid, startpos=startpos)
 
         self._char = char
+        self._has_pickpoint = False
 
         self._representation()
 
@@ -429,7 +430,7 @@ class Line(Symbol):
         else:
             self._type = type
         self._terminal = self.TERMINAL_TYPE[self._type]
-        self._has_pickpoint = False
+        # self._has_pickpoint = False
 
         self._representation()
 

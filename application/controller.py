@@ -600,8 +600,8 @@ class Controller(object):
             skipped = self.play_memo_original_aac(memo)
 
             # empty the undo stack (from the played memo actions)
-            self.latest_action = []
-            pub.sendMessage('UNDO_CHANGED', undo=False)
+            # self.latest_action = []
+            # pub.sendMessage('UNDO_CHANGED', undo=False)
 
             if skipped > 0:
                 msg = _("{0} lines skipped in {1}".format(skipped, filename))
