@@ -755,9 +755,7 @@ class MagLineOld(MagLine):
 
     def __init__(self, startpos, endpos, cell_callback=None, type=0):
 
-        self.cell = cell_callback
-
-        super(MagLine, self).__init__(startpos=startpos, endpos=endpos, type=type)
+        super(MagLineOld, self).__init__(startpos=startpos, endpos=endpos, cell_callback=cell_callback, type=type)
 
         self._representation()
 
@@ -766,10 +764,8 @@ class MagLineOld(MagLine):
         startpos = self._startpos
         endpos = self._endpos
 
-        # dx = endpos.x - startpos.x
-        # dy = endpos.y - startpos.y
-
-        repr = dict()
+        xdiv = abs(endpos.x - startpos.x)  # Differenz x
+        ydiv = abs(endpos.y - startpos.y)  # Differenz y
 
         x1 = startpos.x
         y1 = startpos.y
@@ -777,8 +773,13 @@ class MagLineOld(MagLine):
         x2 = endpos.x
         y2 = endpos.y
 
-        quotechar = "'"
+        line_hor = Preferences.values['LINE_HOR']
+        line_vert = Preferences.values['LINE_VERT']
+        upper_corner = Preferences.values['UPPER_CORNER']
+        lower_corner = Preferences.values['LOWER_CORNER']
+
         spacechar = ' '
+        connect_char = 'o'
 
         # Startrichtung
         # 1 = oben / unten
@@ -786,23 +787,12 @@ class MagLineOld(MagLine):
         startr = 1
         startc = '#'
 
+        endc = '#'
+
         eckx = 0
         ecky = 0
 
-        endc = '#'
-        eckc = '%'
-
         se_count = 0
-
-        if x2 >= x1:
-            xdiv = x2 - x1
-        else:
-            xdiv = x1 - x2  # Differenz x
-
-        if y2 >= y1:
-            ydiv = y2 - y1
-        else:
-            ydiv = y1 - y2  # Differenz y
 
         # nichts drumherum
         if self.cell(Pos(x1 - 1, y1)) == spacechar \
@@ -816,145 +806,144 @@ class MagLineOld(MagLine):
                 startr = 1
 
             if startr == 1:
-                startc = '|'
+                startc = line_vert
             else:
-                startc = '-'
+                startc = line_hor
 
             se_count += 1
 
         # o/u = |, l/r frei
-        if (self.cell(Pos(x1, y1 - 1)) == ord('|') or self.cell(Pos(x1, y1 + 1)) == ord('|')) \
-                and self.cell(Pos(x1 - 1, y1) == spacechar) \
-                and self.cell(Pos(x1 + 1, y1) == spacechar):
+        if (self.cell(Pos(x1, y1 - 1)) == line_vert or self.cell(Pos(x1, y1 + 1)) == line_vert) \
+                and self.cell(Pos(x1 - 1, y1)) == spacechar \
+                and self.cell(Pos(x1 + 1, y1)) == spacechar:
 
             if ydiv > 0:
-                startc = '|'
                 startr = 1
+                startc = line_vert
 
             if ydiv == 0:
-
                 startr = 2
 
-                if self.cell(Pos(x1, y1 - 1)) == ord('|'):
-                    startc = quotechar
+                if self.cell(Pos(x1, y1 - 1)) == line_vert:
+                    startc = lower_corner
 
-                if self.cell(Pos(x1, y1 + 1)) == ord('|'):
-                    startc = '.'
+                if self.cell(Pos(x1, y1 + 1)) == line_vert:
+                    startc = upper_corner
 
                 se_count += 1
 
         # oben .
-        if self.cell(Pos(x1, y1 - 1)) == ord('.') \
+        if self.cell(Pos(x1, y1 - 1)) == upper_corner \
                 and self.cell(Pos(x1, y1 + 1)) == spacechar \
                 and self.cell(Pos(x1 - 1, y1)) == spacechar \
                 and self.cell(Pos(x1 + 1, y1)) == spacechar:
 
             if ydiv > 0:
-                startc = '|'
                 startr = 1
+                startc = line_vert
 
             if ydiv == 0:
                 startr = 2
-                startc = quotechar
+                startc = lower_corner
 
             se_count += 1
 
         # unten '
-        if self.cell(Pos(x1, y1 + 1)) == ord(quotechar) \
+        if self.cell(Pos(x1, y1 + 1)) == lower_corner \
                 and self.cell(Pos(x1, y1 - 1)) == spacechar \
                 and self.cell(Pos(x1 - 1, y1)) == spacechar \
                 and self.cell(Pos(x1 + 1, y1)) == spacechar:
 
             if ydiv > 0:
-                startc = '|'
                 startr = 1
+                startc = line_vert
 
             if ydiv == 0:
                 startr = 2
-                startc = '.'
+                startc = upper_corner
 
             se_count += 1
 
         # oben -
-        if self.cell(Pos(x1, y1 - 1)) == ord('-') \
+        if self.cell(Pos(x1, y1 - 1)) == line_hor \
                 and self.cell(Pos(x1, y1 + 1)) == spacechar \
                 and self.cell(Pos(x1 - 1, y1)) == spacechar \
                 and self.cell(Pos(x1 + 1, y1)) == spacechar:
 
             if ydiv > 0:
                 startr = 1
-                startc = '|'
+                startc = line_vert
 
             if ydiv == 0:
                 startr = 2
-                startc = '-'
+                startc = line_hor
 
             se_count += 1
 
         # unten -
-        if self.cell(Pos(x1, y1 + 1)) == ord('-') \
+        if self.cell(Pos(x1, y1 + 1)) == line_hor \
                 and self.cell(Pos(x1, y1 - 1)) == spacechar \
                 and self.cell(Pos(x1 - 1, y1)) == spacechar \
                 and self.cell(Pos(x1 + 1, y1)) == spacechar:
 
             if ydiv > 0:
                 startr = 1
-                startc = '|'
+                startc = line_vert
 
             if ydiv == 0:
                 startr = 2
-                startc = '-'
+                startc = line_hor
 
             se_count += 1
 
         # l/r = -, o/u frei
-        if (self.cell(Pos(x1 - 1, y1)) == ord('-') or self.cell(Pos(x1 + 1, y1)) == ord('-')) \
+        if (self.cell(Pos(x1 - 1, y1)) == line_hor or self.cell(Pos(x1 + 1, y1)) == line_hor) \
                 and (self.cell(Pos(x1, y1 - 1)) == spacechar) \
                 and self.cell(Pos(x1, y1 + 1)) == spacechar:
 
             if xdiv > 0:
                 startr = 2
-                startc = '-'
+                startc = line_hor
 
             if xdiv == 0:
                 startr = 1
 
             if y2 > y1:
-                startc = '.'
+                startc = upper_corner
 
             if y2 < y1:
-                startc = quotechar
+                startc = lower_corner
 
             se_count += 1
 
         # links und recht -, oben kein |
-        if self.cell(Pos(x1 - 1, y1)) == ord('-') \
-                and self.cell(Pos(x1 + 1, y1)) == ord('-') \
-                and self.cell(Pos(x1, y1 - 1)) != ord('|'):
+        if self.cell(Pos(x1 - 1, y1)) == line_hor \
+                and self.cell(Pos(x1 + 1, y1)) == line_hor \
+                and self.cell(Pos(x1, y1 - 1)) != line_vert:
             startr = 1  # oben/unten
-            startc = 'o'
+            startc = connect_char
             se_count += 1
 
         # oben und unten |, links kein -
-        if self.cell(Pos(x1, y1 - 1)) == ord('|') \
-                and self.cell(Pos(x1, y1 + 1)) == ord('|') \
-                and self.cell(Pos(x1, y1 - 1)) != ord('|'):
+        if self.cell(Pos(x1, y1 - 1)) == line_vert \
+                and self.cell(Pos(x1, y1 + 1)) == line_vert \
+                and self.cell(Pos(x1, y1 - 1)) != line_vert:
             startr = 2  # oben/unten
-            startc = 'o'
+            startc = connect_char
             se_count += 1
 
         # links oder rechts o
-        if self.cell(Pos(x1 - 1, y1)) == ord('o') \
-                or self.cell(Pos(x1 + 1, y1)) == ord('o'):
+        if self.cell(Pos(x1 - 1, y1)) == connect_char \
+                or self.cell(Pos(x1 + 1, y1)) == connect_char:
             startr = 2
-            startc = '-'
+            startc = line_hor
             se_count += 1
 
         # oben oder unten o
-        if self.cell(Pos(x1, y1 - 1)) == ord('o') \
-                or self.cell(Pos(x1, y1 + 1)) == ord('o'):
+        if self.cell(Pos(x1, y1 - 1)) == connect_char \
+                or self.cell(Pos(x1, y1 + 1)) == connect_char:
             startr = 1
-            startc = '|'
+            startc = line_vert
             se_count += 1
 
         # End Char
@@ -966,123 +955,145 @@ class MagLineOld(MagLine):
 
             if startr == 1:  # Startrichtung oben / unten
                 if x1 == x2:
-                    endc = '|'
+                    endc = line_vert
                 else:
-                    endc = '-'
+                    endc = line_hor
 
             if startr == 2:  # Startrichtung linksrechts
                 if y1 == y2:
-                    endc = '-'
+                    endc = line_hor
                 else:
-                    endc = '|'
+                    endc = line_vert
 
             se_count += 1
 
         # von oben oder unten
-        if (self.cell(Pos(x2, y2 - 1)) == ord('|') or self.cell(Pos(x2, y2 + 1)) == ord('|')) \
+        if (self.cell(Pos(x2, y2 - 1)) == line_vert or self.cell(Pos(x2, y2 + 1)) == line_vert) \
                 and self.cell(Pos(x2 - 1, y2)) == spacechar \
                 and self.cell(Pos(x2 + 1, y2)) == spacechar:
 
             if startr == 1:
                 if x1 == x2:
-                    endc = '|'
+                    endc = line_vert
                 else:
-                    endc = 'o'
+                    endc = connect_char
 
             if startr == 2:
                 if y1 == y2:
-                    endc = 'o'
+                    endc = connect_char
                 else:
-                    endc = '|'
+                    endc = line_vert
 
             se_count += 1
 
         # von links oder rechts
-        if (self.cell(Pos(x2 - 1, y2)) == ord('-') or self.cell(Pos(x2 + 1, y2)) == ord('-')) \
+        if (self.cell(Pos(x2 - 1, y2)) == line_hor or self.cell(Pos(x2 + 1, y2)) == line_hor) \
                 and self.cell(Pos(x2, y2 - 1)) == spacechar \
                 and self.cell(Pos(x2, y2 + 1)) == spacechar:
 
             if startr == 1:
                 if x1 == x2:
                     if y1 < y2:
-                        endc = quotechar
+                        endc = lower_corner
                     if y1 > y2:
-                        endc = '.'
+                        endc = upper_corner
                 else:
-                    endc = '-'
+                    endc = line_hor
 
             if startr == 2:
                 if y1 != y2:
                     if y1 < y2:
-                        endc = quotechar
+                        endc = lower_corner
                     if y1 > y2:
-                        endc = '.'
+                        endc = upper_corner
                 else:
-                    endc = '-'
+                    endc = line_hor
 
             se_count += 1
 
         # links UND rechts -
-        if self.cell(Pos(x2 - 1, y2)) == ord('-') \
-                and self.cell(Pos(x2 + 1, y2)) == ord('-'):
+        if self.cell(Pos(x2 - 1, y2)) == line_hor \
+                and self.cell(Pos(x2 + 1, y2)) == line_hor:
 
             if (startr == 1 and x1 == x2) or (startr == 2 and y1 != y2):
-                endc = 'o'
+                endc = connect_char
                 se_count += 1
 
         # generell, wenn EndC noch # ist
         if endc == '#':
             if startr == 1:
                 if x1 == x2:
-                    endc = '|'
+                    endc = line_vert
                 else:
-                    endc = '-'
+                    endc = line_hor
             if startr == 2:
                 if y1 != y2:
-                    endc = '|'
+                    endc = line_vert
                 else:
-                    endc = '-'
+                    endc = line_hor
 
         # generell, wenn StartC noch # ist
         if startc == '#':
             if startr == 1:
-                startc = '|'
+                startc = line_vert
             if startr == 2:
-                startc = '-'
+                startc = line_hor
 
-        # Linie zeichnen
+        self._draw_line(eckx, ecky, endc, startc, startr)
+
+
+    def _draw_line(self, eckx, ecky, endc, startc, startr):
+
+        repr = dict()
+
+        line_hor = Preferences.values['LINE_HOR']
+        line_vert = Preferences.values['LINE_VERT']
+        upper_corner = Preferences.values['UPPER_CORNER']
+        lower_corner = Preferences.values['LOWER_CORNER']
+
+        eckc = '%'
+
+        startpos = self._startpos
+        endpos = self._endpos
+
+        x1 = startpos.x
+        y1 = startpos.y
+
+        x2 = endpos.x
+        y2 = endpos.y
+
         if startr == 1:
 
             mx = x1
 
             if y2 > y1:
-                eckc = quotechar
+                eckc = lower_corner
             else:
-                eckc = '.'
+                eckc = upper_corner
 
             if y2 > y1:
                 my = y1 + 1
                 while my < y2 - 1:
-                    repr[Pos(mx, my)] = '|'
+                    repr[Pos(mx, my)] = line_vert
                     my += 1
 
             if y1 > y2:
                 my = y1 - 1
                 while my > y2 + 1:
-                    repr[Pos(mx, my)] = '|'
+                    repr[Pos(mx, my)] = line_vert
                     my -= 1
 
             my = y2
             if x2 > x1:
                 mx = x1 + 1
                 while mx < x2 - 1:
-                    repr[Pos(mx, my)] = '-'
+                    repr[Pos(mx, my)] = line_hor
                     mx += 1
 
             if x1 > x2:
                 mx = x1 - 1
                 while mx > x2 + 1:
-                    repr[Pos(mx, my)] = '-'
+                    repr[Pos(mx, my)] = line_hor
                     mx -= 1
 
             ecky = y2
@@ -1093,20 +1104,20 @@ class MagLineOld(MagLine):
             my = y1
 
             if y2 < y1:
-                eckc = quotechar
+                eckc = lower_corner
             else:
-                eckc = '.'
+                eckc = upper_corner
 
             if x2 > x1:
                 mx = x1 + 1
                 while mx < x2 - 1:
-                    repr[Pos(mx, my)] = '-'
+                    repr[Pos(mx, my)] = line_hor
                     mx += 1
 
             if x1 > x2:
                 mx = x1 - 1
                 while mx > x2 + 1:
-                    repr[Pos(mx, my)] = '-'
+                    repr[Pos(mx, my)] = line_hor
                     mx -= 1
 
             mx = x2
@@ -1114,13 +1125,13 @@ class MagLineOld(MagLine):
             if y2 > y1:
                 my = y1 + 1
                 while my < y2 - 1:
-                    repr[Pos(mx, my)] = '|'
+                    repr[Pos(mx, my)] = line_vert
                     mx += 1
 
             if y1 > y2:
                 my = y1 - 1
                 while my > y2 + 1:
-                    repr[Pos(mx, my)] = '|'
+                    repr[Pos(mx, my)] = line_vert
                     mx -= 1
 
             ecky = y1
