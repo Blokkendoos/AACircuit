@@ -19,7 +19,7 @@ from application.preferences import Preferences
 from application.main_window import MainWindow
 from application.component_library import ComponentLibrary
 from application.file import InputFileChooser, InputFileAscii, OutputFileChooser, OutputFileAscii, OutputFilePDF, PrintOperation
-from application.symbol import Eraser, Character, Text, Line, MagLine, DirLine, Rect, Row, Column
+from application.symbol import Eraser, Character, Text, Line, MagLine, MagLineOld, DirLine, Rect, Row, Column
 
 SelectedObjects = collections.namedtuple('SelectedObjects', ['startpos', 'symbol'])
 Action = collections.namedtuple('Action', ['action', 'symbol'])
@@ -421,7 +421,17 @@ class Controller(object):
 
     def on_paste_mag_line(self, startpos, endpos):
         symbol = MagLine(startpos, endpos, self.cell_callback)
+        self._paste_mag_line(symbol)
 
+    def on_paste_mag_line_w_type(self, startpos, endpos, type):
+        # backward compatibility
+        if type == 1:
+            symbol = MagLine(startpos, endpos, self.cell_callback)
+        else:
+            symbol = MagLineOld(startpos, endpos, self.cell_callback)
+        self._paste_mag_line(symbol)
+
+    def _paste_mag_line(self, symbol):
         self.selected_objects = []
         self.add_selected_object(symbol)
 
@@ -678,7 +688,7 @@ class Controller(object):
 
             elif type == LINE:
 
-                terminal = int(m.group(2))
+                line_type = int(m.group(2))
 
                 x, y = m.group(3, 4)
                 startpos = Pos(x, y)
@@ -686,7 +696,7 @@ class Controller(object):
                 x, y = m.group(5, 6)
                 endpos = Pos(x, y)
 
-                self.on_paste_line(startpos, endpos, terminal)
+                self.on_paste_line(startpos, endpos, line_type)
 
             elif type == DIR_LINE:
 
@@ -700,13 +710,15 @@ class Controller(object):
 
             elif type == MAG_LINE:
 
-                x, y = m.group(2, 3)
+                line_type = int(m.group(2))
+
+                x, y = m.group(3, 4)
                 startpos = Pos(x, y)
 
-                x, y = m.group(4, 5)
+                x, y = m.group(5, 6)
                 endpos = Pos(x, y)
 
-                self.on_paste_mag_line(startpos, endpos)
+                self.on_paste_mag_line_w_type(startpos, endpos, line_type)
 
             elif type == DRAW_RECT:
 
@@ -878,13 +890,15 @@ class Controller(object):
 
             elif type == MAG_LINE or type == 'MagL':
 
+                line_type = int(m.group(2))
+
                 x, y = m.group(3, 4)
                 startpos = Pos(x, y)
 
                 x, y = m.group(5, 6)
                 endpos = Pos(x, y)
 
-                self.on_paste_mag_line(startpos, endpos)
+                self.on_paste_mag_line_w_type(startpos, endpos, line_type)
 
             elif type == DRAW_RECT:
 

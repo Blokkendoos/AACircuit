@@ -569,11 +569,11 @@ class DirLine(Line):
 class MagLine(Line):
     """A square bend from start to end position."""
 
-    def __init__(self, startpos, endpos, cell_callback=None):
+    def __init__(self, startpos, endpos, cell_callback=None, type=1):
 
         self.cell = cell_callback
 
-        super(MagLine, self).__init__(startpos=startpos, endpos=endpos)
+        super(MagLine, self).__init__(startpos=startpos, endpos=endpos, type=type)
 
         self._representation()
 
@@ -746,8 +746,391 @@ class MagLine(Line):
         return MagLine(startpos, endpos, self.cell)
 
     def memo(self):
-        str = "{0}:{1},{2}".format(MAG_LINE, self._startpos, self._endpos)
+        str = "{0}:{1},{2},{3}".format(MAG_LINE, self._type, self._startpos, self._endpos)
         return str
+
+
+class MagLineOld(MagLine):
+    """Alte MagLine, wegen abwärtscompatibilität noch vorhanden."""
+
+    def __init__(self, startpos, endpos, cell_callback=None, type=0):
+
+        self.cell = cell_callback
+
+        super(MagLine, self).__init__(startpos=startpos, endpos=endpos, type=type)
+
+        self._representation()
+
+    def _representation(self):
+
+        startpos = self._startpos
+        endpos = self._endpos
+
+        # dx = endpos.x - startpos.x
+        # dy = endpos.y - startpos.y
+
+        repr = dict()
+
+        x1 = startpos.x
+        y1 = startpos.y
+
+        x2 = endpos.x
+        y2 = endpos.y
+
+        quotechar = "'"
+        spacechar = ' '
+
+        # Startrichtung
+        # 1 = oben / unten
+        # 2 = rechts / links
+        startr = 1
+        startc = '#'
+
+        eckx = 0
+        ecky = 0
+
+        endc = '#'
+        eckc = '%'
+
+        se_count = 0
+
+        if x2 >= x1:
+            xdiv = x2 - x1
+        else:
+            xdiv = x1 - x2  # Differenz x
+
+        if y2 >= y1:
+            ydiv = y2 - y1
+        else:
+            ydiv = y1 - y2  # Differenz y
+
+        # nichts drumherum
+        if self.cell(Pos(x1 - 1, y1)) == spacechar \
+                and self.cell(Pos(x1 + 1, y1)) == spacechar \
+                and self.cell(Pos(x1, y1 - 1)) == spacechar \
+                and self.cell(Pos(x1, y1 + 1)) == spacechar:
+
+            if xdiv > ydiv:
+                startr = 2
+            else:
+                startr = 1
+
+            if startr == 1:
+                startc = '|'
+            else:
+                startc = '-'
+
+            se_count += 1
+
+        # o/u = |, l/r frei
+        if (self.cell(Pos(x1, y1 - 1)) == ord('|') or self.cell(Pos(x1, y1 + 1)) == ord('|')) \
+                and self.cell(Pos(x1 - 1, y1) == spacechar) \
+                and self.cell(Pos(x1 + 1, y1) == spacechar):
+
+            if ydiv > 0:
+                startc = '|'
+                startr = 1
+
+            if ydiv == 0:
+
+                startr = 2
+
+                if self.cell(Pos(x1, y1 - 1)) == ord('|'):
+                    startc = quotechar
+
+                if self.cell(Pos(x1, y1 + 1)) == ord('|'):
+                    startc = '.'
+
+                se_count += 1
+
+        # oben .
+        if self.cell(Pos(x1, y1 - 1)) == ord('.') \
+                and self.cell(Pos(x1, y1 + 1)) == spacechar \
+                and self.cell(Pos(x1 - 1, y1)) == spacechar \
+                and self.cell(Pos(x1 + 1, y1)) == spacechar:
+
+            if ydiv > 0:
+                startc = '|'
+                startr = 1
+
+            if ydiv == 0:
+                startr = 2
+                startc = quotechar
+
+            se_count += 1
+
+        # unten '
+        if self.cell(Pos(x1, y1 + 1)) == ord(quotechar) \
+                and self.cell(Pos(x1, y1 - 1)) == spacechar \
+                and self.cell(Pos(x1 - 1, y1)) == spacechar \
+                and self.cell(Pos(x1 + 1, y1)) == spacechar:
+
+            if ydiv > 0:
+                startc = '|'
+                startr = 1
+
+            if ydiv == 0:
+                startr = 2
+                startc = '.'
+
+            se_count += 1
+
+        # oben -
+        if self.cell(Pos(x1, y1 - 1)) == ord('-') \
+                and self.cell(Pos(x1, y1 + 1)) == spacechar \
+                and self.cell(Pos(x1 - 1, y1)) == spacechar \
+                and self.cell(Pos(x1 + 1, y1)) == spacechar:
+
+            if ydiv > 0:
+                startr = 1
+                startc = '|'
+
+            if ydiv == 0:
+                startr = 2
+                startc = '-'
+
+            se_count += 1
+
+        # unten -
+        if self.cell(Pos(x1, y1 + 1)) == ord('-') \
+                and self.cell(Pos(x1, y1 - 1)) == spacechar \
+                and self.cell(Pos(x1 - 1, y1)) == spacechar \
+                and self.cell(Pos(x1 + 1, y1)) == spacechar:
+
+            if ydiv > 0:
+                startr = 1
+                startc = '|'
+
+            if ydiv == 0:
+                startr = 2
+                startc = '-'
+
+            se_count += 1
+
+        # l/r = -, o/u frei
+        if (self.cell(Pos(x1 - 1, y1)) == ord('-') or self.cell(Pos(x1 + 1, y1)) == ord('-')) \
+                and (self.cell(Pos(x1, y1 - 1)) == spacechar) \
+                and self.cell(Pos(x1, y1 + 1)) == spacechar:
+
+            if xdiv > 0:
+                startr = 2
+                startc = '-'
+
+            if xdiv == 0:
+                startr = 1
+
+            if y2 > y1:
+                startc = '.'
+
+            if y2 < y1:
+                startc = quotechar
+
+            se_count += 1
+
+        # links und recht -, oben kein |
+        if self.cell(Pos(x1 - 1, y1)) == ord('-') \
+                and self.cell(Pos(x1 + 1, y1)) == ord('-') \
+                and self.cell(Pos(x1, y1 - 1)) != ord('|'):
+            startr = 1  # oben/unten
+            startc = 'o'
+            se_count += 1
+
+        # oben und unten |, links kein -
+        if self.cell(Pos(x1, y1 - 1)) == ord('|') \
+                and self.cell(Pos(x1, y1 + 1)) == ord('|') \
+                and self.cell(Pos(x1, y1 - 1)) != ord('|'):
+            startr = 2  # oben/unten
+            startc = 'o'
+            se_count += 1
+
+        # links oder rechts o
+        if self.cell(Pos(x1 - 1, y1)) == ord('o') \
+                or self.cell(Pos(x1 + 1, y1)) == ord('o'):
+            startr = 2
+            startc = '-'
+            se_count += 1
+
+        # oben oder unten o
+        if self.cell(Pos(x1, y1 - 1)) == ord('o') \
+                or self.cell(Pos(x1, y1 + 1)) == ord('o'):
+            startr = 1
+            startc = '|'
+            se_count += 1
+
+        # End Char
+        # nichts drumherum
+        if self.cell(Pos(x2 - 1, y2)) == spacechar \
+                and self.cell(Pos(x2 + 1, y2)) == spacechar \
+                and self.cell(Pos(x2, y2 - 1)) == spacechar \
+                and self.cell(Pos(x2, y2 + 1)) == spacechar:
+
+            if startr == 1:  # Startrichtung oben / unten
+                if x1 == x2:
+                    endc = '|'
+                else:
+                    endc = '-'
+
+            if startr == 2:  # Startrichtung linksrechts
+                if y1 == y2:
+                    endc = '-'
+                else:
+                    endc = '|'
+
+            se_count += 1
+
+        # von oben oder unten
+        if (self.cell(Pos(x2, y2 - 1)) == ord('|') or self.cell(Pos(x2, y2 + 1)) == ord('|')) \
+                and self.cell(Pos(x2 - 1, y2)) == spacechar \
+                and self.cell(Pos(x2 + 1, y2)) == spacechar:
+
+            if startr == 1:
+                if x1 == x2:
+                    endc = '|'
+                else:
+                    endc = 'o'
+
+            if startr == 2:
+                if y1 == y2:
+                    endc = 'o'
+                else:
+                    endc = '|'
+
+            se_count += 1
+
+        # von links oder rechts
+        if (self.cell(Pos(x2 - 1, y2)) == ord('-') or self.cell(Pos(x2 + 1, y2)) == ord('-')) \
+                and self.cell(Pos(x2, y2 - 1)) == spacechar \
+                and self.cell(Pos(x2, y2 + 1)) == spacechar:
+
+            if startr == 1:
+                if x1 == x2:
+                    if y1 < y2:
+                        endc = quotechar
+                    if y1 > y2:
+                        endc = '.'
+                else:
+                    endc = '-'
+
+            if startr == 2:
+                if y1 != y2:
+                    if y1 < y2:
+                        endc = quotechar
+                    if y1 > y2:
+                        endc = '.'
+                else:
+                    endc = '-'
+
+            se_count += 1
+
+        # links UND rechts -
+        if self.cell(Pos(x2 - 1, y2)) == ord('-') \
+                and self.cell(Pos(x2 + 1, y2)) == ord('-'):
+
+            if (startr == 1 and x1 == x2) or (startr == 2 and y1 != y2):
+                endc = 'o'
+                se_count += 1
+
+        # generell, wenn EndC noch # ist
+        if endc == '#':
+            if startr == 1:
+                if x1 == x2:
+                    endc = '|'
+                else:
+                    endc = '-'
+            if startr == 2:
+                if y1 != y2:
+                    endc = '|'
+                else:
+                    endc = '-'
+
+        # generell, wenn StartC noch # ist
+        if startc == '#':
+            if startr == 1:
+                startc = '|'
+            if startr == 2:
+                startc = '-'
+
+        # Linie zeichnen
+        if startr == 1:
+
+            mx = x1
+
+            if y2 > y1:
+                eckc = quotechar
+            else:
+                eckc = '.'
+
+            if y2 > y1:
+                my = y1 + 1
+                while my < y2 - 1:
+                    repr[Pos(mx, my)] = '|'
+                    my += 1
+
+            if y1 > y2:
+                my = y1 - 1
+                while my > y2 + 1:
+                    repr[Pos(mx, my)] = '|'
+                    my -= 1
+
+            my = y2
+            if x2 > x1:
+                mx = x1 + 1
+                while mx < x2 - 1:
+                    repr[Pos(mx, my)] = '-'
+                    mx += 1
+
+            if x1 > x2:
+                mx = x1 - 1
+                while mx > x2 + 1:
+                    repr[Pos(mx, my)] = '-'
+                    mx -= 1
+
+            ecky = y2
+            eckx = x1
+
+        if startr == 2:
+
+            my = y1
+
+            if y2 < y1:
+                eckc = quotechar
+            else:
+                eckc = '.'
+
+            if x2 > x1:
+                mx = x1 + 1
+                while mx < x2 - 1:
+                    repr[Pos(mx, my)] = '-'
+                    mx += 1
+
+            if x1 > x2:
+                mx = x1 - 1
+                while mx > x2 + 1:
+                    repr[Pos(mx, my)] = '-'
+                    mx -= 1
+
+            mx = x2
+
+            if y2 > y1:
+                my = y1 + 1
+                while my < y2 - 1:
+                    repr[Pos(mx, my)] = '|'
+                    mx += 1
+
+            if y1 > y2:
+                my = y1 - 1
+                while my > y2 + 1:
+                    repr[Pos(mx, my)] = '|'
+                    mx -= 1
+
+            ecky = y1
+            eckx = x2
+
+        repr[Pos(eckx, ecky)] = eckc
+        repr[Pos(x1, y1)] = startc
+        repr[Pos(x2, y2)] = endc
+
+        self._repr = repr
 
 
 class Rect(Symbol):
