@@ -49,6 +49,7 @@ class Symbol(object):
     def __init__(self, id=0, grid=None, ori=None, mirrored=None, startpos=None, endpos=None):
 
         self._id = id
+        self._has_pickpoint = True
 
         if ori is None:
             self._ori = 0
@@ -95,8 +96,8 @@ class Symbol(object):
             pos += Pos(0, 1)
 
     @property
-    def show_pickpoint(self):
-        return True
+    def has_pickpoint(self):
+        return self._has_pickpoint
 
     @property
     def id(self):
@@ -428,6 +429,7 @@ class Line(Symbol):
         else:
             self._type = type
         self._terminal = self.TERMINAL_TYPE[self._type]
+        self._has_pickpoint = False
 
         self._representation()
 
@@ -767,8 +769,6 @@ class Rect(Symbol):
         bl = Pos(self._startpos.x, self._endpos.y)
         br = self._endpos
 
-        # print("ul:", ul, " ur:", ur, "\nbl:", bl, "br:", br)
-
         type = 3
 
         line1 = Line(ul, ur, type)
@@ -861,10 +861,7 @@ class Column(Symbol):
         super(Column, self).__init__(id=col, startpos=Pos(col, 0))
         self._col = col
         self._action = action
-
-    @property
-    def show_pickpoint(self):
-        return False
+        self._has_pickpoint = False
 
     @property
     def col(self):
@@ -902,10 +899,7 @@ class Row(Symbol):
         super(Row, self).__init__(id=row, startpos=Pos(0, row))
         self._row = row
         self._action = action
-
-    @property
-    def show_pickpoint(self):
-        return False
+        self._has_pickpoint = False
 
     @property
     def row(self):

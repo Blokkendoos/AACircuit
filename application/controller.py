@@ -420,7 +420,7 @@ class Controller(object):
         self.push_latest_action(symbol)
 
     def on_paste_mag_line(self, startpos, endpos):
-        symbol = MagLine(startpos, endpos, self.cell_callback )
+        symbol = MagLine(startpos, endpos, self.cell_callback)
 
         self.selected_objects = []
         self.add_selected_object(symbol)
@@ -595,7 +595,9 @@ class Controller(object):
 
             file.close()
 
-            skipped = self.play_memo(memo)
+            # TODO add import original AAC menu option
+            # skipped = self.play_memo(memo)
+            skipped = self.play_memo_original_aac(memo)
 
             # empty the undo stack (from the played memo actions)
             self.latest_action = []
@@ -619,55 +621,353 @@ class Controller(object):
 
     def play_memo(self, memo):
 
+        def play_m1(m):
+
+            skip = 0
+            type = m.group(1)
+
+            if type == ERASER:
+
+                w = int(m.group(2))
+                h = int(m.group(3))
+                size = (w, h)
+
+                x, y = m.group(4, 5)
+                pos = Pos(x, y)
+
+                symbol = Eraser(size)
+
+                self.selected_objects = []
+                self.add_selected_object(symbol)
+
+                self.on_paste_objects(pos)
+
+            elif type == COMPONENT:
+
+                id = int(m.group(2))
+
+                orientation = int(m.group(3))
+                mirrored = int(m.group(4))
+
+                x, y = m.group(5, 6)
+                pos = Pos(x, y)
+
+                symbol = self.components.get_symbol_byid(id)
+                symbol.ori = orientation
+                symbol.mirrored = mirrored
+
+                self.selected_objects = []
+                self.add_selected_object(symbol)
+
+                self.on_paste_objects(pos)
+
+            elif type == CHARACTER:
+
+                ascii = m.group(2)
+                char = chr(int(ascii))
+
+                x, y = m.group(3, 4)
+                pos = Pos(x, y)
+
+                symbol = Character(char)
+
+                self.selected_objects = []
+                self.add_selected_object(symbol)
+
+                self.on_paste_objects(pos)
+
+            elif type == LINE:
+
+                terminal = int(m.group(2))
+
+                x, y = m.group(3, 4)
+                startpos = Pos(x, y)
+
+                x, y = m.group(5, 6)
+                endpos = Pos(x, y)
+
+                self.on_paste_line(startpos, endpos, terminal)
+
+            elif type == DIR_LINE:
+
+                x, y = m.group(2, 3)
+                startpos = Pos(x, y)
+
+                x, y = m.group(4, 5)
+                endpos = Pos(x, y)
+
+                self.on_paste_dir_line(startpos, endpos)
+
+            elif type == MAG_LINE:
+
+                x, y = m.group(2, 3)
+                startpos = Pos(x, y)
+
+                x, y = m.group(4, 5)
+                endpos = Pos(x, y)
+
+                self.on_paste_mag_line(startpos, endpos)
+
+            elif type == DRAW_RECT:
+
+                x, y = m.group(2, 3)
+                startpos = Pos(x, y)
+
+                x, y = m.group(4, 5)
+                endpos = Pos(x, y)
+
+                self.on_paste_rect(startpos, endpos)
+
+            else:
+                skip = 1
+
+            return skip
+
+        def play_m2(m):
+
+            skip = 0
+            type = m.group(1)
+
+            if type == 'i':
+                action = INSERT
+            else:
+                action = REMOVE
+
+            what = m.group(2)
+            nr = int(m.group(3))
+
+            if what == COL:
+                self.on_grid_col(nr, action)
+
+            elif what == ROW:
+                self.on_grid_row(nr, action)
+
+            else:
+                skip = 1
+
+            return skip
+
+        def play_m3(m):
+
+            skip = 0
+            type = m.group(1)
+
+            if type == TEXT:
+
+                orientation = int(m.group(2))
+
+                x, y = m.group(3, 4)
+                pos = Pos(x, y)
+
+                str = m.group(5)
+                text = json.loads(str)
+
+                symbol = Text(pos, text, orientation)
+
+                self.selected_objects = []
+                self.add_selected_object(symbol)
+
+                self.on_paste_objects(pos)
+
+            else:
+                skip = 1
+
+            return skip
+
         skipped = 0
+        linenr = 0
 
         for item in memo:
+
+            linenr += 1
 
             m1 = re.search('(^eras|^comp|^char|^rect|^line|^magl|^dirl):(\d+),(\d+),(\d+),?(\d*),?(\d*),?(\d*)', item)  # noqa W605
             m2 = re.search('(^d|^i)(row|col):(\d+)', item)  # noqa W605
             m3 = re.search('(^text):(\d+),(\d+),(\d+),(.*)', item)  # noqa W605
 
             if m1 is not None:
-                skipped += self.play_m1(m1)
+                skipped += play_m1(m1)
             elif m2 is not None:
-                skipped += self.play_m2(m2)
+                skipped += play_m2(m2)
             elif m3 is not None:
-                skipped += self.play_m3(m3)
+                skipped += play_m3(m3)
             else:
+                print("skipped linenr: ", linenr)
                 skipped += 1
 
         return skipped
 
-    def play_m1(self, m):
+    def play_memo_original_aac(self, memo):
 
-        skip = 0
-        type = m.group(1)
+        def play_m1(m):
 
-        if type == ERASER:
+            skip = 0
+            type = m.group(1)
 
-            w = int(m.group(2))
-            h = int(m.group(3))
-            size = (w, h)
+            if type == ERASER:
 
-            x, y = m.group(4, 5)
-            pos = Pos(x, y)
+                w = int(m.group(2))
+                h = int(m.group(3))
+                size = (w, h)
 
-            symbol = Eraser(size)
+                x, y = m.group(4, 5)
+                pos = Pos(x, y)
+
+                symbol = Eraser(size)
+
+                self.selected_objects = []
+                self.add_selected_object(symbol)
+
+                self.on_paste_objects(pos)
+
+            elif type == COMPONENT:
+
+                id = int(m.group(2))
+
+                orientation = int(m.group(3))
+                mirrored = int(m.group(4))
+
+                x, y = m.group(5, 6)
+                pos = Pos(x, y)
+
+                symbol = self.components.get_symbol_byid(id)
+                symbol.ori = orientation
+                symbol.mirrored = mirrored
+
+                self.selected_objects = []
+                self.add_selected_object(symbol)
+
+                self.on_paste_objects(pos)
+
+            elif type == CHARACTER:
+
+                ascii = m.group(2)
+                char = chr(int(ascii))
+
+                x, y = m.group(3, 4)
+                pos = Pos(x, y)
+
+                symbol = Character(char)
+
+                self.selected_objects = []
+                self.add_selected_object(symbol)
+
+                self.on_paste_objects(pos)
+
+            elif type == LINE:
+
+                terminal = int(m.group(2))
+
+                x, y = m.group(3, 4)
+                startpos = Pos(x, y)
+
+                x, y = m.group(5, 6)
+                endpos = Pos(x, y)
+
+                self.on_paste_line(startpos, endpos, terminal)
+
+            elif type == DIR_LINE:
+
+                x, y = m.group(2, 3)
+                startpos = Pos(x, y)
+
+                x, y = m.group(4, 5)
+                endpos = Pos(x, y)
+
+                self.on_paste_dir_line(startpos, endpos)
+
+            elif type == MAG_LINE or type == 'MagL':
+
+                x, y = m.group(3, 4)
+                startpos = Pos(x, y)
+
+                x, y = m.group(5, 6)
+                endpos = Pos(x, y)
+
+                self.on_paste_mag_line(startpos, endpos)
+
+            elif type == DRAW_RECT:
+
+                x, y = m.group(3, 4)
+                startpos = Pos(x, y)
+
+                x, y = m.group(5, 6)
+                endpos = Pos(x, y)
+
+                self.on_paste_rect(startpos, endpos)
+
+            else:
+                print("skipped: ", type)
+                skip = 1
+
+            return skip
+
+        def play_m2(m):
+
+            type = m.group(1)
+
+            if type == 'I':
+                action = INSERT
+            else:
+                action = REMOVE
+
+            what = m.group(2)
+            nr = int(m.group(3))
+
+            if what.lower() == COL:
+                symbol = Column(nr, action)
+
+            elif what.lower() == ROW:
+                symbol = Row(nr, action)
 
             self.selected_objects = []
             self.add_selected_object(symbol)
 
-            self.on_paste_objects(pos)
+            self.on_paste_objects(symbol.startpos)
 
-        elif type == COMPONENT:
+            return 0
+
+        def play_m3(m):
+
+            skip = 0
+            type = m.group(1)
+
+            if type == TEXT:
+
+                text = m.group(2)
+
+                x, y = m.group(3, 4)
+                pos = Pos(x, y)
+
+                orientation = 0
+
+                symbol = Text(pos, text, orientation)
+
+                self.selected_objects = []
+                self.add_selected_object(symbol)
+
+                self.on_paste_objects(pos)
+
+            else:
+                print("skipped: ", type)
+                skip = 1
+
+            return skip
+
+        def play_m4(m):
 
             id = int(m.group(2))
 
             orientation = int(m.group(3))
-            mirrored = int(m.group(4))
+            orientation -= 1
 
-            x, y = m.group(5, 6)
+            x, y = m.group(4, 5)
             pos = Pos(x, y)
+
+            if m.group(6) == 'y':
+                mirrored = 1
+            else:
+                mirrored = 0
 
             symbol = self.components.get_symbol_byid(id)
             symbol.ori = orientation
@@ -678,115 +978,30 @@ class Controller(object):
 
             self.on_paste_objects(pos)
 
-        elif type == CHARACTER:
+            return 0
 
-            ascii = m.group(2)
-            char = chr(int(ascii))
+        skipped = 0
+        linenr = 0
 
-            x, y = m.group(3, 4)
-            pos = Pos(x, y)
+        for item in memo:
 
-            symbol = Character(char)
+            linenr += 1
 
-            self.selected_objects = []
-            self.add_selected_object(symbol)
+            m1 = re.search('(^eras|^char|^rect|^line|^MagL|^dirl):(\d+),(\d+),(\d+),?(\d*),?(\d*),?(\d*)', item)  # noqa W605
+            m2 = re.search('(^D|^I)(ROW|COL):(\d+)', item)  # noqa W605
+            m3 = re.search('(^text):([\w\number-]+),(\d+),(\d+)', item)  # noqa W605
+            m4 = re.search('(^comp):(\d+),(\d+),(\d+),(\d+),(\w),?(\w*)', item)  # noqa W605
 
-            self.on_paste_objects(pos)
+            if m1 is not None:
+                skipped += play_m1(m1)
+            elif m2 is not None:
+                skipped += play_m2(m2)
+            elif m3 is not None:
+                skipped += play_m3(m3)
+            elif m4 is not None:
+                skipped += play_m4(m4)
+            else:
+                print("skipped linenr: ", linenr)
+                skipped += 1
 
-        elif type == LINE:
-
-            terminal = int(m.group(2))
-
-            x, y = m.group(3, 4)
-            startpos = Pos(x, y)
-
-            x, y = m.group(5, 6)
-            endpos = Pos(x, y)
-
-            self.on_paste_line(startpos, endpos, terminal)
-
-        elif type == DIR_LINE:
-
-            x, y = m.group(2, 3)
-            startpos = Pos(x, y)
-
-            x, y = m.group(4, 5)
-            endpos = Pos(x, y)
-
-            self.on_paste_dir_line(startpos, endpos)
-
-        elif type == MAG_LINE:
-
-            x, y = m.group(2, 3)
-            startpos = Pos(x, y)
-
-            x, y = m.group(4, 5)
-            endpos = Pos(x, y)
-
-            self.on_paste_mag_line(startpos, endpos)
-
-        elif type == DRAW_RECT:
-
-            x, y = m.group(2, 3)
-            startpos = Pos(x, y)
-
-            x, y = m.group(4, 5)
-            endpos = Pos(x, y)
-
-            self.on_paste_rect(startpos, endpos)
-
-        else:
-            skip = 1
-
-        return skip
-
-    def play_m2(self, m):
-
-        skip = 0
-        type = m.group(1)
-
-        if type == 'i':
-            action = INSERT
-        else:
-            action = REMOVE
-
-        what = m.group(2)
-        nr = int(m.group(3))
-
-        if what == COL:
-            self.on_grid_col(nr, action)
-
-        elif what == ROW:
-            self.on_grid_row(nr, action)
-
-        else:
-            skip = 1
-
-        return skip
-
-    def play_m3(self, m):
-
-        skip = 0
-        type = m.group(1)
-
-        if type == TEXT:
-
-            orientation = int(m.group(2))
-
-            x, y = m.group(3, 4)
-            pos = Pos(x, y)
-
-            str = m.group(5)
-            text = json.loads(str)
-
-            symbol = Text(pos, text, orientation)
-
-            self.selected_objects = []
-            self.add_selected_object(symbol)
-
-            self.on_paste_objects(pos)
-
-        else:
-            skip = 1
-
-        return skip
+        return skipped
