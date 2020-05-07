@@ -614,6 +614,8 @@ class GridView(Gtk.DrawingArea):
             elif button == 3:
                 # right button
                 self._symbol.rotate()
+                # FIXME more elegant options? otoh grid_view() is owner of the Text Symbol
+                pub.sendMessage('ORIENTATION_CHANGED', ori=self._symbol.ori_as_str)
 
         elif self._selection.item == OBJECTS:
 
