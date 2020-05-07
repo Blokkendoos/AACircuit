@@ -907,6 +907,7 @@
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
                                 <signal name="clicked" handler="on_select_eraser" swapped="no"/>
+                                <property name="tooltip_text" translatable="yes">eraser 9x9</property>
                               </object>
                               <packing>
                                 <property name="top_attach">3</property>
@@ -919,6 +920,7 @@
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
                                 <signal name="clicked" handler="on_select_eraser" swapped="no"/>
+                                <property name="tooltip_text" translatable="yes">eraser 7x7</property>
                               </object>
                               <packing>
                                 <property name="top_attach">2</property>
@@ -931,6 +933,7 @@
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
                                 <signal name="clicked" handler="on_select_eraser" swapped="no"/>
+                                <property name="tooltip_text" translatable="yes">eraser 5x5</property>
                               </object>
                               <packing>
                                 <property name="top_attach">1</property>
@@ -944,6 +947,7 @@
                                 <property name="receives_default">True</property>
                                 <property name="image">image34</property>
                                 <signal name="clicked" handler="on_select_eraser" swapped="no"/>
+                                <property name="tooltip_text" translatable="yes">eraser 3x3</property>
                               </object>
                             </child>
                           </object>

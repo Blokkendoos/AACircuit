@@ -5,6 +5,13 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 # #-#-#-#-#  aacircuit.po  #-#-#-#-#
+# #-#-#-#-#  aacircuit.pot (PACKAGE VERSION)  #-#-#-#-#
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+# #-#-#-#-#  aacircuit.po  #-#-#-#-#
 # AACIRCUIT
 # Copyright (C) 2020 JvO
 # This file is distributed under the same license as the PACKAGE package.
@@ -12,6 +19,126 @@
 #
 msgid ""
 msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-07 15:30+0200\n"
+"PO-Revision-Date: 2020-05-07 16:02+0200\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-07 15:30+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-07 15:30+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-07 15:30+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-07 15:30+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-07 15:30+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-07 15:30+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-07 15:30+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-07 15:30+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-07 15:30+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-07 15:30+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-07 15:30+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-07 15:30+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-07 15:30+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-05 14:06+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-05 12:50+0200\n"
@@ -113,6 +240,282 @@ msgstr ""
 "Last-Translator: \n"
 "Language-Team: \n"
 
+# GUI
+#: application/aacircuit.glade:198
+msgid "_File"
+msgstr "_Datei"
+
+#: ../application/aacircuit.glade:267
+msgid "Import AACircuit original..."
+msgstr "Importieren AACircuit original Datei…"
+
+#: ../application/aacircuit.glade:282
+msgid "Export as ASCII..."
+msgstr "Exportieren als ASCII…"
+
+#: ../application/aacircuit.glade:291
+msgid "Export as PDF..."
+msgstr "Exportieren als PDF…"
+
+#: application/aacircuit.glade:268
+msgid "_Edit"
+msgstr "_Bearbeiten"
+
+#: ../application/aacircuit.glade:409
+msgid "Copy grid"
+msgstr "Kopier Gitter"
+
+#: ../application/aacircuit.glade:418
+msgid "Paste grid"
+msgstr "Gitter einfügen"
+
+#: ../application/aacircuit.glade:427
+msgid "Load and paste ASCII"
+msgstr "Laden und einfügen Gitter"
+
+#: application/aacircuit.glade:331
+msgid "_View"
+msgstr "_Darstellung"
+
+#: ../application/aacircuit.glade:450
+msgid "Grid size 72x36"
+msgstr "Gitter Größe 72x36"
+
+#: ../application/aacircuit.glade:459
+msgid "Grid size 72x49"
+msgstr "Gitter Größe 72x49"
+
+#: ../application/aacircuit.glade:468
+msgid "Grid size 100x49"
+msgstr "Gitter Größe 100x49"
+
+#: ../application/aacircuit.glade:477
+msgid "Grid size 200x70"
+msgstr "Gitter Größe 200x70"
+
+#: ../application/aacircuit.glade:492
+msgid "Redraw schema"
+msgstr "Neu zeichnen"
+
+#: ../application/aacircuit.glade:506
+msgid "_Symbol"
+msgstr ""
+
+#: ../application/aacircuit.glade:516
+msgid "Rotate 90° clockwise"
+msgstr "90° rechtsum drehen"
+
+#: ../application/aacircuit.glade:525
+msgid "Mirror vertically"
+msgstr "Vertikal spiegeln"
+
+#: ../application/aacircuit.glade:538
+msgid "AACircuit"
+msgstr ""
+
+#: ../application/aacircuit.glade:564
+msgid "_Preferences"
+msgstr "_Einstellungen"
+
+#: ../application/aacircuit.glade:574
+msgid "_Magic-line settings"
+msgstr "_Magic-line Einstellungen"
+
+#: ../application/aacircuit.glade:601
+msgid "+"
+msgstr ""
+
+#: ../application/aacircuit.glade:609
+msgid "o"
+msgstr ""
+
+#: ../application/aacircuit.glade:621
+msgid "#"
+msgstr ""
+
+#: ../application/aacircuit.glade:633
+msgid "/"
+msgstr ""
+
+#: ../application/aacircuit.glade:645
+msgid "\\"
+msgstr ""
+
+#: ../application/aacircuit.glade:657
+msgid "|"
+msgstr ""
+
+#: ../application/aacircuit.glade:669
+msgid "-"
+msgstr ""
+
+#: ../application/aacircuit.glade:681
+msgid "("
+msgstr ""
+
+#: ../application/aacircuit.glade:693
+msgid ")"
+msgstr ""
+
+#: ../application/aacircuit.glade:705
+msgid "'"
+msgstr ""
+
+#: ../application/aacircuit.glade:717
+msgid "."
+msgstr ""
+
+#: ../application/aacircuit.glade:729
+msgid " "
+msgstr ""
+
+#: ../application/aacircuit.glade:757
+msgid "write text"
+msgstr "Text schreiben"
+
+#: ../application/aacircuit.glade:775
+msgid "insert text"
+msgstr "Text einfügen"
+
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:192
+msgid "load file and paste into grid"
+msgstr "ASCII aus einer Datei laden und in die Zeichnung einfügen"
+
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:191
+msgid "paste grid from clipboard"
+msgstr "fügt den Inhalt der Zwischenablage ein"
+
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:190
+msgid "copy grid to clipboard"
+msgstr "kopiert die komplette Zeichnung in die Zwischenablage"
+
+#: application/aacircuit.glade:642
+msgid "<b>Clipb.</b>"
+msgstr "Zwischenabl."
+
+#: ../application/aacircuit.glade:910
+msgid "eraser 9x9"
+msgstr "Radierer 9x9"
+
+#: ../application/aacircuit.glade:923
+msgid "eraser 7x7"
+msgstr "Radierer 7x7"
+
+#: ../application/aacircuit.glade:936
+msgid "eraser 5x5"
+msgstr "Radierer 5x5"
+
+#: ../application/aacircuit.glade:950
+msgid "eraser 3x3"
+msgstr "Radierer 3x3"
+
+#: application/aacircuit.glade:718
+msgid "<b>Erase</b>"
+msgstr "Radierer"
+
+#: application/aacircuit.glade:797
+msgid "<b>Curs.</b>"
+msgstr "Zeiger"
+
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:127
+msgid "rotate the symbol clockwise"
+msgstr "Symbol 90°rechts drehen"
+
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:131
+msgid "mirror the symbol vertically"
+msgstr "Symbol vertikal spiegeln"
+
+#: ../application/aacircuit.glade:1141
+msgid "draw automatic line"
+msgstr "automatische Linie zeichnen"
+
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:149
+msgid "free line"
+msgstr "freihe Linie"
+
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:150
+msgid "straight line"
+msgstr "gerade Linie"
+
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:151
+msgid "line with start and end point 'o'"
+msgstr "Linie mit Start/Endpunkt ‘o’"
+
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:152
+msgid "line with start and end point '+'"
+msgstr "Linie mit Start/Endpunkt ‘+’"
+
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:153
+msgid "line with end terminals"
+msgstr "Linie mit Abschluß"
+
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:157
+msgid "draw a rectangle"
+msgstr "Rechteck zeichnen"
+
+#: ../application/aacircuit.glade:1258
+msgid "move or delete symbol, shortcut: [DEL]"
+msgstr "individuelle Symbole schneiden oder kopieren"
+
+#: ../application/aacircuit.glade:1273
+msgid "selection rectangle"
+msgstr "Rechtecke selektieren"
+
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:170
+msgid "insert rows"
+msgstr "Zeile horizontal einfügen"
+
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:171
+msgid "insert columns"
+msgstr "Zeile vertikal einfügen"
+
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:172
+msgid "remove rows"
+msgstr "Zeile horizontal löschen"
+
+#: /Users/johan/Documents/Programmeren/Python/AACircuit
+#: Python/aacircuit/application/main_window.py:173
+msgid "remove columns"
+msgstr "Zeile vertikal löschen"
+
+#: ../application/aacircuit.glade:1426
+msgid "y"
+msgstr ""
+
+#: ../application/aacircuit.glade:1474
+msgid "x"
+msgstr ""
+
+#: ../application/aacircuit.glade:1485
+msgid "orientation"
+msgstr "Orientierung"
+
+#: ../application/about_dialog.glade:8
+msgid "© 2020 Johan van Oostrum"
+msgstr ""
+
+#: ../application/about_dialog.glade:9
+msgid ""
+"This is a Python version,\n"
+"derived from the original AACircuit by Andreas Weber."
+msgstr ""
+"Dies ist eine Python version,\n"
+"abgeleitet vom Originalem Program wie verfertigt von Andreas Weber."
+
 # COMPONENT_LIBRARY
 #: application/component_library.py:35
 #, python-brace-format
@@ -128,6 +531,14 @@ msgstr "Anzahl Bibliotheken geladen: {0}"
 #: application/component_view.py:17
 msgid "Description"
 msgstr "Umschreibung"
+
+#: ../application/confirmation_dialog.glade:10
+msgid "Really close the program?"
+msgstr "Tatsächlich Programm beënden?"
+
+#: ../application/confirmation_dialog.glade:11
+msgid "The current schema has been changed"
+msgstr "Der aktuelle Zeichnung is geändert worden"
 
 # CONTROLLER
 #: application/controller.py:32
@@ -153,10 +564,10 @@ msgstr "Drucken beendet"
 msgid "More than one item at position: %s !"
 msgstr "Mehrere Symbole auf Positino: %s!"
 
-#: application/controller.py:199
-#, python-format
-msgid "Unable to open file for reading: %s"
-msgstr "Datei %s läßt sich nicht öffnen zum lesen"
+#: ../application/controller.py:533 ../application/controller.py:539
+#: ../application/controller.py:667 ../application/controller.py:673
+msgid "Unable to open file for reading: {} error({}): {}"
+msgstr "Datei: {} läßt sich nicht öffnen zum lesen, fehler({}): {}"
 
 #: ../application/controller.py:509
 msgid "Selecting rectangle..."
@@ -233,6 +644,38 @@ msgstr "Ungültiges Kanvas"
 msgid "PDF Exported to {}"
 msgstr "PDF Exportiert nach {0}"
 
+#: ../application/magic_line_dialog.glade:22
+msgid "Restore defaults"
+msgstr "Standardeinstellungen laden"
+
+#: ../application/magic_line_dialog.glade:37
+msgid "Cancel"
+msgstr "Abbrechen"
+
+#: ../application/magic_line_dialog.glade:51
+msgid "Save"
+msgstr "Speichern"
+
+#: ../application/magic_line_dialog.glade:101
+msgid "decision matrix"
+msgstr "Entscheidngsmatrize"
+
+#: ../application/magic_line_dialog.glade:123
+msgid "start direction"
+msgstr "start Richtung"
+
+#: ../application/magic_line_dialog.glade:149
+msgid "start character"
+msgstr "start Zeichen"
+
+#: ../application/magic_line_dialog.glade:221
+msgid "Create new"
+msgstr "Neue Matrize"
+
+#: ../application/magic_line_dialog.glade:237
+msgid "Refresh"
+msgstr "Neu laden"
+
 #: ../application/magic_line_settings.py:54
 #, python-format
 msgid "Magic_line settings have been read from: %s"
@@ -282,7 +725,9 @@ msgstr "Einstellungen sind geladen von: %s"
 #: ../application/preferences.py:108
 #, python-format
 msgid "Preferences file not found: %s, default preferences are being used"
-msgstr "Der Einstellungen Datei: %s ist nicht gefunden worden, die Standartwerte werden verwendet"
+msgstr ""
+"Der Einstellungen Datei: %s ist nicht gefunden worden, die Standartwerte "
+"werden verwendet"
 
 #: ../application/preferences.py:122
 #, python-format
@@ -357,39 +802,31 @@ msgstr "Obere Ecke Zeichen"
 msgid "Lower corner char"
 msgstr "Untere Ecke Zeichen"
 
+#: ../application/preferences_dialog.glade:80
+msgid "Grid"
+msgstr "Gitter"
+
+#: ../application/preferences_dialog.glade:109
+msgid "Lines"
+msgstr "Linien"
+
+#: ../application/preferences_dialog.glade:138
+msgid "Magic line"
+msgstr ""
+
 #: ../application/symbol.py:79
 #, python-brace-format
 msgid "symbol id: {0} orientation: {1}"
 msgstr "Symbol id: {0} Richtung: {1}"
 
-# GUI
-#: application/aacircuit.glade:198
-msgid "_File"
-msgstr "_Datei"
-
-#: application/aacircuit.glade:268
-msgid "_Edit"
-msgstr "_Bearbeiten"
-
-#: application/aacircuit.glade:331
-msgid "_View"
-msgstr "_Darstellung"
+#: application/controller.py:199
+#, python-format
+msgid "Unable to open file for reading: %s"
+msgstr "Datei %s läßt sich nicht öffnen zum lesen"
 
 #: application/aacircuit.glade:339
 msgid "_Help"
 msgstr "_Info"
-
-#: application/aacircuit.glade:642
-msgid "<b>Clipb.</b>"
-msgstr "Zwischenabl."
-
-#: application/aacircuit.glade:718
-msgid "<b>Erase</b>"
-msgstr "Radierer"
-
-#: application/aacircuit.glade:797
-msgid "<b>Curs.</b>"
-msgstr "Zeiger"
 
 # FILE
 #: application/file.py:22
@@ -431,87 +868,3 @@ msgstr "Gewählte Ordner: %s"
 #, python-brace-format
 msgid "number of rows: {0} columns: {1}"
 msgstr "Reihen: {0} Kolumne: {1}"
-
-#: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:127
-msgid "rotate the symbol clockwise"
-msgstr "Symbol 90°rechts drehen"
-
-#: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:131
-msgid "mirror the symbol vertically"
-msgstr "Symbol vertikal spiegeln"
-
-#: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:148
-msgid "MagLine"
-msgstr "automatische Linie"
-
-#: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:149
-msgid "free line"
-msgstr "freihe Linie"
-
-#: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:150
-msgid "straight line"
-msgstr "gerade Linie"
-
-#: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:151
-msgid "line with start and end point 'o'"
-msgstr "Linie mit Start/Endpunkt ‘o’"
-
-#: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:152
-msgid "line with start and end point '+'"
-msgstr "Linie mit Start/Endpunkt ‘+’"
-
-#: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:153
-msgid "line with end terminals"
-msgstr "Linie mit Abschluß"
-
-#: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:157
-msgid "draw a rectangle"
-msgstr "Rechteck zeichnen"
-
-#: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:170
-msgid "insert rows"
-msgstr "Zeile horizontal einfügen"
-
-#: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:171
-msgid "insert columns"
-msgstr "Zeile vertikal einfügen"
-
-#: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:172
-msgid "remove rows"
-msgstr "Zeile horizontal löschen"
-
-#: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:173
-msgid "remove columns"
-msgstr "Zeile vertikal löschen"
-
-#: application/main_window.py:180
-msgid "Move or delete symbol, shortcut: [DEL]"
-msgstr "Symbol verschieben oder löschen, Tastaturkürzel: [DEL]"
-
-#: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:190
-msgid "copy grid to clipboard"
-msgstr "kopiert die komplette Zeichnung in die Zwischenablage"
-
-#: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:191
-msgid "paste grid from clipboard"
-msgstr "fügt den Inhalt der Zwischenablage ein"
-
-#: /Users/johan/Documents/Programmeren/Python/AACircuit
-#: Python/aacircuit/application/main_window.py:192
-msgid "load file and paste into grid"
-msgstr "ASCII aus einer Datei laden und in die Zeichnung einfügen"
