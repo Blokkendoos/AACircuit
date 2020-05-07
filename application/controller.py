@@ -3,6 +3,7 @@ AACircuit.py
 2020-03-02 JvO
 """
 
+import os
 import re
 import json
 import xerox
@@ -649,10 +650,12 @@ class Controller(object):
             # self.latest_action = []
             # pub.sendMessage('UNDO_CHANGED', undo=False)
 
+            # TODO only the basename in statusbar, or truncated path, e.g. when the full path exceeds length x
+            base = os.path.basename(filename)
             if skipped > 0:
-                msg = _("{0} lines skipped in {1}".format(skipped, filename))
+                msg = _("{0} lines skipped in {1}".format(skipped, base))
             else:
-                msg = "%s" % filename
+                msg = "%s" % base
 
             pub.sendMessage('STATUS_MESSAGE', msg=msg)
             pub.sendMessage('FILE_OPENED')
