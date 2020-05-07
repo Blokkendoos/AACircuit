@@ -12,6 +12,7 @@ import locale
 from locale import gettext as _
 
 from application import INSERT, REMOVE
+from application.symbol import Line
 from application.grid_view import GridView
 from application.component_view import ComponentView
 from application.preferences import Preferences, PreferencesDialog
@@ -206,7 +207,17 @@ class MainWindow(Gtk.Window):
 
     def on_line(self, button):
         name = Gtk.Buildable.get_name(button)
-        type = int(name[-1])
+        line = name[-1]
+        if line == 1:
+            type = Line.LINE1
+        elif line == 2:
+            type = Line.LINE2
+        elif line == 3:
+            type = Line.LINE3
+        elif line == 4:
+            type = Line.LINE4
+        else:
+            type = Line.LINE1
         # DRAW_LINEx
         pub.sendMessage(name.upper(), type=type)
 

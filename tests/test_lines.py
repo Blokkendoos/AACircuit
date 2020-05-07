@@ -3,6 +3,7 @@
 import unittest
 
 from application.pos import Pos
+from application.symbol import Line
 from application.controller import Controller
 
 
@@ -16,7 +17,9 @@ class LinesTest(unittest.TestCase):
         start = Pos(5, 5)
         end = Pos(15, 5)
 
-        for type in range(1, 5):
+        line_types = (Line.MLINE, Line.LINE1, Line.LINE2, Line.LINE3, Line.LINE4)
+
+        for type in line_types:
             c.on_paste_line(start, end, type)
             start += Pos(0, 5)
             end += Pos(0, 5)
