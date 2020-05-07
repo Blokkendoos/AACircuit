@@ -416,11 +416,20 @@ class Text(Symbol):
 class Line(Symbol):
     """A horizontal or verical line from start to end position."""
 
-    TERMINAL_TYPE = {0: None,
-                     1: Preferences.values['TERMINAL1'],
-                     2: Preferences.values['TERMINAL2'],
-                     3: Preferences.values['TERMINAL3'],
-                     4: Preferences.values['TERMINAL4']}
+    # decimal char codes (following the original AACircuit) for lines
+    # and 0/1 for the 'old' respectively new Magic line
+
+    MLINE = 1
+    LINE1 = 0
+    LINE2 = ord('o')  # 111
+    LINE3 = ord('+')  # 43
+    LINE4 = ord("'")  # 39
+
+    TERMINAL_TYPE = {MLINE: None,
+                     LINE1: Preferences.values['TERMINAL1'],
+                     LINE2: Preferences.values['TERMINAL2'],
+                     LINE3: Preferences.values['TERMINAL3'],
+                     LINE4: Preferences.values['TERMINAL4']}
 
     def __init__(self, startpos, endpos, type=None):
 
@@ -1202,7 +1211,7 @@ class Rect(Symbol):
         bl = Pos(self._startpos.x, self._endpos.y)
         br = self._endpos
 
-        type = 3
+        type = Line.LINE3
 
         line1 = Line(ul, ur, type)
         line2 = Line(ur, br, type)
@@ -1253,7 +1262,7 @@ class Rect(Symbol):
 
         # print("ul:", ul, " ur:", ur, "\nbl:", bl, "br:", br)
 
-        type = 3
+        type = Line.LINE3
 
         line1 = Line(ul, ur, type)
         line2 = Line(ur, br, type)
@@ -1275,7 +1284,7 @@ class Rect(Symbol):
         bl = Pos(start.x, end.y)
         br = end
 
-        type = 3
+        type = Line.LINE3
 
         line1 = Line(ul, ur, type)
         line2 = Line(ur, br, type)

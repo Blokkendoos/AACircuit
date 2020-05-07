@@ -38,6 +38,9 @@ class Controller(object):
         self.init_stack()
         self.init_grid()
 
+        # True: read original (Delphi/Pascal) AACircuit file
+        self._import_legacy = False
+
         all_components = [key for key in self.components.get_dict()]
         if self.components.nr_libraries() == 1:
             msg = _("One library loaded, total number of components: {0}").format(self.components.nr_components())
@@ -87,6 +90,7 @@ class Controller(object):
         pub.subscribe(self.on_open, 'OPEN_FILE')
         pub.subscribe(self.on_save, 'SAVE_FILE')
         pub.subscribe(self.on_save_as, 'SAVE_AS_FILE')
+        pub.subscribe(self.on_import_aacircuit, 'IMPORT_AACIRCUIT')
         pub.subscribe(self.on_export_as_pdf, 'EXPORT_AS_PDF')
         pub.subscribe(self.on_export_as_ascii, 'EXPORT_AS_ASCII')
 
@@ -216,6 +220,7 @@ class Controller(object):
         pub.sendMessage('NOTHING_SELECTED')
 
     def on_open(self):
+        self._import_legacy = False
         dialog = InputFileChooser()  # noqa: F841
 
     def on_save(self):
@@ -224,6 +229,10 @@ class Controller(object):
 
     def on_save_as(self):
         dialog = OutputFileChooser()  # noqa: F841
+
+    def on_import_aacircuit(self):
+        self._import_legacy = True
+        dialog = InputFileChooser()  # noqa: F841
 
     def on_export_as_pdf(self, filename=_("Untitled.pdf")):
         dialog = OutputFilePDF(filename)  # noqa: F841
@@ -420,7 +429,9 @@ class Controller(object):
         self.push_latest_action(symbol)
 
     def on_paste_mag_line(self, startpos, endpos):
-        symbol = MagLine(startpos, endpos, self.cell_callback)
+        # symbol = MagLine(startpos, endpos, self.cell_callback)
+        # FIXME DEBUG
+        symbol = MagLineOld(startpos, endpos, self.cell_callback)
         self._paste_mag_line(symbol)
 
     def on_paste_mag_line_w_type(self, startpos, endpos, type):
@@ -613,9 +624,10 @@ class Controller(object):
 
             file.close()
 
-            # TODO add import original AAC menu option
-            # skipped = self.play_memo(memo)
-            skipped = self.play_memo_original_aac(memo)
+            if self._import_legacy:
+                skipped = self.play_memo_original_aac(memo)
+            else:
+                skipped = self.play_memo(memo)
 
             # empty the undo stack (from the played memo actions)
             # self.latest_action = []
@@ -829,7 +841,8 @@ class Controller(object):
         def play_m1(m):
 
             skip = 0
-            type = m.group(1)
+            component = m.group(1)
+            type = component.lower()
 
             if type == ERASER:
 
@@ -903,7 +916,7 @@ class Controller(object):
 
                 self.on_paste_dir_line(startpos, endpos)
 
-            elif type == MAG_LINE or type == 'MagL':
+            elif type == MAG_LINE:
 
                 line_type = int(m.group(2))
 
@@ -993,7 +1006,7 @@ class Controller(object):
             x, y = m.group(4, 5)
             pos = Pos(x, y)
 
-            if m.group(6) == 'y':
+            if m.group(6) == 's':
                 mirrored = 1
             else:
                 mirrored = 0
@@ -1018,7 +1031,7 @@ class Controller(object):
 
             m1 = re.search('(^eras|^char|^rect|^line|^MagL|^dirl):(\d+),(\d+),(\d+),?(\d*),?(\d*),?(\d*)', item)  # noqa W605
             m2 = re.search('(^D|^I)(ROW|COL):(\d+)', item)  # noqa W605
-            m3 = re.search('(^text):([\w\number-]+),(\d+),(\d+)', item)  # noqa W605
+            m3 = re.search('(^text):(.+),(\d+),(\d+)', item)  # noqa W605
             m4 = re.search('(^comp):(\d+),(\d+),(\d+),(\d+),(\w),?(\w*)', item)  # noqa W605
 
             if m1 is not None:
