@@ -85,6 +85,7 @@ class MainWindow(Gtk.Window):
         self.timer_is_running = False
         self.label_xpos = self.builder.get_object('x_pos')
         self.label_ypos = self.builder.get_object('y_pos')
+        self.label_orientation = self.builder.get_object('symbol_orientation')
         self.msg = self.builder.get_object('statusbar1')
 
         # the GUI signals are handled by this class
@@ -138,6 +139,7 @@ class MainWindow(Gtk.Window):
 
         pub.subscribe(self.on_pointer_moved, 'POINTER_MOVED')
         pub.subscribe(self.on_message, 'STATUS_MESSAGE')
+        pub.subscribe(self.on_orientation_changed, 'ORIENTATION_CHANGED')
 
         pub.subscribe(self.on_file_opened, 'FILE_OPENED')
         pub.subscribe(self.on_nothing_selected, 'NOTHING_SELECTED')
@@ -186,6 +188,10 @@ class MainWindow(Gtk.Window):
         """Update the pointer position in the statusbar."""
         self.label_xpos.set_text(format(pos.x))
         self.label_ypos.set_text(format(pos.y))
+
+    def on_orientation_changed(self, ori):
+        """Show the Symbol orientation in the statusbar."""
+        self.label_orientation.set_label(ori)
 
     def on_message(self, msg):
         """Add message to statusbar."""

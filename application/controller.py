@@ -319,6 +319,9 @@ class Controller(object):
         """Select all symbols that are located within the selection rectangle."""
         self.find_selected(rect)
         pub.sendMessage('OBJECTS_SELECTED', objects=self.selected_objects)
+        if len(self.selected_objects) > 0:
+            first_obj = self.selected_objects[0]
+            pub.sendMessage('ORIENTATION_CHANGED', ori=first_obj.symbol.ori_as_str)
 
     # grid manipulation
 
@@ -364,10 +367,16 @@ class Controller(object):
         self.selected_objects = []
         self.add_selected_object(symbol)
         pub.sendMessage('SYMBOL_SELECTED', symbol=symbol)
+        pub.sendMessage('ORIENTATION_CHANGED', ori=symbol.ori_as_str)
 
     def on_rotate_symbol(self):
+        first = True
         for obj in self.selected_objects:
             obj.symbol.rotate()
+            # show the orientation of a single, or the first, symbol in the statusbar
+            if first:
+                first = False
+                pub.sendMessage('ORIENTATION_CHANGED', ori=obj.symbol.ori_as_str)
 
     def on_mirror_symbol(self):
         for obj in self.selected_objects:

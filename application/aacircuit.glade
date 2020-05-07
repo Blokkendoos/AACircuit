@@ -1464,9 +1464,21 @@
               </packing>
             </child>
             <child>
-              <object class="GtkVSeparator" id="vseparator1">
+              <object class="GtkLabel" id="label2">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="label" translatable="yes">x</property>
+              </object>
+              <packing>
+                <property name="x_options">GTK_EXPAND</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="symbol_orientation">
+                <property name="visible">True</property>
+                <property name="sensitive">False</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">orientation</property>
               </object>
               <packing>
                 <property name="left_attach">4</property>
@@ -1483,16 +1495,6 @@
               <packing>
                 <property name="left_attach">5</property>
                 <property name="right_attach">6</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel" id="label2">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="label" translatable="yes">x</property>
-              </object>
-              <packing>
-                <property name="x_options">GTK_EXPAND</property>
               </packing>
             </child>
           </object>

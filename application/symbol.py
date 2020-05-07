@@ -105,6 +105,10 @@ class Symbol(object):
         return self._id
 
     @property
+    def ori_as_str(self):
+        return Symbol.ORIENTATION[self._ori]
+
+    @property
     def ori(self):
         return self._ori
 
