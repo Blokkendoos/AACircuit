@@ -501,8 +501,16 @@ class Controller(object):
             pub.sendMessage('OBJECTS_SELECTED', objects=self.selected_objects)
             return True
 
-        except (IOError, UnicodeDecodeError):
-            print(_("Unable to open file for reading: %s" % filename))
+        except IOError as e:
+            msg = _("Unable to open file for reading: {} error({}): {}".format(filename, e.errno, e.strerror))
+            print(msg)
+            pub.sendMessage('STATUS_MESSAGE', msg=msg)
+            return False
+
+        except UnicodeDecodeError as e:
+            msg = _("Unable to open file for reading: {} error({}): {}".format(filename, e.encoding, e.reason))
+            print(msg)
+            pub.sendMessage('STATUS_MESSAGE', msg=msg)
             return False
 
     # other
@@ -624,8 +632,15 @@ class Controller(object):
 
             return True
 
-        except (IOError, UnicodeDecodeError):
-            msg = _("Unable to open file for reading: %s" % filename)
+        except IOError as e:
+            msg = _("Unable to open file for reading: {} error({}): {}".format(filename, e.errno, e.strerror))
+            print(msg)
+            pub.sendMessage('STATUS_MESSAGE', msg=msg)
+            return False
+
+        except UnicodeDecodeError as e:
+            msg = _("Unable to open file for reading: {} error({}): {}".format(filename, e.encoding, e.reason))
+            print(msg)
             pub.sendMessage('STATUS_MESSAGE', msg=msg)
             return False
 
