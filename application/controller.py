@@ -107,6 +107,14 @@ class Controller(object):
         pub.subscribe(self.on_grid_size, 'GRID_SIZE')
         pub.subscribe(self.on_redraw_grid, 'REDRAW_GRID')
 
+    @property
+    def legacy(self):
+        return self._import_legacy
+
+    @legacy.setter
+    def legacy(self, value):
+        self._import_legacy = value
+
     def init_stack(self):
         # action stack with the last cut/pasted symbol(s)
         self.latest_action = []

@@ -28,7 +28,6 @@ class FileTest(unittest.TestCase):
     def test_read_ascii(self):
 
         c = Controller()
-
         c.on_new()
 
         filename = 'tests/files/test_ascii.txt'
@@ -38,6 +37,17 @@ class FileTest(unittest.TestCase):
         c.on_paste_objects(pos)
 
         filename = 'tmp/test_ascii.aac'
+        self.assertTrue(c.on_write_to_file(filename))
+
+    def test_import_aacircuit(self):
+
+        c = Controller()
+        c.legacy = True
+
+        filename = 'tests/files/original_741.aac'
+        self.assertTrue(c.on_read_from_file(filename))
+
+        filename = 'tmp/741.aac'
         self.assertTrue(c.on_write_to_file(filename))
 
     def test_export_ascii(self):

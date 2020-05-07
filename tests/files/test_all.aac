@@ -1,8 +1,8 @@
-line:1,7,2,26,2
-line:2,7,4,26,4
-line:3,7,6,26,6
+line:0,7,2,26,2
+line:111,7,4,26,4
+line:43,7,6,26,6
 rect:7,8,26,15
 comp:15,0,0,18,10
-magl:18,11,13,8
+magl:1,18,11,13,8
 text:0,9,12,"Hallo\neen\ntekst"
 text:1,30,8,"en\nverdraaid\nnog een tekst"
