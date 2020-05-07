@@ -530,13 +530,13 @@ class Controller(object):
             return True
 
         except IOError as e:
-            msg = _("Unable to open file for reading: {} error({}): {}".format(filename, e.errno, e.strerror))
+            msg = _("Unable to open file for reading: {} error({}): {}").format(filename, e.errno, e.strerror)
             print(msg)
             pub.sendMessage('STATUS_MESSAGE', msg=msg)
             return False
 
         except UnicodeDecodeError as e:
-            msg = _("Unable to open file for reading: {} error({}): {}".format(filename, e.encoding, e.reason))
+            msg = _("Unable to open file for reading: {} error({}): {}").format(filename, e.encoding, e.reason)
             print(msg)
             pub.sendMessage('STATUS_MESSAGE', msg=msg)
             return False
@@ -653,9 +653,9 @@ class Controller(object):
             # TODO only the basename in statusbar, or truncated path, e.g. when the full path exceeds length x
             base = os.path.basename(filename)
             if skipped > 0:
-                msg = _("{0} lines skipped in {1}".format(skipped, base))
+                msg = _("{0} lines skipped in: {1}").format(skipped, base)
             else:
-                msg = "%s" % base
+                msg = _("File: {}").format(base)
 
             pub.sendMessage('STATUS_MESSAGE', msg=msg)
             pub.sendMessage('FILE_OPENED')
@@ -664,13 +664,13 @@ class Controller(object):
             return True
 
         except IOError as e:
-            msg = _("Unable to open file for reading: {} error({}): {}".format(filename, e.errno, e.strerror))
+            msg = _("Unable to open file for reading: {} error({}): {}").format(filename, e.errno, e.strerror)
             print(msg)
             pub.sendMessage('STATUS_MESSAGE', msg=msg)
             return False
 
         except UnicodeDecodeError as e:
-            msg = _("Unable to open file for reading: {} error({}): {}".format(filename, e.encoding, e.reason))
+            msg = _("Unable to open file for reading: {} error({}): {}").format(filename, e.encoding, e.reason)
             print(msg)
             pub.sendMessage('STATUS_MESSAGE', msg=msg)
             return False
@@ -850,7 +850,7 @@ class Controller(object):
             elif m3 is not None:
                 skipped += play_m3(m3)
             else:
-                print("skipped linenr: ", linenr)
+                print(_("skipped linenr: {}").format(linenr))
                 skipped += 1
 
         return skipped
@@ -958,7 +958,7 @@ class Controller(object):
                 self.on_paste_rect(startpos, endpos)
 
             else:
-                print("skipped: ", type)
+                print(_("skipped: {}").format(type))
                 skip = 1
 
             return skip
@@ -1010,7 +1010,7 @@ class Controller(object):
                 self.on_paste_objects(pos)
 
             else:
-                print("skipped: ", type)
+                print(_("skipped: {}").format(type))
                 skip = 1
 
             return skip
@@ -1062,7 +1062,7 @@ class Controller(object):
             elif m4 is not None:
                 skipped += play_m4(m4)
             else:
-                print("skipped linenr: ", linenr)
+                print(_("skipped linenr: ").format(linenr))
                 skipped += 1
 
         return skipped
