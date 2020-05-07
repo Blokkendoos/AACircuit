@@ -419,6 +419,7 @@ class Line(Symbol):
     # decimal char codes (following the original AACircuit) for lines
     # and 0/1 for the 'old' respectively new Magic line
 
+    MLINE_LEGACY = 0
     MLINE = 1
     LINE1 = 0
     LINE2 = ord('o')  # 111
@@ -436,7 +437,7 @@ class Line(Symbol):
         super(Line, self).__init__(id=type, startpos=startpos, endpos=endpos)
 
         if type is None:
-            self._type = 0
+            self._type = Line.LINE1
         else:
             self._type = type
         self._terminal = self.TERMINAL_TYPE[self._type]
@@ -579,7 +580,7 @@ class DirLine(Line):
 class MagLine(Line):
     """A square bend from start to end position."""
 
-    def __init__(self, startpos, endpos, cell_callback=None, type=1):
+    def __init__(self, startpos, endpos, cell_callback=None, type=Line.MLINE):
 
         self.cell = cell_callback
 
@@ -763,7 +764,7 @@ class MagLine(Line):
 class MagLineOld(MagLine):
     """Alte MagLine, wegen abwärtscompatibilität noch vorhanden."""
 
-    def __init__(self, startpos, endpos, cell_callback=None, type=0):
+    def __init__(self, startpos, endpos, cell_callback=None, type=Line.MLINE_LEGACY):
 
         super(MagLineOld, self).__init__(startpos=startpos, endpos=endpos, cell_callback=cell_callback, type=type)
 
