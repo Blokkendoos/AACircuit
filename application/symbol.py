@@ -1248,54 +1248,6 @@ class Rect(Symbol):
         str = "{0}:{1},{2}".format(DRAW_RECT, self._startpos, self._endpos)
         return str
 
-    def paste(self, grid):
-
-        self._representation()
-
-        start = self._startpos
-        end = self._endpos
-
-        ul = start
-        ur = Pos(end.x, start.y)
-        bl = Pos(start.x, end.y)
-        br = end
-
-        # print("ul:", ul, " ur:", ur, "\nbl:", bl, "br:", br)
-
-        type = Line.LINE3
-
-        line1 = Line(ul, ur, type)
-        line2 = Line(ur, br, type)
-        line3 = Line(bl, br, type)
-        line4 = Line(ul, bl, type)
-
-        line1.paste(grid)
-        line2.paste(grid)
-        line3.paste(grid)
-        line4.paste(grid)
-
-    def remove(self, grid):
-
-        start = self._startpos
-        end = self._endpos
-
-        ul = start
-        ur = Pos(end.x, start.y)
-        bl = Pos(start.x, end.y)
-        br = end
-
-        type = Line.LINE3
-
-        line1 = Line(ul, ur, type)
-        line2 = Line(ur, br, type)
-        line3 = Line(bl, br, type)
-        line4 = Line(ul, bl, type)
-
-        line1.remove(grid)
-        line2.remove(grid)
-        line3.remove(grid)
-        line4.remove(grid)
-
 
 class Column(Symbol):
 
