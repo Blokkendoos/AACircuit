@@ -429,9 +429,8 @@ class Controller(object):
         self.push_latest_action(symbol)
 
     def on_paste_mag_line(self, startpos, endpos):
-        # symbol = MagLine(startpos, endpos, self.cell_callback)
-        # FIXME DEBUG
-        symbol = MagLineOld(startpos, endpos, self.cell_callback)
+        symbol = MagLine(startpos, endpos, self.cell_callback)
+        # symbol = MagLineOld(startpos, endpos, self.cell_callback)
         self._paste_mag_line(symbol)
 
     def on_paste_mag_line_w_type(self, startpos, endpos, type):

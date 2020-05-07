@@ -5,7 +5,7 @@ AACircuit
 
 import copy
 import json
-# from pubsub import pub
+from pubsub import pub
 from bresenham import bresenham
 from math import pi, radians, atan
 
@@ -775,11 +775,11 @@ class MagLineOld(MagLine):
 
         super(MagLineOld, self).paste(grid)
 
+        # FIXME pubsub from within represenation() does not work (statusbar not updated)
         if self._se_count > 0:
             msg = self._status_msg
-            # FIXME pubsub werkt niet?
-            # pub.sendMessage('STATUS_MESSAGE', msg=msg)
-            print(msg)
+            pub.sendMessage('STATUS_MESSAGE', msg=msg)
+            # print(msg)
 
     def _representation(self):
 
