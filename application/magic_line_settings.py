@@ -186,7 +186,7 @@ class MagicLineSettingsDialog(Gtk.Dialog):
         Arguments pass in must be passed from __new__().
         """
         builder.connect_signals(self)
-        self.set_default_size(500, 200)
+        # self.set_default_size(400, 250)
 
         # Add any other initialization here
 
