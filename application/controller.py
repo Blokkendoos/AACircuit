@@ -343,6 +343,7 @@ class Controller(object):
         self.init_grid()
 
         memo = []
+        str = str.splitlines()
         for line in str:
             memo.append(line)
 

@@ -64,7 +64,9 @@
               <object class="GtkTextView" id="memo_text">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="overwrite">True</property>
+                <style>
+                  <class name="text_view"/>
+                </style>
               </object>
             </child>
           </object>
@@ -87,6 +89,7 @@
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
+                <property name="padding">5</property>
                 <property name="position">0</property>
               </packing>
             </child>

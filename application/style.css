@@ -1,13 +1,25 @@
 /*
  AACircuit.py
  2020-03-16 JvO
- */
 
-/*
- character buttons
- */
+ Note that Gtk id's are not the same as CSS id's
+ Source:  https://stackoverflow.com/questions/16740949/gtk-cssprovider-how-do-id-based-selectors-work-in-gtk3
+
+*/
+
+/* Color values:
+   #f2f2d8 grid color
+   #555555 inactive text
+*/
+
+/* main window character buttons */
 .char_buttons {
-    font-size: 135%;
+    font-size: 150%;
 }
 
-
+/* memo editing dialog */
+/*
+.text_view text {
+    background-color: #f2f2d8;
+}
+*/

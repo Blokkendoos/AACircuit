@@ -59,6 +59,13 @@ class MemoEditingDialog(Gtk.Dialog):
 
         # Add any other initialization here
 
+        css_provider = Gtk.CssProvider()
+        css_provider.load_from_path('application/style.css')
+
+        style_context = self.get_style_context()
+        style_context.add_provider(css_provider,
+                                   Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+
         self._memo_editable = False
 
         self.text_buffer = Gtk.TextBuffer()
@@ -67,14 +74,38 @@ class MemoEditingDialog(Gtk.Dialog):
         self.memo_text = builder.get_object('memo_text')
         self.memo_text.set_buffer(self.text_buffer)
         self.memo_text.set_monospace(True)
+
+        tt = self.text_buffer.get_tag_table()
+        self.editable_tag = Gtk.TextTag()
+        self.editable_tag.set_property('foreground', '#000000')
+        tt.add(self.editable_tag)
+
+        # locked text is shown in light gray
+        self.locked_tag = Gtk.TextTag()
+        self.locked_tag.set_property('foreground', '#7f7f7f')
+        tt.add(self.locked_tag)
+
         self.enable_memo_text()
 
         self.show_all()
 
     def enable_memo_text(self):
         editable = self._memo_editable
+
         self.memo_text.set_editable(editable)
         self.memo_text.set_cursor_visible(editable)
+
+        # start = self.text_buffer.get_start_iter()
+        # end = self.text_buffer.get_end_iter()
+        bounds = self.text_buffer.get_bounds()
+        start, end = bounds
+        if bounds:
+            if editable:
+                self.text_buffer.remove_all_tags(start, end)
+                self.text_buffer.apply_tag(self.editable_tag, start, end)
+            else:
+                self.text_buffer.remove_all_tags(start, end)
+                self.text_buffer.apply_tag(self.locked_tag, start, end)
 
     def on_edit_memo(self, item, data):
         self._memo_editable = item.get_active()
@@ -84,6 +115,4 @@ class MemoEditingDialog(Gtk.Dialog):
         start = self.text_buffer.get_start_iter()
         end = self.text_buffer.get_end_iter()
         text = self.text_buffer.get_text(start, end, False)
-        text = text.splitlines()
-        # print("MEMO:", text)
         pub.sendMessage('RERUN_MEMO', str=text)

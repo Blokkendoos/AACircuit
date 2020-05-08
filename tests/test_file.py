@@ -50,6 +50,10 @@ class FileTest(unittest.TestCase):
         filename = 'tmp/741.aac'
         self.assertTrue(c.on_write_to_file(filename))
 
+        # for (visual) verification only
+        filename = 'tmp/legacy_741.pdf'
+        c.on_export_as_pdf(filename)
+
     def test_export_ascii(self):
 
         c = Controller()
