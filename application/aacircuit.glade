@@ -429,6 +429,21 @@
                         <signal name="activate" handler="on_load_and_paste_grid" swapped="no"/>
                       </object>
                     </child>
+                    <child>
+                      <object class="GtkSeparatorMenuItem">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="menu_edit_memo">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Edit draw commands...</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_menu_edit_memo" swapped="no"/>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>
@@ -906,8 +921,8 @@
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
-                                <signal name="clicked" handler="on_select_eraser" swapped="no"/>
                                 <property name="tooltip_text" translatable="yes">eraser 9x9</property>
+                                <signal name="clicked" handler="on_select_eraser" swapped="no"/>
                               </object>
                               <packing>
                                 <property name="top_attach">3</property>
@@ -919,8 +934,8 @@
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
-                                <signal name="clicked" handler="on_select_eraser" swapped="no"/>
                                 <property name="tooltip_text" translatable="yes">eraser 7x7</property>
+                                <signal name="clicked" handler="on_select_eraser" swapped="no"/>
                               </object>
                               <packing>
                                 <property name="top_attach">2</property>
@@ -932,8 +947,8 @@
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
-                                <signal name="clicked" handler="on_select_eraser" swapped="no"/>
                                 <property name="tooltip_text" translatable="yes">eraser 5x5</property>
+                                <signal name="clicked" handler="on_select_eraser" swapped="no"/>
                               </object>
                               <packing>
                                 <property name="top_attach">1</property>
@@ -945,9 +960,9 @@
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
+                                <property name="tooltip_text" translatable="yes">eraser 3x3</property>
                                 <property name="image">image34</property>
                                 <signal name="clicked" handler="on_select_eraser" swapped="no"/>
-                                <property name="tooltip_text" translatable="yes">eraser 3x3</property>
                               </object>
                             </child>
                           </object>

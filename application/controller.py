@@ -18,6 +18,7 @@ from application.grid import Grid
 from application.magic_line_settings import MagicLineSettings
 from application.preferences import Preferences
 from application.main_window import MainWindow
+from application.memo_editing import MemoEditingDialog
 from application.component_library import ComponentLibrary
 from application.file import InputFileChooser, InputFileAscii, OutputFileChooser, OutputFileAscii, OutputFilePDF, PrintOperation
 from application.symbol import Eraser, Character, Text, Line, MagLine, MagLineOld, DirLine, Rect, Row, Column
@@ -80,11 +81,14 @@ class Controller(object):
         # clipboard
         pub.subscribe(self.on_cut, 'CUT')
         pub.subscribe(self.on_copy, 'COPY')
-        pub.subscribe(self.on_copy_grid, 'COPY_GRID')
 
+        pub.subscribe(self.on_copy_grid, 'COPY_GRID')
         pub.subscribe(self.on_paste_grid, 'PASTE_GRID')
         pub.subscribe(self.on_load_and_paste_grid, 'LOAD_AND_PASTE_GRID')
         pub.subscribe(self.on_load_ascii_from_file, 'LOAD_ASCII_FROM_FILE')
+
+        pub.subscribe(self.on_edit_memo, 'EDIT_MEMO')
+        pub.subscribe(self.on_rerun_memo, 'RERUN_MEMO')
 
         # file
         pub.subscribe(self.on_new, 'NEW_FILE')
@@ -323,6 +327,26 @@ class Controller(object):
         if len(self.selected_objects) > 0:
             first_obj = self.selected_objects[0]
             pub.sendMessage('ORIENTATION_CHANGED', ori=first_obj.symbol.ori_as_str)
+
+    def on_edit_memo(self):
+
+        memo = ""
+        for symbol in self.objects:
+            memo += symbol.memo() + "\n"
+
+        dialog = MemoEditingDialog(memo)
+        dialog.run()
+        dialog.hide()
+
+    def on_rerun_memo(self, str):
+        self.init_stack()
+        self.init_grid()
+
+        memo = []
+        for line in str:
+            memo.append(line)
+
+        self.play_memo(memo)
 
     # grid manipulation
 

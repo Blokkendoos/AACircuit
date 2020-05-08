@@ -387,6 +387,9 @@ class MainWindow(Gtk.Window):
         dialog.run()
         dialog.hide()
 
+    def on_menu_edit_memo(self, item):
+        pub.sendMessage('EDIT_MEMO')
+
     def on_menu_grid_size(self, item):
         name = Gtk.Buildable.get_name(item)
         # the grid_size option sequence number
