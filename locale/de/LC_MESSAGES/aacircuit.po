@@ -33,6 +33,13 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 # #-#-#-#-#  aacircuit.po  #-#-#-#-#
+# #-#-#-#-#  aacircuit.pot (PACKAGE VERSION)  #-#-#-#-#
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+# #-#-#-#-#  aacircuit.po  #-#-#-#-#
 # AACIRCUIT
 # Copyright (C) 2020 JvO
 # This file is distributed under the same license as the PACKAGE package.
@@ -40,6 +47,142 @@
 #
 msgid ""
 msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-09 14:09+0200\n"
+"PO-Revision-Date: 2020-05-09 14:13+0200\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-09 14:09+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-09 14:09+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-09 14:09+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-09 14:09+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-09 14:09+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-09 14:09+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-09 14:09+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-09 14:09+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-09 14:09+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-09 14:09+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-09 14:09+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-09 14:09+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-09 14:09+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-09 14:09+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-09 14:09+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-05 14:06+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-07 22:04+0200\n"
@@ -654,6 +797,10 @@ msgstr "Gitter einfügen"
 msgid "Load and paste ASCII"
 msgstr "Laden und einfügen Gitter"
 
+#: ../application/aacircuit.glade:442
+msgid "Edit draw commands..."
+msgstr "Zeichenbefehle bearbeiten…"
+
 #: application/aacircuit.glade:331
 msgid "_View"
 msgstr "_Darstellung"
@@ -678,7 +825,7 @@ msgstr "Gitter Größe 200x70"
 msgid "Redraw schema"
 msgstr "Neu zeichnen"
 
-#: ../application/aacircuit.glade:506
+#: ../application/aacircuit.glade:521 ../application/aacircuit.glade:506
 msgid "_Symbol"
 msgstr ""
 
@@ -690,7 +837,7 @@ msgstr "90° rechtsum drehen"
 msgid "Mirror vertically"
 msgstr "Vertikal spiegeln"
 
-#: ../application/aacircuit.glade:538
+#: ../application/aacircuit.glade:553 ../application/aacircuit.glade:538
 msgid "AACircuit"
 msgstr ""
 
@@ -702,51 +849,51 @@ msgstr "_Einstellungen"
 msgid "_Magic-line settings"
 msgstr "_Magic-line Einstellungen"
 
-#: ../application/aacircuit.glade:601
+#: ../application/aacircuit.glade:616 ../application/aacircuit.glade:601
 msgid "+"
 msgstr ""
 
-#: ../application/aacircuit.glade:609
+#: ../application/aacircuit.glade:624 ../application/aacircuit.glade:609
 msgid "o"
 msgstr ""
 
-#: ../application/aacircuit.glade:621
+#: ../application/aacircuit.glade:636 ../application/aacircuit.glade:621
 msgid "#"
 msgstr ""
 
-#: ../application/aacircuit.glade:633
+#: ../application/aacircuit.glade:648 ../application/aacircuit.glade:633
 msgid "/"
 msgstr ""
 
-#: ../application/aacircuit.glade:645
+#: ../application/aacircuit.glade:660 ../application/aacircuit.glade:645
 msgid "\\"
 msgstr ""
 
-#: ../application/aacircuit.glade:657
+#: ../application/aacircuit.glade:672 ../application/aacircuit.glade:657
 msgid "|"
 msgstr ""
 
-#: ../application/aacircuit.glade:669
+#: ../application/aacircuit.glade:684 ../application/aacircuit.glade:669
 msgid "-"
 msgstr ""
 
-#: ../application/aacircuit.glade:681
+#: ../application/aacircuit.glade:696 ../application/aacircuit.glade:681
 msgid "("
 msgstr ""
 
-#: ../application/aacircuit.glade:693
+#: ../application/aacircuit.glade:708 ../application/aacircuit.glade:693
 msgid ")"
 msgstr ""
 
-#: ../application/aacircuit.glade:705
+#: ../application/aacircuit.glade:720 ../application/aacircuit.glade:705
 msgid "'"
 msgstr ""
 
-#: ../application/aacircuit.glade:717
+#: ../application/aacircuit.glade:732 ../application/aacircuit.glade:717
 msgid "."
 msgstr ""
 
-#: ../application/aacircuit.glade:729
+#: ../application/aacircuit.glade:744 ../application/aacircuit.glade:729
 msgid " "
 msgstr ""
 
@@ -873,11 +1020,11 @@ msgstr "Zeile horizontal löschen"
 msgid "remove columns"
 msgstr "Zeile vertikal löschen"
 
-#: ../application/aacircuit.glade:1426
+#: ../application/aacircuit.glade:1441 ../application/aacircuit.glade:1426
 msgid "y"
 msgstr ""
 
-#: ../application/aacircuit.glade:1474
+#: ../application/aacircuit.glade:1489 ../application/aacircuit.glade:1474
 msgid "x"
 msgstr ""
 
@@ -1069,10 +1216,6 @@ msgstr "start Zeichen"
 msgid "Create new"
 msgstr "Neue Matrize"
 
-#: ../application/magic_line_dialog.glade:237
-msgid "Refresh"
-msgstr "Neu laden"
-
 #: ../application/magic_line_settings.py:54
 #, python-format
 msgid "Magic_line settings have been read from: %s"
@@ -1113,6 +1256,23 @@ msgstr "Die XML GUI Datei aacircuit.glade könnte nicht geladen worden"
 #: Python/aacircuit/application/main_window.py:262
 msgid "Closing application"
 msgstr "Programma beenden"
+
+#: ../application/memo_editing.py:45
+msgid "Failed to load XML GUI file memo_editing_dialog.glade"
+msgstr ""
+"Die XML GUI Datei memo_editing_dialog.glade könnte nicht geladen worden"
+
+#: ../application/memo_editing_dialog.glade:23
+msgid "Close"
+msgstr "Beënden"
+
+#: ../application/memo_editing_dialog.glade:37
+msgid "Draw"
+msgstr "Zeichnen"
+
+#: ../application/memo_editing_dialog.glade:87
+msgid "Edit draw commands"
+msgstr "Zeichenbefehle bearbeiten"
 
 #: ../application/preferences.py:103
 #, python-format
@@ -1215,6 +1375,10 @@ msgstr ""
 #, python-brace-format
 msgid "symbol id: {0} orientation: {1}"
 msgstr "Symbol id: {0} Richtung: {1}"
+
+#: ../application/magic_line_dialog.glade:237
+msgid "Refresh"
+msgstr "Neu laden"
 
 #: ../application/controller.py:594
 #, python-brace-format
