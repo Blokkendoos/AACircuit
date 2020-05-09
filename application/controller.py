@@ -153,6 +153,12 @@ class Controller(object):
         return self.grid.cell(pos)
 
     def show_all(self):
+
+        # DEBUG
+        # self._import_legacy = True
+        # self.on_read_from_file('tests/files/original_741.aac')
+        # self.on_read_from_file('tests/files/original_JKMasterSlave.aac')
+
         self.gui.show_all()
 
     def revert_action(self, stack):

@@ -51,8 +51,11 @@ class FileTest(unittest.TestCase):
         self.assertTrue(c.on_write_to_file(filename))
 
         # for (visual) verification only
-        filename = 'tmp/legacy_741.pdf'
+        filename = 'tmp/741_legacy.pdf'
         c.on_export_as_pdf(filename)
+
+        filename = 'tmp/741_legacy.txt'
+        self.assertTrue(c.on_write_to_ascii_file(filename))
 
     def test_export_ascii(self):
 

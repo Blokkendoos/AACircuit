@@ -822,6 +822,13 @@ class MagLineOld(MagLine):
         se_status = ""
         se_count = 0
 
+        # DEBUG start character
+        # print("START startc: {} endc: {} o: {} u: {} l:{} r:{} ".format(startc, endc,
+        #                                                                 self.cell(Pos(x1, y1 - 1)),
+        #                                                                 self.cell(Pos(x1, y1 + 1)),
+        #                                                                 self.cell(Pos(x1 - 1, y1)),
+        #                                                                 self.cell(Pos(x1 + 1, y1))))
+
         # nichts drumherum
         if self.cell(Pos(x1 - 1, y1)) == spacechar \
                 and self.cell(Pos(x1 + 1, y1)) == spacechar \
@@ -860,7 +867,7 @@ class MagLineOld(MagLine):
                     startc = upper_corner
 
             se_count += 1
-            se_status = _("S:o/u; l/r=space")
+            se_status = _("S:oVu |; l/r=space")
 
         # oben .
         if self.cell(Pos(x1, y1 - 1)) == upper_corner \
@@ -932,8 +939,7 @@ class MagLineOld(MagLine):
 
         # l/r = -, o/u frei
         if (self.cell(Pos(x1 - 1, y1)) == line_hor or self.cell(Pos(x1 + 1, y1)) == line_hor) \
-                and (self.cell(Pos(x1, y1 - 1)) == spacechar) \
-                and self.cell(Pos(x1, y1 + 1)) == spacechar:
+                and ((self.cell(Pos(x1, y1 - 1)) == spacechar) or self.cell(Pos(x1, y1 + 1)) == spacechar):
 
             if xdiv > 0:
                 startr = rechts_links
@@ -949,7 +955,7 @@ class MagLineOld(MagLine):
                     startc = lower_corner
 
             se_count += 1
-            se_status = _("S:l/r, o/u=space")
+            se_status = _("S:lVr {}, oVu=space".format(line_hor))
 
         # links und rechts -, oben kein |
         if self.cell(Pos(x1 - 1, y1)) == line_hor \
@@ -959,17 +965,17 @@ class MagLineOld(MagLine):
             startc = connect_char
 
             se_count += 1
-            se_status = _("links und rechts {}; oben kein {}".format(line_hor, line_vert))
+            se_status = _("S:links und rechts {}; oben kein {}".format(line_hor, line_vert))
 
         # oben und unten |, links kein -
         if self.cell(Pos(x1, y1 - 1)) == line_vert \
                 and self.cell(Pos(x1, y1 + 1)) == line_vert \
-                and self.cell(Pos(x1, y1 - 1)) != line_vert:
+                and self.cell(Pos(x1 - 1, y1)) != line_hor:
             startr = rechts_links
             startc = connect_char
 
             se_count += 1
-            se_status = _("oben und unten {}; links kein".format(line_vert, line_hor))
+            se_status = _("S:oben und unten {}; links kein".format(line_vert, line_hor))
 
         # links oder rechts o
         if self.cell(Pos(x1 - 1, y1)) == connect_char \
@@ -978,7 +984,7 @@ class MagLineOld(MagLine):
             startc = line_hor
 
             se_count += 1
-            se_status = _("S:lVr=o;")
+            se_status = _("S:lVr={};".format(connect_char))
 
         # oben oder unten o
         if self.cell(Pos(x1, y1 - 1)) == connect_char \
@@ -986,9 +992,10 @@ class MagLineOld(MagLine):
             startr = oben_unten
             startc = line_vert
             se_count += 1
-            se_status = _("S:oVu=o;")
+            se_status = _("S:oVu={};".format(connect_char))
 
         # End Char
+
         # nichts drumherum
         if self.cell(Pos(x2 - 1, y2)) == spacechar \
                 and self.cell(Pos(x2 + 1, y2)) == spacechar \
@@ -1054,7 +1061,7 @@ class MagLineOld(MagLine):
                     endc = line_hor
 
             se_count += 1
-            se_status = _("END:l/r")
+            se_status = _("E:l/r")
 
         # links und rechts -
         if self.cell(Pos(x2 - 1, y2)) == line_hor \
@@ -1062,8 +1069,24 @@ class MagLineOld(MagLine):
 
             if (startr == oben_unten and x1 == x2) or (startr == rechts_links and y1 != y2):
                 endc = connect_char
+
             se_count += 1
-            se_status = _("links und rechts {}".format(line_hor))
+            se_status = _("E:links und rechts {}".format(line_hor))
+
+        # DEBUG end character
+        # print("END type: {} startc: {} endc: {} o: {} u: {} l:{} r:{} ".format(self._type, startc, endc,
+        #                                                                        self.cell(Pos(x2, y2 - 1)),
+        #                                                                        self.cell(Pos(x2, y2 + 1)),
+        #                                                                        self.cell(Pos(x2 - 1, y2)),
+        #                                                                        self.cell(Pos(x2 + 1, y2))))
+
+        # links oder rechts - unten |
+        if (self.cell(Pos(x2 - 1, y2)) == line_hor or self.cell(Pos(x2 + 1, y2)) == line_hor) \
+                and self.cell(Pos(x2 + 1, y2)) == spacechar \
+                and self.cell(Pos(x2, y2 + 1)) == line_vert:
+            endc = connect_char
+            se_count += 1
+            se_status = _("E: l{0}/{1} u={2}".format(upper_corner, lower_corner, line_vert))
 
         # generell, wenn endc noch # ist
         if endc == '#':
