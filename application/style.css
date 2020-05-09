@@ -18,8 +18,6 @@
 }
 
 /* memo editing dialog */
-/*
-.text_view text {
-    background-color: #f2f2d8;
+.view#linenr text {
+    background-color: #dfdfdf;
 }
-*/

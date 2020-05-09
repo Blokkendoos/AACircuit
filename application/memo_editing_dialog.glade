@@ -56,18 +56,13 @@
           </packing>
         </child>
         <child>
-          <object class="GtkScrolledWindow">
+          <object class="GtkScrolledWindow" id="main_sw">
+            <property name="name">main_sw</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="shadow_type">in</property>
             <child>
-              <object class="GtkTextView" id="memo_text">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <style>
-                  <class name="text_view"/>
-                </style>
-              </object>
+              <placeholder/>
             </child>
           </object>
           <packing>
@@ -110,6 +105,7 @@
             <property name="expand">False</property>
             <property name="fill">True</property>
             <property name="padding">5</property>
+            <property name="pack_type">end</property>
             <property name="position">2</property>
           </packing>
         </child>
@@ -119,4 +115,6 @@
       <action-widget response="-6">close</action-widget>
     </action-widgets>
   </object>
+  <object class="GtkTextBuffer" id="textbuffer1"/>
+  <object class="GtkTextBuffer" id="textbuffer2"/>
 </interface>
