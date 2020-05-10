@@ -112,6 +112,9 @@ class GridView(Gtk.DrawingArea):
 
     def set_grid(self, grid):
         self._grid = grid
+        self.gridsize_changed()
+
+    def gridsize_changed(self, *args, **kwargs):
         self.set_viewport_size()
 
     def set_viewport_size(self):
@@ -183,17 +186,13 @@ class GridView(Gtk.DrawingArea):
     def on_draw_page(self, parms):
         operation, print_ctx, page_num = parms
 
-        ctx = print_ctx.get_cairo_context()
         w = print_ctx.get_width()
         h = print_ctx.get_height()
         # print("width: {} height:{})".format(w, h))
 
-        ctx.set_source_rgb(0.75, 0.75, 0.75)
-        ctx.set_line_width(0.25)
+        ctx = print_ctx.get_cairo_context()
 
-        ctx.rectangle(w*0.1, h*0.1, w*0.8, h*0.8)  # noqa E226
-        ctx.stroke()
-
+        # self.draw_border(ctx, w, h)
         ctx.scale(0.5, 0.5)
         self.draw_content(ctx)
 
@@ -208,12 +207,7 @@ class GridView(Gtk.DrawingArea):
         surface = cairo.PDFSurface(filename, w, h)
         ctx = cairo.Context(surface)
 
-        ctx.set_source_rgb(0.75, 0.75, 0.75)
-        ctx.set_line_width(0.25)
-
-        ctx.rectangle(w*0.01, h*0.01, w*0.99, h*0.99)  # noqa E226
-        ctx.stroke()
-
+        # self.draw_border(ctx, w, h)
         ctx.scale(0.5, 0.5)
         self.draw_content(ctx)
 
@@ -221,17 +215,6 @@ class GridView(Gtk.DrawingArea):
 
         msg = _("PDF Exported to {}").format(filename)
         pub.sendMessage('STATUS_MESSAGE', msg=msg)
-
-    # drawing
-
-    def do_drawing(self, ctx):
-        self.draw_background(ctx)
-        self.draw_gridlines(ctx)
-        self.draw_content(ctx)
-        self.draw_selection(ctx)
-
-    def gridsize_changed(self, *args, **kwargs):
-        self.set_viewport_size()
 
     # SELECTIONs
 
@@ -326,6 +309,24 @@ class GridView(Gtk.DrawingArea):
         return True
 
     # DRAWING
+
+    def do_drawing(self, ctx):
+        self.draw_background(ctx)
+        self.draw_gridlines(ctx)
+        self.draw_content(ctx)
+        self.draw_selection(ctx)
+
+    def draw_border(self, ctx, w, h):
+        """draw a border at 1% of the page-size."""
+        ctx.save()
+
+        ctx.set_source_rgb(0.75, 0.75, 0.75)
+        ctx.set_line_width(0.25)
+
+        ctx.rectangle(w*0.01, h*0.01, w*0.99, h*0.99)  # noqa E226
+        ctx.stroke()
+
+        ctx.restore()
 
     def draw_background(self, ctx):
         """Draw a background with the size of the grid."""
