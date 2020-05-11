@@ -176,10 +176,13 @@ class Symbol(object):
 
     @property
     def grid(self):
-        if self._mirrored == 1:
-            return self.mirror(self._grid[self.ORIENTATION[self._ori]])
-        else:
-            return self._grid[self.ORIENTATION[self._ori]]
+        try:
+            if self._mirrored == 1:
+                return self.mirror(self._grid[self.ORIENTATION[self._ori]])
+            else:
+                return self._grid[self.ORIENTATION[self._ori]]
+        except KeyError:
+            return self.default
 
     def rotate(self):
         """Return the grid with the next (90 degrees clockwise rotated) orientation for this symbol."""
