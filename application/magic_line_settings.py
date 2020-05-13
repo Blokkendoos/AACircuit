@@ -10,11 +10,11 @@ import copy
 import collections
 from pubsub import pub
 
+from application import get_path_to_data
 from application import LONGEST_FIRST, HORIZONTAL, VERTICAL
 from application.pos import Pos
 from application.preferences import Preferences, SingleCharEntry
 
-import os
 import sys
 import locale
 from locale import gettext as _
@@ -36,8 +36,6 @@ class MagicLineSettings(object):
 
     def __init__(self, filename='magic_line.ini'):
 
-        # TODO platform indepent path
-        # lib_path = os.path.dirname(__file__)
         self._filename = filename
         self.read_settings()
 
@@ -156,20 +154,19 @@ class MagicLineSettingsDialog(Gtk.Dialog):
 
         https://eeperry.wordpress.com/2013/01/05/pygtk-new-style-python-class-using-builder/
         """
-        app_path = os.path.dirname(__file__)
 
         try:
             # https://askubuntu.com/questions/140552/how-to-make-glade-load-translations-from-opt
             # For this particular case the locale module needs to be used instead of gettext.
             # Python's gettext module is pure python, it doesn't actually set the text domain
             # in a way that the C library can read, but locale does (by calling libc).
-            locale.bindtextdomain('aacircuit', 'locale/')
+            locale.bindtextdomain('aacircuit', get_path_to_data('locale/'))
             locale.textdomain('aacircuit')
 
             builder = Gtk.Builder()
             # https://stackoverflow.com/questions/24320502/how-to-translate-pygtk-glade-gtk-builder-application
             builder.set_translation_domain('aacircuit')
-            builder.add_from_file(os.path.join(app_path, 'magic_line_dialog.glade'))
+            builder.add_from_file(get_path_to_data('magic_line_dialog.glade'))
 
         except IOError:
             print(_("Failed to load XML GUI file preferences_dialog.glade"))

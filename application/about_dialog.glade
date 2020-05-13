@@ -8,7 +8,7 @@
     <property name="copyright" translatable="yes">© 2020 Johan van Oostrum</property>
     <property name="comments" translatable="yes">This is a Python version,
 derived from the original AACircuit by Andreas Weber.</property>
-    <property name="logo">../aacircuit_logo.bmp</property>
+    <property name="logo">aacircuit_logo.bmp</property>
     <property name="license_type">gpl-3-0</property>
     <child type="titlebar">
       <placeholder/>

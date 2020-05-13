@@ -5,6 +5,8 @@ AACircuit
 
 import gettext
 import locale
+import sys
+from os import path
 
 # set local language, if supported
 try:
@@ -15,6 +17,14 @@ try:
     _ = local_lang.gettext
 except Exception as e:  # noqa F841
     _ = gettext.gettext
+
+
+def get_path_to_data(file_path):
+    # when run from within a bundle (created w pyinstaller)
+    bundle_dir = getattr(sys, '_MEIPASS', path.abspath(path.dirname(__file__)))
+    path_to_dat = path.join(bundle_dir, file_path)
+    return path_to_dat
+
 
 # grid cells
 CELL_DEFAULT = ' '

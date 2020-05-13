@@ -3,18 +3,17 @@ AACircuit
 2020-03-02 JvO
 """
 
-import os
 import sys
 import locale
 import json
 import collections
 from pubsub import pub
 from locale import gettext as _
+from application import get_path_to_data
 
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk  # noqa: E402
-
 
 PreferenceSetting = collections.namedtuple('PreferenceSetting', ['type', 'entry'])
 
@@ -170,20 +169,19 @@ class PreferencesDialog(Gtk.Dialog):
 
         https://eeperry.wordpress.com/2013/01/05/pygtk-new-style-python-class-using-builder/
         """
-        app_path = os.path.dirname(__file__)
 
         try:
             # https://askubuntu.com/questions/140552/how-to-make-glade-load-translations-from-opt
             # For this particular case the locale module needs to be used instead of gettext.
             # Python's gettext module is pure python, it doesn't actually set the text domain
             # in a way that the C library can read, but locale does (by calling libc).
-            locale.bindtextdomain('aacircuit', 'locale/')
+            locale.bindtextdomain('aacircuit', get_path_to_data('locale/'))
             locale.textdomain('aacircuit')
 
             builder = Gtk.Builder()
             # https://stackoverflow.com/questions/24320502/how-to-translate-pygtk-glade-gtk-builder-application
             builder.set_translation_domain('aacircuit')
-            builder.add_from_file(os.path.join(app_path, 'preferences_dialog.glade'))
+            builder.add_from_file(get_path_to_data('preferences_dialog.glade'))
 
         except IOError:
             print(_("Failed to load XML GUI file preferences_dialog.glade"))

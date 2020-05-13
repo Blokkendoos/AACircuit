@@ -4,11 +4,11 @@ component_library.py
 2020-03-02 JvO
 """
 
-import os
 import sys
 import json
 
 from application import _
+from application import get_path_to_data
 from application.symbol import Symbol
 
 
@@ -23,13 +23,10 @@ class ComponentLibrary(object):
         #     self._libraries.append("component{0}.json".format(n + 1))
         self._libraries.append('component_en.json')
 
-        lib_path = os.path.dirname(__file__)
-        print("Path: {0}".format(lib_path))
-
         self._dict = {}
         for lib in self._libraries:
             try:
-                f = open(os.path.join(lib_path + '/components/', lib), "r")
+                f = open(get_path_to_data('components/' + lib), "r")
                 self._dict.update(json.load(f))
                 f.close()
             except IOError as e:

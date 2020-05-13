@@ -3,7 +3,6 @@ AACircuit
 2020-03-02 JvO
 """
 
-import os
 import sys
 from pubsub import pub
 from threading import Timer
@@ -11,6 +10,7 @@ from threading import Timer
 import locale
 from locale import gettext as _
 
+from application import get_path_to_data
 from application import INSERT, REMOVE
 from application.symbol import Line
 from application.grid_view import GridView
@@ -36,20 +36,19 @@ class MainWindow(Gtk.Window):
 
         https://eeperry.wordpress.com/2013/01/05/pygtk-new-style-python-class-using-builder/
         """
-        app_path = os.path.dirname(__file__)
 
         try:
             # https://askubuntu.com/questions/140552/how-to-make-glade-load-translations-from-opt
             # For this particular case the locale module needs to be used instead of gettext.
             # Python's gettext module is pure python, it doesn't actually set the text domain
             # in a way that the C library can read, but locale does (by calling libc).
-            locale.bindtextdomain('aacircuit', 'locale/')
+            locale.bindtextdomain('aacircuit', get_path_to_data('locale/'))
             locale.textdomain('aacircuit')
 
             builder = Gtk.Builder()
             # https://stackoverflow.com/questions/24320502/how-to-translate-pygtk-glade-gtk-builder-application
             builder.set_translation_domain('aacircuit')
-            builder.add_from_file(os.path.join(app_path, 'aacircuit.glade'))
+            builder.add_from_file(get_path_to_data('aacircuit.glade'))
 
         except IOError:
             print(_("Failed to load XML GUI file aacircuit.glade"))
@@ -74,7 +73,7 @@ class MainWindow(Gtk.Window):
         css_provider = Gtk.CssProvider()
 
         # https://stackoverflow.com/questions/16740949/gtk-cssprovider-how-do-id-based-selectors-work-in-gtk3
-        css_provider.load_from_path('application/style.css')
+        css_provider.load_from_path(get_path_to_data('style.css'))
 
         screen = Gdk.Screen.get_default()
         style_context = Gtk.StyleContext()
@@ -176,7 +175,7 @@ class MainWindow(Gtk.Window):
     def init_cursors(self):
         self.cursor = []
         for i in range(1, 5):
-            self.cursor.append(GdkPixbuf.Pixbuf.new_from_file("application/buttons/c{0}.png".format(i)))
+            self.cursor.append(GdkPixbuf.Pixbuf.new_from_file(get_path_to_data('buttons/c{0}.png'.format(i))))
 
     def init_char_buttons(self):
         container = self.builder.get_object('char_table')
@@ -269,8 +268,7 @@ class MainWindow(Gtk.Window):
 
         # https://bytes.com/topic/python/answers/873799-how-click-close-window-dont-close-gtk-window
         builder = Gtk.Builder()
-        app_path = os.path.dirname(__file__)
-        builder.add_from_file(os.path.join(app_path, 'confirmation_dialog.glade'))
+        builder.add_from_file(get_path_to_data('confirmation_dialog.glade'))
 
         builder.connect_signals(self)
         confirm = builder.get_object('confirm')
@@ -342,8 +340,7 @@ class MainWindow(Gtk.Window):
         # the cursor hot-spot is at the center of the (16x16) cursor image
         cursor = Gdk.Cursor.new_from_pixbuf(display, pb, 8, 15)
 
-        widget = self.grid_view._drawing_area
-        widget.get_window().set_cursor(cursor)
+        self.grid_view.get_window().set_cursor(cursor)
 
     # MENU handling
 
@@ -370,8 +367,7 @@ class MainWindow(Gtk.Window):
 
     def on_menu_about(self, item):
         builder = Gtk.Builder()
-        app_path = os.path.dirname(__file__)
-        builder.add_from_file(os.path.join(app_path, 'about_dialog.glade'))
+        builder.add_from_file(get_path_to_data('about_dialog.glade'))
         builder.connect_signals(self)
         about = builder.get_object('about')
         about.run()
