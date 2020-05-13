@@ -841,6 +841,18 @@ class MagLineOld(MagLine):
 
     def start_character(self, se_count, se_status, startpos, endpos):
 
+        def set_rechts_links():
+            nonlocal startr  # noqa E999
+            nonlocal startc  # noqa E999
+            startr = rechts_links
+            startc = line_hor
+
+        def set_oben_unten():
+            nonlocal startr  # noqa E999
+            nonlocal startc  # noqa E999
+            startr = oben_unten
+            startc = line_vert
+
         x1, y1 = startpos.xy
         x2, y2 = endpos.xy
 
@@ -854,13 +866,12 @@ class MagLineOld(MagLine):
         startr = oben_unten
         startc = '#'
         spacechar = ' '
+        connect_char = 'o'
 
         line_hor = Preferences.values['LINE_HOR']
         line_vert = Preferences.values['LINE_VERT']
         upper_corner = Preferences.values['UPPER_CORNER']
         lower_corner = Preferences.values['LOWER_CORNER']
-
-        connect_char = 'o'
 
         # DEBUG
         # print("START startc: {} endc: {} o: {} u: {} l:{} r:{} ".format(startc, endc,
@@ -894,15 +905,11 @@ class MagLineOld(MagLine):
                 and self.cell(Pos(x1 + 1, y1)) == spacechar:
 
             if ydiv > 0:
-                startr = oben_unten
-                startc = line_vert
-
-            if ydiv == 0:
+                set_oben_unten()
+            elif ydiv == 0:
                 startr = rechts_links
-
                 if self.cell(Pos(x1, y1 - 1)) == line_vert:
                     startc = lower_corner
-
                 if self.cell(Pos(x1, y1 + 1)) == line_vert:
                     startc = upper_corner
 
@@ -916,12 +923,9 @@ class MagLineOld(MagLine):
                 and self.cell(Pos(x1 + 1, y1)) == spacechar:
 
             if ydiv > 0:
-                startr = oben_unten
-                startc = line_vert
-
-            if ydiv == 0:
-                startr = rechts_links
-                startc = lower_corner
+                set_oben_unten()
+            elif ydiv == 0:
+                set_rechts_links()
 
             se_count += 1
             se_status = _("S:o{}; l/r/u=space".format(lower_corner))
@@ -933,12 +937,9 @@ class MagLineOld(MagLine):
                 and self.cell(Pos(x1 + 1, y1)) == spacechar:
 
             if ydiv > 0:
-                startr = oben_unten
-                startc = line_vert
-
-            if ydiv == 0:
-                startr = rechts_links
-                startc = upper_corner
+                set_oben_unten()
+            elif ydiv == 0:
+                set_rechts_links()
 
             se_count += 1
             se_status = _("S:u{}; l/r/0=space".format(lower_corner))
@@ -950,12 +951,9 @@ class MagLineOld(MagLine):
                 and self.cell(Pos(x1 + 1, y1)) == spacechar:
 
             if ydiv > 0:
-                startr = oben_unten
-                startc = line_vert
-
-            if ydiv == 0:
-                startr = rechts_links
-                startc = line_hor
+                set_oben_unten()
+            elif ydiv == 0:
+                set_rechts_links()
 
             se_count += 1
             se_status = _("S:o{}; l/r/u=space".format(line_hor))
@@ -967,12 +965,9 @@ class MagLineOld(MagLine):
                 and self.cell(Pos(x1 + 1, y1)) == spacechar:
 
             if ydiv > 0:
-                startr = oben_unten
-                startc = line_vert
-
-            if ydiv == 0:
-                startr = rechts_links
-                startc = line_hor
+                set_oben_unten()
+            elif ydiv == 0:
+                set_rechts_links()
 
             se_count += 1
             se_status = _("S:u{}; l/r/u=space".format(line_hor))
@@ -982,16 +977,12 @@ class MagLineOld(MagLine):
                 and ((self.cell(Pos(x1, y1 - 1)) == spacechar) or self.cell(Pos(x1, y1 + 1)) == spacechar):
 
             if xdiv > 0:
-                startr = rechts_links
-                startc = line_hor
-
-            if xdiv == 0:
+                set_rechts_links()
+            elif xdiv == 0:
                 startr = oben_unten
-
                 if y2 > y1:
                     startc = upper_corner
-
-                if y2 < y1:
+                elif y2 < y1:
                     startc = lower_corner
 
             se_count += 1
@@ -1003,7 +994,6 @@ class MagLineOld(MagLine):
                 and self.cell(Pos(x1, y1 - 1)) != line_vert:
             startr = oben_unten
             startc = connect_char
-
             se_count += 1
             se_status = _("S:links und rechts {}; oben kein {}".format(line_hor, line_vert))
 
@@ -1013,24 +1003,20 @@ class MagLineOld(MagLine):
                 and self.cell(Pos(x1 - 1, y1)) != line_hor:
             startr = rechts_links
             startc = connect_char
-
             se_count += 1
             se_status = _("S:oben und unten {}; links kein".format(line_vert, line_hor))
 
         # links oder rechts o
         if self.cell(Pos(x1 - 1, y1)) == connect_char \
                 or self.cell(Pos(x1 + 1, y1)) == connect_char:
-            startr = rechts_links
-            startc = line_hor
-
+            set_rechts_links()
             se_count += 1
             se_status = _("S:lVr={};".format(connect_char))
 
         # oben oder unten o
         if self.cell(Pos(x1, y1 - 1)) == connect_char \
                 or self.cell(Pos(x1, y1 + 1)) == connect_char:
-            startr = oben_unten
-            startc = line_vert
+            set_oben_unten()
             se_count += 1
             se_status = _("S:oVu={};".format(connect_char))
 
@@ -1053,6 +1039,13 @@ class MagLineOld(MagLine):
         line_vert = Preferences.values['LINE_VERT']
         upper_corner = Preferences.values['UPPER_CORNER']
         lower_corner = Preferences.values['LOWER_CORNER']
+
+        # DEBUG
+        # print("END type: {} startc: {} endc: {} o: {} u: {} l:{} r:{} ".format(self._type, startc, endc,
+        #                                                                        self.cell(Pos(x2, y2 - 1)),
+        #                                                                        self.cell(Pos(x2, y2 + 1)),
+        #                                                                        self.cell(Pos(x2 - 1, y2)),
+        #                                                                        self.cell(Pos(x2 + 1, y2))))
 
         # nichts drumherum
         if self.cell(Pos(x2 - 1, y2)) == spacechar \
@@ -1130,13 +1123,6 @@ class MagLineOld(MagLine):
 
             se_count += 1
             se_status = _("E:links und rechts {}".format(line_hor))
-
-        # DEBUG
-        # print("END type: {} startc: {} endc: {} o: {} u: {} l:{} r:{} ".format(self._type, startc, endc,
-        #                                                                        self.cell(Pos(x2, y2 - 1)),
-        #                                                                        self.cell(Pos(x2, y2 + 1)),
-        #                                                                        self.cell(Pos(x2 - 1, y2)),
-        #                                                                        self.cell(Pos(x2 + 1, y2))))
 
         # links oder rechts - unten |
         if (self.cell(Pos(x2 - 1, y2)) == line_hor or self.cell(Pos(x2 + 1, y2)) == line_hor) \
