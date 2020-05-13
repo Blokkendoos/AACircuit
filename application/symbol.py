@@ -302,9 +302,6 @@ class Eraser(Symbol):
         ctx.set_source_rgb(0.75, 0.75, 0.75)
 
         x_start, y_start = pos.xy
-        # x_end, y_end = self.endpos_capped.xy
-        # w = x_end - x_start
-        # h = y_end - y_start
 
         # size from grid (col,row) to view (x,y) coordinates
         size = Pos(self._size[0], self._size[1]).view_xy()
@@ -536,7 +533,7 @@ class DirLine(Line):
 
         x, y = (self._endpos - self._startpos).xy
 
-        # TODO better represenation of straight line (using ASCII chars)?
+        # TODO better representation of straight line (using ASCII chars)?
 
         if abs(x) > 0:
             angle = atan(y / x)
@@ -794,9 +791,6 @@ class MagLineOld(MagLine):
         startpos = self._startpos
         endpos = self._endpos
 
-        xdiv = abs(endpos.x - startpos.x)  # Differenz x
-        ydiv = abs(endpos.y - startpos.y)  # Differenz y
-
         x1 = startpos.x
         y1 = startpos.y
 
@@ -805,19 +799,10 @@ class MagLineOld(MagLine):
 
         line_hor = Preferences.values['LINE_HOR']
         line_vert = Preferences.values['LINE_VERT']
-        upper_corner = Preferences.values['UPPER_CORNER']
-        lower_corner = Preferences.values['LOWER_CORNER']
-
-        spacechar = ' '
-        connect_char = 'o'
 
         # Startrichtung
         oben_unten = 1  # TODO global
         rechts_links = 2  # TODO global
-        startr = oben_unten
-        startc = '#'
-
-        endc = '#'
 
         eckx = 0
         ecky = 0
@@ -825,7 +810,59 @@ class MagLineOld(MagLine):
         se_status = ""
         se_count = 0
 
-        # DEBUG start character
+        se_count, se_status, startc, startr = self.start_character(se_count, se_status, startpos, endpos)
+
+        se_count, se_status, endc = self.end_character(se_count, se_status, startpos, endpos, startr)
+
+        # generell, wenn endc noch # ist
+        if endc == '#':
+            if startr == oben_unten:
+                if x1 == x2:
+                    endc = line_vert
+                else:
+                    endc = line_hor
+            if startr == rechts_links:
+                if y1 != y2:
+                    endc = line_vert
+                else:
+                    endc = line_hor
+
+        # generell, wenn startc noch # ist
+        if startc == '#':
+            if startr == oben_unten:
+                startc = line_vert
+            if startr == rechts_links:
+                startc = line_hor
+
+        self._se_count = se_count
+        self._status_msg = se_status + "; cnt:" + str(se_count)
+
+        self._draw_line(eckx, ecky, endc, startc, startr)
+
+    def start_character(self, se_count, se_status, startpos, endpos):
+
+        x1, y1 = startpos.xy
+        x2, y2 = endpos.xy
+
+        xdiv = abs(endpos.x - startpos.x)  # Differenz x
+        ydiv = abs(endpos.y - startpos.y)  # Differenz y
+
+        # Startrichtung
+        oben_unten = 1  # TODO global
+        rechts_links = 2  # TODO global
+
+        startr = oben_unten
+        startc = '#'
+        spacechar = ' '
+
+        line_hor = Preferences.values['LINE_HOR']
+        line_vert = Preferences.values['LINE_VERT']
+        upper_corner = Preferences.values['UPPER_CORNER']
+        lower_corner = Preferences.values['LOWER_CORNER']
+
+        connect_char = 'o'
+
+        # DEBUG
         # print("START startc: {} endc: {} o: {} u: {} l:{} r:{} ".format(startc, endc,
         #                                                                 self.cell(Pos(x1, y1 - 1)),
         #                                                                 self.cell(Pos(x1, y1 + 1)),
@@ -997,7 +1034,25 @@ class MagLineOld(MagLine):
             se_count += 1
             se_status = _("S:oVu={};".format(connect_char))
 
-        # End Char
+        return se_count, se_status, startc, startr
+
+    def end_character(self, se_count, se_status, startpos, endpos, startr):
+
+        x1, y1 = startpos.xy
+        x2, y2 = endpos.xy
+
+        # Startrichtung
+        oben_unten = 1  # TODO global
+        rechts_links = 2  # TODO global
+
+        endc = '#'
+        spacechar = ' '
+        connect_char = 'o'
+
+        line_hor = Preferences.values['LINE_HOR']
+        line_vert = Preferences.values['LINE_VERT']
+        upper_corner = Preferences.values['UPPER_CORNER']
+        lower_corner = Preferences.values['LOWER_CORNER']
 
         # nichts drumherum
         if self.cell(Pos(x2 - 1, y2)) == spacechar \
@@ -1076,7 +1131,7 @@ class MagLineOld(MagLine):
             se_count += 1
             se_status = _("E:links und rechts {}".format(line_hor))
 
-        # DEBUG end character
+        # DEBUG
         # print("END type: {} startc: {} endc: {} o: {} u: {} l:{} r:{} ".format(self._type, startc, endc,
         #                                                                        self.cell(Pos(x2, y2 - 1)),
         #                                                                        self.cell(Pos(x2, y2 + 1)),
@@ -1091,30 +1146,7 @@ class MagLineOld(MagLine):
             se_count += 1
             se_status = _("E: l{0}/{1} u={2}".format(upper_corner, lower_corner, line_vert))
 
-        # generell, wenn endc noch # ist
-        if endc == '#':
-            if startr == oben_unten:
-                if x1 == x2:
-                    endc = line_vert
-                else:
-                    endc = line_hor
-            if startr == rechts_links:
-                if y1 != y2:
-                    endc = line_vert
-                else:
-                    endc = line_hor
-
-        # generell, wenn startc noch # ist
-        if startc == '#':
-            if startr == oben_unten:
-                startc = line_vert
-            if startr == rechts_links:
-                startc = line_hor
-
-        self._se_count = se_count
-        self._status_msg = se_status + "; cnt:" + str(se_count)
-
-        self._draw_line(eckx, ecky, endc, startc, startr)
+        return se_count, se_status, endc
 
     def _draw_line(self, eckx, ecky, endc, startc, startr):
 
