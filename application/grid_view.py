@@ -529,11 +529,17 @@ class GridView(Gtk.DrawingArea):
 
                 pos = ref.startpos.view_xy()
 
-                # the text glyph origin is its left-bottom corner
-                y_xbase = pos.y + Preferences.values['FONTSIZE']
-                ctx.move_to(pos.x, y_xbase)
-
-                ctx.show_text(MARK_CHAR)  # mark the upper-left corner
+                if True:
+                    # the text glyph origin is its left-bottom corner
+                    y_xbase = pos.y + Preferences.values['FONTSIZE']
+                    ctx.move_to(pos.x, y_xbase)
+                    ctx.show_text(MARK_CHAR)  # mark the upper-left corner
+                else:
+                    ctx.move_to(pos.x, pos.y)
+                    ctx.rectangle(pos.x, pos.y, Preferences.values['GRIDSIZE_W'], Preferences.values['GRIDSIZE_H'])
+                    ctx.stroke()
+                    # ctx.set_source_rgba(1, 0, 0, 0.5)
+                    # ctx.fill()
 
         ctx.restore()
 
