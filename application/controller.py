@@ -452,7 +452,7 @@ class Controller(object):
 
         self.latest_action += action
 
-        pub.sendMessage('NOTHING_SELECTED')
+        # pub.sendMessage('NOTHING_SELECTED')
         pub.sendMessage('UNDO_CHANGED', undo=True)
 
     # lines
