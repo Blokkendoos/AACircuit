@@ -610,7 +610,8 @@
               <object class="GtkTable" id="char_table">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="n_columns">12</property>
+                <property name="n_columns">11</property>
+                <property name="column_spacing">2</property>
                 <child>
                   <object class="GtkButton" id="button2">
                     <property name="label" translatable="yes">+</property>
@@ -739,18 +740,6 @@
                     <property name="right_attach">11</property>
                   </packing>
                 </child>
-                <child>
-                  <object class="GtkButton" id="button13">
-                    <property name="label" translatable="yes"> </property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
-                  </object>
-                  <packing>
-                    <property name="left_attach">11</property>
-                    <property name="right_attach">12</property>
-                  </packing>
-                </child>
                 <style>
                   <class name="char_buttons"/>
                 </style>
@@ -762,39 +751,49 @@
               </packing>
             </child>
             <child>
-              <placeholder/>
+              <object class="GtkButton" id="eraser5">
+                <property name="label" translatable="yes"> Space</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <signal name="clicked" handler="on_select_eraser" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="padding">5</property>
+                <property name="position">1</property>
+              </packing>
             </child>
             <child>
               <object class="GtkButton" id="add_text">
+                <property name="label" translatable="yes">Textblock</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="tooltip_text" translatable="yes">write text</property>
-                <property name="image">image15</property>
                 <signal name="clicked" handler="on_add_text" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">True</property>
                 <property name="fill">True</property>
+                <property name="padding">5</property>
                 <property name="position">2</property>
               </packing>
             </child>
             <child>
-              <placeholder/>
-            </child>
-            <child>
               <object class="GtkButton" id="add_textblock">
+                <property name="label" translatable="yes">Textline:</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="tooltip_text" translatable="yes">insert text</property>
-                <property name="image">image14</property>
                 <signal name="clicked" handler="on_add_textblock" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">True</property>
                 <property name="fill">True</property>
-                <property name="position">4</property>
+                <property name="position">3</property>
               </packing>
             </child>
             <child>
@@ -808,7 +807,7 @@
               <packing>
                 <property name="expand">True</property>
                 <property name="fill">True</property>
-                <property name="position">5</property>
+                <property name="position">4</property>
               </packing>
             </child>
           </object>
@@ -1105,7 +1104,6 @@
                       <object class="GtkVButtonBox" id="vbuttonbox5">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="homogeneous">True</property>
                         <child>
                           <object class="GtkButton" id="rotate">
                             <property name="visible">True</property>
@@ -1147,7 +1145,6 @@
                       <object class="GtkVButtonBox" id="vbuttonbox6">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="homogeneous">True</property>
                         <child>
                           <object class="GtkButton" id="draw_mag_line">
                             <property name="visible">True</property>
@@ -1264,7 +1261,6 @@
                       <object class="GtkVButtonBox" id="vbuttonbox7">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="homogeneous">True</property>
                         <child>
                           <object class="GtkButton" id="select_components">
                             <property name="visible">True</property>
@@ -1306,7 +1302,6 @@
                       <object class="GtkVButtonBox" id="vbuttonbox8">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="homogeneous">True</property>
                         <child>
                           <object class="GtkButton" id="insert_row">
                             <property name="visible">True</property>
@@ -1348,7 +1343,6 @@
                       <object class="GtkVButtonBox" id="vbuttonbox9">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="homogeneous">True</property>
                         <child>
                           <object class="GtkButton" id="remove_row">
                             <property name="visible">True</property>

@@ -295,6 +295,8 @@ class MainWindow(Gtk.Window):
             size = (7, 7)
         elif nr == 4:
             size = (9, 9)
+        elif nr == 5:
+            size = (1, 1)
         else:
             # default, catch all
             size = (3, 3)
