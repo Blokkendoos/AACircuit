@@ -788,44 +788,18 @@ class MagLineOld(MagLine):
 
     def _representation(self):
 
-        startpos = self._startpos
-        endpos = self._endpos
-
-        line_hor = Preferences.values['LINE_HOR']
-        line_vert = Preferences.values['LINE_VERT']
-
         se_status = ""
         se_count = 0
 
-        se_count, se_status, start_char, start_ori = self.start_character(se_count, se_status, startpos, endpos)
-        se_count, se_status, end_char = self.end_character(se_count, se_status, startpos, endpos, start_ori)
-
-        # generell, wenn endc noch # ist
-        if end_char == '#':
-            if start_ori == VERTICAL:
-                if startpos.x == endpos.x:
-                    end_char = line_vert
-                else:
-                    end_char = line_hor
-            if start_ori == HORIZONTAL:
-                if startpos.y != endpos.y:
-                    end_char = line_vert
-                else:
-                    end_char = line_hor
-
-        # generell, wenn startc noch # ist
-        if start_char == '#':
-            if start_ori == VERTICAL:
-                start_char = line_vert
-            elif start_ori == HORIZONTAL:
-                start_char = line_hor
+        se_count, se_status, start_char, start_ori = self.start_character(se_count, se_status)
+        se_count, se_status, end_char = self.end_character(se_count, se_status, start_ori)
 
         self._se_count = se_count
         self._status_msg = se_status + "; cnt:" + str(se_count)
 
         self._draw_line(start_char, start_ori, end_char)
 
-    def start_character(self, se_count, se_status, startpos, endpos):
+    def start_character(self, se_count, se_status):
 
         def set_rechts_links():
             nonlocal start_ori  # noqa E999
@@ -839,11 +813,11 @@ class MagLineOld(MagLine):
             start_ori = VERTICAL
             start_char = line_vert
 
-        x1, y1 = startpos.xy
-        x2, y2 = endpos.xy
+        x1, y1 = self._startpos.xy
+        x2, y2 = self._endpos.xy
 
-        xdiv = abs(endpos.x - startpos.x)  # Differenz x
-        ydiv = abs(endpos.y - startpos.y)  # Differenz y
+        xdiv = abs(x2 - x1)  # Differenz x
+        ydiv = abs(y2 - y1)  # Differenz y
 
         start_ori = VERTICAL
         start_char = '#'
@@ -1002,12 +976,19 @@ class MagLineOld(MagLine):
             se_count += 1
             se_status = _("S:oVu={};".format(connect_char))
 
+        # generell, wenn startc noch # ist
+        if start_char == '#':
+            if start_ori == VERTICAL:
+                start_char = line_vert
+            elif start_ori == HORIZONTAL:
+                start_char = line_hor
+
         return se_count, se_status, start_char, start_ori
 
-    def end_character(self, se_count, se_status, startpos, endpos, start_ori):
+    def end_character(self, se_count, se_status, start_ori):
 
-        x1, y1 = startpos.xy
-        x2, y2 = endpos.xy
+        x1, y1 = self._startpos.xy
+        x2, y2 = self._endpos.xy
 
         end_char = '#'
         space_char = ' '
@@ -1109,6 +1090,19 @@ class MagLineOld(MagLine):
             end_char = connect_char
             se_count += 1
             se_status = _("E: l{0}/{1} u={2}".format(upper_corner, lower_corner, line_vert))
+
+        # generell, wenn endc noch # ist
+        if end_char == '#':
+            if start_ori == VERTICAL:
+                if x1 == x2:
+                    end_char = line_vert
+                else:
+                    end_char = line_hor
+            if start_ori == HORIZONTAL:
+                if y1 != y2:
+                    end_char = line_vert
+                else:
+                    end_char = line_hor
 
         return se_count, se_status, end_char
 
