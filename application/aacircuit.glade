@@ -771,7 +771,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="tooltip_text" translatable="yes">write text</property>
+                <property name="tooltip_text" translatable="yes">insert text</property>
                 <signal name="clicked" handler="on_add_text" swapped="no"/>
               </object>
               <packing>
@@ -787,7 +787,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="tooltip_text" translatable="yes">insert text</property>
+                <property name="tooltip_text" translatable="yes">insert textline</property>
                 <signal name="clicked" handler="on_add_textblock" swapped="no"/>
               </object>
               <packing>
