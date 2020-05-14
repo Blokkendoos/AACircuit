@@ -765,6 +765,10 @@ class GridView(Gtk.DrawingArea):
         self._hover_pos = self.calc_position(event.x, event.y)
         pub.sendMessage('POINTER_MOVED', pos=self._hover_pos.grid_cr())
 
+        if self._selection.state == SELECTING and \
+                self._selection.item == OBJECTS:
+            pub.sendMessage('SELECTOR_MOVED', pos=self._hover_pos.grid_cr())
+
         if not Preferences.values['SELECTION_DRAG'] \
                 and self._selection.state == SELECTING \
                 and self._selection.item in (DRAW_RECT, RECT, LINE, MAG_LINE, DIR_LINE):

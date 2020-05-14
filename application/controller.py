@@ -73,6 +73,7 @@ class Controller(object):
         pub.subscribe(self.on_eraser_selected, 'ERASER')
         pub.subscribe(self.on_select_rect, 'SELECT_RECT')
         pub.subscribe(self.on_select_objects, 'SELECT_OBJECTS')
+        pub.subscribe(self.on_selector_moved, 'SELECTOR_MOVED')
 
         # insert/remove rows or columns
         pub.subscribe(self.on_grid_col, 'GRID_COL')
@@ -298,8 +299,7 @@ class Controller(object):
             positions = set()
             for sel in selected:
                 if sel.symbol.startpos in positions:
-                    # print("Duplicates")
-                    msg = _("More than one item at position: %s !" % sel.symbol.startpos)
+                    msg = _("More than one item at position: {} !".format(sel.symbol.startpos))
                     pub.sendMessage('STATUS_MESSAGE', msg=msg)
                 else:
                     positions.add(sel.symbol.startpos)
@@ -307,6 +307,22 @@ class Controller(object):
             selected = selected_unique
 
         self.selected_objects = selected
+
+    def on_selector_moved(self, pos):
+        """Show the object (type) that is located at the cursor position."""
+        count = 0
+        for symbol in self.objects:
+            if symbol.startpos == pos:
+                last_found = symbol
+                count += 1
+        if count > 1:
+            msg = _("More than one item at position: {} !".format(pos))
+            pub.sendMessage('STATUS_MESSAGE', msg=msg)
+        elif count == 1:
+            msg = "Object: " + last_found.name
+            pub.sendMessage('STATUS_MESSAGE', msg=msg)
+        else:
+            pub.sendMessage('STATUS_MESSAGE', msg="")
 
     def on_cut(self, rect):
 

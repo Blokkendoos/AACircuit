@@ -97,6 +97,10 @@ class Symbol(object):
             pos += Pos(0, 1)
 
     @property
+    def name(self):
+        return self.__class__.__name__
+
+    @property
     def has_pickpoint(self):
         return self._has_pickpoint
 
