@@ -8,25 +8,32 @@
                                             
 
 Draw electronic circuits with ASCII characters.
-
-            -------------------
-            |            |
-           .-.          .-.
-           | |          | |
-           | |          | |
-           '-'          '-'
-            |            |
-      ||    |          |/
-     -||----+----------|   BC109
-      ||    |          |>
-            |            |
-           .-.          .-.
-           | |          | |
-           | |          | |
-           '-'          '-'
-            |            |
-            -------------------
-
+                                                                        
+                                                                        
+         .---------------------o--------------o---o +1.5V               
+         |                     |              |                         
+         |                     |              |                         
+        .-.         ||100n     |             .-.                        
+        | |    .----||----.    |             | |                        
+       100k    |    ||    |    |             | |1k                      
+        '-'    |    ___   |  |<              '-'                        
+         |     o---|___|--o--|                |                         
+         |     |    1k       |\               |                         
+         |   |/                |              |                         
+         o---|                 |              |                         
+    L    |   |>                |              |                         
+    E    |     |               |              |                         
+    D    |     |    \]         |     \]       |                         
+         '-----)----|]---------o-----|]-------o                         
+    B          |    /]+        |     /]+      |                         
+    l          |    10µ       .-.    100µ     |                         
+    i          |              | |             |                         
+    n          |              | |47Ω          V ->                      
+    k          |              '-'             -                         
+    e          |               |              |                         
+    r          '---------------o--------------o---o GND                 
+                                                                        
+                                                                        
 This is a pythonized version of the original (Borland Delphi) AACircuit (by Andreas Weber).
 A kind of reverse engineered version, where the idea and GUI layout are taken from the original.
 
