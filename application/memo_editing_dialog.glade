@@ -2,6 +2,7 @@
 <!-- Generated with glade 3.22.2 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
+  <object class="GtkTextBuffer" id="textbuffer1"/>
   <object class="MemoEditingDialog" id="memo_editing">
     <property name="can_focus">False</property>
     <property name="default_width">375</property>
@@ -56,13 +57,37 @@
           </packing>
         </child>
         <child>
+          <object class="GtkSearchEntry">
+            <property name="name">search_entry</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="primary_icon_name">edit-find-symbolic</property>
+            <property name="primary_icon_activatable">False</property>
+            <property name="primary_icon_sensitive">False</property>
+            <signal name="next-match" handler="on_next_match" swapped="no"/>
+            <signal name="previous-match" handler="on_previous_match" swapped="no"/>
+            <signal name="search-changed" handler="on_search_changed" swapped="no"/>
+            <signal name="stop-search" handler="on_stop_search" swapped="no"/>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
           <object class="GtkScrolledWindow" id="main_sw">
             <property name="name">main_sw</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="shadow_type">in</property>
             <child>
-              <placeholder/>
+              <object class="GtkTextView" id="memo_textview">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="buffer">textbuffer1</property>
+                <property name="monospace">True</property>
+              </object>
             </child>
           </object>
           <packing>
@@ -106,7 +131,7 @@
             <property name="fill">True</property>
             <property name="padding">5</property>
             <property name="pack_type">end</property>
-            <property name="position">2</property>
+            <property name="position">4</property>
           </packing>
         </child>
       </object>
@@ -115,6 +140,5 @@
       <action-widget response="-6">close</action-widget>
     </action-widgets>
   </object>
-  <object class="GtkTextBuffer" id="textbuffer1"/>
   <object class="GtkTextBuffer" id="textbuffer2"/>
 </interface>

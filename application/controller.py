@@ -354,7 +354,7 @@ class Controller(object):
 
         memo = ""
         for symbol in self.objects:
-            memo += symbol.memo() + "\n"
+            memo += symbol.memo() + '\n'
 
         dialog = MemoEditingDialog(memo)
         dialog.run()

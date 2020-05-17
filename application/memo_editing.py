@@ -69,75 +69,32 @@ class MemoEditingDialog(Gtk.Dialog):
         self._memo_editable = False
 
         self.init_scrolled_window(builder)
-        self.init_text()
         self.enable_memo_text()
 
         self.show_all()
 
     def init_scrolled_window(self, builder):
 
-        def setup_sub_scrolled_window(textview):
-            # https://stackoverflow.com/questions/6617816/two-gtk-textview-widgets-with-shared-scrollbar
-            sw = Gtk.ScrolledWindow()
+        # FIXME the scrollbars (hadjustment) get set correctly only after having scrolled to the end of the text (in the textview)
+        self.memo_tv = builder.get_object('memo_textview')
 
-            # don't show the scrollbars on these sub-scrolledwindows
-            sw.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.NEVER)
-            sw.add(textview)
-
-            textview.set_monospace(True)
-            textview.set_editable(False)
-            textview.set_cursor_visible(False)
-
-            return sw
-
-        box = Gtk.HBox()
-        textview1 = Gtk.TextView()
-        textview2 = Gtk.TextView()
-
-        # FIXME set_size_request() makes the view content to be updated only after being selected
-        # textview1.set_size_request(25, -1)
-        textview1.set_justification(Gtk.Justification.RIGHT)
-        # textview1.set_css_name('linenr')
-        textview1.set_name('linenr')  # use this name in CSS selector (!)
-
-        sw1 = setup_sub_scrolled_window(textview1)
-        sw2 = setup_sub_scrolled_window(textview2)
-
-        # use the first scrolledwindow's adjustments
-        sw2.set_hadjustment(sw1.get_hadjustment())
-        sw2.set_vadjustment(sw1.get_vadjustment())
-
-        box.pack_start(sw1, False, False, padding=5)
-        box.pack_start(sw2, True, True, padding=5)
-
-        # main scrolled window
-        main_sw = builder.get_object('main_sw')
-        main_sw.add(box)
-
-        self.memo_tv = textview2
-        self.text_buffer = textview2.get_buffer()
-
-        self.linenr_tv = textview1
-        self.linenr_buffer = textview1.get_buffer()
+        self.text_buffer = self.memo_tv.get_buffer()
+        self.text_buffer.set_text(self._text)
 
         tt = self.text_buffer.get_tag_table()
-        self.editable_tag = Gtk.TextTag()
-        self.editable_tag.set_property('foreground', '#000000')
-        tt.add(self.editable_tag)
+
+        self.tag_editable = Gtk.TextTag()
+        self.tag_editable.set_property('foreground', '#000000')
+        tt.add(self.tag_editable)
 
         # locked text is shown in light gray
-        self.locked_tag = Gtk.TextTag()
-        self.locked_tag.set_property('foreground', '#7f7f7f')
-        tt.add(self.locked_tag)
+        self.tag_locked = Gtk.TextTag()
+        self.tag_locked.set_property('foreground', '#7f7f7f')
+        tt.add(self.tag_locked)
 
-    def init_text(self):
-        self.text_buffer.set_text(self._text)
-        # linenumbers
-        lines = self._text.splitlines()
-        str = ""
-        for i in range(1, len(lines) + 1):
-            str += "{}\n".format(i)
-        self.linenr_buffer.set_text(str)
+        self.tag_match = Gtk.TextTag()
+        self.tag_match.set_property('background', 'yellow')
+        tt.add(self.tag_match)
 
     def enable_memo_text(self):
         editable = self._memo_editable
@@ -145,13 +102,13 @@ class MemoEditingDialog(Gtk.Dialog):
         self.memo_tv.set_cursor_visible(editable)
 
         bounds = self.text_buffer.get_bounds()
-        start, end = bounds
         if bounds:
+            start, end = bounds
             self.text_buffer.remove_all_tags(start, end)
             if editable:
-                self.text_buffer.apply_tag(self.editable_tag, start, end)
+                self.text_buffer.apply_tag(self.tag_editable, start, end)
             else:
-                self.text_buffer.apply_tag(self.locked_tag, start, end)
+                self.text_buffer.apply_tag(self.tag_locked, start, end)
 
     def on_edit_memo(self, item, data):
         self._memo_editable = item.get_active()
@@ -162,3 +119,35 @@ class MemoEditingDialog(Gtk.Dialog):
         end = self.text_buffer.get_end_iter()
         text = self.text_buffer.get_text(start, end, False)
         pub.sendMessage('RERUN_MEMO', str=text)
+
+    def on_search_changed(self, widget):
+        self.search_and_mark(widget.get_text())
+
+    def search_and_mark(self, text):
+        start = self.text_buffer.get_start_iter()
+        end = self.text_buffer.get_end_iter()
+        self.text_buffer.remove_tag(self.tag_match, start, end)
+
+        match = start.forward_search(text, Gtk.TextSearchFlags.TEXT_ONLY, end)
+
+        if match is not None:
+            # scroll to the first hit
+            match_start, match_end = match
+            self.memo_tv.scroll_to_iter(match_start, 0.0, True, 0, 0)
+
+        while match is not None:
+            match_start, match_end = match
+            self.text_buffer.apply_tag(self.tag_match, match_start, match_end)
+            start = match_end
+            match = start.forward_search(text, Gtk.TextSearchFlags.TEXT_ONLY, end)
+
+    def on_next_match(self, item):
+        print("Not yet implemented")
+
+    def on_previous_match(self, item):
+        print("Not yet implemented")
+
+    def on_stop_search(self, item):
+        start = self.text_buffer.get_start_iter()
+        end = self.text_buffer.get_end_iter()
+        self.text_buffer.remove_tag(self.tag_match, start, end)
