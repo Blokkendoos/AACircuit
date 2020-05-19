@@ -81,6 +81,12 @@ class MemoEditingDialog(Gtk.Dialog):
         self.text_buffer = self.memo_tv.get_buffer()
         self.text_buffer.set_text(self._text)
 
+        # https://mail.gnome.org/archives/gtk-list/2007-May/msg00034.html
+        mark = self.text_buffer.get_insert()
+        end = self.text_buffer.get_end_iter()
+        self.text_buffer.move_mark(mark, end)
+        self.memo_tv.scroll_to_mark(mark, 0.0, True, 0, 0)
+
         tt = self.text_buffer.get_tag_table()
 
         self.tag_editable = Gtk.TextTag()
@@ -128,18 +134,18 @@ class MemoEditingDialog(Gtk.Dialog):
         end = self.text_buffer.get_end_iter()
         self.text_buffer.remove_tag(self.tag_match, start, end)
 
-        match = start.forward_search(text, Gtk.TextSearchFlags.TEXT_ONLY, end)
-
-        if match is not None:
-            # scroll to the first hit
+        match = start.forward_search(text, Gtk.TextSearchFlags.TEXT_ONLY)
+        if match:
+            # scroll to the first match
+            # FIXME scrollbar adjustment is incorrect
             match_start, match_end = match
             self.memo_tv.scroll_to_iter(match_start, 0.0, True, 0, 0)
 
-        while match is not None:
-            match_start, match_end = match
-            self.text_buffer.apply_tag(self.tag_match, match_start, match_end)
-            start = match_end
-            match = start.forward_search(text, Gtk.TextSearchFlags.TEXT_ONLY, end)
+            while match is not None:
+                match_start, match_end = match
+                self.text_buffer.apply_tag(self.tag_match, match_start, match_end)
+                start = match_end
+                match = start.forward_search(text, Gtk.TextSearchFlags.TEXT_ONLY)
 
     def on_next_match(self, item):
         print("Not yet implemented")
