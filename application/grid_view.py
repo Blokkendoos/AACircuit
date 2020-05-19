@@ -80,7 +80,6 @@ class GridView(Gtk.DrawingArea):
         # subscriptions
 
         pub.subscribe(self.set_grid, 'NEW_GRID')
-        pub.subscribe(self.gridsize_changed, 'GRID_SIZE_CHANGED')
 
         pub.subscribe(self.on_add_text, 'ADD_TEXT')
         pub.subscribe(self.on_add_textblock, 'ADD_TEXTBLOCK')
@@ -112,9 +111,6 @@ class GridView(Gtk.DrawingArea):
 
     def set_grid(self, grid):
         self._grid = grid
-        self.gridsize_changed()
-
-    def gridsize_changed(self, *args, **kwargs):
         self.set_viewport_size()
 
     def set_viewport_size(self):

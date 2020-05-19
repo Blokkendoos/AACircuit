@@ -376,8 +376,7 @@ class Controller(object):
     def on_grid_size(self, cols, rows):
         self._rows = rows
         self._cols = cols
-        self.grid.resize(cols, rows)
-        pub.sendMessage('GRID_SIZE_CHANGED')
+        self.on_redraw_grid()
 
     def on_redraw_grid(self):
         rows = self._rows

@@ -252,23 +252,5 @@ class Grid(object):
     def insert_col(self, col):
         """Insert a column to the grid, without changing its dimensions."""
         self._insert_col(col)
-        # maintain the grid dimensions by removing the right column
+        # maintain the grid dimensions by removing the rightmost column
         self._remove_col(self.nr_cols - 1)
-
-    def resize(self, cols, rows):
-
-        if self.nr_cols < cols:
-            for cnt in range(cols - self.nr_cols):
-                self.insert_col(self.nr_cols)
-
-        elif self.nr_cols > cols:
-            for cnt in range(self.nr_cols - cols):
-                self.remove_col(self.nr_cols - 1)
-
-        if self.nr_rows < rows:
-            for cnt in range(rows - self.nr_rows):
-                self.insert_row(self.nr_rows)
-
-        elif self.nr_rows > rows:
-            for cnt in range(self.nr_rows - rows):
-                self.remove_row(self.nr_rows - 1)
