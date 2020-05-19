@@ -19,9 +19,12 @@ class ComponentLibrary(object):
     def __init__(self):
 
         self._libraries = []
+        # TODO add other (user) libraries
         # for n in range(2):
         #     self._libraries.append("component{0}.json".format(n + 1))
+        # TODO use German/English library based on Locale (adjust testruns too?)
         self._libraries.append('component_en.json')
+        # self._libraries.append('component_de.json')
 
         self._dict = {}
         for lib in self._libraries:
