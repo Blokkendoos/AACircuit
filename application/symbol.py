@@ -5,6 +5,7 @@ AACircuit
 
 import copy
 import json
+import re
 from pubsub import pub
 from bresenham import bresenham
 from math import pi, radians, atan
@@ -103,6 +104,30 @@ class Symbol(object):
     @property
     def has_pickpoint(self):
         return self._has_pickpoint
+
+    @property
+    def pickpoint_pos(self):
+        """
+        Return the pick position.
+
+        Examples, where '.' represents a space character and 'x' the pick-point:
+        '.|.....' => 'x|.....'
+        '....|..' => '...x|..'
+        '|......' => 'x|......'
+        '.......' => '.......x' => empty first line not expected, see the component library content
+
+        """
+        # TODO move this to init and return PP position here?
+        first_row = self.grid[0]
+        found = re.search(r'\S', first_row)
+        if found:
+            x_offset = found.start()
+            if x_offset > 0:
+                x_offset -= 1
+        else:
+            x_offset = 0
+        pos = Pos(self._startpos.x + x_offset, self._startpos.y)
+        return pos
 
     @property
     def id(self):
@@ -441,16 +466,14 @@ class Line(Symbol):
                      LINE4: Preferences.values['TERMINAL4']}
 
     def __init__(self, startpos, endpos, type=None):
-
-        super(Line, self).__init__(id=type, startpos=startpos, endpos=endpos)
+        grid = {"N": ['?']}
+        super(Line, self).__init__(id=type, grid=grid, startpos=startpos, endpos=endpos)
 
         if type is None:
             self._type = Line.LINE1
         else:
             self._type = type
         self._terminal = self.TERMINAL_TYPE[self._type]
-        # self._has_pickpoint = False
-
         self._representation()
 
     def _direction(self):
@@ -503,6 +526,10 @@ class Line(Symbol):
 
         # endpoint terminal
         self._repr[pos] = terminal
+
+    @property
+    def pickpoint_pos(self):
+        return self.startpos
 
     def rotate(self):
         # TODO enable to rotate (from HOR to VERT)?
@@ -762,7 +789,7 @@ class MagLine(Line):
     def copy(self):
         startpos = copy.deepcopy(self._startpos)
         endpos = copy.deepcopy(self._endpos)
-        return MagLine(startpos, endpos, self.cell)
+        return MagLine(startpos, endpos, self.cell, self.type)
 
     def memo(self):
         str = "{0}:{1},{2},{3}".format(MAG_LINE, self._type, self._startpos, self._endpos)
@@ -1211,7 +1238,8 @@ class Rect(Symbol):
             endpos = startpos
             startpos = tmp
 
-        super(Rect, self).__init__(startpos=startpos, endpos=endpos)
+        grid = {"N": ['?']}
+        super(Rect, self).__init__(grid=grid, startpos=startpos, endpos=endpos)
 
         self._representation()
 

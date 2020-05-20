@@ -523,19 +523,12 @@ class GridView(Gtk.DrawingArea):
                 ctx.set_source_rgb(1, 0, 0)
                 ctx.select_font_face("monospace", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
 
-                pos = ref.startpos.view_xy()
+                pos = ref.symbol.pickpoint_pos.view_xy()
 
-                if True:
-                    # the text glyph origin is its left-bottom corner
-                    y_xbase = pos.y + Preferences.values['FONTSIZE']
-                    ctx.move_to(pos.x, y_xbase)
-                    ctx.show_text(MARK_CHAR)  # mark the upper-left corner
-                else:
-                    ctx.move_to(pos.x, pos.y)
-                    ctx.rectangle(pos.x, pos.y, Preferences.values['GRIDSIZE_W'], Preferences.values['GRIDSIZE_H'])
-                    ctx.stroke()
-                    # ctx.set_source_rgba(1, 0, 0, 0.5)
-                    # ctx.fill()
+                # the text glyph origin is its left-bottom corner
+                y_xbase = pos.y + Preferences.values['FONTSIZE']
+                ctx.move_to(pos.x, y_xbase)
+                ctx.show_text(MARK_CHAR)  # mark the upper-left corner
 
         ctx.restore()
 
@@ -600,12 +593,10 @@ class GridView(Gtk.DrawingArea):
         if self._selection.item == ROW:
             row = pos.grid_cr().y
             pub.sendMessage('GRID_ROW', row=row, action=self._selection.action)
-            self.gridsize_changed()
 
         elif self._selection.item == COL:
             col = pos.grid_cr().x
             pub.sendMessage('GRID_COL', col=col, action=self._selection.action)
-            self.gridsize_changed()
 
         elif self._selection.item in (TEXT, TEXT_BLOCK):
             button = event.button

@@ -287,7 +287,7 @@ class Controller(object):
         for symbol in self.objects:
 
             # select symbols of which the upper-left corner is within the selection rectangle
-            if symbol.startpos.in_rect(rect):
+            if symbol.pickpoint_pos.in_rect(rect):
                 copy = symbol.copy()
                 selection = SelectedObjects(startpos=ul, symbol=copy)
                 selected.append(selection)
@@ -312,7 +312,7 @@ class Controller(object):
         """Show the object (type) that is located at the cursor position."""
         count = 0
         for symbol in self.objects:
-            if symbol.startpos == pos:
+            if symbol.pickpoint_pos == pos:
                 last_found = symbol
                 count += 1
         if count > 1:
