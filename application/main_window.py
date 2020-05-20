@@ -212,7 +212,7 @@ class MainWindow(Gtk.Window):
 
     def on_line(self, button):
         name = Gtk.Buildable.get_name(button)
-        line = name[-1]
+        line = int(name[-1])
         if line == 1:
             type = Line.LINE1
         elif line == 2:
