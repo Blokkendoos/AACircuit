@@ -122,8 +122,7 @@ class Symbol(object):
         found = re.search(r'\S', first_row)
         if found:
             x_offset = found.start()
-            if x_offset > 0:
-                x_offset -= 1
+            x_offset -= 1
         else:
             x_offset = 0
         pos = Pos(self._startpos.x + x_offset, self._startpos.y)
