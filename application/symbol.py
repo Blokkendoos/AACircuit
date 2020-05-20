@@ -186,7 +186,7 @@ class Symbol(object):
             else:
                 return self._grid[self.ORIENTATION[self._ori]]
         except KeyError:
-            return self.default
+            return self.default[self.ORIENTATION[0]]
 
     def rotate(self):
         """Return the grid with the next (90 degrees clockwise rotated) orientation for this symbol."""
@@ -239,12 +239,12 @@ class Symbol(object):
         mir_grid = []
 
         for r, row in enumerate(grid):
-            rev = []
+            rev = ""
             for c in reversed(row):
                 try:
-                    rev.append(switcher[c])
+                    rev += switcher[c]
                 except KeyError:
-                    rev.append(c)
+                    rev += c
             mir_grid.append(rev)
 
         return mir_grid
@@ -331,7 +331,7 @@ class Character(Symbol):
 
         id = ord(char)
         if grid is None:
-            thegrid = {"N": [[char]]}
+            thegrid = {'N': [char]}
         else:
             thegrid = grid
 
@@ -363,7 +363,7 @@ class Text(Symbol):
 
     def __init__(self, pos, text, ori=0):
 
-        grid = {"N": [['?']]}
+        grid = {"N": ['?']}
         super(Text, self).__init__(grid=grid, ori=ori, startpos=pos)
 
         self._text = text
