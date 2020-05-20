@@ -491,21 +491,22 @@ class Line(Symbol):
 
         start = self._startpos
         end = self._endpos
-
-        if start < end:
-            pos = start
-        else:
-            pos = end
-            end = start
+        pos = start
 
         if self._dir == HORIZONTAL:
             line_char = Preferences.values['LINE_HOR']
             incr = Pos(1, 0)
-
+            if start > end:
+                # line drawn from right-to-left
+                pos = Pos(end.x, start.y)
+                end = start
         elif self._dir == VERTICAL:
             line_char = Preferences.values['LINE_VERT']
             incr = Pos(0, 1)
-
+            if start > end:
+                # line drawn from right-to-left
+                pos = Pos(start.x, end.y)
+                end = start
         else:
             line_char = "?"
             incr = Pos(1, 1)
