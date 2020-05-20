@@ -51,6 +51,11 @@ class GridView(Gtk.DrawingArea):
         self._cursor_on = True
         self._text = ""
 
+        # pickpoints
+        self._show_symbol_pickpoints = True
+        self._show_line_pickpoints = True
+        self._show_text_pickpoints = True
+
         self.set_can_focus(True)
 
         self.connect('draw', self.on_draw)
@@ -108,6 +113,11 @@ class GridView(Gtk.DrawingArea):
         pub.subscribe(self.on_begin_print, 'BEGIN_PRINT')
         pub.subscribe(self.on_draw_page, 'DRAW_PAGE')
         pub.subscribe(self.on_draw_pdf, 'DRAW_PDF')
+
+        # pickpoints
+        pub.subscribe(self.on_show_symbol_pickpoints, 'SHOW_SYMBOL_PICKPOINTS')
+        pub.subscribe(self.on_show_line_pickpoints, 'SHOW_LINE_PICKPOINTS')
+        pub.subscribe(self.on_show_text_pickpoints, 'SHOW_TEXT_PICKPOINTS')
 
     def set_grid(self, grid):
         self._grid = grid
@@ -171,6 +181,17 @@ class GridView(Gtk.DrawingArea):
         else:
             print(_("Invalid surface"))
         return False
+
+    # (don't) show pickpoints
+
+    def on_show_symbol_pickpoints(self, state):
+        self._show_symbol_pickpoints = state
+
+    def on_show_line_pickpoints(self, state):
+        self._show_line_pickpoints = state
+
+    def on_show_text_pickpoints(self, state):
+        self._show_text_pickpoints = state
 
     # printing
 
@@ -520,15 +541,18 @@ class GridView(Gtk.DrawingArea):
 
             if ref.symbol.has_pickpoint:
 
-                ctx.set_source_rgb(1, 0, 0)
-                ctx.select_font_face("monospace", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+                if (self._show_symbol_pickpoints and ref.symbol.name == 'Symbol') or \
+                        (self._show_line_pickpoints and ref.symbol.name in ('Line', 'MagLine', 'MagLineOld')) or \
+                        (self._show_text_pickpoints and ref.symbol.name in ('Char', 'Text', 'TextBlock')):
+                    ctx.set_source_rgb(1, 0, 0)
+                    ctx.select_font_face("monospace", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
 
-                pos = ref.symbol.pickpoint_pos.view_xy()
+                    pos = ref.symbol.pickpoint_pos.view_xy()
 
-                # the text glyph origin is its left-bottom corner
-                y_xbase = pos.y + Preferences.values['FONTSIZE']
-                ctx.move_to(pos.x, y_xbase)
-                ctx.show_text(MARK_CHAR)  # mark the upper-left corner
+                    # the text glyph origin is its left-bottom corner
+                    y_xbase = pos.y + Preferences.values['FONTSIZE']
+                    ctx.move_to(pos.x, y_xbase)
+                    ctx.show_text(MARK_CHAR)  # mark the upper-left corner
 
         ctx.restore()
 

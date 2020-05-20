@@ -192,6 +192,17 @@ class MainWindow(Gtk.Window):
         """Show the Symbol orientation in the statusbar."""
         self.label_orientation.set_label(ori)
 
+    def on_pickpoints_changed(self, item):
+        name = Gtk.Buildable.get_name(item)
+        state = item.get_active()
+        nr = int(name[-1])
+        if nr == 1:
+            pub.sendMessage('SHOW_SYMBOL_PICKPOINTS', state=state)
+        if nr == 2:
+            pub.sendMessage('SHOW_LINE_PICKPOINTS', state=state)
+        if nr == 3:
+            pub.sendMessage('SHOW_TEXT_PICKPOINTS', state=state)
+
     def on_message(self, msg):
         """Add message to statusbar."""
         id = self.msg.get_context_id(msg)
