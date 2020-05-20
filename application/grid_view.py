@@ -542,8 +542,8 @@ class GridView(Gtk.DrawingArea):
             if ref.symbol.has_pickpoint:
 
                 if (self._show_symbol_pickpoints and ref.symbol.name == 'Symbol') or \
-                        (self._show_line_pickpoints and ref.symbol.name in ('Line', 'MagLine', 'MagLineOld')) or \
-                        (self._show_text_pickpoints and ref.symbol.name in ('Char', 'Text', 'TextBlock')):
+                        (self._show_line_pickpoints and ref.symbol.name in ('DirLine', 'Line', 'MagLine', 'MagLineOld', 'Rect')) or \
+                        (self._show_text_pickpoints and ref.symbol.name == 'Text'):
                     ctx.set_source_rgb(1, 0, 0)
                     ctx.select_font_face("monospace", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
 
