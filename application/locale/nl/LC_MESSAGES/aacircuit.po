@@ -68,6 +68,13 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 # #-#-#-#-#  aacircuit.po  #-#-#-#-#
+# #-#-#-#-#  aacircuit.pot (PACKAGE VERSION)  #-#-#-#-#
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+# #-#-#-#-#  aacircuit.po  #-#-#-#-#
 # AACIRCUIT
 # Copyright (C) 2020 JvO
 # This file is distributed under the same license as the PACKAGE package.
@@ -75,6 +82,14 @@
 #
 msgid ""
 msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-21 11:24+0200\n"
+"PO-Revision-Date: 2020-05-21 11:37+0200\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-14 16:09+0200\n"
@@ -1141,6 +1156,18 @@ msgstr "Rooster bxl 200x70"
 msgid "Redraw schema"
 msgstr "Schema opnieuw tekenen"
 
+#: ../application/aacircuit.glade:523
+msgid "Symbol pickpoints"
+msgstr "Symbool kiespunten"
+
+#: ../application/aacircuit.glade:533
+msgid "Line pickpoints"
+msgstr "Lijn kiespunten"
+
+#: ../application/aacircuit.glade:543
+msgid "Text pickpoints"
+msgstr "Tekst kiespunten"
+
 #: ../application/aacircuit.glade:540
 msgid "_Symbol"
 msgstr "_Symbool"
@@ -1153,8 +1180,8 @@ msgstr "Draai 90° met de klok mee"
 msgid "Mirror vertically"
 msgstr "Spiegel vertikaal"
 
-#: ../application/aacircuit.glade:553 ../application/aacircuit.glade:538
-#: ../application/aacircuit.glade:207
+#: ../application/aacircuit.glade:589 ../application/aacircuit.glade:553
+#: ../application/aacircuit.glade:538 ../application/aacircuit.glade:207
 msgid "AACircuit"
 msgstr ""
 
@@ -1164,60 +1191,71 @@ msgstr "_Voorkeuren"
 
 #: ../application/aacircuit.glade:243
 msgid "_Magic-line settings"
-msgstr "_Magic-line voorkeuren"
+msgstr "_Magic-line instellingen"
 
-#: ../application/aacircuit.glade:617 ../application/aacircuit.glade:616
-#: ../application/aacircuit.glade:601 ../application/aacircuit.glade:589
+#: ../application/aacircuit.glade:653 ../application/aacircuit.glade:617
+#: ../application/aacircuit.glade:616 ../application/aacircuit.glade:601
+#: ../application/aacircuit.glade:589
 msgid "+"
 msgstr ""
 
-#: ../application/aacircuit.glade:625 ../application/aacircuit.glade:624
-#: ../application/aacircuit.glade:609 ../application/aacircuit.glade:597
+#: ../application/aacircuit.glade:661 ../application/aacircuit.glade:625
+#: ../application/aacircuit.glade:624 ../application/aacircuit.glade:609
+#: ../application/aacircuit.glade:597
 msgid "o"
 msgstr ""
 
-#: ../application/aacircuit.glade:637 ../application/aacircuit.glade:636
-#: ../application/aacircuit.glade:621 ../application/aacircuit.glade:609
+#: ../application/aacircuit.glade:673 ../application/aacircuit.glade:637
+#: ../application/aacircuit.glade:636 ../application/aacircuit.glade:621
+#: ../application/aacircuit.glade:609
 msgid "#"
 msgstr ""
 
-#: ../application/aacircuit.glade:649 ../application/aacircuit.glade:648
-#: ../application/aacircuit.glade:633 ../application/aacircuit.glade:621
+#: ../application/aacircuit.glade:685 ../application/aacircuit.glade:649
+#: ../application/aacircuit.glade:648 ../application/aacircuit.glade:633
+#: ../application/aacircuit.glade:621
 msgid "/"
 msgstr ""
 
-#: ../application/aacircuit.glade:661 ../application/aacircuit.glade:660
-#: ../application/aacircuit.glade:645 ../application/aacircuit.glade:633
+#: ../application/aacircuit.glade:697 ../application/aacircuit.glade:661
+#: ../application/aacircuit.glade:660 ../application/aacircuit.glade:645
+#: ../application/aacircuit.glade:633
 msgid "\\"
 msgstr ""
 
-#: ../application/aacircuit.glade:673 ../application/aacircuit.glade:672
-#: ../application/aacircuit.glade:657 ../application/aacircuit.glade:645
+#: ../application/aacircuit.glade:709 ../application/aacircuit.glade:673
+#: ../application/aacircuit.glade:672 ../application/aacircuit.glade:657
+#: ../application/aacircuit.glade:645
 msgid "|"
 msgstr ""
 
-#: ../application/aacircuit.glade:685 ../application/aacircuit.glade:684
-#: ../application/aacircuit.glade:669 ../application/aacircuit.glade:657
+#: ../application/aacircuit.glade:721 ../application/aacircuit.glade:685
+#: ../application/aacircuit.glade:684 ../application/aacircuit.glade:669
+#: ../application/aacircuit.glade:657
 msgid "-"
 msgstr ""
 
-#: ../application/aacircuit.glade:697 ../application/aacircuit.glade:696
-#: ../application/aacircuit.glade:681 ../application/aacircuit.glade:669
+#: ../application/aacircuit.glade:733 ../application/aacircuit.glade:697
+#: ../application/aacircuit.glade:696 ../application/aacircuit.glade:681
+#: ../application/aacircuit.glade:669
 msgid "("
 msgstr ""
 
-#: ../application/aacircuit.glade:709 ../application/aacircuit.glade:708
-#: ../application/aacircuit.glade:693 ../application/aacircuit.glade:681
+#: ../application/aacircuit.glade:745 ../application/aacircuit.glade:709
+#: ../application/aacircuit.glade:708 ../application/aacircuit.glade:693
+#: ../application/aacircuit.glade:681
 msgid ")"
 msgstr ""
 
-#: ../application/aacircuit.glade:721 ../application/aacircuit.glade:720
-#: ../application/aacircuit.glade:705 ../application/aacircuit.glade:693
+#: ../application/aacircuit.glade:757 ../application/aacircuit.glade:721
+#: ../application/aacircuit.glade:720 ../application/aacircuit.glade:705
+#: ../application/aacircuit.glade:693
 msgid "'"
 msgstr ""
 
-#: ../application/aacircuit.glade:733 ../application/aacircuit.glade:732
-#: ../application/aacircuit.glade:717 ../application/aacircuit.glade:705
+#: ../application/aacircuit.glade:769 ../application/aacircuit.glade:733
+#: ../application/aacircuit.glade:732 ../application/aacircuit.glade:717
+#: ../application/aacircuit.glade:705
 msgid "."
 msgstr ""
 
@@ -1328,8 +1366,8 @@ msgstr "lijn met start en eindpunt"
 msgid "draw a rectangle"
 msgstr "teken een rechthoek"
 
-#: ../application/aacircuit.glade:1239
-msgid "move or delete symbol, shortcut: [DEL]"
+#: ../application/aacircuit.glade:1305
+msgid "move or delete symbol"
 msgstr "knip en plak symbolen"
 
 #: ../application/aacircuit.glade:1254
@@ -1356,13 +1394,15 @@ msgstr "verwijder rijen"
 msgid "remove columns"
 msgstr "verwijder kolommen"
 
-#: ../application/aacircuit.glade:1435 ../application/aacircuit.glade:1441
-#: ../application/aacircuit.glade:1426 ../application/aacircuit.glade:1407
+#: ../application/aacircuit.glade:1471 ../application/aacircuit.glade:1435
+#: ../application/aacircuit.glade:1441 ../application/aacircuit.glade:1426
+#: ../application/aacircuit.glade:1407
 msgid "y"
 msgstr ""
 
-#: ../application/aacircuit.glade:1483 ../application/aacircuit.glade:1489
-#: ../application/aacircuit.glade:1474 ../application/aacircuit.glade:1477
+#: ../application/aacircuit.glade:1519 ../application/aacircuit.glade:1483
+#: ../application/aacircuit.glade:1489 ../application/aacircuit.glade:1474
+#: ../application/aacircuit.glade:1477
 msgid "x"
 msgstr ""
 

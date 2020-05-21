@@ -1302,7 +1302,7 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
-                            <property name="tooltip_text" translatable="yes">move or delete symbol, shortcut: [DEL]</property>
+                            <property name="tooltip_text" translatable="yes">move or delete symbol</property>
                             <property name="image">image25</property>
                             <signal name="clicked" handler="on_select_objects" swapped="no"/>
                           </object>
