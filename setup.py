@@ -11,12 +11,12 @@ from setuptools import setup
 APP = ['aacircuit.py']
 # DATA_FILES = ['application/style.css', 'application/components/component_de.json']
 DATA_FILES = [
- ('application', ['application/style.css']),
- ('components', ['application/component_de.json']),
- ('locale/de/LC_MESSAGES', ['locale/de/LC_MESSAGES/aacircuit.mo']),
- ('locale/de/LC_MESSAGES', ['locale/de/LC_MESSAGES/aacircuit.po']),
- ('locale/nl/LC_MESSAGES', ['locale/nl/LC_MESSAGES/aacircuit.mo']),
- ('locale/nl/LC_MESSAGES', ['locale/nl/LC_MESSAGES/aacircuit.po'])
+    ('application', ['application/style.css']),
+    ('components', ['application/component_de.json']),
+    ('locale/de/LC_MESSAGES', ['locale/de/LC_MESSAGES/aacircuit.mo']),
+    ('locale/de/LC_MESSAGES', ['locale/de/LC_MESSAGES/aacircuit.po']),
+    ('locale/nl/LC_MESSAGES', ['locale/nl/LC_MESSAGES/aacircuit.mo']),
+    ('locale/nl/LC_MESSAGES', ['locale/nl/LC_MESSAGES/aacircuit.po'])
 ]
 OPTIONS = {}
 

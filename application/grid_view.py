@@ -664,7 +664,7 @@ class GridView(Gtk.DrawingArea):
     def on_drag_begin(self, widget, x_start, y_start):
 
         if self._selection.state == IDLE and self._selection.item in (DRAW_RECT, RECT, LINE, MAG_LINE, DIR_LINE):
-            None
+            pass
         else:
             return
 
@@ -682,7 +682,7 @@ class GridView(Gtk.DrawingArea):
     def on_drag_end(self, widget, x_offset, y_offset):
 
         if self._selection.state == SELECTING and self._selection.item in (DRAW_RECT, RECT, LINE, MAG_LINE, DIR_LINE):
-            None
+            pass
         else:
             return
 
@@ -717,7 +717,7 @@ class GridView(Gtk.DrawingArea):
     def on_drag_update(self, widget, x_offset, y_offset):
 
         if self._selection.state == SELECTING and self._selection.item in (DRAW_RECT, RECT, LINE, MAG_LINE, DIR_LINE):
-            None
+            pass
         else:
             return
 
