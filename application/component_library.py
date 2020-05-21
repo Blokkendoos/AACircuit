@@ -6,6 +6,8 @@ component_library.py
 
 import sys
 import json
+import locale
+from pathlib import Path
 
 from application import _
 from application import get_path_to_data
@@ -17,14 +19,25 @@ class ComponentLibrary(object):
     ORIENTATION = ('N', 'E', 'S', 'W')
 
     def __init__(self):
-
         self._libraries = []
-        # TODO add other (user) libraries
+
+        default_lib = 'component_en.json'
+        default_lang, coding = locale.getdefaultlocale()
+        if default_lang:
+            lang = default_lang[:2]
+            lib = 'component_' + lang + '.json'
+            lib_path = get_path_to_data('components/' + lib)
+            check = Path(lib_path)
+            if check.is_file():
+                self._libraries.append(lib)
+            else:
+                self._libraries.append(default_lib)
+        else:
+            self._libraries.append(default_lib)
+
+        # TODO add extra (user) libraries?
         # for n in range(2):
         #     self._libraries.append("component{0}.json".format(n + 1))
-        # TODO use German/English library based on Locale (adjust testruns too?)
-        self._libraries.append('component_en.json')
-        # self._libraries.append('component_de.json')
 
         self._dict = {}
         for lib in self._libraries:
@@ -82,7 +95,6 @@ class ComponentLibrary(object):
         :param key: the component name
         :returns the symbol
         """
-
         grid = self.get_grid(key)
         id = self.get_id(key)
         symbol = Symbol(id, grid)

@@ -19,6 +19,8 @@ class ComponentLibraryTest(unittest.TestCase):
     def test_default(self):
 
         c = ComponentLibrary()
+
+        # NB test should be run against the default (en_US) component library
         key = DEFAULT_COMPONENT_KEY
         symbol = c.get_symbol(key=key)
 

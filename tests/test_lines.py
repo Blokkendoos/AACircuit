@@ -53,6 +53,8 @@ class LinesTest(unittest.TestCase):
 
         # connect component to line
         c.on_paste_line(Pos(5, 2), Pos(31, 2), 1)
+
+        # NB test should be run against the default (en_US) component library
         c.on_component_changed('AND gate')
         c.on_paste_objects(Pos(25, 5))
 

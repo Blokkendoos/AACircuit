@@ -14,6 +14,7 @@ class EditingTest(unittest.TestCase):
         c = Controller()
         c.on_new()
 
+        # NB test should be run against the default (en_US) component library
         c.on_component_changed('AND gate')
         c.on_paste_objects(Pos(4, 2))
 
@@ -95,6 +96,7 @@ class EditingTest(unittest.TestCase):
         c = Controller()
         c.on_new()
 
+        # NB test should be run against the default (en_US) component library
         c.on_component_changed('AND gate')
         c.on_paste_objects(Pos(4, 2))
 
@@ -109,6 +111,7 @@ class EditingTest(unittest.TestCase):
         c = Controller()
         c.on_new()
 
+        # NB test should be run against the default (en_US) component library
         c.on_component_changed('AND gate')
         c.on_paste_objects(Pos(4, 2))
 
