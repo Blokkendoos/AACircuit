@@ -1,5 +1,5 @@
 {
-"Resistor": {
+"Weerstand": {
   "id": 1,
   "grid": {
     "N": [
@@ -98,7 +98,7 @@
     "          "]
     }
   },
-"Transformer": {
+"Transformator": {
   "id": 4,
   "grid": {
     "N": [
@@ -131,7 +131,7 @@
     "          "]
     }
   },
-"Capacitor": {
+"Condensator": {
   "id": 5,
   "grid": {
     "N": [
@@ -164,7 +164,7 @@
     "          "]
     }
   },
-"Electrolytic cap": {
+"Electrolytische cond": {
   "id": 6,
   "grid": {
     "N": [
@@ -197,7 +197,7 @@
     "          "]
     }
   },
-"Battery": {
+"Batterij": {
   "id": 7,
   "grid": {
     "N": [
@@ -230,7 +230,7 @@
     "          "]
     }
   },
-"Inductor": {
+"Spoel": {
   "id": 8,
   "grid": {
     "N": [
@@ -362,7 +362,7 @@
     "          "]
     }
   },
-"OR gate": {
+"OF poort": {
   "id": 12,
   "grid": {
     "N": [
@@ -395,7 +395,7 @@
     "          "]
     }
   },
-"AND gate": {
+"EN poort": {
   "id": 13,
   "grid": {
     "N": [
@@ -428,7 +428,7 @@
     "          "]
     }
   },
-"NOR gate": {
+"NOF poort": {
   "id": 14,
   "grid": {
     "N": [
@@ -461,7 +461,7 @@
     " | |      "]
     }
   },
-"NAND gate": {
+"NEN poort": {
   "id": 15,
   "grid": {
     "N": [
@@ -494,7 +494,7 @@
     " | |      "]
     }
   },
-"Inverter gate": {
+"Inverter": {
   "id": 16,
   "grid": {
     "N": [
@@ -527,7 +527,7 @@
     "          "]
     }
   },
-"Eraser [OBSOLETE]": {
+"Gum [OVERBODIG]": {
   "id": 17,
   "grid": {
     "N": [
@@ -560,7 +560,7 @@
     "          "]
     }
   },
-"Crossed diagonals": {
+"Kruisende diagonalen": {
   "id": 18,
   "grid": {
     "N": [
@@ -593,7 +593,7 @@
     "/    \\    "]
     }
   },
-"Bridge rectifier": {
+"Bruggelijkrichter": {
   "id": 19,
   "grid": {
     "N": [
@@ -626,7 +626,7 @@
     "          "]
     }
   },
-"Crystal": {
+"Kristal": {
   "id": 20,
   "grid": {
     "N": [
@@ -692,7 +692,7 @@
     "          "]
     }
   },
-"Fuse": {
+"Zekering": {
   "id": 22,
   "grid": {
     "N": [
@@ -725,7 +725,7 @@
     "          "]
     }
   },
-"Relay": {
+"Relais": {
   "id": 23,
   "grid": {
     "N": [
@@ -758,7 +758,7 @@
     "          "]
     }
   },
-"SPDT switch": {
+"Enkelpolige wisselschakelaar": {
   "id": 24,
   "grid": {
     "N": [
@@ -791,7 +791,7 @@
     "          "]
     }
   },
-"SPST switch": {
+"Enkelpolige schakelaar": {
   "id": 25,
   "grid": {
     "N": [
@@ -824,7 +824,7 @@
     "          "]
     }
   },
-"switch": {
+"Schakelaar": {
   "id": 26,
   "grid": {
     "N": [
@@ -857,7 +857,7 @@
     "          "]
     }
   },
-"Voltage egulator 7-series": {
+"Spanningsregelaar 7-serie": {
   "id": 27,
   "grid": {
     "N": [
@@ -1121,7 +1121,7 @@
     "          "]
     }
   },
-"Signal Source": {
+"Signaalbron": {
   "id": 35,
   "grid": {
     "N": [
@@ -1154,7 +1154,7 @@
     "  |       "]
     }
   },
-"Speaker/Mic": {
+"Luidspreker/Mikrofoon": {
   "id": 36,
   "grid": {
     "N": [
@@ -1220,7 +1220,7 @@
     "          "]
     }
   },
-"Ground/Vcc": {
+"Aarde/Vcc": {
   "id": 38,
   "grid": {
     "N": [
@@ -1418,7 +1418,7 @@
     "          "]
     }
   },
-"Voltage": {
+"Spanningsbron": {
   "id": 44,
   "grid": {
     "N": [
@@ -1440,7 +1440,7 @@
     "  /-\\     ",
     " (   )    ",
     "  \\+/     ",
-    "   |      ",
+    "   |       ",
     "          "],
     "W": [
     "          ",

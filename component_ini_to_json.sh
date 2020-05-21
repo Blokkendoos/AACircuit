@@ -2,10 +2,9 @@
 
 # 2020-03-12 Convert AACircuit components library file from *.ini to *.json
 
-# Usage: ./component_ini_to_json.sh > component_de.json
+# Usage: ./component_ini_to_json.sh component1.ini > component_de.json
 
-# 1=Deutsch, 2=English
-FILE="component1.ini";
+FILE="$1"
 DEBUG=${DEBUG:="0"}; # 1=show debug msg
 
 # check the input file
