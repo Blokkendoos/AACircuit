@@ -547,6 +547,7 @@ class GridView(Gtk.DrawingArea):
                     ctx.set_source_rgb(1, 0, 0)
                     ctx.select_font_face("monospace", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
 
+                    # FIXME the pickpoint of a mostleft position (x=0) will not show as it falls of the grid
                     pos = ref.symbol.pickpoint_pos.view_xy()
 
                     # the text glyph origin is its left-bottom corner
