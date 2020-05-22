@@ -802,7 +802,7 @@ class GridView(Gtk.DrawingArea):
         pub.sendMessage('POINTER_MOVED', pos=self._hover_pos.grid_cr())
 
         if self._selection.state == SELECTING and \
-                self._selection.item == OBJECTS:
+                self._selection.item == OBJECT:
             pub.sendMessage('SELECTOR_MOVED', pos=self._hover_pos.grid_cr())
 
         if not Preferences.values['SELECTION_DRAG'] \
