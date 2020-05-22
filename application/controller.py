@@ -72,7 +72,7 @@ class Controller(object):
 
         pub.subscribe(self.on_eraser_selected, 'ERASER')
         pub.subscribe(self.on_select_rect, 'SELECT_RECT')
-        pub.subscribe(self.on_select_objects, 'SELECT_OBJECTS')
+        pub.subscribe(self.on_select_object, 'SELECT_OBJECT')
         pub.subscribe(self.on_selector_moved, 'SELECTOR_MOVED')
 
         # insert/remove rows or columns
@@ -614,10 +614,10 @@ class Controller(object):
         msg = _("Selecting rectangle...")
         pub.sendMessage('STATUS_MESSAGE', msg=msg)
 
-    def on_select_objects(self):
+    def on_select_object(self):
         """Select individual objects."""
         pub.sendMessage('NOTHING_SELECTED')
-        pub.sendMessage('SELECTING_OBJECTS', objects=self.select_all_objects())
+        pub.sendMessage('SELECTING_OBJECT', objects=self.select_all_objects())
 
     # file open/save
 

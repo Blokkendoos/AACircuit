@@ -6,7 +6,7 @@ AACircuit
 from application import INSERT
 from application.preferences import Preferences
 from application import IDLE, SELECTING, SELECTED, DRAG
-from application import TEXT, TEXT_BLOCK, COL, ROW, RECT
+from application import OBJECT, TEXT, TEXT_BLOCK, COL, ROW, RECT
 from application.pos import Pos
 
 
@@ -82,8 +82,8 @@ class Selection(object):
 
 class SelectionRect(Selection):
 
-    def __init__(self, item=RECT):
-        super(SelectionRect, self).__init__(item=item)
+    def __init__(self, item=RECT, state=IDLE):
+        super(SelectionRect, self).__init__(item=item, state=state)
 
     def draw(self, ctx):
         x_start, y_start = self._startpos.xy
@@ -96,13 +96,17 @@ class SelectionRect(Selection):
         ctx.stroke()
 
 
+class SelectionObject(SelectionRect):
+
+    def __init__(self, item=OBJECT, state=SELECTING):
+        super(SelectionObject, self).__init__(item=item, state=state)
+
+
 class SelectionCol(Selection):
 
-    def __init__(self, action):
-        super(SelectionCol, self).__init__(item=COL)
-
+    def __init__(self, action, state=SELECTING):
+        super(SelectionCol, self).__init__(item=COL, state=state)
         self._action = action
-        self._state = SELECTING
 
     @property
     def action(self):
@@ -128,11 +132,9 @@ class SelectionCol(Selection):
 
 class SelectionRow(Selection):
 
-    def __init__(self, action):
-        super(SelectionRow, self).__init__(item=ROW)
-
+    def __init__(self, action, state=SELECTING):
+        super(SelectionRow, self).__init__(item=ROW, state=state)
         self._action = action
-        self._state = SELECTING
 
     @property
     def action(self):
@@ -158,10 +160,8 @@ class SelectionRow(Selection):
 
 class SelectionText(Selection):
 
-    def __init__(self, text="", item=TEXT):
-        super(SelectionText, self).__init__(item=item)
-
-        self._state = SELECTING
+    def __init__(self, text="", item=TEXT, state=SELECTING):
+        super(SelectionText, self).__init__(item=item, state=state)
         self._text = text
 
     @property

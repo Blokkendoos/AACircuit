@@ -315,8 +315,8 @@ class MainWindow(Gtk.Window):
         name = name[:-1]
         pub.sendMessage(name.upper(), size=size)
 
-    def on_select_objects(self, button):
-        pub.sendMessage('SELECT_OBJECTS')
+    def on_select_object(self, button):
+        pub.sendMessage('SELECT_OBJECT')
 
     def on_selecting_col(self, button):
         # https://stackoverflow.com/questions/3489520/python-gtk-widget-name

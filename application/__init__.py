@@ -49,6 +49,7 @@ DRAG = 3
 
 # selected item
 ERASER = 'eras'
+OBJECT = 'obj'
 OBJECTS = 'objs'
 COMPONENT = 'comp'
 CHARACTER = 'char'

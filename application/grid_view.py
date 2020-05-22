@@ -10,13 +10,13 @@ from pubsub import pub
 from application import _
 from application import HORIZONTAL, VERTICAL
 from application import IDLE, SELECTING, SELECTED
-from application import CHARACTER, COMPONENT, LINE, MAG_LINE, DIR_LINE, OBJECTS, COL, ROW, RECT, DRAW_RECT
+from application import CHARACTER, COMPONENT, LINE, MAG_LINE, DIR_LINE, OBJECT, OBJECTS, COL, ROW, RECT, DRAW_RECT
 from application import MARK_CHAR
 from application import TEXT, TEXT_BLOCK
 from application.pos import Pos
 from application.symbol import Text, Line, MagLine, DirLine, Rect
 from application.preferences import Preferences
-from application.selection import Selection, SelectionCol, SelectionRow, SelectionRect
+from application.selection import Selection, SelectionCol, SelectionRow, SelectionRect, SelectionObject
 
 import gi
 
@@ -94,7 +94,7 @@ class GridView(Gtk.DrawingArea):
         pub.subscribe(self.on_objects_selected, 'OBJECTS_SELECTED')
 
         pub.subscribe(self.on_selecting_rect, 'SELECTING_RECT')
-        pub.subscribe(self.on_selecting_objects, 'SELECTING_OBJECTS')
+        pub.subscribe(self.on_selecting_object, 'SELECTING_OBJECT')
         pub.subscribe(self.on_selecting_row, 'SELECTING_ROW')
         pub.subscribe(self.on_selecting_col, 'SELECTING_COL')
 
@@ -260,11 +260,14 @@ class GridView(Gtk.DrawingArea):
         self._symbol = symbol
 
     def on_objects_selected(self, objects):
-        self._selection = Selection(item=OBJECTS, state=SELECTED)
+        # one object or multiple objects have been selected
+        self._selection = Selection(item=OBJECTS)
+        self._selection.state = SELECTED
         self._objects = objects
 
-    def on_selecting_objects(self, objects):
-        self._selection = Selection(item=OBJECTS, state=SELECTING)
+    def on_selecting_object(self, objects):
+        # select a single object
+        self._selection = SelectionObject()
         self._objects = objects
 
     def on_selecting_rect(self, objects):
@@ -309,6 +312,27 @@ class GridView(Gtk.DrawingArea):
         # modifier = event.state
         # name = Gdk.keyval_name(event.keyval)
         value = event.keyval
+
+        if value == Gdk.KEY_Escape:
+            # exit drawing
+            if self._selection.state == SELECTING and \
+                    self._selection.item in (DRAW_RECT, LINE, MAG_LINE, DIR_LINE):
+                self._selection.state = IDLE
+                return True
+
+            # exit selection mode
+            elif self._selection.item == OBJECT:
+                self._selection.state = SELECTING
+                return True
+
+            elif self._selection.item == RECT:
+                self._selection.state = IDLE
+                return True
+
+        if value & 255 == ord('r') and \
+                self._selection.item in (CHARACTER, COMPONENT, OBJECTS, TEXT_BLOCK):
+            pub.sendMessage('ROTATE_SYMBOL')
+            return True
 
         # check the event modifiers (can also use CONTROL_MASK, etc)
         # shift = (event.state & Gdk.ModifierType.SHIFT_MASK)
@@ -451,10 +475,11 @@ class GridView(Gtk.DrawingArea):
         if self._selection.item in (CHARACTER, COMPONENT):
             self._symbol.draw(ctx, self._hover_pos)
 
-        elif self._selection.item == RECT:
+        elif self._selection.item in (OBJECT, RECT):
             # draw the selection rectangle
             self._selection.startpos = self._drag_startpos
             self._selection.endpos = self._drag_endpos
+            self._selection.maxpos = self.max_pos_grid
             self._selection.draw(ctx)
             self.mark_all_objects(ctx)
 
@@ -463,11 +488,7 @@ class GridView(Gtk.DrawingArea):
             self.draw_selected_objects(ctx)
 
     def draw_selecting_state(self, ctx):
-        if self._selection.item == OBJECTS:
-            self.mark_all_objects(ctx)
-            self.draw_cursor(ctx)
-
-        elif self._selection.item in (TEXT, TEXT_BLOCK):
+        if self._selection.item in (TEXT, TEXT_BLOCK):
             self.draw_cursor(ctx)
             self._symbol.startpos = self._hover_pos.grid_cr()
             self._symbol.text = self._text
@@ -487,7 +508,10 @@ class GridView(Gtk.DrawingArea):
             self._selection.endpos = self._drag_currentpos
             self._selection.maxpos = self.max_pos_grid
 
-            if self._selection.item == RECT:
+            if self._selection.item == OBJECT:
+                self.mark_all_objects(ctx)
+
+            elif self._selection.item == RECT:
                 self.mark_all_objects(ctx)
                 self._selection.draw(ctx)
 
@@ -636,12 +660,10 @@ class GridView(Gtk.DrawingArea):
                 # FIXME more elegant options? otoh grid_view() is owner of the Text Symbol
                 pub.sendMessage('ORIENTATION_CHANGED', ori=self._symbol.ori_as_str)
 
-        elif self._selection.item == OBJECTS:
-
-            # select the object within the cursor rect
-            self._selection = SelectionRect()
+        elif self._selection.item == OBJECT:
             self._selection.state = SELECTED
 
+            # select the object within the cursor rect
             ul = pos
             br = ul + Pos(Preferences.values['GRIDSIZE_W'], Preferences.values['GRIDSIZE_H'])
 
@@ -650,9 +672,7 @@ class GridView(Gtk.DrawingArea):
 
             self._selection.startpos = ul
             self._selection.endpos = br
-
             self._selection.maxpos = self.max_pos_grid
-            self._selection.direction = HORIZONTAL
 
             pub.sendMessage('SELECTION_CHANGED', selected=True)
 
@@ -774,6 +794,10 @@ class GridView(Gtk.DrawingArea):
         return dir
 
     def on_hover(self, widget, event):
+
+        if not self.has_focus():
+            self.grab_focus()
+
         self._hover_pos = self.calc_position(event.x, event.y)
         pub.sendMessage('POINTER_MOVED', pos=self._hover_pos.grid_cr())
 
