@@ -488,7 +488,11 @@ class GridView(Gtk.DrawingArea):
             self.draw_selected_objects(ctx)
 
     def draw_selecting_state(self, ctx):
-        if self._selection.item in (TEXT, TEXT_BLOCK):
+        if self._selection.item == OBJECT:
+            self.mark_all_objects(ctx)
+            self.draw_cursor(ctx)
+
+        elif self._selection.item in (TEXT, TEXT_BLOCK):
             self.draw_cursor(ctx)
             self._symbol.startpos = self._hover_pos.grid_cr()
             self._symbol.text = self._text
@@ -508,10 +512,7 @@ class GridView(Gtk.DrawingArea):
             self._selection.endpos = self._drag_currentpos
             self._selection.maxpos = self.max_pos_grid
 
-            if self._selection.item == OBJECT:
-                self.mark_all_objects(ctx)
-
-            elif self._selection.item == RECT:
+            if self._selection.item == RECT:
                 self.mark_all_objects(ctx)
                 self._selection.draw(ctx)
 
