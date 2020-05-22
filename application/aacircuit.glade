@@ -140,12 +140,27 @@
   <object class="GtkImage" id="image34">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">bitmaps/delete.bmp</property>
+    <property name="pixbuf">buttons/eraser1.png</property>
   </object>
   <object class="GtkImage" id="image35">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="pixbuf">buttons/stretch1.png</property>
+  </object>
+  <object class="GtkImage" id="image36">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="pixbuf">buttons/eraser2.png</property>
+  </object>
+  <object class="GtkImage" id="image37">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="pixbuf">buttons/eraser3.png</property>
+  </object>
+  <object class="GtkImage" id="image38">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="pixbuf">buttons/eraser4.png</property>
   </object>
   <object class="GtkImage" id="image4">
     <property name="visible">True</property>
@@ -957,6 +972,7 @@
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
                                 <property name="tooltip_text" translatable="yes">eraser 9x9</property>
+                                <property name="image">image38</property>
                                 <signal name="clicked" handler="on_select_eraser" swapped="no"/>
                               </object>
                               <packing>
@@ -970,6 +986,7 @@
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
                                 <property name="tooltip_text" translatable="yes">eraser 7x7</property>
+                                <property name="image">image37</property>
                                 <signal name="clicked" handler="on_select_eraser" swapped="no"/>
                               </object>
                               <packing>
@@ -983,6 +1000,7 @@
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
                                 <property name="tooltip_text" translatable="yes">eraser 5x5</property>
+                                <property name="image">image36</property>
                                 <signal name="clicked" handler="on_select_eraser" swapped="no"/>
                               </object>
                               <packing>
