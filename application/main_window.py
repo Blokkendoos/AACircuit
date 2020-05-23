@@ -65,7 +65,7 @@ class MainWindow(Gtk.Window):
         Arguments pass in must be passed from __new__().
         """
         self.builder = builder
-        self.set_default_size(640, 480)
+        self.set_default_size(640, 700)
 
         # Add any other initialization here
 
@@ -294,26 +294,12 @@ class MainWindow(Gtk.Window):
     def on_select_rect(self, button):
         pub.sendMessage('SELECT_RECT')
 
-    def on_select_eraser(self, button):
-        name = Gtk.Buildable.get_name(button)
-        # the sequence number defines the eraser size
-        nr = int(name[-1])
-        if nr == 1:
-            size = (3, 3)
-        elif nr == 2:
-            size = (5, 5)
-        elif nr == 3:
-            size = (7, 7)
-        elif nr == 4:
-            size = (9, 9)
-        elif nr == 5:
-            size = (1, 1)
-        else:
-            # default, catch all
-            size = (3, 3)
-        # strip the sequence nr and forward msg
-        name = name[:-1]
-        pub.sendMessage(name.upper(), size=size)
+    def on_select_space(self, button):
+        size = (1, 1)
+        pub.sendMessage('ERASER', size=size)
+
+    def on_selecting_eraser(self, button):
+        pub.sendMessage('SELECTING_ERASER')
 
     def on_select_object(self, button):
         pub.sendMessage('SELECT_OBJECT')

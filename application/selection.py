@@ -6,7 +6,7 @@ AACircuit
 from application import INSERT
 from application.preferences import Preferences
 from application import IDLE, SELECTING, SELECTED, DRAG
-from application import OBJECT, TEXT, TEXT_BLOCK, COL, ROW, RECT
+from application import OBJECT, TEXT, TEXT_BLOCK, COL, ROW, RECT, ERASER
 from application.pos import Pos
 
 
@@ -94,6 +94,12 @@ class SelectionRect(Selection):
         h = y_end - y_start
         ctx.rectangle(x_start, y_start, w, h)
         ctx.stroke()
+
+
+class SelectionEraser(SelectionRect):
+
+    def __init__(self, item=ERASER):
+        super(SelectionEraser, self).__init__(item=item)
 
 
 class SelectionObject(SelectionRect):

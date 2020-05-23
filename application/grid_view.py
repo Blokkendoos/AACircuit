@@ -10,13 +10,13 @@ from pubsub import pub
 from application import _
 from application import HORIZONTAL, VERTICAL
 from application import IDLE, SELECTING, SELECTED
-from application import CHARACTER, COMPONENT, LINE, MAG_LINE, DIR_LINE, OBJECT, OBJECTS, COL, ROW, RECT, DRAW_RECT
+from application import CHARACTER, COMPONENT, LINE, MAG_LINE, DIR_LINE, OBJECT, OBJECTS, COL, ROW, RECT, DRAW_RECT, ERASER
 from application import MARK_CHAR
 from application import TEXT, TEXT_BLOCK
 from application.pos import Pos
 from application.symbol import Text, Line, MagLine, DirLine, Rect
 from application.preferences import Preferences
-from application.selection import Selection, SelectionCol, SelectionRow, SelectionRect, SelectionObject
+from application.selection import Selection, SelectionCol, SelectionRow, SelectionRect, SelectionObject, SelectionEraser
 
 import gi
 
@@ -93,6 +93,7 @@ class GridView(Gtk.DrawingArea):
         pub.subscribe(self.on_symbol_selected, 'SYMBOL_SELECTED')
         pub.subscribe(self.on_objects_selected, 'OBJECTS_SELECTED')
 
+        pub.subscribe(self.on_selecting_eraser, 'SELECTING_ERASER')
         pub.subscribe(self.on_selecting_rect, 'SELECTING_RECT')
         pub.subscribe(self.on_selecting_object, 'SELECTING_OBJECT')
         pub.subscribe(self.on_selecting_row, 'SELECTING_ROW')
@@ -270,6 +271,9 @@ class GridView(Gtk.DrawingArea):
         self._selection = SelectionObject()
         self._objects = objects
 
+    def on_selecting_eraser(self):
+        self._selection = SelectionEraser()
+
     def on_selecting_rect(self, objects):
         self._selection = SelectionRect()
         self._objects = objects
@@ -325,7 +329,7 @@ class GridView(Gtk.DrawingArea):
                 self._selection.state = SELECTING
                 return True
 
-            elif self._selection.item == RECT:
+            elif self._selection.item in (RECT, ERASER):
                 self._selection.state = IDLE
                 return True
 
@@ -606,7 +610,7 @@ class GridView(Gtk.DrawingArea):
         pub.sendMessage('POINTER_MOVED', pos=pos.grid_cr())
 
         if not Preferences.values['SELECTION_DRAG'] \
-                and self._selection.item in (DRAW_RECT, RECT, LINE, MAG_LINE, DIR_LINE):
+                and self._selection.item in (DRAW_RECT, ERASER, RECT, LINE, MAG_LINE, DIR_LINE):
 
             if self._selection.state == IDLE:
                 self.on_drag_begin(None, event.x, event.y)
@@ -685,7 +689,7 @@ class GridView(Gtk.DrawingArea):
 
     def on_drag_begin(self, widget, x_start, y_start):
 
-        if self._selection.state == IDLE and self._selection.item in (DRAW_RECT, RECT, LINE, MAG_LINE, DIR_LINE):
+        if self._selection.state == IDLE and self._selection.item in (DRAW_RECT, RECT, ERASER, LINE, MAG_LINE, DIR_LINE):
             pass
         else:
             return
@@ -703,7 +707,7 @@ class GridView(Gtk.DrawingArea):
 
     def on_drag_end(self, widget, x_offset, y_offset):
 
-        if self._selection.state == SELECTING and self._selection.item in (DRAW_RECT, RECT, LINE, MAG_LINE, DIR_LINE):
+        if self._selection.state == SELECTING and self._selection.item in (DRAW_RECT, RECT, ERASER, LINE, MAG_LINE, DIR_LINE):
             pass
         else:
             return
@@ -723,6 +727,10 @@ class GridView(Gtk.DrawingArea):
         elif self._selection.item == RECT:
             pub.sendMessage('SELECTION_CHANGED', selected=True)
 
+        elif self._selection.item == ERASER:
+            size = offset.grid_cr().xy
+            pub.sendMessage('ERASE', startpos=startpos, size=size)
+
         elif self._selection.item == LINE:
             if self._drag_dir == HORIZONTAL:
                 endpos.y = startpos.y
@@ -738,7 +746,7 @@ class GridView(Gtk.DrawingArea):
 
     def on_drag_update(self, widget, x_offset, y_offset):
 
-        if self._selection.state == SELECTING and self._selection.item in (DRAW_RECT, RECT, LINE, MAG_LINE, DIR_LINE):
+        if self._selection.state == SELECTING and self._selection.item in (DRAW_RECT, RECT, ERASER, LINE, MAG_LINE, DIR_LINE):
             pass
         else:
             return
@@ -748,7 +756,7 @@ class GridView(Gtk.DrawingArea):
         pos = self._drag_startpos + offset
         pos.snap_to_grid()
 
-        if self._selection.item in (DRAW_RECT, RECT, DIR_LINE, MAG_LINE):
+        if self._selection.item in (DRAW_RECT, RECT, ERASER, DIR_LINE, MAG_LINE):
             self._drag_currentpos = pos
 
         elif self._selection.item == LINE:
@@ -808,7 +816,7 @@ class GridView(Gtk.DrawingArea):
 
         if not Preferences.values['SELECTION_DRAG'] \
                 and self._selection.state == SELECTING \
-                and self._selection.item in (DRAW_RECT, RECT, LINE, MAG_LINE, DIR_LINE):
+                and self._selection.item in (DRAW_RECT, RECT, ERASER, LINE, MAG_LINE, DIR_LINE):
             offset = Pos(event.x, event.y) - self._drag_startpos
             self.on_drag_update(None, offset.x, offset.y)
 

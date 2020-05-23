@@ -70,6 +70,7 @@ class Controller(object):
         pub.subscribe(self.on_undo, 'UNDO')
         pub.subscribe(self.on_redo, 'REDO')
 
+        pub.subscribe(self.on_erase, 'ERASE')
         pub.subscribe(self.on_eraser_selected, 'ERASER')
         pub.subscribe(self.on_select_rect, 'SELECT_RECT')
         pub.subscribe(self.on_select_object, 'SELECT_OBJECT')
@@ -462,7 +463,6 @@ class Controller(object):
             action.append(act)
 
             self.objects.append(symbol)
-
             symbol.paste(self.grid)
 
         self.latest_action += action
@@ -588,6 +588,19 @@ class Controller(object):
             return False
 
     # other
+
+    def on_erase(self, startpos, size):
+        """Erase an area of the given size."""
+        symbol = Eraser(size, startpos)
+
+        self.selected_objects = []
+        self.add_selected_object(symbol)
+
+        self.objects.append(symbol)
+        symbol.paste(self.grid)
+        self.push_latest_action(symbol)
+
+        pub.sendMessage('UNDO_CHANGED', undo=True)
 
     def on_eraser_selected(self, size):
         """Select eraser of the given size."""

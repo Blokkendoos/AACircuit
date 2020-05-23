@@ -140,27 +140,12 @@
   <object class="GtkImage" id="image34">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">buttons/eraser1.png</property>
+    <property name="pixbuf">buttons/eraser.png</property>
   </object>
   <object class="GtkImage" id="image35">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="pixbuf">buttons/stretch1.png</property>
-  </object>
-  <object class="GtkImage" id="image36">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="pixbuf">buttons/eraser2.png</property>
-  </object>
-  <object class="GtkImage" id="image37">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="pixbuf">buttons/eraser3.png</property>
-  </object>
-  <object class="GtkImage" id="image38">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="pixbuf">buttons/eraser4.png</property>
   </object>
   <object class="GtkImage" id="image4">
     <property name="visible">True</property>
@@ -802,12 +787,12 @@
               </packing>
             </child>
             <child>
-              <object class="GtkButton" id="eraser5">
+              <object class="GtkButton" id="space">
                 <property name="label" translatable="yes"> Space</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <signal name="clicked" handler="on_select_eraser" swapped="no"/>
+                <signal name="clicked" handler="on_select_space" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -951,6 +936,65 @@
                   </packing>
                 </child>
                 <child>
+                  <object class="GtkFrame" id="frame2">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label_xalign">0</property>
+                    <property name="shadow_type">none</property>
+                    <child>
+                      <object class="GtkAlignment" id="alignment2">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="left_padding">12</property>
+                        <child>
+                          <object class="GtkTable" id="table5">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="n_rows">2</property>
+                            <child>
+                              <object class="GtkButton">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">True</property>
+                                <property name="tooltip_text" translatable="yes">move or delete symbol</property>
+                                <property name="image">image25</property>
+                                <signal name="clicked" handler="on_select_object" swapped="no"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="select_rect">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">True</property>
+                                <property name="tooltip_text" translatable="yes">selection rectangle</property>
+                                <property name="image">image26</property>
+                                <signal name="clicked" handler="on_select_rect" swapped="no"/>
+                              </object>
+                              <packing>
+                                <property name="top_attach">1</property>
+                                <property name="bottom_attach">2</property>
+                              </packing>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child type="label">
+                      <object class="GtkLabel" id="label4">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">&lt;b&gt;Select&lt;/b&gt;</property>
+                        <property name="use_markup">True</property>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">False</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+                <child>
                   <object class="GtkFrame" id="frame5">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
@@ -965,57 +1009,14 @@
                           <object class="GtkTable" id="table2">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="n_rows">4</property>
                             <child>
-                              <object class="GtkButton" id="eraser4">
+                              <object class="GtkButton" id="eraser">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
-                                <property name="tooltip_text" translatable="yes">eraser 9x9</property>
-                                <property name="image">image38</property>
-                                <signal name="clicked" handler="on_select_eraser" swapped="no"/>
-                              </object>
-                              <packing>
-                                <property name="top_attach">3</property>
-                                <property name="bottom_attach">4</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkButton" id="eraser3">
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">True</property>
-                                <property name="tooltip_text" translatable="yes">eraser 7x7</property>
-                                <property name="image">image37</property>
-                                <signal name="clicked" handler="on_select_eraser" swapped="no"/>
-                              </object>
-                              <packing>
-                                <property name="top_attach">2</property>
-                                <property name="bottom_attach">3</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkButton" id="eraser2">
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">True</property>
-                                <property name="tooltip_text" translatable="yes">eraser 5x5</property>
-                                <property name="image">image36</property>
-                                <signal name="clicked" handler="on_select_eraser" swapped="no"/>
-                              </object>
-                              <packing>
-                                <property name="top_attach">1</property>
-                                <property name="bottom_attach">2</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkButton" id="eraser1">
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">True</property>
-                                <property name="tooltip_text" translatable="yes">eraser 3x3</property>
+                                <property name="tooltip_text" translatable="yes">erase selected area</property>
                                 <property name="image">image34</property>
-                                <signal name="clicked" handler="on_select_eraser" swapped="no"/>
+                                <signal name="clicked" handler="on_selecting_eraser" swapped="no"/>
                               </object>
                             </child>
                           </object>
@@ -1034,7 +1035,7 @@
                   <packing>
                     <property name="expand">True</property>
                     <property name="fill">False</property>
-                    <property name="position">1</property>
+                    <property name="position">2</property>
                   </packing>
                 </child>
                 <child>
@@ -1117,7 +1118,7 @@
                   <packing>
                     <property name="expand">True</property>
                     <property name="fill">False</property>
-                    <property name="position">2</property>
+                    <property name="position">3</property>
                   </packing>
                 </child>
               </object>
@@ -1312,47 +1313,6 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkVButtonBox" id="vbuttonbox7">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <child>
-                          <object class="GtkButton">
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">True</property>
-                            <property name="tooltip_text" translatable="yes">move or delete symbol</property>
-                            <property name="image">image25</property>
-                            <signal name="clicked" handler="on_select_object" swapped="no"/>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">False</property>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkButton" id="select_rect">
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">True</property>
-                            <property name="tooltip_text" translatable="yes">selection rectangle</property>
-                            <property name="image">image26</property>
-                            <signal name="clicked" handler="on_select_rect" swapped="no"/>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">False</property>
-                            <property name="position">1</property>
-                          </packing>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">False</property>
-                        <property name="position">2</property>
-                      </packing>
-                    </child>
-                    <child>
                       <object class="GtkVButtonBox" id="vbuttonbox8">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
@@ -1390,7 +1350,7 @@
                       <packing>
                         <property name="expand">True</property>
                         <property name="fill">False</property>
-                        <property name="position">3</property>
+                        <property name="position">2</property>
                       </packing>
                     </child>
                     <child>
@@ -1431,7 +1391,7 @@
                       <packing>
                         <property name="expand">True</property>
                         <property name="fill">False</property>
-                        <property name="position">4</property>
+                        <property name="position">3</property>
                       </packing>
                     </child>
                   </object>
