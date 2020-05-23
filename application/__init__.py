@@ -63,5 +63,4 @@ LINE = 'line'
 MAG_LINE = 'magl'
 DIR_LINE = 'dirl'
 
-DEFAULT_COMPONENT_KEY = 'Resistor'
 MARK_CHAR = 'X'

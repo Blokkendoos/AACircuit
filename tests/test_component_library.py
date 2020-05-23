@@ -1,8 +1,8 @@
 # NB to be run with nose, this .py should _not_ be executable (chmod -x)
 
 import unittest
+from locale import gettext as _
 
-from application import DEFAULT_COMPONENT_KEY
 from application.component_library import ComponentLibrary
 
 
@@ -20,8 +20,7 @@ class ComponentLibraryTest(unittest.TestCase):
 
         c = ComponentLibrary()
 
-        # NB test should be run against the default (en_US) component library
-        key = DEFAULT_COMPONENT_KEY
+        key = _("Resistor")
         symbol = c.get_symbol(key=key)
 
         self.assertEquals(symbol.id, 1)

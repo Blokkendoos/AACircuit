@@ -4,8 +4,7 @@ AACircuit
 """
 
 from pubsub import pub
-from application import _
-from application import DEFAULT_COMPONENT_KEY
+from locale import gettext as _
 
 import gi
 gi.require_version('Gtk', '3.0')
@@ -48,6 +47,7 @@ class ComponentView():
         if iter is not None:
             label = model[iter][0]
         else:
-            label = DEFAULT_COMPONENT_KEY
+            # default component
+            label = _("Resistor")
         pub.sendMessage('COMPONENT_CHANGED', label=label)
         return True
