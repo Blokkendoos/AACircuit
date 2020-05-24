@@ -338,6 +338,11 @@ class GridView(Gtk.DrawingArea):
             pub.sendMessage('ROTATE_SYMBOL')
             return True
 
+        if value & 255 == ord('m') and \
+                self._selection.item in (COMPONENT, OBJECTS, TEXT_BLOCK):
+            pub.sendMessage('MIRROR_SYMBOL')
+            return True
+
         # check the event modifiers (can also use CONTROL_MASK, etc)
         # shift = (event.state & Gdk.ModifierType.SHIFT_MASK)
         if value == Gdk.KEY_Left or value == Gdk.KEY_BackSpace:
