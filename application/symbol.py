@@ -78,6 +78,10 @@ class Symbol(object):
         else:
             self._endpos = endpos
 
+        self._is_symbol = True
+        self._is_text = False
+        self._is_line = False
+
     def __str__(self):
         str = _("Class: {0} id: {1} ori: {2} startpos: {3}").format(self.__class__.__name__, self._id, self.ORIENTATION[self._ori], self.startpos)
         return str
@@ -100,6 +104,22 @@ class Symbol(object):
     @property
     def name(self):
         return self.__class__.__name__
+
+    @property
+    def is_symbol(self):
+        return self._is_symbol
+
+    @property
+    def is_text(self):
+        return self._is_text
+
+    @property
+    def is_line(self):
+        return self._is_line
+
+    @property
+    def pickpoint_type(self):
+        return ''
 
     @property
     def has_pickpoint(self):
@@ -287,7 +307,6 @@ class Eraser(Symbol):
         # arbitrary id chosen for the eraser symbol
         super(Eraser, self).__init__(grid=None, startpos=startpos)
         self._size = size
-
         self._representation()
 
     def _representation(self):
@@ -352,18 +371,16 @@ class Eraser(Symbol):
 class Character(Symbol):
 
     def __init__(self, char, grid=None, startpos=None):
-
         id = ord(char)
         if grid is None:
             thegrid = {'N': [char]}
         else:
             thegrid = grid
-
         super(Character, self).__init__(id=id, grid=thegrid, startpos=startpos)
 
         self._char = char
-        self._has_pickpoint = False
-
+        self._is_symbol = False
+        self._is_text = True
         self._representation()
 
     @property
@@ -380,7 +397,7 @@ class Character(Symbol):
 
     def rotate(self):
         # raise NotImplementedError
-        return
+        pass
 
 
 class Text(Symbol):
@@ -391,6 +408,8 @@ class Text(Symbol):
         super(Text, self).__init__(grid=grid, ori=ori, startpos=pos)
 
         self._text = text
+        self._is_symbol = False
+        self._is_text = True
         self._representation()
 
     def _representation(self):
@@ -473,6 +492,8 @@ class Line(Symbol):
         else:
             self._type = type
         self._terminal = self.TERMINAL_TYPE[self._type]
+        self._is_symbol = False
+        self._is_line = True
         self._representation()
 
     def _direction(self):
@@ -1241,6 +1262,8 @@ class Rect(Symbol):
         grid = {"N": ['?']}
         super(Rect, self).__init__(grid=grid, startpos=startpos, endpos=endpos)
 
+        self._is_symbol = False
+        self._is_line = True
         self._representation()
 
     def _representation(self):
@@ -1294,6 +1317,7 @@ class Column(Symbol):
         super(Column, self).__init__(id=col, startpos=Pos(col, 0))
         self._col = col
         self._action = action
+        self._is_symbol = False
         self._has_pickpoint = False
 
     @property
@@ -1332,6 +1356,7 @@ class Row(Symbol):
         super(Row, self).__init__(id=row, startpos=Pos(0, row))
         self._row = row
         self._action = action
+        self._is_symbol = False
         self._has_pickpoint = False
 
     @property
