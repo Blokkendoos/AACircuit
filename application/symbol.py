@@ -25,10 +25,8 @@ from application import ERASER, COMPONENT, CHARACTER, TEXT, DRAW_RECT, LINE, MAG
 
 def show_text(ctx, x, y, text):
     """Show text on a canvas position taking into account the Cairo glyph origin."""
-
     # the Cairo text glyph origin is its left-bottom corner
     y += Preferences.values['FONTSIZE']
-
     ctx.move_to(x, y)
     ctx.show_text(text)
     return
@@ -49,7 +47,6 @@ class Symbol(object):
     ORIENTATION = {0: "N", 1: "E", 2: "S", 3: "W"}
 
     def __init__(self, id=0, grid=None, ori=None, mirrored=None, startpos=None, endpos=None):
-
         self._id = id
         self._has_pickpoint = True
 
@@ -87,9 +84,7 @@ class Symbol(object):
         return str
 
     def _representation(self):
-
         self._repr = dict()
-
         pos = self._startpos
         incr = Pos(1, 0)
 
@@ -271,7 +266,6 @@ class Symbol(object):
 
     def mirror(self, grid):
         """Return the symbol grid vertically mirrored."""
-
         # mirror specific characters
         switcher = {'/': '\\',
                     '\\': '/',
@@ -298,13 +292,11 @@ class Eraser(Symbol):
 
     def __init__(self, size, startpos=None):
         """
-        Erase a part of the grid.
+        Hide a part of the grid.
 
         :param size: the size (in cols, rows) of the grid area to be erased
         :param startpos: the upper-left corner (col,row) coordinate of the area to be erased
         """
-
-        # arbitrary id chosen for the eraser symbol
         super(Eraser, self).__init__(grid=None, startpos=startpos)
         self._size = size
         self._representation()
@@ -323,27 +315,11 @@ class Eraser(Symbol):
                 pos += incr
             pos += Pos(0, 1)
 
-    def draw_char(self, ctx, pos=None):
-        """
-        The Eraser is shown with 'x' characters.
-        :param ctx: the Cairo context
-        :param pos: target position in grid canvas (x,y) coordinates
-        """
-
-        self._representation()
-        char = 'x'
-
-        offset = pos - self._startpos.view_xy()
-        for pos in self._repr.keys():
-            grid_pos = pos.view_xy() + offset
-            show_text(ctx, grid_pos.x, grid_pos.y, char)
-
     def draw(self, ctx, pos=None):
         """
         :param ctx: the Cairo context
         :param pos: target position in grid canvas (x,y) coordinates
         """
-
         ctx.save()
 
         ctx.set_source_rgb(0.75, 0.75, 0.75)
@@ -466,10 +442,8 @@ class Text(Symbol):
 
 class Line(Symbol):
     """A horizontal or verical line from start to end position."""
-
     # decimal char codes (following the original AACircuit) for lines
     # and 0/1 for the 'old' respectively new Magic line
-
     MLINE_LEGACY = 0
     MLINE = 1
     LINE1 = 0
@@ -505,9 +479,7 @@ class Line(Symbol):
 
     def _representation(self):
         """Compose the line elements."""
-
         self._direction()
-
         self._repr = dict()
 
         start = self._startpos
@@ -576,13 +548,10 @@ class DirLine(Line):
     """A straight line from start to end position."""
 
     def __init__(self, startpos, endpos):
-
         super(DirLine, self).__init__(startpos=startpos, endpos=endpos)
-
         self._representation()
 
     def _representation(self):
-
         x, y = (self._endpos - self._startpos).xy
 
         # TODO better representation of straight line (using ASCII chars)?
@@ -684,7 +653,6 @@ class MagLine(Line):
         return result, m_ori, m_char
 
     def _representation(self):
-
         startpos = self._startpos
         endpos = self._endpos
 

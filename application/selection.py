@@ -85,7 +85,7 @@ class SelectionRect(Selection):
     def __init__(self, item=RECT, state=IDLE):
         super(SelectionRect, self).__init__(item=item, state=state)
 
-    def draw(self, ctx):
+    def set_position(self, ctx):
         x_start, y_start = self._startpos.xy
         x_end, y_end = self.endpos_capped.xy
 
@@ -93,6 +93,9 @@ class SelectionRect(Selection):
         w = x_end - x_start
         h = y_end - y_start
         ctx.rectangle(x_start, y_start, w, h)
+
+    def draw(self, ctx):
+        self.set_position(ctx)
         ctx.stroke()
 
 
@@ -100,6 +103,11 @@ class SelectionEraser(SelectionRect):
 
     def __init__(self, item=ERASER):
         super(SelectionEraser, self).__init__(item=item)
+
+    def draw(self, ctx):
+        self.set_position(ctx)
+        ctx.set_source_rgba(0.75, 0.75, 0.75, 0.5)
+        ctx.fill()
 
 
 class SelectionObject(SelectionRect):
@@ -119,8 +127,9 @@ class SelectionCol(Selection):
         return self._action
 
     def draw(self, ctx):
-        """Highlight the selected column.  Green or red color when inserting respectively deleting a column."""
-
+        """
+        Highlight the selected column.  Green or red color when inserting respectively deleting a column.
+        """
         if self._action == INSERT:
             ctx.set_source_rgb(0, 1, 0)
         else:
@@ -147,8 +156,9 @@ class SelectionRow(Selection):
         return self._action
 
     def draw(self, ctx):
-        """Highlight the selected row. Green or red color when inserting respectively deleting a row."""
-
+        """
+        Highlight the selected row. Green or red color when inserting respectively deleting a row.
+        """
         if self._action == INSERT:
             ctx.set_source_rgb(0, 1, 0)
         else:

@@ -508,10 +508,7 @@ class GridView(Gtk.DrawingArea):
             self._symbol.draw(ctx)
 
         else:
-            ctx.set_font_size(Preferences.values['FONTSIZE'])
             ctx.set_source_rgb(0.5, 0.5, 0.75)
-            ctx.set_line_width(0.5)
-            ctx.set_tolerance(0.1)
             ctx.set_line_join(cairo.LINE_JOIN_ROUND)
 
             if self._selection.item in (ROW, COL):
