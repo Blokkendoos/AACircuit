@@ -125,17 +125,17 @@
   <object class="GtkImage" id="image31">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">buttons/copytoclipboard.png</property>
+    <property name="pixbuf">buttons/copy_to_clipboard.png</property>
   </object>
   <object class="GtkImage" id="image32">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">buttons/pastefromclipboard.png</property>
+    <property name="pixbuf">buttons/paste_from_clipboard.png</property>
   </object>
   <object class="GtkImage" id="image33">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">bitmaps/loadandpaste.bmp</property>
+    <property name="pixbuf">buttons/load_and_paste.png</property>
   </object>
   <object class="GtkImage" id="image34">
     <property name="visible">True</property>
