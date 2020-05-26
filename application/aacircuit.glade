@@ -90,12 +90,12 @@
   <object class="GtkImage" id="image25">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">bitmaps/moveb.bmp</property>
+    <property name="pixbuf">buttons/cut_and_copy.png</property>
   </object>
   <object class="GtkImage" id="image26">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">bitmaps/selectb.bmp</property>
+    <property name="pixbuf">buttons/select_rect.png</property>
   </object>
   <object class="GtkImage" id="image27">
     <property name="visible">True</property>
