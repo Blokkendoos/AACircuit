@@ -100,17 +100,17 @@
   <object class="GtkImage" id="image27">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">buttons/stretch1.png</property>
+    <property name="pixbuf">buttons/add_row.png</property>
   </object>
   <object class="GtkImage" id="image28">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">buttons/stretch3.png</property>
+    <property name="pixbuf">buttons/add_col.png</property>
   </object>
   <object class="GtkImage" id="image29">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">buttons/stretch2.png</property>
+    <property name="pixbuf">buttons/remove_row.png</property>
   </object>
   <object class="GtkImage" id="image3">
     <property name="visible">True</property>
@@ -120,7 +120,7 @@
   <object class="GtkImage" id="image30">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">buttons/stretch4.png</property>
+    <property name="pixbuf">buttons/remove_col.png</property>
   </object>
   <object class="GtkImage" id="image31">
     <property name="visible">True</property>
@@ -141,16 +141,6 @@
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="pixbuf">buttons/eraser.png</property>
-  </object>
-  <object class="GtkImage" id="image35">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="pixbuf">buttons/stretch1.png</property>
-  </object>
-  <object class="GtkImage" id="image4">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="pixbuf">buttons/stretch1.png</property>
   </object>
   <object class="GtkImage" id="image5">
     <property name="visible">True</property>
@@ -1338,7 +1328,7 @@
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
                             <property name="tooltip_text" translatable="yes">insert rows</property>
-                            <property name="image">image35</property>
+                            <property name="image">image27</property>
                             <signal name="clicked" handler="on_selecting_row" swapped="no"/>
                           </object>
                           <packing>
