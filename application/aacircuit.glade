@@ -50,12 +50,12 @@
   <object class="GtkImage" id="image18">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">bitmaps/autoline.bmp</property>
+    <property name="pixbuf">buttons/draw_magl.png</property>
   </object>
   <object class="GtkImage" id="image19">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">buttons/dline.bmp</property>
+    <property name="pixbuf">buttons/draw_line0.png</property>
   </object>
   <object class="GtkImage" id="image2">
     <property name="visible">True</property>
@@ -65,27 +65,27 @@
   <object class="GtkImage" id="image20">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">buttons/line2.png</property>
+    <property name="pixbuf">buttons/draw_line1.png</property>
   </object>
   <object class="GtkImage" id="image21">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">buttons/line.png</property>
+    <property name="pixbuf">buttons/draw_line2.png</property>
   </object>
   <object class="GtkImage" id="image22">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">buttons/line3.png</property>
+    <property name="pixbuf">buttons/draw_line3.png</property>
   </object>
   <object class="GtkImage" id="image23">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">buttons/line4.png</property>
+    <property name="pixbuf">buttons/draw_line4.png</property>
   </object>
   <object class="GtkImage" id="image24">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">bitmaps/rectb.bmp</property>
+    <property name="pixbuf">buttons/draw_rect.png</property>
   </object>
   <object class="GtkImage" id="image25">
     <property name="visible">True</property>
