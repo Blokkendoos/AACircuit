@@ -482,6 +482,9 @@ class Line(Symbol):
         self._direction()
         self._repr = dict()
 
+        terminal = self._terminal
+        start_terminal = terminal
+
         start = self._startpos
         end = self._endpos
         pos = start
@@ -493,7 +496,10 @@ class Line(Symbol):
                 # line drawn from right-to-left
                 pos = Pos(end.x, start.y)
                 end = start
+
         elif self._dir == VERTICAL:
+            if self._type == self.LINE4:
+                start_terminal = Preferences.values['TERMINAL4_VERT']
             line_char = Preferences.values['LINE_VERT']
             incr = Pos(0, 1)
             if start > end:
@@ -504,13 +510,11 @@ class Line(Symbol):
             line_char = "?"
             incr = Pos(1, 1)
 
-        if self._terminal is None:
-            terminal = line_char
-        else:
-            terminal = self._terminal
-
         # startpoint terminal
-        self._repr[pos] = terminal
+        if start_terminal is None:
+            self._repr[pos] = line_char
+        else:
+            self._repr[pos] = start_terminal
         pos += incr
 
         while pos < end:
@@ -518,7 +522,10 @@ class Line(Symbol):
             pos += incr
 
         # endpoint terminal
-        self._repr[pos] = terminal
+        if self._terminal is None:
+            self._repr[pos] = line_char
+        else:
+            self._repr[pos] = self._terminal
 
     @property
     def pickpoint_pos(self):

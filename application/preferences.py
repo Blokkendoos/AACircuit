@@ -48,6 +48,7 @@ class Preferences(object):
     values['TERMINAL2'] = 'o'
     values['TERMINAL3'] = '+'
     values['TERMINAL4'] = "'"
+    values['TERMINAL4_VERT'] = "."
 
     def __init__(self, filename='aacircuit.ini'):
 
@@ -301,17 +302,19 @@ class PreferencesDialog(Gtk.Dialog):
         frame.add(grid)
 
         row = 0
-        self.entry_string(grid, row, _("Horizontal line char"), 'LINE_HOR')
+        self.entry_string(grid, row, _("Horizontal line"), 'LINE_HOR')
         row += 1
-        self.entry_string(grid, row, _("Vertical line char"), 'LINE_VERT')
+        self.entry_string(grid, row, _("Vertical line"), 'LINE_VERT')
         row += 1
-        self.entry_string(grid, row, _("Terminal char 1"), 'TERMINAL1')
+        self.entry_string(grid, row, _("Terminal1"), 'TERMINAL1')
         row += 1
-        self.entry_string(grid, row, _("Terminal char 2"), 'TERMINAL2')
+        self.entry_string(grid, row, _("Terminal2"), 'TERMINAL2')
         row += 1
-        self.entry_string(grid, row, _("Terminal char 3"), 'TERMINAL3')
+        self.entry_string(grid, row, _("Terminal3"), 'TERMINAL3')
         row += 1
-        self.entry_string(grid, row, _("Terminal char 4"), 'TERMINAL4')
+        self.entry_string(grid, row, _("Terminal4"), 'TERMINAL4')
+        row += 1
+        self.entry_string(grid, row, _("Terminal4 Vertical start"), 'TERMINAL4_VERT')
 
     def init_magic_line_prefs(self, frame):
 
