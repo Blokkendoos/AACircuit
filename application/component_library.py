@@ -4,13 +4,12 @@ component_library.py
 2020-03-02 JvO
 """
 
-import sys
 import json
 import locale
 from pubsub import pub
 from pathlib import Path
 
-from application import _
+from locale import gettext as _
 from application import ERROR
 from application import get_path_to_data
 from application.symbol import Symbol
@@ -39,7 +38,7 @@ class ComponentLibrary(object):
 
         # optional user libraries
         for n in range(5):
-            user_lib  = ("user_component_{0}.json".format(n + 1))
+            user_lib = ("user_component_{0}.json".format(n + 1))
             check = Path(get_path_to_data('components/' + user_lib))
             if check.is_file():
                 self._libraries.append(user_lib)
@@ -51,7 +50,7 @@ class ComponentLibrary(object):
                 self._dict.update(json.load(f))
                 f.close()
             except IOError as e:
-                msg =_("Failed to load component library {0} due to I/O error {1}: {2}").format(lib, e.errno, e.strerror)
+                msg = _("Failed to load component library {0} due to I/O error {1}: {2}").format(lib, e.errno, e.strerror)
                 pub.sendMessage('STATUS_MESSAGE', msg=msg, type=ERROR)
                 print(msg)
 
@@ -61,7 +60,7 @@ class ComponentLibrary(object):
             for label, symbol in self._dict.items():
                 id = symbol['id']
                 if id in ids:
-                    msg = _("Symbol: {} has duplicate id: {} !".format(label, id))
+                    msg = _("Symbol: {} has duplicate id: {} !").format(label, id)
                     pub.sendMessage('STATUS_MESSAGE', msg=msg, type=ERROR)
                 else:
                     ids.add(id)
