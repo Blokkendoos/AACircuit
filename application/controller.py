@@ -31,7 +31,6 @@ Action = collections.namedtuple('Action', ['action', 'symbol'])
 class Controller(object):
 
     def __init__(self):
-
         self.prefs = Preferences()
         self.ml_settings = MagicLineSettings()
 
@@ -136,7 +135,6 @@ class Controller(object):
         self.selected_objects = []
 
     def init_grid(self, cols=None, rows=None):
-
         if cols is None:
             self._cols = Preferences.values['DEFAULT_COLS']
         else:
@@ -156,12 +154,10 @@ class Controller(object):
         return self.grid.cell(pos)
 
     def show_all(self):
-
         # DEBUG
         # self._import_legacy = True
         # self.on_read_from_file('tests/files/original_741.aac')
         # self.on_read_from_file('tests/files/original_JKMasterSlave.aac')
-
         self.gui.show_all()
 
     def revert_action(self, stack):
@@ -193,7 +189,6 @@ class Controller(object):
         return symbol, action
 
     def on_undo(self):
-
         if len(self.latest_action) > 0:
             symbol, action = self.revert_action(self.latest_action)
             if action:
@@ -204,7 +199,6 @@ class Controller(object):
             pub.sendMessage('UNDO_CHANGED', undo=False)
 
     def on_redo(self):
-
         if len(self.undone_action) > 0:
             symbol, action = self.revert_action(self.undone_action)
             if action:
@@ -282,9 +276,7 @@ class Controller(object):
 
     def find_selected(self, rect):
         """Find all symbols that are located within the selection rectangle."""
-
         ul, br = rect
-
         selected = []
         for symbol in self.objects:
 
@@ -327,9 +319,7 @@ class Controller(object):
             pub.sendMessage('STATUS_MESSAGE', msg="")
 
     def on_cut(self, rect):
-
         self.find_selected(rect)
-
         action = []
         for obj in self.selected_objects:
 
@@ -353,7 +343,6 @@ class Controller(object):
             pub.sendMessage('ORIENTATION_CHANGED', ori=first_obj.symbol.ori_as_str)
 
     def on_edit_memo(self):
-
         memo = ""
         for symbol in self.objects:
             memo += symbol.memo() + '\n'
@@ -432,7 +421,6 @@ class Controller(object):
             obj.symbol.mirrored = 1 - obj.symbol.mirrored  # toggle 0/1
 
     def on_paste_text(self, symbol):
-
         self.selected_objects = []
         self.add_selected_object(symbol)
 
@@ -448,7 +436,6 @@ class Controller(object):
         Paste selection.
         :param pos: the target position in grid (col, row) coordinates.
         """
-
         action = []
 
         for obj in self.selected_objects:
@@ -555,7 +542,6 @@ class Controller(object):
         dialog = InputFileAscii()  # noqa: F841
 
     def on_load_ascii_from_file(self, filename):
-
         try:
             file = open(filename, 'r')
             str = file.readlines()

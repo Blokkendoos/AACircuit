@@ -141,7 +141,6 @@ class Grid(object):
         :param rect: the canvas position (Pos) of the upper left corner (row, column) and bottom-right corner of the rectangle
         :returns the content of the given rectangle
         """
-
         print("Obsolete method: ", self.rect.__name__)
 
         content = []
@@ -165,7 +164,6 @@ class Grid(object):
         Erase a rectangle its content.
         :param rect: rectangle upper-left corner and bottom-right corner (row, column) tuple
         """
-
         print("Obsolete method: ", self.erase_rect.__name__)
 
         c_start, r_start, c_end, r_end = self.rect_to_rc(rect)
@@ -186,7 +184,6 @@ class Grid(object):
         :param pos: rectangle upper left corner (row, column) tuple
         :param content: 2D array
         """
-
         print("Obsolete method: ", self.fill_rect.__name__)
 
         if len(content) == 0:

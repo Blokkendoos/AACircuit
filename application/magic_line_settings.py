@@ -35,15 +35,12 @@ class MagicLineSettings(object):
     LMD = []
 
     def __init__(self, filename='magic_line.ini'):
-
         self._filename = filename
         self.read_settings()
-
         pub.subscribe(self.on_save_settings, 'SAVE_MAGIC_LINE_SETTINGS')
         pub.subscribe(self.load_default_settings, 'RESTORE_DEFAULT_MAGIC_LINE_SETTINGS')
 
     def read_settings(self):
-
         try:
             file = open(self._filename, 'r')
             self.load_settings_from_str(file.read())
@@ -59,7 +56,6 @@ class MagicLineSettings(object):
             print(msg)
 
     def on_save_settings(self):
-
         try:
             fout = open(self._filename, 'w')
             fout.write(self.settings_to_str())
@@ -73,7 +69,6 @@ class MagicLineSettings(object):
             pub.sendMessage('STATUS_MESSAGE', msg=msg)
 
     def settings_to_str(self):
-
         str = ""
 
         for lmd in self.LMD:
@@ -86,18 +81,14 @@ class MagicLineSettings(object):
         return str
 
     def load_settings_from_str(self, str):
-
         MagicLineSettings.LMD = []
-
         for line in str.splitlines():
             item = json.loads(line)
             lmd = LineMatchingData(item['pattern'], item['ori'], item['char'])
             MagicLineSettings.LMD.append(lmd)
 
     def load_default_settings(self):
-
         lmd = []
-
         lmd.append(LineMatchingData(
             [[' ', ' ', ' '],
              [' ', ' ', ' '],
@@ -154,7 +145,6 @@ class MagicLineSettingsDialog(Gtk.Dialog):
 
         https://eeperry.wordpress.com/2013/01/05/pygtk-new-style-python-class-using-builder/
         """
-
         try:
             # https://askubuntu.com/questions/140552/how-to-make-glade-load-translations-from-opt
             # For this particular case the locale module needs to be used instead of gettext.
@@ -198,8 +188,6 @@ class MagicLineSettingsDialog(Gtk.Dialog):
         self.show_all()
 
     def init_start_orientation(self, builder):
-
-        # TODO use literals
         # orientation and description
         ori_store = Gtk.ListStore(int, str)
         ori_store.append([0, _("Horizontal")])
@@ -220,12 +208,8 @@ class MagicLineSettingsDialog(Gtk.Dialog):
         start_box = builder.get_object('start_box')
         start_character = SingleCharEntry()
         start_box.add(start_character)
-        # self._start_character = builder.get_object('start_character')
         self._start_character = start_character
         self._start_character.connect('changed', self.on_start_character_changed)
-        # self._start_character.connect('insert_text', self.on_start_character_changed)
-        # self._start_character.connect('insert_at_cursor', self.on_start_character_changed)
-        # self._start_character.get_buffer().connect('inserted_text', self.on_start_character_changed)
 
     def update_line_matching_data(self):
         lmd = self.lmd[self.matrix_nr]
@@ -291,7 +275,6 @@ class MagicLineSettingsDialog(Gtk.Dialog):
 class MatrixView(Gtk.DrawingArea):
 
     def __init__(self, lmd, mnr=0):
-
         super(MatrixView, self).__init__()
 
         self._surface = None
@@ -373,7 +356,6 @@ class MatrixView(Gtk.DrawingArea):
         return True
 
     def on_key_press(self, widget, event):
-
         # TODO Will this work in other locale too?
         def filter_non_printable(ascii):
             char = ''
@@ -436,7 +418,6 @@ class MatrixView(Gtk.DrawingArea):
         return True
 
     def on_hover(self, widget, event):
-
         if not self.has_focus():
             self.grab_focus()
 
@@ -458,7 +439,6 @@ class MatrixView(Gtk.DrawingArea):
         self.draw_cursor(ctx)
 
     def draw_gridlines(self, ctx):
-
         grid_w = Preferences.values['GRIDSIZE_W']
         grid_h = Preferences.values['GRIDSIZE_H']
 
@@ -503,7 +483,6 @@ class MatrixView(Gtk.DrawingArea):
             x += grid_w
 
     def draw_content(self, ctx):
-
         if self._matrix is None:
             return
 
@@ -546,7 +525,6 @@ class MatrixView(Gtk.DrawingArea):
             y += grid_h
 
     def draw_cursor(self, ctx):
-
         if not self.has_focus():
             return
 
@@ -569,7 +547,6 @@ class MatrixView(Gtk.DrawingArea):
         ctx.restore()
 
     def toggle_cursor(self, widget, frame_clock, user_data=None):
-
         now = time.time()
         elapsed = now - self.start_time
 

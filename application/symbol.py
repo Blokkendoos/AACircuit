@@ -20,9 +20,6 @@ from application import HORIZONTAL, VERTICAL, LONGEST_FIRST
 from application import ERASER, COMPONENT, CHARACTER, TEXT, DRAW_RECT, LINE, MAG_LINE, DIR_LINE
 
 
-# TODO how to get this into an 'utility' source
-# TODO now has a duplicate in symbol.py
-
 def show_text(ctx, x, y, text):
     """Show text on a canvas position taking into account the Cairo glyph origin."""
     # the Cairo text glyph origin is its left-bottom corner
@@ -132,7 +129,6 @@ class Symbol(object):
         '.......' => '.......x' => empty first line not expected, see the component library content
 
         """
-        # TODO move this to init and return PP position here?
         first_row = self.grid[0]
         found = re.search(r'\S', first_row)
         if found:
@@ -302,7 +298,6 @@ class Eraser(Symbol):
         self._representation()
 
     def _representation(self):
-
         self._repr = dict()
 
         pos = self._startpos
@@ -379,7 +374,6 @@ class Character(Symbol):
 class Text(Symbol):
 
     def __init__(self, pos, text, ori=0):
-
         grid = {"N": ['?']}
         super(Text, self).__init__(grid=grid, ori=ori, startpos=pos)
 
@@ -389,7 +383,6 @@ class Text(Symbol):
         self._representation()
 
     def _representation(self):
-
         self._repr = dict()
 
         startpos = self._startpos
@@ -533,8 +526,7 @@ class Line(Symbol):
 
     def rotate(self):
         # TODO enable to rotate (from HOR to VERT)?
-        # raise NotImplementedError
-        return
+        pass
 
     def copy(self):
         startpos = copy.deepcopy(self._startpos)
@@ -721,7 +713,6 @@ class MagLine(Line):
         self._corner_line(f_ori)
 
     def _corner_line(self, ori):
-
         startpos = self._startpos
         endpos = self._endpos
 
@@ -796,7 +787,6 @@ class MagLineOld(MagLine):
     """Alte MagLine, wegen abwärtscompatibilität noch vorhanden."""
 
     def __init__(self, startpos, endpos, cell_callback=None, type=Line.MLINE_LEGACY):
-
         super(MagLineOld, self).__init__(startpos=startpos, endpos=endpos, cell_callback=cell_callback, type=type)
 
         self._representation()
@@ -804,7 +794,6 @@ class MagLineOld(MagLine):
         self._se_status_msg = ""
 
     def paste(self, grid):
-
         super(MagLineOld, self).paste(grid)
 
         # FIXME pubsub from within represenation() does not work (statusbar not updated)
@@ -814,7 +803,6 @@ class MagLineOld(MagLine):
             # print(msg)
 
     def _representation(self):
-
         se_status = ""
         se_count = 0
 
@@ -1013,7 +1001,6 @@ class MagLineOld(MagLine):
         return se_count, se_status, start_char, start_ori
 
     def end_character(self, se_count, se_status, start_ori):
-
         x1, y1 = self._startpos.xy
         x2, y2 = self._endpos.xy
 
@@ -1134,7 +1121,6 @@ class MagLineOld(MagLine):
         return se_count, se_status, end_char
 
     def _draw_line(self, startc, start_ori, endc):
-
         repr = dict()
 
         line_hor = Preferences.values['LINE_HOR']
@@ -1242,7 +1228,6 @@ class Rect(Symbol):
         self._representation()
 
     def _representation(self):
-
         ul = self._startpos
         ur = Pos(self._endpos.x, self._startpos.y)
         bl = Pos(self._startpos.x, self._endpos.y)
@@ -1263,7 +1248,6 @@ class Rect(Symbol):
         self._repr.update(line4.repr)
 
     def rotate(self):
-
         w = self._endpos.x - self._startpos.x
         h = self._endpos.y - self._startpos.y
 
@@ -1272,9 +1256,6 @@ class Rect(Symbol):
 
         self._startpos = ul
         self._endpos = br
-
-        # TODO
-        # self._rect()
 
     def copy(self):
         startpos = copy.deepcopy(self._startpos)

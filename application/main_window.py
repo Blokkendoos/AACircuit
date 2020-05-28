@@ -38,7 +38,6 @@ class MainWindow(Gtk.Window):
 
         https://eeperry.wordpress.com/2013/01/05/pygtk-new-style-python-class-using-builder/
         """
-
         try:
             # https://askubuntu.com/questions/140552/how-to-make-glade-load-translations-from-opt
             # For this particular case the locale module needs to be used instead of gettext.
@@ -262,9 +261,7 @@ class MainWindow(Gtk.Window):
         pub.sendMessage('DRAW_RECT')
 
     def on_cursor_toggled(self, button):
-
         if button.get_active():
-
             name = Gtk.Buildable.get_name(button)
             btn = int(name[-1])
             self.custom_cursor(btn)
@@ -280,13 +277,10 @@ class MainWindow(Gtk.Window):
         pub.sendMessage('CHARACTER_CHANGED', char=char)
 
     def on_delete_window(self, window, event):
-
         # self.stop_timer()
-
         return not self.on_close_clicked()
 
     def on_close_clicked(self, item=None):
-
         if self._undo_stack_empty or self.show_confirmation_dlg():
             print(_("Closing application"))
             Gtk.main_quit()
@@ -294,7 +288,6 @@ class MainWindow(Gtk.Window):
             return False
 
     def show_confirmation_dlg(self):
-
         # https://bytes.com/topic/python/answers/873799-how-click-close-window-dont-close-gtk-window
         builder = Gtk.Builder()
         builder.add_from_file(get_path_to_data('confirmation_dialog.glade'))
@@ -352,7 +345,6 @@ class MainWindow(Gtk.Window):
 
     def custom_cursor(self, btn):
         display = self.get_root_window().get_display()
-
         pb = self.cursor[btn - 1]
         # the cursor hot-spot is at the center of the (16x16) cursor image
         cursor = Gdk.Cursor.new_from_pixbuf(display, pb, 8, 15)

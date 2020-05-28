@@ -30,7 +30,6 @@ from gi.repository import Pango, PangoCairo  # noqa: E402
 class GridView(Gtk.DrawingArea):
 
     def __init__(self):
-
         super(GridView, self).__init__()
 
         self.surface = None
@@ -198,7 +197,6 @@ class GridView(Gtk.DrawingArea):
 
     def on_begin_print(self, parms):
         operation, print_ctx = parms
-
         operation.set_n_pages(1)
 
     def on_draw_page(self, parms):
@@ -215,7 +213,6 @@ class GridView(Gtk.DrawingArea):
         self.draw_content(ctx)
 
     def on_draw_pdf(self, filename):
-
         # don't use the drawing_area, so that this method can be run from (nose) test method (w/o GUI)
         # w = self.get_allocated_width()
         # h = self.get_allocated_height()
@@ -393,7 +390,6 @@ class GridView(Gtk.DrawingArea):
         ctx.fill()
 
     def draw_gridlines(self, ctx):
-
         # TODO use CSS for uniform colors?
         ctx.set_source_rgb(0.75, 0.75, 0.75)
         ctx.set_line_width(0.5)
@@ -423,7 +419,6 @@ class GridView(Gtk.DrawingArea):
             x += x_incr
 
     def draw_content(self, ctx):
-
         if self._grid is None:
             return
 
@@ -464,7 +459,6 @@ class GridView(Gtk.DrawingArea):
             #     break
 
     def draw_selection(self, ctx):
-
         ctx.save()
 
         if self._selection.state == IDLE:
@@ -532,7 +526,6 @@ class GridView(Gtk.DrawingArea):
                 self._selection.draw(ctx)
 
     def draw_cursor(self, ctx):
-
         ctx.save()
 
         ctx.set_line_width(1.5)
@@ -551,7 +544,6 @@ class GridView(Gtk.DrawingArea):
         ctx.restore()
 
     def toggle_cursor(self, widget, frame_clock, user_data=None):
-
         now = time.time()
         elapsed = now - self.start_time
 
@@ -565,7 +557,6 @@ class GridView(Gtk.DrawingArea):
 
     def mark_all_objects(self, ctx):
         """Mark all objects on the grid canvas."""
-
         ctx.save()
 
         for ref in self._objects:
@@ -590,7 +581,6 @@ class GridView(Gtk.DrawingArea):
 
     def draw_selected_objects(self, ctx):
         """Draw multiple objects selection."""
-
         ctx.save()
 
         for ref in self._objects:
@@ -630,7 +620,6 @@ class GridView(Gtk.DrawingArea):
         widget.queue_resize()
 
     def selected_state(self, event):
-
         pos = self._hover_pos
         pos = pos.grid_cr()
 
@@ -645,7 +634,6 @@ class GridView(Gtk.DrawingArea):
                 pub.sendMessage('ROTATE_SYMBOL')
 
     def selecting_state(self, pos, event):
-
         if self._selection.item == ROW:
             row = pos.grid_cr().y
             pub.sendMessage('GRID_ROW', row=row, action=self._selection.action)
@@ -690,7 +678,6 @@ class GridView(Gtk.DrawingArea):
         return pos
 
     def on_drag_begin(self, widget, x_start, y_start):
-
         if self._selection.state == IDLE and self._selection.item in (DRAW_RECT, RECT, ERASER, LINE, MAG_LINE, DIR_LINE):
             pass
         else:
@@ -708,7 +695,6 @@ class GridView(Gtk.DrawingArea):
         self._selection.state = SELECTING
 
     def on_drag_end(self, widget, x_offset, y_offset):
-
         if self._selection.state == SELECTING and self._selection.item in (DRAW_RECT, RECT, ERASER, LINE, MAG_LINE, DIR_LINE):
             pass
         else:
@@ -747,7 +733,6 @@ class GridView(Gtk.DrawingArea):
             pub.sendMessage("PASTE_DIR_LINE", startpos=startpos, endpos=endpos)
 
     def on_drag_update(self, widget, x_offset, y_offset):
-
         if self._selection.state == SELECTING and self._selection.item in (DRAW_RECT, RECT, ERASER, LINE, MAG_LINE, DIR_LINE):
             pass
         else:
@@ -805,7 +790,6 @@ class GridView(Gtk.DrawingArea):
         return dir
 
     def on_hover(self, widget, event):
-
         if not self.has_focus():
             self.grab_focus()
 

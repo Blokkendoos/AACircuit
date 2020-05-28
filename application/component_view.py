@@ -16,7 +16,6 @@ class ComponentView():
     columns = [_('Description')]
 
     def __init__(self, builder):
-
         scrolled_window = builder.get_object('component_window')
         # scrolled_window.set_size_request(200, 100)
         scrolled_window.set_border_width(2)

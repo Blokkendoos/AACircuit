@@ -51,7 +51,6 @@ class Preferences(object):
     values['TERMINAL4_VERT'] = "."
 
     def __init__(self, filename='aacircuit.ini'):
-
         self._filename = filename
         self.read_preferences()
 
@@ -59,7 +58,6 @@ class Preferences(object):
 
     def has_value(self, name):
         """Verify whether we have a preference value with this name."""
-
         try:
             value = self.values[name]  # noqa F841
             return True
@@ -77,7 +75,6 @@ class Preferences(object):
         Deprecated method.
         Use the class dictionary instead: value = Preferences.values['name']
         """
-
         print("Deprecated method: ", self.get_value.__name__)
 
         try:
@@ -92,7 +89,6 @@ class Preferences(object):
         self.values[name] = value
 
     def read_preferences(self):
-
         try:
             file = open(self._filename, 'r')
             str = file.read()
@@ -110,7 +106,6 @@ class Preferences(object):
             print(msg)
 
     def on_save_preferences(self):
-
         try:
             fout = open(self._filename, 'w')
 
@@ -217,7 +212,6 @@ class PreferencesDialog(Gtk.Dialog):
         self.show_all()
 
     def entry_string(self, container, row, label_txt, name):
-
         label = Gtk.Label(label_txt)
         label.set_alignment(0, 0)
         container.attach(label, 0, row, 1, 1)
@@ -230,7 +224,6 @@ class PreferencesDialog(Gtk.Dialog):
         self.entries[name] = PreferenceSetting('str', entry)
 
     def entry_dimension(self, container, row, label_txt, name):
-
         label = Gtk.Label(label_txt)
         label.set_alignment(0, 0)
         container.attach(label, 0, row, 1, 1)
@@ -244,7 +237,6 @@ class PreferencesDialog(Gtk.Dialog):
         self.entries[name] = PreferenceSetting('dim', entry)
 
     def entry_font(self, container, row, label_txt, name):
-
         label = Gtk.Label(label_txt)
         label.set_alignment(0, 0)
         container.attach(label, 0, row, 1, 1)
@@ -257,7 +249,6 @@ class PreferencesDialog(Gtk.Dialog):
         self.entries[name] = PreferenceSetting('font', entry)
 
     def entry_bool(self, container, row, label_txt, name):
-
         label = Gtk.Label(label_txt)
         label.set_alignment(0, 0)
         container.attach(label, 0, row, 1, 1)
@@ -270,7 +261,6 @@ class PreferencesDialog(Gtk.Dialog):
         self.entries[name] = PreferenceSetting('bool', entry)
 
     def init_grid_prefs(self, frame):
-
         grid = Gtk.Grid()
         grid.set_row_spacing(5)
         grid.set_column_spacing(5)
@@ -295,7 +285,6 @@ class PreferencesDialog(Gtk.Dialog):
         self.entry_bool(grid, row, _("Drag selection"), 'SELECTION_DRAG')
 
     def init_lines_prefs(self, frame):
-
         grid = Gtk.Grid()
         grid.set_row_spacing(5)
         grid.set_column_spacing(5)
@@ -317,7 +306,6 @@ class PreferencesDialog(Gtk.Dialog):
         self.entry_string(grid, row, _("Terminal4 Vertical start"), 'TERMINAL4_VERT')
 
     def init_magic_line_prefs(self, frame):
-
         grid = Gtk.Grid()
         grid.set_row_spacing(5)
         grid.set_column_spacing(5)
@@ -331,7 +319,6 @@ class PreferencesDialog(Gtk.Dialog):
         self.entry_string(grid, row, _("Lower corner char"), 'LOWER_CORNER')
 
     def on_ok_clicked(self, item):
-
         for key, setting in self.entries.items():
 
             if setting.type == 'str':
