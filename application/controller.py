@@ -10,7 +10,7 @@ import xerox
 import collections
 from pubsub import pub
 
-from application import _
+from locale import gettext as _
 from application import ERROR, WARNING
 from application import REMOVE, INSERT
 from application import ERASER, COMPONENT, CHARACTER, TEXT, COL, ROW, DRAW_RECT, LINE, MAG_LINE, DIR_LINE

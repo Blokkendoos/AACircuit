@@ -18,6 +18,13 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
+# #-#-#-#-#  aacircuit.po  #-#-#-#-#
+# #-#-#-#-#  aacircuit.pot (PACKAGE VERSION)  #-#-#-#-#
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
 # #-#-#-#-#  aacircuit.po (PACKAGE VERSION)  #-#-#-#-#
 # #-#-#-#-#  aacircuit.pot (PACKAGE VERSION)  #-#-#-#-#
 # SOME DESCRIPTIVE TITLE.
@@ -110,6 +117,142 @@
 #
 msgid ""
 msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-23 15:46+0200\n"
+"PO-Revision-Date: 2020-05-28 13:19+0200\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-28 13:18+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-28 13:18+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-28 13:18+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-28 13:18+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-28 13:18+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-28 13:18+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-28 13:18+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-28 13:18+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-28 13:18+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-28 13:18+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-28 13:18+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-28 13:18+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-28 13:18+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-28 13:18+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-28 13:18+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-28 13:18+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-23 15:46+0200\n"
@@ -1372,8 +1515,9 @@ msgstr "Draai 90° met de klok mee"
 msgid "Mirror vertically"
 msgstr "Spiegel vertikaal"
 
-#: ../application/aacircuit.glade:589 ../application/aacircuit.glade:553
-#: ../application/aacircuit.glade:538 ../application/aacircuit.glade:207
+#: ../application/aacircuit.glade:579 ../application/aacircuit.glade:589
+#: ../application/aacircuit.glade:553 ../application/aacircuit.glade:538
+#: ../application/aacircuit.glade:207
 msgid "AACircuit"
 msgstr ""
 
@@ -1385,69 +1529,69 @@ msgstr "_Voorkeuren"
 msgid "_Magic-line settings"
 msgstr "_Magic-line instellingen"
 
-#: ../application/aacircuit.glade:653 ../application/aacircuit.glade:617
-#: ../application/aacircuit.glade:616 ../application/aacircuit.glade:601
-#: ../application/aacircuit.glade:589
+#: ../application/aacircuit.glade:643 ../application/aacircuit.glade:653
+#: ../application/aacircuit.glade:617 ../application/aacircuit.glade:616
+#: ../application/aacircuit.glade:601 ../application/aacircuit.glade:589
 msgid "+"
 msgstr ""
 
-#: ../application/aacircuit.glade:661 ../application/aacircuit.glade:625
-#: ../application/aacircuit.glade:624 ../application/aacircuit.glade:609
-#: ../application/aacircuit.glade:597
+#: ../application/aacircuit.glade:651 ../application/aacircuit.glade:661
+#: ../application/aacircuit.glade:625 ../application/aacircuit.glade:624
+#: ../application/aacircuit.glade:609 ../application/aacircuit.glade:597
 msgid "o"
 msgstr ""
 
-#: ../application/aacircuit.glade:673 ../application/aacircuit.glade:637
-#: ../application/aacircuit.glade:636 ../application/aacircuit.glade:621
-#: ../application/aacircuit.glade:609
+#: ../application/aacircuit.glade:663 ../application/aacircuit.glade:673
+#: ../application/aacircuit.glade:637 ../application/aacircuit.glade:636
+#: ../application/aacircuit.glade:621 ../application/aacircuit.glade:609
 msgid "#"
 msgstr ""
 
-#: ../application/aacircuit.glade:685 ../application/aacircuit.glade:649
-#: ../application/aacircuit.glade:648 ../application/aacircuit.glade:633
-#: ../application/aacircuit.glade:621
+#: ../application/aacircuit.glade:675 ../application/aacircuit.glade:685
+#: ../application/aacircuit.glade:649 ../application/aacircuit.glade:648
+#: ../application/aacircuit.glade:633 ../application/aacircuit.glade:621
 msgid "/"
 msgstr ""
 
-#: ../application/aacircuit.glade:697 ../application/aacircuit.glade:661
-#: ../application/aacircuit.glade:660 ../application/aacircuit.glade:645
-#: ../application/aacircuit.glade:633
+#: ../application/aacircuit.glade:687 ../application/aacircuit.glade:697
+#: ../application/aacircuit.glade:661 ../application/aacircuit.glade:660
+#: ../application/aacircuit.glade:645 ../application/aacircuit.glade:633
 msgid "\\"
 msgstr ""
 
-#: ../application/aacircuit.glade:709 ../application/aacircuit.glade:673
-#: ../application/aacircuit.glade:672 ../application/aacircuit.glade:657
-#: ../application/aacircuit.glade:645
+#: ../application/aacircuit.glade:699 ../application/aacircuit.glade:709
+#: ../application/aacircuit.glade:673 ../application/aacircuit.glade:672
+#: ../application/aacircuit.glade:657 ../application/aacircuit.glade:645
 msgid "|"
 msgstr ""
 
-#: ../application/aacircuit.glade:721 ../application/aacircuit.glade:685
-#: ../application/aacircuit.glade:684 ../application/aacircuit.glade:669
-#: ../application/aacircuit.glade:657
+#: ../application/aacircuit.glade:711 ../application/aacircuit.glade:721
+#: ../application/aacircuit.glade:685 ../application/aacircuit.glade:684
+#: ../application/aacircuit.glade:669 ../application/aacircuit.glade:657
 msgid "-"
 msgstr ""
 
-#: ../application/aacircuit.glade:733 ../application/aacircuit.glade:697
-#: ../application/aacircuit.glade:696 ../application/aacircuit.glade:681
-#: ../application/aacircuit.glade:669
+#: ../application/aacircuit.glade:723 ../application/aacircuit.glade:733
+#: ../application/aacircuit.glade:697 ../application/aacircuit.glade:696
+#: ../application/aacircuit.glade:681 ../application/aacircuit.glade:669
 msgid "("
 msgstr ""
 
-#: ../application/aacircuit.glade:745 ../application/aacircuit.glade:709
-#: ../application/aacircuit.glade:708 ../application/aacircuit.glade:693
-#: ../application/aacircuit.glade:681
+#: ../application/aacircuit.glade:735 ../application/aacircuit.glade:745
+#: ../application/aacircuit.glade:709 ../application/aacircuit.glade:708
+#: ../application/aacircuit.glade:693 ../application/aacircuit.glade:681
 msgid ")"
 msgstr ""
 
-#: ../application/aacircuit.glade:757 ../application/aacircuit.glade:721
-#: ../application/aacircuit.glade:720 ../application/aacircuit.glade:705
-#: ../application/aacircuit.glade:693
+#: ../application/aacircuit.glade:747 ../application/aacircuit.glade:757
+#: ../application/aacircuit.glade:721 ../application/aacircuit.glade:720
+#: ../application/aacircuit.glade:705 ../application/aacircuit.glade:693
 msgid "'"
 msgstr ""
 
-#: ../application/aacircuit.glade:769 ../application/aacircuit.glade:733
-#: ../application/aacircuit.glade:732 ../application/aacircuit.glade:717
-#: ../application/aacircuit.glade:705
+#: ../application/aacircuit.glade:759 ../application/aacircuit.glade:769
+#: ../application/aacircuit.glade:733 ../application/aacircuit.glade:732
+#: ../application/aacircuit.glade:717 ../application/aacircuit.glade:705
 msgid "."
 msgstr ""
 
@@ -1578,15 +1722,17 @@ msgstr "verwijder rijen"
 msgid "remove columns"
 msgstr "verwijder kolommen"
 
-#: ../application/aacircuit.glade:1449 ../application/aacircuit.glade:1471
-#: ../application/aacircuit.glade:1435 ../application/aacircuit.glade:1441
-#: ../application/aacircuit.glade:1426 ../application/aacircuit.glade:1407
+#: ../application/aacircuit.glade:1461 ../application/aacircuit.glade:1449
+#: ../application/aacircuit.glade:1471 ../application/aacircuit.glade:1435
+#: ../application/aacircuit.glade:1441 ../application/aacircuit.glade:1426
+#: ../application/aacircuit.glade:1407
 msgid "y"
 msgstr ""
 
-#: ../application/aacircuit.glade:1497 ../application/aacircuit.glade:1519
-#: ../application/aacircuit.glade:1483 ../application/aacircuit.glade:1489
-#: ../application/aacircuit.glade:1474 ../application/aacircuit.glade:1477
+#: ../application/aacircuit.glade:1509 ../application/aacircuit.glade:1497
+#: ../application/aacircuit.glade:1519 ../application/aacircuit.glade:1483
+#: ../application/aacircuit.glade:1489 ../application/aacircuit.glade:1474
+#: ../application/aacircuit.glade:1477
 msgid "x"
 msgstr ""
 
@@ -1611,6 +1757,10 @@ msgstr ""
 #, python-brace-format
 msgid "Failed to load component library {0} due to I/O error {1}: {2}"
 msgstr "Kan de componentbibliotheek {0} niet laden als gevolg van i/o-fout {1}: {2}"
+
+#: ../application/component_library.py:64
+msgid "Symbol: {} has duplicate id: {} !"
+msgstr "Symbool: {} heeft een dubbele id: {} !"
 
 #: application/component_library.py:88
 #, python-brace-format
