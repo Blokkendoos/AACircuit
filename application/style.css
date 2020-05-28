@@ -12,6 +12,21 @@
    #555555 inactive text
 */
 
+/* message levels */
+statusbar#info {
+    background-color: #dfdfdf;
+}
+statusbar#warning {
+    background-color: #ffcc00;
+}
+statusbar#error1 {
+    background-color: #ff6060;
+}
+statusbar#error {
+    color: #ffffff;
+    background-color: #ff3300;
+}
+
 /* main window character buttons */
 .char_buttons {
     font-size: 150%;

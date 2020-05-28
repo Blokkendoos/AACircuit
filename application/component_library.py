@@ -7,9 +7,11 @@ component_library.py
 import sys
 import json
 import locale
+from pubsub import pub
 from pathlib import Path
 
 from application import _
+from application import ERROR
 from application import get_path_to_data
 from application.symbol import Symbol
 
@@ -46,8 +48,20 @@ class ComponentLibrary(object):
                 self._dict.update(json.load(f))
                 f.close()
             except IOError as e:
-                print(_("Failed to load component library {0} due to I/O error {1}: {2}").format(lib, e.errno, e.strerror))
-                sys.exit(1)
+                msg =_("Failed to load component library {0} due to I/O error {1}: {2}").format(lib, e.errno, e.strerror)
+                pub.sendMessage('STATUS_MESSAGE', msg=msg, type=ERROR)
+                print(msg)
+
+        # check component id's
+        if len(self._dict) > 0:
+            ids = set()
+            for label, symbol in self._dict.items():
+                id = symbol['id']
+                if id in ids:
+                    msg = _("Symbol: {} has duplicate id: {} !".format(label, id))
+                    pub.sendMessage('STATUS_MESSAGE', msg=msg, type=ERROR)
+                else:
+                    ids.add(id)
 
         self._key = None
         self._dir = None

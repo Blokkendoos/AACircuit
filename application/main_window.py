@@ -4,6 +4,7 @@ AACircuit
 """
 
 import sys
+import time
 from pubsub import pub
 from threading import Timer
 
@@ -11,6 +12,7 @@ import locale
 from locale import gettext as _
 
 from application import get_path_to_data
+from application import ERROR, INFO
 from application import INSERT, REMOVE
 from application.symbol import Line
 from application.grid_view import GridView
@@ -127,6 +129,10 @@ class MainWindow(Gtk.Window):
         self.connect('delete_event', self.on_delete_window)
         self.connect('destroy', lambda w: Gtk.main_quit())
 
+        self._last_msg_type = None
+        self._last_msg_id = None
+        self._start_time = time.time()
+
         self.init_grid()
         self.init_cursors()
         self.init_components()
@@ -203,10 +209,22 @@ class MainWindow(Gtk.Window):
         if nr == 3:
             pub.sendMessage('SHOW_TEXT_PICKPOINTS', state=state)
 
-    def on_message(self, msg):
-        """Add message to statusbar."""
-        id = self.msg.get_context_id(msg)
-        self.msg.push(id, msg)
+    def on_message(self, msg, type=INFO):
+        """
+        Add message to statusbar.
+        Error messages are shown at least x seconds.
+        """
+        now = time.time()
+        elapsed = now - self._start_time
+        if self._last_msg_type != ERROR or elapsed > 5:
+            # self.msg.set_css_name('error')
+            self.msg.set_name(type)  # use this name in CSS selector (!)
+            self._start_time = now
+            self._last_msg_type = type
+            id = self.msg.get_context_id(msg)
+            self._last_msg_id = id
+            self.msg.push(id, msg)
+            # TODO show errors with another bg color
 
     def on_add_text(self, button):
         pub.sendMessage('ADD_TEXT')

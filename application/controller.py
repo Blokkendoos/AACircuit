@@ -11,6 +11,7 @@ import collections
 from pubsub import pub
 
 from application import _
+from application import ERROR, WARNING
 from application import REMOVE, INSERT
 from application import ERASER, COMPONENT, CHARACTER, TEXT, COL, ROW, DRAW_RECT, LINE, MAG_LINE, DIR_LINE
 from application.pos import Pos
@@ -301,7 +302,7 @@ class Controller(object):
             for sel in selected:
                 if sel.symbol.startpos in positions:
                     msg = _("More than one item at position: {} !".format(sel.symbol.startpos))
-                    pub.sendMessage('STATUS_MESSAGE', msg=msg)
+                    pub.sendMessage('STATUS_MESSAGE', msg=msg, type=WARNING)
                 else:
                     positions.add(sel.symbol.startpos)
                     selected_unique.append(sel)
@@ -318,7 +319,7 @@ class Controller(object):
                 count += 1
         if count > 1:
             msg = _("More than one item at position: {} !".format(pos))
-            pub.sendMessage('STATUS_MESSAGE', msg=msg)
+            pub.sendMessage('STATUS_MESSAGE', msg=msg, type=WARNING)
         elif count == 1:
             msg = "Object: " + last_found.name
             pub.sendMessage('STATUS_MESSAGE', msg=msg)
@@ -578,13 +579,13 @@ class Controller(object):
         except IOError as e:
             msg = _("Unable to open file for reading: {} error({}): {}").format(filename, e.errno, e.strerror)
             print(msg)
-            pub.sendMessage('STATUS_MESSAGE', msg=msg)
+            pub.sendMessage('STATUS_MESSAGE', msg=msg, type=WARNING)
             return False
 
         except UnicodeDecodeError as e:
             msg = _("Unable to open file for reading: {} error({}): {}").format(filename, e.encoding, e.reason)
             print(msg)
-            pub.sendMessage('STATUS_MESSAGE', msg=msg)
+            pub.sendMessage('STATUS_MESSAGE', msg=msg, type=WARNING)
             return False
 
     # other
@@ -657,7 +658,7 @@ class Controller(object):
 
         except IOError:
             msg = _("Unable to open file for writing: %s" % filename)
-            pub.sendMessage('STATUS_MESSAGE', msg=msg)
+            pub.sendMessage('STATUS_MESSAGE', msg=msg, type=ERROR)
             return False
 
     def on_write_to_ascii_file(self, filename):
@@ -679,7 +680,7 @@ class Controller(object):
 
         except IOError:
             msg = _("Unable to open file for writing: %s" % filename)
-            pub.sendMessage('STATUS_MESSAGE', msg=msg)
+            pub.sendMessage('STATUS_MESSAGE', msg=msg, type=ERROR)
             return False
 
     def on_read_from_file(self, filename):
@@ -725,13 +726,13 @@ class Controller(object):
         except IOError as e:
             msg = _("Unable to open file for reading: {} error({}): {}").format(filename, e.errno, e.strerror)
             print(msg)
-            pub.sendMessage('STATUS_MESSAGE', msg=msg)
+            pub.sendMessage('STATUS_MESSAGE', msg=msg, type=ERROR)
             return False
 
         except UnicodeDecodeError as e:
             msg = _("Unable to open file for reading: {} error({}): {}").format(filename, e.encoding, e.reason)
             print(msg)
-            pub.sendMessage('STATUS_MESSAGE', msg=msg)
+            pub.sendMessage('STATUS_MESSAGE', msg=msg, type=ERROR)
             return False
 
     def play_memo(self, memo):

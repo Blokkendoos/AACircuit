@@ -25,6 +25,10 @@ def get_path_to_data(file_path):
     path_to_dat = path.join(bundle_dir, file_path)
     return path_to_dat
 
+# message levels (css style name too)
+INFO = 'info'
+WARNING = 'warning'
+ERROR = 'error'
 
 # grid cells
 CELL_DEFAULT = ' '
