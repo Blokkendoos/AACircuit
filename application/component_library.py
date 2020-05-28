@@ -37,9 +37,12 @@ class ComponentLibrary(object):
         else:
             self._libraries.append(default_lib)
 
-        # TODO add extra (user) libraries?
-        # for n in range(2):
-        #     self._libraries.append("component{0}.json".format(n + 1))
+        # optional user libraries
+        for n in range(5):
+            user_lib  = ("user_component_{0}.json".format(n + 1))
+            check = Path(get_path_to_data('components/' + user_lib))
+            if check.is_file():
+                self._libraries.append(user_lib)
 
         self._dict = {}
         for lib in self._libraries:
