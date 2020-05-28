@@ -318,7 +318,7 @@ class Controller(object):
                 last_found = symbol
                 count += 1
         if count > 1:
-            msg = _("More than one item at position: {} !".format(pos))
+            msg = _("More than one item at position: {} !").format(pos)
             pub.sendMessage('STATUS_MESSAGE', msg=msg, type=WARNING)
         elif count == 1:
             msg = "Object: " + last_found.name
@@ -578,13 +578,11 @@ class Controller(object):
 
         except IOError as e:
             msg = _("Unable to open file for reading: {} error({}): {}").format(filename, e.errno, e.strerror)
-            print(msg)
             pub.sendMessage('STATUS_MESSAGE', msg=msg, type=WARNING)
             return False
 
         except UnicodeDecodeError as e:
             msg = _("Unable to open file for reading: {} error({}): {}").format(filename, e.encoding, e.reason)
-            print(msg)
             pub.sendMessage('STATUS_MESSAGE', msg=msg, type=WARNING)
             return False
 
@@ -725,13 +723,11 @@ class Controller(object):
 
         except IOError as e:
             msg = _("Unable to open file for reading: {} error({}): {}").format(filename, e.errno, e.strerror)
-            print(msg)
             pub.sendMessage('STATUS_MESSAGE', msg=msg, type=ERROR)
             return False
 
         except UnicodeDecodeError as e:
             msg = _("Unable to open file for reading: {} error({}): {}").format(filename, e.encoding, e.reason)
-            print(msg)
             pub.sendMessage('STATUS_MESSAGE', msg=msg, type=ERROR)
             return False
 
@@ -910,7 +906,8 @@ class Controller(object):
             elif m3 is not None:
                 skipped += play_m3(m3)
             else:
-                print(_("skipped linenr: {}").format(linenr))
+                msg = _("skipped linenr: {}").format(linenr)
+                pub.sendMessage('STATUS_MESSAGE', msg=msg, type=WARNING)
                 skipped += 1
 
         return skipped
@@ -1018,7 +1015,8 @@ class Controller(object):
                 self.on_paste_rect(startpos, endpos)
 
             else:
-                print(_("skipped: {}").format(type))
+                msg = _("skipped: {}").format(type)
+                pub.sendMessage('STATUS_MESSAGE', msg=msg, type=WARNING)
                 skip = 1
 
             return skip
@@ -1070,7 +1068,8 @@ class Controller(object):
                 self.on_paste_objects(pos)
 
             else:
-                print(_("skipped: {}").format(type))
+                msg = _("skipped: {}").format(type)
+                pub.sendMessage('STATUS_MESSAGE', msg=msg, type=WARNING)
                 skip = 1
 
             return skip
@@ -1122,7 +1121,8 @@ class Controller(object):
             elif m4 is not None:
                 skipped += play_m4(m4)
             else:
-                print(_("skipped linenr: ").format(linenr))
+                msg = _("skipped linenr: {}").format(linenr)
+                pub.sendMessage('STATUS_MESSAGE', msg=msg, type=WARNING)
                 skipped += 1
 
         return skipped
