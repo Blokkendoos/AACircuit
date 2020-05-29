@@ -36,6 +36,7 @@ class GridView(Gtk.DrawingArea):
         self._grid = None
         self._objects = None
         self._hover_pos = Pos(0, 0)
+        self._hover_previous_pos = Pos(0, 0)
 
         self._selection = Selection(None)
 
@@ -793,17 +794,28 @@ class GridView(Gtk.DrawingArea):
         if not self.has_focus():
             self.grab_focus()
 
+        width = Preferences.values['GRIDSIZE_W']
+        height = Preferences.values['GRIDSIZE_H']
+
         self._hover_pos = self.calc_position(event.x, event.y)
-        pub.sendMessage('POINTER_MOVED', pos=self._hover_pos.grid_cr())
+        delta = self._hover_previous_pos - self._hover_pos
+        if abs(delta.x) > width / 2 or abs(delta.y) > height / 2:
+            moved_enough = True
+        else:
+            # reduce message flooding and superfluous drawing updates
+            moved_enough = False
+
+        if moved_enough:
+            pub.sendMessage('POINTER_MOVED', pos=self._hover_pos.grid_cr())
 
         if self._selection.state == SELECTING and \
                 self._selection.item == OBJECT:
-            pub.sendMessage('SELECTOR_MOVED', pos=self._hover_pos.grid_cr())
+            if moved_enough:
+                pub.sendMessage('SELECTOR_MOVED', pos=self._hover_pos.grid_cr())
 
         if not Preferences.values['SELECTION_DRAG'] \
                 and self._selection.state == SELECTING \
                 and self._selection.item in (DRAW_RECT, RECT, ERASER, LINE, MAG_LINE, DIR_LINE):
             offset = Pos(event.x, event.y) - self._drag_startpos
-            self.on_drag_update(None, offset.x, offset.y)
-
-        widget.queue_resize()
+            if moved_enough:
+                self.on_drag_update(None, offset.x, offset.y)
