@@ -1233,18 +1233,16 @@ class Rect(Symbol):
         bl = Pos(self._startpos.x, self._endpos.y)
         br = self._endpos
 
-        type = Line.LINE3
-
-        line1 = Line(ul, ur, type)
-        line2 = Line(ur, br, type)
-        line3 = Line(bl, br, type)
-        line4 = Line(ul, bl, type)
+        line1 = Line(ul, ur, Line.LINE1)
+        line2 = Line(ur, br, Line.LINE4)
+        line3 = Line(bl, br, Line.LINE1)
+        line4 = Line(ul, bl, Line.LINE4)
 
         self._repr = dict()
 
         self._repr.update(line1.repr)
-        self._repr.update(line2.repr)
         self._repr.update(line3.repr)
+        self._repr.update(line2.repr)
         self._repr.update(line4.repr)
 
     def rotate(self):
