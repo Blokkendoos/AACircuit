@@ -290,13 +290,13 @@ class Controller(object):
         if len(selected) > 0:
             selected.sort(key=lambda x: x.startpos)
             selected_unique = []
-            positions = set()
+            pps = set()
             for sel in selected:
-                if sel.symbol.startpos in positions:
-                    msg = _("More than one item at position: {} !".format(sel.symbol.startpos))
+                if sel.symbol.pickpoint_pos in pps:
+                    msg = _("More than one item at position: {} !").format(sel.symbol.pickpoint_pos )
                     pub.sendMessage('STATUS_MESSAGE', msg=msg, type=WARNING)
                 else:
-                    positions.add(sel.symbol.startpos)
+                    pps.add(sel.symbol.pickpoint_pos)
                     selected_unique.append(sel)
             selected = selected_unique
 
