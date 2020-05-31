@@ -801,6 +801,7 @@ class GridView(Gtk.DrawingArea):
         delta = self._hover_previous_pos - self._hover_pos
         if abs(delta.x) > width / 2 or abs(delta.y) > height / 2:
             moved_enough = True
+            self._hover_previous_pos = self._hover_pos
         else:
             # reduce message flooding and superfluous drawing updates
             moved_enough = False
