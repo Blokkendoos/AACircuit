@@ -4,6 +4,7 @@ AACircuit
 """
 
 from application import INSERT
+from application import HORIZONTAL, VERTICAL
 from application.preferences import Preferences
 from application import IDLE, SELECTING, SELECTED, DRAG
 from application import OBJECT, TEXT, TEXT_BLOCK, COL, ROW, RECT, ERASER
@@ -93,6 +94,91 @@ class SelectionRect(Selection):
         w = x_end - x_start
         h = y_end - y_start
         ctx.rectangle(x_start, y_start, w, h)
+
+    def draw(self, ctx):
+        self.set_position(ctx)
+        ctx.stroke()
+
+
+class SelectionArrow(Selection):
+
+    def __init__(self, item=RECT, state=IDLE):
+        super(SelectionArrow, self).__init__(item=item, state=state)
+
+    def _direction(self):
+        dx = abs(self._endpos.x - self._startpos.x)
+        dy = abs(self._endpos.y - self._startpos.y)
+        if dx > dy:
+            return HORIZONTAL
+        else:
+            return VERTICAL
+
+    def set_position(self, ctx):
+        if self._direction() == HORIZONTAL:
+            poly = self.set_pos_hor()
+        else:
+            poly = self.set_pos_vert()
+        self.draw_polyline(ctx, poly)
+
+    def set_pos_vert(self):
+        startpos = self._startpos
+        endpos = self._endpos
+
+        w = endpos.x - startpos.x
+        if w == 0:
+            w = 3
+        w = w + w % 3
+        w2 = w / 2
+        w3 = w / 3
+        mx = (startpos.x + endpos.x) / 2
+
+        poly = []
+        poly.append(Pos(endpos.x - w3, startpos.y))  # a
+        poly.append(Pos(startpos.x + w3, startpos.y))  # b
+        poly.append(Pos(startpos.x + w3, endpos.y + w2))  # c
+
+        # arrow tip
+        poly.append(Pos(startpos.x, endpos.y + w2))  # d
+        poly.append(Pos(mx, endpos.y))  # e
+        poly.append(Pos(endpos.x, endpos.y + w2))  # f
+
+        poly.append(Pos(endpos.x - w3, endpos.y + w2))  # g
+        poly.append(Pos(endpos.x - w3, startpos.y))  # a
+        return poly
+
+    def set_pos_hor(self):
+        startpos = self._startpos
+        endpos = self._endpos
+
+        h = startpos.y - endpos.y
+        if h == 0:
+            h = 3
+        h = h + h % 3
+        h2 = h / 2
+        h3 = h / 3
+        my = (startpos.y + endpos.y) / 2
+
+        poly = []
+        poly.append(Pos(startpos.x, startpos.y - h3))  # a
+        poly.append(Pos(startpos.x, endpos.y + h3))  # b
+        poly.append(Pos(endpos.x - h2, endpos.y + h3))  # c
+
+        # arrow tip
+        poly.append(Pos(endpos.x - h2, endpos.y))  # d
+        poly.append(Pos(endpos.x, my))  # e
+        poly.append(Pos(endpos.x - h2, startpos.y))  # f
+
+        poly.append(Pos(endpos.x - h2, startpos.y - h3))  # g
+        poly.append(Pos(startpos.x, startpos.y - h3))  # a
+        return poly
+
+    def draw_polyline(self, ctx, poly):
+        ctx.new_path()
+        cmd = ctx.move_to
+        for p in poly:
+            p.snap_to_grid()
+            cmd(p.x, p.y)
+            cmd = ctx.line_to
 
     def draw(self, ctx):
         self.set_position(ctx)
