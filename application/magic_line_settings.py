@@ -258,9 +258,6 @@ class MagicLineSettingsDialog(Gtk.Dialog):
     def on_create_new_matrix(self, item):
         print("Not yet implemented")
 
-    def on_refresh(self, item):
-        print("Not yet implemented")
-
     def on_save_clicked(self, item):
         MagicLineSettings.LMD = self.lmd
         pub.sendMessage('SAVE_MAGIC_LINE_SETTINGS')
