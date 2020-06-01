@@ -273,8 +273,15 @@ class GridView(Gtk.DrawingArea):
         self._selection = SelectionEraser()
 
     def on_selecting_rect(self, objects):
-        self._selection = SelectionRect()
+        # self._selection = SelectionRect()
+        self._selection = SelectionArrow()
         self._objects = objects
+
+    # TEST arrow drawing proof of concept
+    def on_selecting_arrow(self, objects):
+        self._selection = SelectionArrow()
+        self._objects = objects
+        self.enable_cursor_callback(False)
 
     def on_selecting_row(self, action):
         self._selection = SelectionRow(action)
