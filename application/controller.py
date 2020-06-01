@@ -293,7 +293,7 @@ class Controller(object):
             pps = set()
             for sel in selected:
                 if sel.symbol.pickpoint_pos in pps:
-                    msg = _("More than one item at position: {} !").format(sel.symbol.pickpoint_pos )
+                    msg = _("More than one item at position: {} !").format(sel.symbol.pickpoint_pos)
                     pub.sendMessage('STATUS_MESSAGE', msg=msg, type=WARNING)
                 else:
                     pps.add(sel.symbol.pickpoint_pos)
@@ -381,7 +381,6 @@ class Controller(object):
         symbol = Column(col, action)
         self.objects.append(symbol)
         symbol.paste(self.grid)
-
         self.push_latest_action(symbol)
 
     def on_grid_row(self, row, action):
@@ -389,7 +388,6 @@ class Controller(object):
         symbol = Row(row, action)
         self.objects.append(symbol)
         symbol.paste(self.grid)
-
         self.push_latest_action(symbol)
 
     # character/component symbol
@@ -426,7 +424,6 @@ class Controller(object):
 
         self.objects.append(symbol)
         symbol.paste(self.grid)
-
         self.push_latest_action(symbol)
 
         pub.sendMessage('UNDO_CHANGED', undo=True)
@@ -455,7 +452,6 @@ class Controller(object):
 
         self.latest_action += action
 
-        # pub.sendMessage('NOTHING_SELECTED')
         pub.sendMessage('UNDO_CHANGED', undo=True)
 
     # lines
