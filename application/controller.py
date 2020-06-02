@@ -13,7 +13,7 @@ from pubsub import pub
 from locale import gettext as _
 from application import ERROR, WARNING
 from application import REMOVE, INSERT
-from application import ERASER, COMPONENT, CHARACTER, TEXT, COL, ROW, DRAW_RECT, LINE, MAG_LINE, DIR_LINE
+from application import ERASER, COMPONENT, CHARACTER, TEXT, COL, ROW, DRAW_RECT, ARROW, LINE, MAG_LINE, DIR_LINE
 from application.pos import Pos
 from application.grid import Grid
 from application.magic_line_settings import MagicLineSettings
@@ -697,6 +697,12 @@ class Controller(object):
                 endpos = Pos(x, y)
                 self.on_paste_rect(startpos, endpos)
 
+            elif type == ARROW:
+                x, y = m.group(2, 3)
+                startpos = Pos(x, y)
+                x, y = m.group(4, 5)
+                endpos = Pos(x, y)
+                self.on_paste_arrow(startpos, endpos)
             else:
                     skip = 1
             return skip
@@ -739,7 +745,7 @@ class Controller(object):
         linenr = 0
         for item in memo:
             linenr += 1
-            m1 = re.search('(^eras|^comp|^char|^rect|^line|^magl|^dirl):(\d+),(\d+),(\d+),?(\d*),?(\d*),?(\d*)', item)  # noqa W605
+            m1 = re.search('(^eras|^comp|^char|^rect|^line|^magl|^dirl|^arrw):(\d+),(\d+),(\d+),?(\d*),?(\d*),?(\d*)', item)  # noqa W605
             m2 = re.search('(^d|^i)(row|col):(\d+)', item)  # noqa W605
             m3 = re.search('(^text):(\d+),(\d+),(\d+),(.*)', item)  # noqa W605
             if m1 is not None:
