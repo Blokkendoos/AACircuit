@@ -13,7 +13,7 @@ from pubsub import pub
 from locale import gettext as _
 from application import ERROR, WARNING
 from application import REMOVE, INSERT
-from application import ERASER, COMPONENT, CHARACTER, TEXT, COL, ROW, DRAW_RECT, LINE, MAG_LINE, DIR_LINE
+from application import ERASER, COMPONENT, CHARACTER, TEXT, COL, ROW, DRAW_RECT, ARROW, LINE, MAG_LINE, DIR_LINE
 from application.pos import Pos
 from application.grid import Grid
 from application.magic_line_settings import MagicLineSettings
@@ -22,7 +22,7 @@ from application.main_window import MainWindow
 from application.memo_editing import MemoEditingDialog
 from application.component_library import ComponentLibrary
 from application.file import InputFileChooser, InputFileAscii, OutputFileChooser, OutputFileAscii, OutputFilePDF, PrintOperation
-from application.symbol import Eraser, Character, Text, Line, MagLine, MagLineOld, DirLine, Rect, Row, Column
+from application.symbol import Eraser, Character, Text, Line, MagLine, MagLineOld, DirLine, Rect, Arrow, Row, Column
 
 SelectedObjects = collections.namedtuple('SelectedObjects', ['startpos', 'symbol'])
 Action = collections.namedtuple('Action', ['action', 'symbol'])
@@ -33,7 +33,6 @@ class Controller(object):
     def __init__(self):
         self.prefs = Preferences()
         self.ml_settings = MagicLineSettings()
-
         self.gui = MainWindow()
         self.components = ComponentLibrary()
 
@@ -65,6 +64,7 @@ class Controller(object):
         pub.subscribe(self.on_paste_dir_line, 'PASTE_DIR_LINE')
         pub.subscribe(self.on_paste_line, 'PASTE_LINE')
         pub.subscribe(self.on_paste_rect, 'PASTE_RECT')
+        pub.subscribe(self.on_paste_arrow, 'PASTE_ARROW')
         pub.subscribe(self.on_paste_text, 'PASTE_TEXT')
         pub.subscribe(self.on_paste_text, 'PASTE_TEXTBLOCK')
         pub.subscribe(self.on_undo, 'UNDO')
@@ -125,13 +125,10 @@ class Controller(object):
     def init_stack(self):
         # action stack with the last cut/pasted symbol(s)
         self.latest_action = []
-
         # redo stack that contains the last undone actions
         self.undone_action = []
-
         # all objects on the grid
         self.objects = []
-
         self.selected_objects = []
 
     def init_grid(self, cols=None, rows=None):
@@ -139,12 +136,10 @@ class Controller(object):
             self._cols = Preferences.values['DEFAULT_COLS']
         else:
             self._cols = cols
-
         if rows is None:
             self._rows = Preferences.values['DEFAULT_ROWS']
         else:
             self._rows = rows
-
         self.grid = Grid(self._cols, self._rows)
         pub.sendMessage('NEW_GRID', grid=self.grid)
 
@@ -172,20 +167,15 @@ class Controller(object):
 
         action = None
         symbol = None
-
         if len(stack) > 0:
-
             action, symbol = stack.pop()
-
             # revert action
             if action == REMOVE:
                 paste_symbol()
                 action = INSERT
-
             elif action == INSERT:
                 cut_symbol()
                 action = REMOVE
-
         return symbol, action
 
     def on_undo(self):
@@ -193,7 +183,6 @@ class Controller(object):
             symbol, action = self.revert_action(self.latest_action)
             if action:
                 self.push_undone(symbol, action)
-
         if len(self.latest_action) < 1:
             # there are no more actions to undo
             pub.sendMessage('UNDO_CHANGED', undo=False)
@@ -203,25 +192,20 @@ class Controller(object):
             symbol, action = self.revert_action(self.undone_action)
             if action:
                 self.push_latest_action(symbol, action)
-
         if len(self.undone_action) < 1:
             # there are no more actions to redo
             pub.sendMessage('REDO_CHANGED', redo=False)
 
     def push_latest_action(self, symbol, action=INSERT):
         """Add a cut or paste action to the undo stack."""
-
         act = Action(action=action, symbol=symbol)
         self.latest_action.append(act)
-
         pub.sendMessage('UNDO_CHANGED', undo=True)
 
     def push_undone(self, symbol, action):
         """Add an undone action to the redo stack."""
-
         act = Action(action=action, symbol=symbol)
         self.undone_action.append(act)
-
         pub.sendMessage('REDO_CHANGED', redo=True)
 
     def add_selected_object(self, symbol):
@@ -279,7 +263,6 @@ class Controller(object):
         ul, br = rect
         selected = []
         for symbol in self.objects:
-
             # select symbols of which the upper-left corner is within the selection rectangle
             if symbol.pickpoint_pos.in_rect(rect):
                 copy = symbol.copy()
@@ -299,7 +282,6 @@ class Controller(object):
                     pps.add(sel.symbol.pickpoint_pos)
                     selected_unique.append(sel)
             selected = selected_unique
-
         self.selected_objects = selected
 
     def on_selector_moved(self, pos):
@@ -322,15 +304,11 @@ class Controller(object):
         self.find_selected(rect)
         action = []
         for obj in self.selected_objects:
-
             act = Action(action=REMOVE, symbol=obj.symbol)
             action.append(act)
-
             obj.symbol.remove(self.grid)
             self.remove_from_objects(obj.symbol)
-
         self.latest_action += action
-
         pub.sendMessage('UNDO_CHANGED', undo=True)
         pub.sendMessage('OBJECTS_SELECTED', objects=self.selected_objects)
 
@@ -346,7 +324,6 @@ class Controller(object):
         memo = ""
         for symbol in self.objects:
             memo += symbol.memo() + '\n'
-
         dialog = MemoEditingDialog(memo)
         dialog.run()
         dialog.hide()
@@ -354,12 +331,10 @@ class Controller(object):
     def on_rerun_memo(self, str):
         self.init_stack()
         self.init_grid()
-
         memo = []
         str = str.splitlines()
         for line in str:
             memo.append(line)
-
         self.play_memo(memo)
 
     # grid manipulation
@@ -419,13 +394,7 @@ class Controller(object):
             obj.symbol.mirrored = 1 - obj.symbol.mirrored  # toggle 0/1
 
     def on_paste_text(self, symbol):
-        self.selected_objects = []
-        self.add_selected_object(symbol)
-
-        self.objects.append(symbol)
-        symbol.paste(self.grid)
-        self.push_latest_action(symbol)
-
+        self.paste_symbol(symbol)
         pub.sendMessage('UNDO_CHANGED', undo=True)
 
     def on_paste_objects(self, pos):
@@ -434,52 +403,40 @@ class Controller(object):
         :param pos: the target position in grid (col, row) coordinates.
         """
         action = []
-
         for obj in self.selected_objects:
-
             offset = pos - obj.startpos
-
             # TODO make the position translation a Symbol method?
             symbol = obj.symbol.copy()
             symbol.startpos += offset
             symbol.endpos += offset
-
             act = Action(action=INSERT, symbol=symbol)
             action.append(act)
-
             self.objects.append(symbol)
             symbol.paste(self.grid)
-
         self.latest_action += action
-
         pub.sendMessage('UNDO_CHANGED', undo=True)
+
+    def paste_symbol(self, symbol):
+        self.selected_objects = []
+        self.add_selected_object(symbol)
+        self.objects.append(symbol)
+        symbol.paste(self.grid)
+        self.push_latest_action(symbol)
 
     # lines
 
     def on_paste_line(self, startpos, endpos, type):
         symbol = Line(startpos, endpos, type)
-
-        self.selected_objects = []
-        self.add_selected_object(symbol)
-
-        self.objects.append(symbol)
-        symbol.paste(self.grid)
-        self.push_latest_action(symbol)
+        self.paste_symbol(symbol)
 
     def on_paste_dir_line(self, startpos, endpos):
         symbol = DirLine(startpos, endpos)
-
-        self.selected_objects = []
-        self.add_selected_object(symbol)
-
-        self.objects.append(symbol)
-        symbol.paste(self.grid)
-        self.push_latest_action(symbol)
+        self.paste_symbol(symbol)
 
     def on_paste_mag_line(self, startpos, endpos):
         symbol = MagLine(startpos, endpos, self.cell_callback)
         # symbol = MagLineOld(startpos, endpos, self.cell_callback)
-        self._paste_mag_line(symbol)
+        self.paste_symbol(symbol)
 
     def on_paste_mag_line_w_type(self, startpos, endpos, type):
         # backward compatibility
@@ -487,25 +444,15 @@ class Controller(object):
             symbol = MagLine(startpos, endpos, self.cell_callback)
         else:
             symbol = MagLineOld(startpos, endpos, self.cell_callback)
-        self._paste_mag_line(symbol)
-
-    def _paste_mag_line(self, symbol):
-        self.selected_objects = []
-        self.add_selected_object(symbol)
-
-        self.objects.append(symbol)
-        symbol.paste(self.grid)
-        self.push_latest_action(symbol)
+        self.paste_symbol(symbol)
 
     def on_paste_rect(self, startpos, endpos):
         symbol = Rect(startpos, endpos)
+        self.paste_symbol(symbol)
 
-        self.selected_objects = []
-        self.add_selected_object(symbol)
-
-        self.objects.append(symbol)
-        symbol.paste(self.grid)
-        self.push_latest_action(symbol)
+    def on_paste_arrow(self, startpos, endpos):
+        symbol = Arrow(startpos, endpos)
+        self.paste_symbol(symbol)
 
     # clipboard
 
@@ -520,17 +467,13 @@ class Controller(object):
         selected = []
         pos = Pos(0, 0)
         relative_pos = Pos(0, 0)
-
         content = xerox.paste().splitlines()
-
         for line in content:
             symbol = Text(relative_pos, line)
             selection = SelectedObjects(startpos=pos, symbol=symbol)
             selected.append(selection)
             relative_pos += Pos(0, 1)
-
         self.selected_objects = selected
-
         pub.sendMessage('OBJECTS_SELECTED', objects=self.selected_objects)
 
     def on_load_and_paste_grid(self):
@@ -541,7 +484,6 @@ class Controller(object):
         try:
             file = open(filename, 'r')
             str = file.readlines()
-
             startpos = Pos(0, 0)
             pos = Pos(0, 0)
             for line in str:
@@ -549,12 +491,9 @@ class Controller(object):
                 # fill selected_objects...
                 symbol = Text(pos, line)
                 selection = SelectedObjects(startpos=startpos, symbol=symbol)
-
                 pos += Pos(0, 1)
                 self.selected_objects.append(selection)
-
             file.close()
-
             pub.sendMessage('OBJECTS_SELECTED', objects=self.selected_objects)
             return True
 
@@ -573,23 +512,18 @@ class Controller(object):
     def on_erase(self, startpos, size):
         """Erase an area of the given size."""
         symbol = Eraser(size, startpos)
-
         self.selected_objects = []
         self.add_selected_object(symbol)
-
         self.objects.append(symbol)
         symbol.paste(self.grid)
         self.push_latest_action(symbol)
-
         pub.sendMessage('UNDO_CHANGED', undo=True)
 
     def on_eraser_selected(self, size):
         """Select eraser of the given size."""
         symbol = Eraser(size)
-
         self.selected_objects = []
         self.add_selected_object(symbol)
-
         pub.sendMessage('SYMBOL_SELECTED', symbol=symbol)
 
     def select_all_objects(self):
@@ -604,7 +538,6 @@ class Controller(object):
         """Select multiple objects."""
         pub.sendMessage('NOTHING_SELECTED')
         pub.sendMessage('SELECTING_RECT', objects=self.select_all_objects())
-
         msg = _("Selecting rectangle...")
         pub.sendMessage('STATUS_MESSAGE', msg=msg)
 
@@ -618,22 +551,16 @@ class Controller(object):
     # TODO naar eigen file of class zetten
 
     def on_write_to_file(self, filename):
-
         try:
             fout = open(filename, 'w')
-
             str = ""
             for symbol in self.objects:
                 str += symbol.memo() + "\n"
             fout.write(str)
-
             fout.close()
-
             self.filename = filename
-
             msg = _("Schema has been saved in: %s" % self.filename)
             pub.sendMessage('STATUS_MESSAGE', msg=msg)
-
             return True
 
         except IOError:
@@ -642,20 +569,14 @@ class Controller(object):
             return False
 
     def on_write_to_ascii_file(self, filename):
-
         try:
             fout = open(filename, 'w')
-
             str = self.grid.content_as_str()
             fout.write(str)
-
             fout.close()
-
             self.filename = filename
-
             msg = _("ASCII Schema has been saved in: %s" % self.filename)
             pub.sendMessage('STATUS_MESSAGE', msg=msg)
-
             return True
 
         except IOError:
@@ -664,21 +585,16 @@ class Controller(object):
             return False
 
     def on_read_from_file(self, filename):
-
         self.filename = filename
-
         try:
             file = open(filename, 'r')
             str = file.readlines()
-
             # start with a fresh grid
             self.init_stack()
             self.init_grid()
-
             memo = []
             for line in str:
                 memo.append(line)
-
             file.close()
 
             if self._import_legacy:
@@ -700,7 +616,6 @@ class Controller(object):
             pub.sendMessage('STATUS_MESSAGE', msg=msg)
             pub.sendMessage('FILE_OPENED')
             pub.sendMessage('NOTHING_SELECTED')
-
             return True
 
         except IOError as e:
@@ -716,171 +631,123 @@ class Controller(object):
     def play_memo(self, memo):
 
         def play_m1(m):
-
             skip = 0
             type = m.group(1)
-
             if type == ERASER:
-
                 w = int(m.group(2))
                 h = int(m.group(3))
                 size = (w, h)
-
                 x, y = m.group(4, 5)
                 pos = Pos(x, y)
-
                 symbol = Eraser(size)
-
                 self.selected_objects = []
                 self.add_selected_object(symbol)
-
                 self.on_paste_objects(pos)
 
             elif type == COMPONENT:
-
                 id = int(m.group(2))
-
                 orientation = int(m.group(3))
                 mirrored = int(m.group(4))
-
                 x, y = m.group(5, 6)
                 pos = Pos(x, y)
-
                 symbol = self.components.get_symbol_byid(id)
                 symbol.ori = orientation
                 symbol.mirrored = mirrored
-
                 self.selected_objects = []
                 self.add_selected_object(symbol)
-
                 self.on_paste_objects(pos)
 
             elif type == CHARACTER:
-
                 ascii = m.group(2)
                 char = chr(int(ascii))
-
                 x, y = m.group(3, 4)
                 pos = Pos(x, y)
-
                 symbol = Character(char)
-
                 self.selected_objects = []
                 self.add_selected_object(symbol)
-
                 self.on_paste_objects(pos)
 
             elif type == LINE:
-
                 line_type = int(m.group(2))
-
                 x, y = m.group(3, 4)
                 startpos = Pos(x, y)
-
                 x, y = m.group(5, 6)
                 endpos = Pos(x, y)
-
                 self.on_paste_line(startpos, endpos, line_type)
 
             elif type == DIR_LINE:
-
                 x, y = m.group(2, 3)
                 startpos = Pos(x, y)
-
                 x, y = m.group(4, 5)
                 endpos = Pos(x, y)
-
                 self.on_paste_dir_line(startpos, endpos)
 
             elif type == MAG_LINE:
-
                 line_type = int(m.group(2))
-
                 x, y = m.group(3, 4)
                 startpos = Pos(x, y)
-
                 x, y = m.group(5, 6)
                 endpos = Pos(x, y)
-
                 self.on_paste_mag_line_w_type(startpos, endpos, line_type)
 
             elif type == DRAW_RECT:
-
                 x, y = m.group(2, 3)
                 startpos = Pos(x, y)
-
                 x, y = m.group(4, 5)
                 endpos = Pos(x, y)
-
                 self.on_paste_rect(startpos, endpos)
 
+            elif type == ARROW:
+                x, y = m.group(2, 3)
+                startpos = Pos(x, y)
+                x, y = m.group(4, 5)
+                endpos = Pos(x, y)
+                self.on_paste_arrow(startpos, endpos)
             else:
-                skip = 1
-
+                    skip = 1
             return skip
 
         def play_m2(m):
-
             skip = 0
             type = m.group(1)
-
             if type == 'i':
                 action = INSERT
             else:
                 action = REMOVE
-
             what = m.group(2)
             nr = int(m.group(3))
-
             if what == COL:
                 self.on_grid_col(nr, action)
-
             elif what == ROW:
                 self.on_grid_row(nr, action)
-
             else:
                 skip = 1
-
             return skip
 
         def play_m3(m):
-
             skip = 0
             type = m.group(1)
-
             if type == TEXT:
-
                 orientation = int(m.group(2))
-
                 x, y = m.group(3, 4)
                 pos = Pos(x, y)
-
                 str = m.group(5)
                 text = json.loads(str)
-
                 symbol = Text(pos, text, orientation)
-
                 self.selected_objects = []
                 self.add_selected_object(symbol)
-
                 self.on_paste_objects(pos)
-
             else:
                 skip = 1
-
             return skip
 
         skipped = 0
         linenr = 0
-
         for item in memo:
-
             linenr += 1
-
-            m1 = re.search('(^eras|^comp|^char|^rect|^line|^magl|^dirl):(\d+),(\d+),(\d+),?(\d*),?(\d*),?(\d*)', item)  # noqa W605
+            m1 = re.search('(^eras|^comp|^char|^rect|^line|^magl|^dirl|^arrw):(\d+),(\d+),(\d+),?(\d*),?(\d*),?(\d*)', item)  # noqa W605
             m2 = re.search('(^d|^i)(row|col):(\d+)', item)  # noqa W605
             m3 = re.search('(^text):(\d+),(\d+),(\d+),(.*)', item)  # noqa W605
-
             if m1 is not None:
                 skipped += play_m1(m1)
             elif m2 is not None:
@@ -891,209 +758,145 @@ class Controller(object):
                 msg = _("skipped linenr: {}").format(linenr)
                 pub.sendMessage('STATUS_MESSAGE', msg=msg, type=WARNING)
                 skipped += 1
-
         return skipped
 
     def play_memo_original_aac(self, memo):
 
         def play_m1(m):
-
             skip = 0
             component = m.group(1)
             type = component.lower()
-
             if type == ERASER:
-
                 w = int(m.group(2))
                 h = int(m.group(3))
                 size = (w, h)
-
                 x, y = m.group(4, 5)
                 pos = Pos(x, y)
-
                 symbol = Eraser(size)
-
                 self.selected_objects = []
                 self.add_selected_object(symbol)
-
                 self.on_paste_objects(pos)
 
             elif type == COMPONENT:
-
                 id = int(m.group(2))
-
                 orientation = int(m.group(3))
                 mirrored = int(m.group(4))
-
                 x, y = m.group(5, 6)
                 pos = Pos(x, y)
-
                 symbol = self.components.get_symbol_byid(id)
                 symbol.ori = orientation
                 symbol.mirrored = mirrored
-
                 self.selected_objects = []
                 self.add_selected_object(symbol)
-
                 self.on_paste_objects(pos)
 
             elif type == CHARACTER:
-
                 ascii = m.group(2)
                 char = chr(int(ascii))
-
                 x, y = m.group(3, 4)
                 pos = Pos(x, y)
-
                 symbol = Character(char)
-
                 self.selected_objects = []
                 self.add_selected_object(symbol)
-
                 self.on_paste_objects(pos)
 
             elif type == LINE:
-
                 terminal = int(m.group(2))
-
                 x, y = m.group(3, 4)
                 startpos = Pos(x, y)
-
                 x, y = m.group(5, 6)
                 endpos = Pos(x, y)
-
                 self.on_paste_line(startpos, endpos, terminal)
 
             elif type == DIR_LINE:
-
                 x, y = m.group(2, 3)
                 startpos = Pos(x, y)
-
                 x, y = m.group(4, 5)
                 endpos = Pos(x, y)
-
                 self.on_paste_dir_line(startpos, endpos)
 
             elif type == MAG_LINE:
-
                 line_type = int(m.group(2))
 
                 x, y = m.group(3, 4)
                 startpos = Pos(x, y)
-
                 x, y = m.group(5, 6)
                 endpos = Pos(x, y)
-
                 self.on_paste_mag_line_w_type(startpos, endpos, line_type)
 
             elif type == DRAW_RECT:
-
                 x, y = m.group(3, 4)
                 startpos = Pos(x, y)
-
                 x, y = m.group(5, 6)
                 endpos = Pos(x, y)
-
                 self.on_paste_rect(startpos, endpos)
-
             else:
                 msg = _("skipped: {}").format(type)
                 pub.sendMessage('STATUS_MESSAGE', msg=msg, type=WARNING)
                 skip = 1
-
             return skip
 
         def play_m2(m):
-
             type = m.group(1)
-
             if type == 'I':
                 action = INSERT
             else:
                 action = REMOVE
-
             what = m.group(2)
             nr = int(m.group(3))
-
             if what.lower() == COL:
                 symbol = Column(nr, action)
-
             elif what.lower() == ROW:
                 symbol = Row(nr, action)
-
             self.selected_objects = []
             self.add_selected_object(symbol)
-
             self.on_paste_objects(symbol.startpos)
-
             return 0
 
         def play_m3(m):
-
             skip = 0
             type = m.group(1)
-
             if type == TEXT:
-
                 text = m.group(2)
-
                 x, y = m.group(3, 4)
                 pos = Pos(x, y)
-
                 orientation = 0
-
                 symbol = Text(pos, text, orientation)
-
                 self.selected_objects = []
                 self.add_selected_object(symbol)
-
                 self.on_paste_objects(pos)
-
             else:
                 msg = _("skipped: {}").format(type)
                 pub.sendMessage('STATUS_MESSAGE', msg=msg, type=WARNING)
                 skip = 1
-
             return skip
 
         def play_m4(m):
-
             id = int(m.group(2))
-
             orientation = int(m.group(3))
             orientation -= 1
-
             x, y = m.group(4, 5)
             pos = Pos(x, y)
-
             if m.group(6) == 's':
                 mirrored = 1
             else:
                 mirrored = 0
-
             symbol = self.components.get_symbol_byid(id)
             symbol.ori = orientation
             symbol.mirrored = mirrored
-
             self.selected_objects = []
             self.add_selected_object(symbol)
-
             self.on_paste_objects(pos)
-
             return 0
 
         skipped = 0
         linenr = 0
-
         for item in memo:
-
             linenr += 1
-
             m1 = re.search('(^eras|^char|^rect|^line|^MagL|^dirl):(\d+),(\d+),(\d+),?(\d*),?(\d*),?(\d*)', item)  # noqa W605
             m2 = re.search('(^D|^I)(ROW|COL):(\d+)', item)  # noqa W605
             m3 = re.search('(^text):(.+),(\d+),(\d+)', item)  # noqa W605
             m4 = re.search('(^comp):(\d+),(\d+),(\d+),(\d+),(\w),?(\w*)', item)  # noqa W605
-
             if m1 is not None:
                 skipped += play_m1(m1)
             elif m2 is not None:
@@ -1106,5 +909,4 @@ class Controller(object):
                 msg = _("skipped linenr: {}").format(linenr)
                 pub.sendMessage('STATUS_MESSAGE', msg=msg, type=WARNING)
                 skipped += 1
-
         return skipped

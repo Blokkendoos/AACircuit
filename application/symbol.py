@@ -17,7 +17,7 @@ from application.pos import Pos
 from application import CELL_ERASE
 from application import INSERT, COL, ROW
 from application import HORIZONTAL, VERTICAL, LONGEST_FIRST
-from application import ERASER, COMPONENT, CHARACTER, TEXT, DRAW_RECT, LINE, MAG_LINE, DIR_LINE
+from application import ERASER, COMPONENT, CHARACTER, TEXT, DRAW_RECT, LINE, MAG_LINE, DIR_LINE, ARROW
 
 
 def show_text(ctx, x, y, text):
@@ -1214,7 +1214,6 @@ class MagLineOld(MagLine):
 class Rect(Symbol):
 
     def __init__(self, startpos, endpos):
-
         if startpos > endpos:
             tmp = endpos
             endpos = startpos
@@ -1262,6 +1261,116 @@ class Rect(Symbol):
 
     def memo(self):
         str = "{0}:{1},{2}".format(DRAW_RECT, self._startpos, self._endpos)
+        return str
+
+
+class Arrow(Symbol):
+
+    def __init__(self, startpos, endpos):
+        grid = {"N": ['?']}
+        super(Arrow, self).__init__(grid=grid, startpos=startpos, endpos=endpos)
+
+        self._is_symbol = False
+        self._is_line = True
+        self._representation()
+
+    def _direction(self):
+        dx = abs(self._endpos.x - self._startpos.x)
+        dy = abs(self._endpos.y - self._startpos.y)
+        if dx > dy:
+            return HORIZONTAL
+        else:
+            return VERTICAL
+
+    def _representation(self):
+        if self._direction() == HORIZONTAL:
+            self._repr_hor()
+        else:
+            self._repr_vert()
+
+    def _repr_hor(self):
+        ul = self._startpos
+        ur = Pos(self._endpos.x, self._startpos.y)
+        bl = Pos(self._startpos.x, self._endpos.y)
+        br = self._endpos
+
+        startpos = ul
+        endpos = br
+
+        h = startpos.y - endpos.y
+        if h == 0:
+            h = 3
+        h = h + h % 3
+        h2 = h / 2
+        h3 = h / 3
+        my = (startpos.y + endpos.y) / 2
+
+        a = Pos(startpos.x, startpos.y - h3)
+        b = Pos(startpos.x, endpos.y + h3)
+        c = Pos(endpos.x - h2, endpos.y + h3)
+        # arrow tip
+        d = Pos(endpos.x - h2, endpos.y)
+        e = Pos(endpos.x, my)
+        f = Pos(endpos.x - h2, startpos.y)
+        # close loop
+        g = Pos(endpos.x - h2, startpos.y - h3)
+        self._repr_poly(a, b, c, d, e, f, g)
+
+    def _repr_vert(self):
+        ul = self._startpos
+        ur = Pos(self._endpos.x, self._startpos.y)
+        bl = Pos(self._startpos.x, self._endpos.y)
+        br = self._endpos
+
+        startpos = ul
+        endpos = br
+
+        w = br.x - ul.x
+        if w == 0:
+            w = 3
+        w = w + w % 3
+        w2 = w / 2
+        w3 = w / 3
+        mx = (startpos.x + endpos.x) / 2
+
+        a = Pos(endpos.x - w3, startpos.y)
+        b = Pos(startpos.x + w3, startpos.y)
+        c = Pos(startpos.x + w3, endpos.y + w2)
+        # arrow tip
+        d = Pos(startpos.x, endpos.y + w2)
+        e = Pos(mx, endpos.y)
+        f = Pos(endpos.x, endpos.y + w2)
+        # close loop
+        g = Pos(endpos.x - w3, endpos.y + w2)
+        self._repr_poly(a, b, c, d, e, f, g)
+
+    def _repr_poly(self, a, b, c, d, e, f, g):
+
+        line1 = Line(a, b, Line.LINE1)
+        line2 = Line(b, c, Line.LINE1)
+        line3 = Line(c, d, Line.LINE1)
+        line4 = DirLine(d, e)
+        line5 = DirLine(e, f)
+        line6 = Line(f, g, Line.LINE1)
+        line7 = Line(g, a, Line.LINE1)
+
+        self._repr = dict()
+
+        self._repr.update(line1.repr)
+        self._repr.update(line3.repr)
+        self._repr.update(line2.repr)
+        self._repr.update(line4.repr)
+        self._repr.update(line5.repr)
+        self._repr.update(line6.repr)
+        self._repr.update(line7.repr)
+
+    def copy(self):
+        startpos = copy.deepcopy(self._startpos)
+        endpos = copy.deepcopy(self._endpos)
+        return Arrow(startpos, endpos)
+
+    def memo(self):
+        str = "{0}:{1},{2}".format(ARROW, self._startpos, self._endpos)
         return str
 
 

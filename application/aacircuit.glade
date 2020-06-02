@@ -142,6 +142,11 @@
     <property name="can_focus">False</property>
     <property name="pixbuf">buttons/eraser.png</property>
   </object>
+  <object class="GtkImage" id="image4">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="pixbuf">buttons/draw_arrow.png</property>
+  </object>
   <object class="GtkImage" id="image5">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -1307,6 +1312,22 @@
                             <property name="expand">False</property>
                             <property name="fill">False</property>
                             <property name="position">6</property>
+                            <property name="non_homogeneous">True</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkButton">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="receives_default">True</property>
+                            <property name="tooltip_text" translatable="yes">draw an arrow</property>
+                            <property name="image">image4</property>
+                            <signal name="clicked" handler="on_arrow" swapped="no"/>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">False</property>
+                            <property name="position">7</property>
                             <property name="non_homogeneous">True</property>
                           </packing>
                         </child>

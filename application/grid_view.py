@@ -10,13 +10,13 @@ from pubsub import pub
 from application import _
 from application import HORIZONTAL, VERTICAL
 from application import IDLE, SELECTING, SELECTED
-from application import CHARACTER, COMPONENT, LINE, MAG_LINE, DIR_LINE, OBJECT, OBJECTS, COL, ROW, RECT, DRAW_RECT, ERASER
+from application import CHARACTER, COMPONENT, LINE, MAG_LINE, DIR_LINE, OBJECT, OBJECTS, COL, ROW, RECT, DRAW_RECT, ERASER, ARROW
 from application import MARK_CHAR
 from application import TEXT, TEXT_BLOCK
 from application.pos import Pos
-from application.symbol import Text, Line, MagLine, DirLine, Rect
+from application.symbol import Text, Line, MagLine, DirLine, Rect, Arrow
 from application.preferences import Preferences
-from application.selection import Selection, SelectionCol, SelectionRow, SelectionRect, SelectionObject, SelectionEraser
+from application.selection import Selection, SelectionCol, SelectionRow, SelectionRect, SelectionArrow, SelectionObject, SelectionEraser
 
 import gi
 
@@ -106,8 +106,8 @@ class GridView(Gtk.DrawingArea):
         pub.subscribe(self.on_draw_line, 'DRAW_LINE2')
         pub.subscribe(self.on_draw_line, 'DRAW_LINE3')
         pub.subscribe(self.on_draw_line, 'DRAW_LINE4')
-
         pub.subscribe(self.on_draw_rect, 'DRAW_RECT')
+        pub.subscribe(self.on_draw_arrow, 'DRAW_ARROW')
 
         # printing
         pub.subscribe(self.on_begin_print, 'BEGIN_PRINT')
@@ -280,6 +280,11 @@ class GridView(Gtk.DrawingArea):
         self._objects = objects
         self.enable_cursor_callback(True)
 
+    def on_selecting_arrow(self, objects):
+        self._selection = SelectionArrow()
+        self._objects = objects
+        self.enable_cursor_callback(False)
+
     def on_selecting_row(self, action):
         self._selection = SelectionRow(action)
         self.enable_cursor_callback(False)
@@ -306,6 +311,10 @@ class GridView(Gtk.DrawingArea):
         self._selection = Selection(item=DRAW_RECT)
         self._symbol = Rect(Pos(0, 0), Pos(1, 1))
 
+    def on_draw_arrow(self):
+        self._selection = Selection(item=ARROW)
+        self._symbol = Arrow(Pos(0, 0), Pos(1, 1))
+
     # TEXT ENTRY
 
     def on_key_press(self, widget, event):
@@ -324,7 +333,7 @@ class GridView(Gtk.DrawingArea):
         if value == Gdk.KEY_Escape:
             # exit drawing
             if self._selection.state == SELECTING and \
-                    self._selection.item in (DRAW_RECT, LINE, MAG_LINE, DIR_LINE):
+                    self._selection.item in (DRAW_RECT, ARROW, LINE, MAG_LINE, DIR_LINE):
                 self._selection.state = IDLE
                 return True
 
@@ -523,7 +532,7 @@ class GridView(Gtk.DrawingArea):
                 self.mark_all_objects(ctx)
                 self._selection.draw(ctx)
 
-            elif self._selection.item in (MAG_LINE, LINE, DIR_LINE, DRAW_RECT):
+            elif self._selection.item in (MAG_LINE, LINE, DIR_LINE, DRAW_RECT, ARROW):
                 self._symbol.startpos = self._selection.startpos.grid_cr()
                 self._symbol.endpos = self._selection.endpos.grid_cr()
                 self._symbol.draw(ctx)
@@ -617,7 +626,7 @@ class GridView(Gtk.DrawingArea):
         pub.sendMessage('POINTER_MOVED', pos=pos.grid_cr())
 
         if not Preferences.values['SELECTION_DRAG'] \
-                and self._selection.item in (DRAW_RECT, ERASER, RECT, LINE, MAG_LINE, DIR_LINE):
+                and self._selection.item in (DRAW_RECT, ARROW, ERASER, RECT, LINE, MAG_LINE, DIR_LINE):
 
             if self._selection.state == IDLE:
                 self.on_drag_begin(None, event.x, event.y)
@@ -693,7 +702,7 @@ class GridView(Gtk.DrawingArea):
         return pos
 
     def on_drag_begin(self, widget, x_start, y_start):
-        if self._selection.state == IDLE and self._selection.item in (DRAW_RECT, RECT, ERASER, LINE, MAG_LINE, DIR_LINE):
+        if self._selection.state == IDLE and self._selection.item in (DRAW_RECT, ARROW, RECT, ERASER, LINE, MAG_LINE, DIR_LINE):
             pass
         else:
             return
@@ -710,7 +719,7 @@ class GridView(Gtk.DrawingArea):
         self._selection.state = SELECTING
 
     def on_drag_end(self, widget, x_offset, y_offset):
-        if self._selection.state == SELECTING and self._selection.item in (DRAW_RECT, RECT, ERASER, LINE, MAG_LINE, DIR_LINE):
+        if self._selection.state == SELECTING and self._selection.item in (DRAW_RECT, ARROW, RECT, ERASER, LINE, MAG_LINE, DIR_LINE):
             pass
         else:
             return
@@ -726,6 +735,9 @@ class GridView(Gtk.DrawingArea):
 
         if self._selection.item == DRAW_RECT:
             pub.sendMessage('PASTE_RECT', startpos=startpos, endpos=endpos)
+
+        elif self._selection.item == ARROW:
+            pub.sendMessage('PASTE_ARROW', startpos=startpos, endpos=endpos)
 
         elif self._selection.item == RECT:
             pub.sendMessage('SELECTION_CHANGED', selected=True)
@@ -748,7 +760,7 @@ class GridView(Gtk.DrawingArea):
             pub.sendMessage("PASTE_DIR_LINE", startpos=startpos, endpos=endpos)
 
     def on_drag_update(self, widget, x_offset, y_offset):
-        if self._selection.state == SELECTING and self._selection.item in (DRAW_RECT, RECT, ERASER, LINE, MAG_LINE, DIR_LINE):
+        if self._selection.state == SELECTING and self._selection.item in (DRAW_RECT, ARROW, RECT, ERASER, LINE, MAG_LINE, DIR_LINE):
             pass
         else:
             return
@@ -758,7 +770,7 @@ class GridView(Gtk.DrawingArea):
         pos = self._drag_startpos + offset
         pos.snap_to_grid()
 
-        if self._selection.item in (DRAW_RECT, RECT, ERASER, DIR_LINE, MAG_LINE):
+        if self._selection.item in (DRAW_RECT, ARROW, RECT, ERASER, DIR_LINE, MAG_LINE):
             self._drag_currentpos = pos
 
         elif self._selection.item == LINE:
@@ -830,7 +842,7 @@ class GridView(Gtk.DrawingArea):
 
         if not Preferences.values['SELECTION_DRAG'] \
                 and self._selection.state == SELECTING \
-                and self._selection.item in (DRAW_RECT, RECT, ERASER, LINE, MAG_LINE, DIR_LINE):
+                and self._selection.item in (DRAW_RECT, ARROW, RECT, ERASER, LINE, MAG_LINE, DIR_LINE):
             offset = Pos(event.x, event.y) - self._drag_startpos
             if moved_enough:
                 self.on_drag_update(None, offset.x, offset.y)
