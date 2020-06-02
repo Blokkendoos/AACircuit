@@ -16,7 +16,7 @@ from application import TEXT, TEXT_BLOCK
 from application.pos import Pos
 from application.symbol import Text, Line, MagLine, DirLine, Rect, Arrow
 from application.preferences import Preferences
-from application.selection import Selection, SelectionCol, SelectionRow, SelectionRect, SelectionObject, SelectionEraser, SelectionArrow
+from application.selection import Selection, SelectionCol, SelectionRow, SelectionRect, SelectionArrow, SelectionObject, SelectionEraser
 
 import gi
 
@@ -107,8 +107,8 @@ class GridView(Gtk.DrawingArea):
         pub.subscribe(self.on_draw_line, 'DRAW_LINE2')
         pub.subscribe(self.on_draw_line, 'DRAW_LINE3')
         pub.subscribe(self.on_draw_line, 'DRAW_LINE4')
-
         pub.subscribe(self.on_draw_rect, 'DRAW_RECT')
+        pub.subscribe(self.on_draw_arrow, 'DRAW_ARROW')
 
         # printing
         pub.subscribe(self.on_begin_print, 'BEGIN_PRINT')
@@ -273,11 +273,10 @@ class GridView(Gtk.DrawingArea):
         self._selection = SelectionEraser()
 
     def on_selecting_rect(self, objects):
-        # self._selection = SelectionRect()
-        self._selection = SelectionArrow()
+        self._selection = SelectionRect()
         self._objects = objects
+        self.enable_cursor_callback(False)
 
-    # TEST arrow drawing proof of concept
     def on_selecting_arrow(self, objects):
         self._selection = SelectionArrow()
         self._objects = objects
@@ -303,11 +302,11 @@ class GridView(Gtk.DrawingArea):
         self._selection = Selection(item=LINE)
         self._symbol = Line(Pos(0, 0), Pos(1, 1), type=type)
 
-    def on_draw_rect_TMP(self):
+    def on_draw_rect(self):
         self._selection = Selection(item=DRAW_RECT)
         self._symbol = Rect(Pos(0, 0), Pos(1, 1))
 
-    def on_draw_rect(self):
+    def on_draw_arrow(self):
         self._selection = Selection(item=ARROW)
         self._symbol = Arrow(Pos(0, 0), Pos(1, 1))
 
@@ -723,6 +722,9 @@ class GridView(Gtk.DrawingArea):
 
         if self._selection.item == DRAW_RECT:
             pub.sendMessage('PASTE_RECT', startpos=startpos, endpos=endpos)
+
+        elif self._selection.item == ARROW:
+            pub.sendMessage('PASTE_ARROW', startpos=startpos, endpos=endpos)
 
         elif self._selection.item == RECT:
             pub.sendMessage('SELECTION_CHANGED', selected=True)

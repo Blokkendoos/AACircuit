@@ -65,6 +65,7 @@ class Controller(object):
         pub.subscribe(self.on_paste_dir_line, 'PASTE_DIR_LINE')
         pub.subscribe(self.on_paste_line, 'PASTE_LINE')
         pub.subscribe(self.on_paste_rect, 'PASTE_RECT')
+        pub.subscribe(self.on_paste_arrow, 'PASTE_ARROW')
         pub.subscribe(self.on_paste_text, 'PASTE_TEXT')
         pub.subscribe(self.on_paste_text, 'PASTE_TEXTBLOCK')
         pub.subscribe(self.on_undo, 'UNDO')
@@ -482,6 +483,9 @@ class Controller(object):
         symbol = Rect(startpos, endpos)
         self.paste_symbol(symbol)
 
+    def on_paste_arrow(self, startpos, endpos):
+        symbol = Arrow(startpos, endpos)
+        self.paste_symbol(symbol)
 
     # clipboard
 
