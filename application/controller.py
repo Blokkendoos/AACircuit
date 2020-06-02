@@ -22,7 +22,7 @@ from application.main_window import MainWindow
 from application.memo_editing import MemoEditingDialog
 from application.component_library import ComponentLibrary
 from application.file import InputFileChooser, InputFileAscii, OutputFileChooser, OutputFileAscii, OutputFilePDF, PrintOperation
-from application.symbol import Eraser, Character, Text, Line, MagLine, MagLineOld, DirLine, Rect, Row, Column
+from application.symbol import Eraser, Character, Text, Line, MagLine, MagLineOld, DirLine, Rect, Arrow, Row, Column
 
 SelectedObjects = collections.namedtuple('SelectedObjects', ['startpos', 'symbol'])
 Action = collections.namedtuple('Action', ['action', 'symbol'])
@@ -419,13 +419,7 @@ class Controller(object):
             obj.symbol.mirrored = 1 - obj.symbol.mirrored  # toggle 0/1
 
     def on_paste_text(self, symbol):
-        self.selected_objects = []
-        self.add_selected_object(symbol)
-
-        self.objects.append(symbol)
-        symbol.paste(self.grid)
-        self.push_latest_action(symbol)
-
+        self.paste_symbol(symbol)
         pub.sendMessage('UNDO_CHANGED', undo=True)
 
     def on_paste_objects(self, pos):
@@ -454,32 +448,27 @@ class Controller(object):
 
         pub.sendMessage('UNDO_CHANGED', undo=True)
 
+    def paste_symbol(self, symbol):
+        self.selected_objects = []
+        self.add_selected_object(symbol)
+        self.objects.append(symbol)
+        symbol.paste(self.grid)
+        self.push_latest_action(symbol)
+
     # lines
 
     def on_paste_line(self, startpos, endpos, type):
         symbol = Line(startpos, endpos, type)
-
-        self.selected_objects = []
-        self.add_selected_object(symbol)
-
-        self.objects.append(symbol)
-        symbol.paste(self.grid)
-        self.push_latest_action(symbol)
+        self.paste_symbol(symbol)
 
     def on_paste_dir_line(self, startpos, endpos):
         symbol = DirLine(startpos, endpos)
-
-        self.selected_objects = []
-        self.add_selected_object(symbol)
-
-        self.objects.append(symbol)
-        symbol.paste(self.grid)
-        self.push_latest_action(symbol)
+        self.paste_symbol(symbol)
 
     def on_paste_mag_line(self, startpos, endpos):
         symbol = MagLine(startpos, endpos, self.cell_callback)
         # symbol = MagLineOld(startpos, endpos, self.cell_callback)
-        self._paste_mag_line(symbol)
+        self.paste_symbol(symbol)
 
     def on_paste_mag_line_w_type(self, startpos, endpos, type):
         # backward compatibility
@@ -487,25 +476,12 @@ class Controller(object):
             symbol = MagLine(startpos, endpos, self.cell_callback)
         else:
             symbol = MagLineOld(startpos, endpos, self.cell_callback)
-        self._paste_mag_line(symbol)
-
-    def _paste_mag_line(self, symbol):
-        self.selected_objects = []
-        self.add_selected_object(symbol)
-
-        self.objects.append(symbol)
-        symbol.paste(self.grid)
-        self.push_latest_action(symbol)
+        self.paste_symbol(symbol)
 
     def on_paste_rect(self, startpos, endpos):
         symbol = Rect(startpos, endpos)
+        self.paste_symbol(symbol)
 
-        self.selected_objects = []
-        self.add_selected_object(symbol)
-
-        self.objects.append(symbol)
-        symbol.paste(self.grid)
-        self.push_latest_action(symbol)
 
     # clipboard
 
@@ -604,7 +580,6 @@ class Controller(object):
         """Select multiple objects."""
         pub.sendMessage('NOTHING_SELECTED')
         pub.sendMessage('SELECTING_RECT', objects=self.select_all_objects())
-
         msg = _("Selecting rectangle...")
         pub.sendMessage('STATUS_MESSAGE', msg=msg)
 
