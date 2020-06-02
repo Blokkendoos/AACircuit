@@ -25,7 +25,7 @@ f="$(basename -- $p)"; \
 echo $f >> ${names}; \
 done;
 
-msgcat -f ${names} -o "aacircuit.pot"
+msgcat --use-first -f ${names} -o "aacircuit.pot"
 
 msgcat aacircuit.pot ../application/locale/de/LC_MESSAGES/aacircuit.po -o aacircuit_de.po
 msgcat aacircuit.pot ../application/locale/nl/LC_MESSAGES/aacircuit.po -o aacircuit_nl.po
