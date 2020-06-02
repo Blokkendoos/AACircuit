@@ -79,7 +79,8 @@ class GridView(Gtk.DrawingArea):
 
         # https://developer.gnome.org/gtk3/stable/GtkWidget.html#gtk-widget-add-tick-callback
         self.start_time = time.time()
-        self.cursor_callback = None
+        self.cursor_callback = self.add_tick_callback(self.toggle_cursor)
+        # self.remove_tick_callback(self.cursor_callback)
 
         # subscriptions
 
@@ -231,13 +232,11 @@ class GridView(Gtk.DrawingArea):
         self._text = ""
         self._symbol = Text(Pos(0, 0), self._text)
         self.grab_focus()
-        self.enable_cursor_callback(True)
 
     def on_add_textblock(self, text):
         self._selection = Selection(item=TEXT_BLOCK, state=SELECTING)
         self._symbol = Text(Pos(0, 0), text)
         self._text = text
-        self.enable_cursor_callback(True)
 
     def on_character_selected(self, char):
         self._selection = Selection(item=CHARACTER, state=SELECTED)
@@ -258,29 +257,23 @@ class GridView(Gtk.DrawingArea):
         # select a single object
         self._selection = SelectionObject()
         self._objects = objects
-        self.enable_cursor_callback(True)
 
     def on_selecting_eraser(self):
         self._selection = SelectionEraser()
-        self.enable_cursor_callback(True)
 
     def on_selecting_rect(self, objects):
         self._selection = SelectionRect()
         self._objects = objects
-        self.enable_cursor_callback(True)
 
     def on_selecting_arrow(self, objects):
         self._selection = SelectionArrow()
         self._objects = objects
-        self.enable_cursor_callback(True)
 
     def on_selecting_row(self, action):
         self._selection = SelectionRow(action)
-        self.enable_cursor_callback(False)
 
     def on_selecting_col(self, action):
         self._selection = SelectionCol(action)
-        self.enable_cursor_callback(False)
 
     # LINES
 
@@ -510,13 +503,6 @@ class GridView(Gtk.DrawingArea):
         ctx.rectangle(x, y, Preferences.values['GRIDSIZE_W'], Preferences.values['GRIDSIZE_H'])
         ctx.stroke()
         ctx.restore()
-
-    def enable_cursor_callback(self, enable):
-        if enable:
-            self.cursor_callback = self.add_tick_callback(self.toggle_cursor)
-        else:
-            if self.cursor_callback:
-                self.remove_tick_callback(self.cursor_callback)
 
     def toggle_cursor(self, widget, frame_clock, user_data=None):
         now = time.time()

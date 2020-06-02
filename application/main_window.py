@@ -260,6 +260,9 @@ class MainWindow(Gtk.Window):
     def on_rect(self, button):
         pub.sendMessage('DRAW_RECT')
 
+    def on_arrow(self, button):
+        pub.sendMessage('DRAW_ARROW')
+
     def on_cursor_toggled(self, button):
         if button.get_active():
             name = Gtk.Buildable.get_name(button)
