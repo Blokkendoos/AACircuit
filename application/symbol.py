@@ -563,6 +563,8 @@ class DirLine(Line):
 class MagLine(Line):
     """A square bend from start to end position."""
 
+    ori_desc = {0: 'hor', 1: 'vert', 2: 'longest-first', None: 'None'}
+
     def __init__(self, startpos, endpos, cell_callback=None, type=Line.MLINE):
         self.cell = cell_callback
         super(MagLine, self).__init__(startpos=startpos, endpos=endpos, type=type)
@@ -611,7 +613,8 @@ class MagLine(Line):
         f_ori = None
         f_terminal = None
         s_ori = HORIZONTAL
-        # determine the terminal of the first line
+
+        # determine the first line terminal
         for i in range(len(MagicLineSettings.LMD)):
             match, f_ori, f_terminal = self._line_match(i, None, startpos)
             if match:
@@ -625,10 +628,7 @@ class MagLine(Line):
                 f_ori = VERTICAL
             else:
                 f_ori = HORIZONTAL
-
-        # TODO Move this to view (by means of another call-back?)
-        msg = _("Start: D[{0}] char:{1} ori:{2}".format(i, f_terminal, f_ori))
-        pub.sendMessage('STATUS_MESSAGE', msg=msg)
+        msg = _("Start: M[{0}] char:{1} ori:{2} / ".format(i, f_terminal, MagLine.ori_desc[f_ori]))
 
         # the orientation of the second line
         if f_ori == HORIZONTAL:
@@ -647,11 +647,8 @@ class MagLine(Line):
                 # the end-terminal of the second line
                 self._repr[endpos] = m_terminal
                 break
-
-        # TODO Move this to view?
-        msg = _("End: D[{0}] char:{1} ori:{2}".format(i, m_terminal, m_ori))
+        msg += _("End: M[{0}] char:{1} ori:{2}".format(i, m_terminal, MagLine.ori_desc[m_ori]))
         pub.sendMessage('STATUS_MESSAGE', msg=msg)
-
         self._corner_line(f_ori)
 
     def _corner_line(self, ori):
