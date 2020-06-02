@@ -271,9 +271,11 @@ class GridView(Gtk.DrawingArea):
 
     def on_selecting_row(self, action):
         self._selection = SelectionRow(action)
+        pub.sendMessage('STATUS_MESSAGE', msg='')
 
     def on_selecting_col(self, action):
         self._selection = SelectionCol(action)
+        pub.sendMessage('STATUS_MESSAGE', msg='')
 
     # LINES
 
@@ -284,18 +286,22 @@ class GridView(Gtk.DrawingArea):
     def on_draw_dir_line(self, type):
         self._selection = Selection(item=DIR_LINE)
         self._symbol = DirLine(Pos(0, 0), Pos(1, 1))
+        pub.sendMessage('STATUS_MESSAGE', msg='')
 
     def on_draw_line(self, type):
         self._selection = Selection(item=LINE)
         self._symbol = Line(Pos(0, 0), Pos(1, 1), type=type)
+        pub.sendMessage('STATUS_MESSAGE', msg='')
 
     def on_draw_rect(self):
         self._selection = Selection(item=DRAW_RECT)
         self._symbol = Rect(Pos(0, 0), Pos(1, 1))
+        pub.sendMessage('STATUS_MESSAGE', msg='')
 
     def on_draw_arrow(self):
         self._selection = Selection(item=ARROW)
         self._symbol = Arrow(Pos(0, 0), Pos(1, 1))
+        pub.sendMessage('STATUS_MESSAGE', msg='')
 
     # TEXT ENTRY
 

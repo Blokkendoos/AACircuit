@@ -377,6 +377,7 @@ class Controller(object):
         symbol = self.components.get_symbol(label)
         self.selected_objects = []
         self.add_selected_object(symbol)
+        pub.sendMessage('STATUS_MESSAGE', msg='')
         pub.sendMessage('SYMBOL_SELECTED', symbol=symbol)
         pub.sendMessage('ORIENTATION_CHANGED', ori=symbol.ori_as_str)
 
