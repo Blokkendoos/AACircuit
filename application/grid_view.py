@@ -562,11 +562,9 @@ class GridView(Gtk.DrawingArea):
     def enable_cursor_callback(self, enable):
         if enable:
             self.cursor_callback = self.add_tick_callback(self.toggle_cursor)
-            print("cursor_callback is enabled")  # TEST
         else:
             if self.cursor_callback:
                 self.remove_tick_callback(self.cursor_callback)
-                print("cursor_callback is disabled")  # TEST
 
     def toggle_cursor(self, widget, frame_clock, user_data=None):
         now = time.time()
