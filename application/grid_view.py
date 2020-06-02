@@ -272,7 +272,7 @@ class GridView(Gtk.DrawingArea):
     def on_selecting_arrow(self, objects):
         self._selection = SelectionArrow()
         self._objects = objects
-        self.enable_cursor_callback(False)
+        self.enable_cursor_callback(True)
 
     def on_selecting_row(self, action):
         self._selection = SelectionRow(action)
