@@ -704,7 +704,7 @@ class Controller(object):
                 endpos = Pos(x, y)
                 self.on_paste_arrow(startpos, endpos)
             else:
-                    skip = 1
+                skip = 1
             return skip
 
         def play_m2(m):

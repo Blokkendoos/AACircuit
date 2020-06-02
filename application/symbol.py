@@ -46,32 +46,26 @@ class Symbol(object):
     def __init__(self, id=0, grid=None, ori=None, mirrored=None, startpos=None, endpos=None):
         self._id = id
         self._has_pickpoint = True
-
         if ori is None:
             self._ori = 0
         else:
             self._ori = ori
-
         if mirrored is None:
             self._mirrored = 0
         else:
             self._mirrored = mirrored
-
         if grid is None:
             self._grid = self.default
         else:
             self._grid = grid
-
         if startpos is None:
             self._startpos = Pos(0, 0)
         else:
             self._startpos = startpos
-
         if endpos is None:
             self._endpos = Pos(0, 0)
         else:
             self._endpos = endpos
-
         self._is_symbol = True
         self._is_text = False
         self._is_line = False
@@ -84,7 +78,6 @@ class Symbol(object):
         self._repr = dict()
         pos = self._startpos
         incr = Pos(1, 0)
-
         for row in self.grid:
             pos.x = self._startpos.x
             for char in row:
@@ -237,10 +230,8 @@ class Symbol(object):
         :param pos: target position in grid canvas (x,y) coordinates
         """
         self._representation()
-
         if pos is None:
             pos = self._startpos.view_xy()
-
         offset = pos - self._startpos.view_xy()
         for pos, char in self._repr.items():
             grid_pos = pos.view_xy() + offset
@@ -249,14 +240,12 @@ class Symbol(object):
     def paste(self, grid):
         """Paste the symbol in the target grid at its start position."""
         self._representation()
-
         for pos, value in self._repr.items():
             grid.set_cell(pos, value)
 
     def remove(self, grid):
         """Remove the symbol from the target grid."""
         self._representation()
-
         for pos in self._repr.keys():
             grid.set_cell(pos, CELL_ERASE)
 
@@ -271,7 +260,6 @@ class Symbol(object):
                     ')': '('
                     }
         mir_grid = []
-
         for r, row in enumerate(grid):
             rev = ""
             for c in reversed(row):
@@ -280,7 +268,6 @@ class Symbol(object):
                 except KeyError:
                     rev += c
             mir_grid.append(rev)
-
         return mir_grid
 
 
@@ -299,10 +286,8 @@ class Eraser(Symbol):
 
     def _representation(self):
         self._repr = dict()
-
         pos = self._startpos
         incr = Pos(1, 0)
-
         for row in range(self._size[1]):
             pos.x = self._startpos.x
             for col in range(self._size[0]):
@@ -316,18 +301,14 @@ class Eraser(Symbol):
         :param pos: target position in grid canvas (x,y) coordinates
         """
         ctx.save()
-
         ctx.set_source_rgb(0.75, 0.75, 0.75)
-
         x_start, y_start = pos.xy
-
         # size from grid (col,row) to view (x,y) coordinates
         size = Pos(self._size[0], self._size[1]).view_xy()
         width = size.x
         height = size.y
         ctx.rectangle(x_start, y_start, width, height)
         ctx.fill()
-
         ctx.restore()
 
     def memo(self):
@@ -348,7 +329,6 @@ class Character(Symbol):
         else:
             thegrid = grid
         super(Character, self).__init__(id=id, grid=thegrid, startpos=startpos)
-
         self._char = char
         self._is_symbol = False
         self._is_text = True
@@ -376,7 +356,6 @@ class Text(Symbol):
     def __init__(self, pos, text, ori=0):
         grid = {"N": ['?']}
         super(Text, self).__init__(grid=grid, ori=ori, startpos=pos)
-
         self._text = text
         self._is_symbol = False
         self._is_text = True
@@ -384,14 +363,10 @@ class Text(Symbol):
 
     def _representation(self):
         self._repr = dict()
-
         startpos = self._startpos
         pos = self._startpos
-
         str = self._text.split('\n')
-
         if self._ori == 0 or self._ori == 2:
-
             for line in str:
                 pos.x = startpos.x
                 for char in line:
@@ -399,9 +374,7 @@ class Text(Symbol):
                         self._repr[pos] = char
                     pos += Pos(1, 0)
                 pos += Pos(0, 1)
-
         elif self._ori == 1 or self._ori == 3:
-
             for line in str:
                 pos.y = startpos.y
                 for char in line:
@@ -443,7 +416,6 @@ class Line(Symbol):
     LINE2 = ord('o')  # 111
     LINE3 = ord('+')  # 43
     LINE4 = ord("'")  # 39
-
     TERMINAL_TYPE = {MLINE: None,
                      LINE1: Preferences.values['TERMINAL1'],
                      LINE2: Preferences.values['TERMINAL2'],
@@ -453,7 +425,6 @@ class Line(Symbol):
     def __init__(self, startpos, endpos, type=None):
         grid = {"N": ['?']}
         super(Line, self).__init__(id=type, grid=grid, startpos=startpos, endpos=endpos)
-
         if type is None:
             self._type = Line.LINE1
         else:
@@ -474,14 +445,11 @@ class Line(Symbol):
         """Compose the line elements."""
         self._direction()
         self._repr = dict()
-
         terminal = self._terminal
         start_terminal = terminal
-
         start = self._startpos
         end = self._endpos
         pos = start
-
         if self._dir == HORIZONTAL:
             line_char = Preferences.values['LINE_HOR']
             incr = Pos(1, 0)
@@ -509,11 +477,9 @@ class Line(Symbol):
         else:
             self._repr[pos] = start_terminal
         pos += incr
-
         while pos < end:
             self._repr[pos] = line_char
             pos += incr
-
         # endpoint terminal
         if self._terminal is None:
             self._repr[pos] = line_char
@@ -552,14 +518,11 @@ class DirLine(Line):
 
     def _representation(self):
         x, y = (self._endpos - self._startpos).xy
-
         # TODO better representation of straight line (using ASCII chars)?
-
         if abs(x) > 0:
             angle = atan(y / x)
         else:
             angle = pi / 2
-
         if angle < radians(-75):
             linechar = '|'
         if angle >= radians(-75) and angle <= radians(-52):
@@ -580,15 +543,11 @@ class DirLine(Line):
             linechar = '|'
         else:
             linechar = '?'
-
         repr = dict()
-
         line = bresenham(self._startpos.x, self._startpos.y, self._endpos.x, self._endpos.y)
-
         for coord in line:
             pos = Pos(coord[0], coord[1])
             repr[pos] = linechar
-
         self._repr = repr
 
     def copy(self):
@@ -605,11 +564,8 @@ class MagLine(Line):
     """A square bend from start to end position."""
 
     def __init__(self, startpos, endpos, cell_callback=None, type=Line.MLINE):
-
         self.cell = cell_callback
-
         super(MagLine, self).__init__(startpos=startpos, endpos=endpos, type=type)
-
         self._representation()
 
     def _line_match(self, idx, search_dir, pos):
@@ -626,13 +582,10 @@ class MagLine(Line):
 
         """
         lmd = MagicLineSettings.LMD[idx]
-
         result = True
         m_ori = None
         m_char = None
-
         if pos > Pos(0, 0) and (search_dir is None or search_dir == lmd.ori):
-
             for j, row in enumerate(lmd.pattern):
                 for i, char in enumerate(row):
                     if char != 'x':
@@ -645,37 +598,28 @@ class MagLine(Line):
                 m_ori = lmd.ori
                 m_char = lmd.char
                 # print("line_match, idx:", idx, " m_ori:", m_ori, " m_char:", m_char)
-
         else:
             result = False
-
         return result, m_ori, m_char
 
     def _representation(self):
         startpos = self._startpos
         endpos = self._endpos
-
         dx = endpos.x - startpos.x
         dy = endpos.y - startpos.y
-
         self._repr = dict()
-
         f_ori = None
         f_terminal = None
-
         s_ori = HORIZONTAL
-
         # determine the terminal of the first line
         for i in range(len(MagicLineSettings.LMD)):
             match, f_ori, f_terminal = self._line_match(i, None, startpos)
             if match:
                 self._repr[startpos] = f_terminal
                 break
-
         # the orientation of the first line
         if f_ori is None:
             f_ori = HORIZONTAL
-
         elif f_ori == LONGEST_FIRST:
             if abs(dy) > abs(dx):
                 f_ori = VERTICAL
@@ -692,13 +636,11 @@ class MagLine(Line):
                 s_ori = VERTICAL
             else:
                 s_ori = HORIZONTAL
-
         elif f_ori == VERTICAL:
             if abs(dx) > 0:
                 s_ori = HORIZONTAL
             else:
                 s_ori = VERTICAL
-
         for i in range(len(MagicLineSettings.LMD)):
             match, m_ori, m_terminal = self._line_match(i, s_ori, endpos)
             if match:
@@ -715,22 +657,17 @@ class MagLine(Line):
     def _corner_line(self, ori):
         startpos = self._startpos
         endpos = self._endpos
-
         dx = endpos.x - startpos.x
         dy = endpos.y - startpos.y
-
         if (dy >= 0) ^ (ori != VERTICAL):
             corner_char = Preferences.values['LOWER_CORNER']
         else:
             corner_char = Preferences.values['UPPER_CORNER']
-
         top = 0
         left = 0
-
         if ori == HORIZONTAL:
             top = startpos.y
             left = endpos.x
-
         elif ori == VERTICAL:
             top = endpos.y
             left = startpos.x
@@ -742,7 +679,6 @@ class MagLine(Line):
         else:
             startv = endpos.x + 1  # don't overwrite the terminal char (in the startposition)
             endv = startpos.x
-
         if abs(dx) > 1:
             for temp in range(endv - startv):
                 pos = Pos(startv + temp, top)
@@ -759,7 +695,6 @@ class MagLine(Line):
         else:
             startv = endpos.y + 1  # don't overwrite the terminal char (in the startposition)
             endv = startpos.y
-
         if abs(dy) > 1:
             for temp in range(endv - startv):
                 pos = Pos(left, startv + temp)
@@ -788,14 +723,12 @@ class MagLineOld(MagLine):
 
     def __init__(self, startpos, endpos, cell_callback=None, type=Line.MLINE_LEGACY):
         super(MagLineOld, self).__init__(startpos=startpos, endpos=endpos, cell_callback=cell_callback, type=type)
-
         self._representation()
         self._se_count = 0
         self._se_status_msg = ""
 
     def paste(self, grid):
         super(MagLineOld, self).paste(grid)
-
         # FIXME pubsub from within represenation() does not work (statusbar not updated)
         if self._se_count > 0:
             msg = self._status_msg
@@ -805,13 +738,10 @@ class MagLineOld(MagLine):
     def _representation(self):
         se_status = ""
         se_count = 0
-
         se_count, se_status, start_char, start_ori = self.start_character(se_count, se_status)
         se_count, se_status, end_char = self.end_character(se_count, se_status, start_ori)
-
         self._se_count = se_count
         self._status_msg = se_status + "; cnt:" + str(se_count)
-
         self._draw_line(start_char, start_ori, end_char)
 
     def start_character(self, se_count, se_status):
@@ -830,15 +760,12 @@ class MagLineOld(MagLine):
 
         x1, y1 = self._startpos.xy
         x2, y2 = self._endpos.xy
-
         xdiv = abs(x2 - x1)  # Differenz x
         ydiv = abs(y2 - y1)  # Differenz y
-
         start_ori = VERTICAL
         start_char = '#'
         space_char = ' '
         connect_char = 'o'
-
         line_hor = Preferences.values['LINE_HOR']
         line_vert = Preferences.values['LINE_VERT']
         upper_corner = Preferences.values['UPPER_CORNER']
@@ -856,17 +783,14 @@ class MagLineOld(MagLine):
                 and self.cell(Pos(x1 + 1, y1)) == space_char \
                 and self.cell(Pos(x1, y1 - 1)) == space_char \
                 and self.cell(Pos(x1, y1 + 1)) == space_char:
-
             if xdiv > ydiv:
                 start_ori = HORIZONTAL
             else:
                 start_ori = VERTICAL
-
             if start_ori == VERTICAL:
                 start_char = line_vert
             else:
                 start_char = line_hor
-
             se_count += 1
             se_status = _("S:all free")
 
@@ -874,7 +798,6 @@ class MagLineOld(MagLine):
         if (self.cell(Pos(x1, y1 - 1)) == line_vert or self.cell(Pos(x1, y1 + 1)) == line_vert) \
                 and self.cell(Pos(x1 - 1, y1)) == space_char \
                 and self.cell(Pos(x1 + 1, y1)) == space_char:
-
             if ydiv > 0:
                 set_oben_unten()
             elif ydiv == 0:
@@ -883,7 +806,6 @@ class MagLineOld(MagLine):
                     start_char = lower_corner
                 if self.cell(Pos(x1, y1 + 1)) == line_vert:
                     start_char = upper_corner
-
             se_count += 1
             se_status = _("S:oVu |; l/r=space")
 
@@ -892,12 +814,10 @@ class MagLineOld(MagLine):
                 and self.cell(Pos(x1, y1 + 1)) == space_char \
                 and self.cell(Pos(x1 - 1, y1)) == space_char \
                 and self.cell(Pos(x1 + 1, y1)) == space_char:
-
             if ydiv > 0:
                 set_oben_unten()
             elif ydiv == 0:
                 set_rechts_links()
-
             se_count += 1
             se_status = _("S:o{}; l/r/u=space".format(lower_corner))
 
@@ -906,12 +826,10 @@ class MagLineOld(MagLine):
                 and self.cell(Pos(x1, y1 - 1)) == space_char \
                 and self.cell(Pos(x1 - 1, y1)) == space_char \
                 and self.cell(Pos(x1 + 1, y1)) == space_char:
-
             if ydiv > 0:
                 set_oben_unten()
             elif ydiv == 0:
                 set_rechts_links()
-
             se_count += 1
             se_status = _("S:u{}; l/r/0=space".format(lower_corner))
 
@@ -920,12 +838,10 @@ class MagLineOld(MagLine):
                 and self.cell(Pos(x1, y1 + 1)) == space_char \
                 and self.cell(Pos(x1 - 1, y1)) == space_char \
                 and self.cell(Pos(x1 + 1, y1)) == space_char:
-
             if ydiv > 0:
                 set_oben_unten()
             elif ydiv == 0:
                 set_rechts_links()
-
             se_count += 1
             se_status = _("S:o{}; l/r/u=space".format(line_hor))
 
@@ -934,19 +850,16 @@ class MagLineOld(MagLine):
                 and self.cell(Pos(x1, y1 - 1)) == space_char \
                 and self.cell(Pos(x1 - 1, y1)) == space_char \
                 and self.cell(Pos(x1 + 1, y1)) == space_char:
-
             if ydiv > 0:
                 set_oben_unten()
             elif ydiv == 0:
                 set_rechts_links()
-
             se_count += 1
             se_status = _("S:u{}; l/r/u=space".format(line_hor))
 
         # l/r = -, o/u frei
         if (self.cell(Pos(x1 - 1, y1)) == line_hor or self.cell(Pos(x1 + 1, y1)) == line_hor) \
                 and ((self.cell(Pos(x1, y1 - 1)) == space_char) or self.cell(Pos(x1, y1 + 1)) == space_char):
-
             if xdiv > 0:
                 set_rechts_links()
             elif xdiv == 0:
@@ -955,7 +868,6 @@ class MagLineOld(MagLine):
                     start_char = upper_corner
                 elif y2 < y1:
                     start_char = lower_corner
-
             se_count += 1
             se_status = _("S:lVr {}, oVu=space".format(line_hor))
 
@@ -1003,11 +915,9 @@ class MagLineOld(MagLine):
     def end_character(self, se_count, se_status, start_ori):
         x1, y1 = self._startpos.xy
         x2, y2 = self._endpos.xy
-
         end_char = '#'
         space_char = ' '
         connect_char = 'o'
-
         line_hor = Preferences.values['LINE_HOR']
         line_vert = Preferences.values['LINE_VERT']
         upper_corner = Preferences.values['UPPER_CORNER']
@@ -1025,19 +935,16 @@ class MagLineOld(MagLine):
                 and self.cell(Pos(x2 + 1, y2)) == space_char \
                 and self.cell(Pos(x2, y2 - 1)) == space_char \
                 and self.cell(Pos(x2, y2 + 1)) == space_char:
-
             if start_ori == VERTICAL:
                 if x1 == x2:
                     end_char = line_vert
                 else:
                     end_char = line_hor
-
             if start_ori == HORIZONTAL:
                 if y1 == y2:
                     end_char = line_hor
                 else:
                     end_char = line_vert
-
             se_count += 1
             se_status = _("E:all free")
 
@@ -1045,19 +952,16 @@ class MagLineOld(MagLine):
         if (self.cell(Pos(x2, y2 - 1)) == line_vert or self.cell(Pos(x2, y2 + 1)) == line_vert) \
                 and self.cell(Pos(x2 - 1, y2)) == space_char \
                 and self.cell(Pos(x2 + 1, y2)) == space_char:
-
             if start_ori == VERTICAL:
                 if x1 == x2:
                     end_char = line_vert
                 else:
                     end_char = connect_char
-
             if start_ori == HORIZONTAL:
                 if y1 == y2:
                     end_char = connect_char
                 else:
                     end_char = line_vert
-
             se_count += 1
             se_status = _("E:o/u")
 
@@ -1065,7 +969,6 @@ class MagLineOld(MagLine):
         if (self.cell(Pos(x2 - 1, y2)) == line_hor or self.cell(Pos(x2 + 1, y2)) == line_hor) \
                 and self.cell(Pos(x2, y2 - 1)) == space_char \
                 and self.cell(Pos(x2, y2 + 1)) == space_char:
-
             if start_ori == VERTICAL:
                 if x1 == x2:
                     if y1 < y2:
@@ -1074,7 +977,6 @@ class MagLineOld(MagLine):
                         end_char = upper_corner
                 else:
                     end_char = line_hor
-
             if start_ori == HORIZONTAL:
                 if y1 != y2:
                     if y1 < y2:
@@ -1083,17 +985,14 @@ class MagLineOld(MagLine):
                         end_char = upper_corner
                 else:
                     end_char = line_hor
-
             se_count += 1
             se_status = _("E:l/r")
 
         # links und rechts -
         if self.cell(Pos(x2 - 1, y2)) == line_hor \
                 and self.cell(Pos(x2 + 1, y2)) == line_hor:
-
             if (start_ori == VERTICAL and x1 == x2) or (start_ori == HORIZONTAL and y1 != y2):
                 end_char = connect_char
-
             se_count += 1
             se_status = _("E:links und rechts {}".format(line_hor))
 
@@ -1122,25 +1021,20 @@ class MagLineOld(MagLine):
 
     def _draw_line(self, startc, start_ori, endc):
         repr = dict()
-
         line_hor = Preferences.values['LINE_HOR']
         line_vert = Preferences.values['LINE_VERT']
         upper_corner = Preferences.values['UPPER_CORNER']
         lower_corner = Preferences.values['LOWER_CORNER']
-
         startpos = self._startpos
         endpos = self._endpos
-
         corner_char = '%'
         cornerpos = Pos(0, 0)
 
         if start_ori == VERTICAL:
-
             if endpos.y > startpos.y:
                 corner_char = lower_corner
             else:
                 corner_char = upper_corner
-
             mx = startpos.x
             if endpos.y > startpos.y:
                 my = startpos.y + 1
@@ -1152,7 +1046,6 @@ class MagLineOld(MagLine):
                 while my > endpos.y:
                     repr[Pos(mx, my)] = line_vert
                     my -= 1
-
             my = endpos.y
             if endpos.x > startpos.x:
                 mx = startpos.x + 1
@@ -1164,50 +1057,40 @@ class MagLineOld(MagLine):
                 while mx > endpos.x:
                     repr[Pos(mx, my)] = line_hor
                     mx -= 1
-
             cornerpos = Pos(startpos.x, endpos.y)
 
         if start_ori == HORIZONTAL:
-
-            my = startpos.y
-
             if endpos.y < startpos.y:
                 corner_char = lower_corner
             else:
                 corner_char = upper_corner
-
+            my = startpos.y
             if endpos.x > startpos.x:
                 mx = startpos.x + 1
                 while mx < endpos.x:
                     repr[Pos(mx, my)] = line_hor
                     mx += 1
-
             if startpos.x > endpos.x:
                 mx = startpos.x - 1
                 while mx > endpos.x:
                     repr[Pos(mx, my)] = line_hor
                     mx -= 1
-
             mx = endpos.x
-
             if endpos.y > startpos.y:
                 my = startpos.y + 1
                 while my < endpos.y:
                     repr[Pos(mx, my)] = line_vert
                     my += 1
-
             if startpos.y > endpos.y:
                 my = startpos.y - 1
                 while my > endpos.y:
                     repr[Pos(mx, my)] = line_vert
                     my -= 1
-
             cornerpos = Pos(endpos.x, startpos.y)
 
         repr[cornerpos] = corner_char
         repr[startpos] = startc
         repr[endpos] = endc
-
         self._repr = repr
 
 
@@ -1218,10 +1101,8 @@ class Rect(Symbol):
             tmp = endpos
             endpos = startpos
             startpos = tmp
-
         grid = {"N": ['?']}
         super(Rect, self).__init__(grid=grid, startpos=startpos, endpos=endpos)
-
         self._is_symbol = False
         self._is_line = True
         self._representation()
@@ -1231,14 +1112,11 @@ class Rect(Symbol):
         ur = Pos(self._endpos.x, self._startpos.y)
         bl = Pos(self._startpos.x, self._endpos.y)
         br = self._endpos
-
         line1 = Line(ul, ur, Line.LINE1)
         line2 = Line(ur, br, Line.LINE4)
         line3 = Line(bl, br, Line.LINE1)
         line4 = Line(ul, bl, Line.LINE4)
-
         self._repr = dict()
-
         self._repr.update(line1.repr)
         self._repr.update(line3.repr)
         self._repr.update(line2.repr)
@@ -1247,10 +1125,8 @@ class Rect(Symbol):
     def rotate(self):
         w = self._endpos.x - self._startpos.x
         h = self._endpos.y - self._startpos.y
-
         ul = self._startpos
         br = Pos(self._startpos.x + h, self._startpos.y + w)
-
         self._startpos = ul
         self._endpos = br
 
@@ -1269,7 +1145,6 @@ class Arrow(Symbol):
     def __init__(self, startpos, endpos):
         grid = {"N": ['?']}
         super(Arrow, self).__init__(grid=grid, startpos=startpos, endpos=endpos)
-
         self._is_symbol = False
         self._is_line = True
         self._representation()
@@ -1291,7 +1166,6 @@ class Arrow(Symbol):
     def _repr_hor(self):
         startpos = self._startpos
         endpos = self._endpos
-
         h = startpos.y - endpos.y
         if h == 0:
             h = 3
@@ -1303,7 +1177,6 @@ class Arrow(Symbol):
         a = Pos(startpos.x, startpos.y - h3)
         b = Pos(startpos.x, endpos.y + h3)
         c = Pos(endpos.x - h2, endpos.y + h3)
-        # arrow tip
         d = Pos(endpos.x - h2, endpos.y)
         e = Pos(endpos.x, my)
         f = Pos(endpos.x - h2, startpos.y)
@@ -1313,7 +1186,6 @@ class Arrow(Symbol):
     def _repr_vert(self):
         startpos = self._startpos
         endpos = self._endpos
-
         w = endpos.x - startpos.x
         if w == 0:
             w = 3
@@ -1325,7 +1197,6 @@ class Arrow(Symbol):
         a = Pos(endpos.x - w3, startpos.y)
         b = Pos(startpos.x + w3, startpos.y)
         c = Pos(startpos.x + w3, endpos.y + w2)
-        # arrow tip
         d = Pos(startpos.x, endpos.y + w2)
         e = Pos(mx, endpos.y)
         f = Pos(endpos.x, endpos.y + w2)
@@ -1333,7 +1204,6 @@ class Arrow(Symbol):
         self._repr_poly(a, b, c, d, e, f, g)
 
     def _repr_poly(self, a, b, c, d, e, f, g):
-
         line1 = Line(a, b, Line.LINE4)
         line2 = Line(b, c, Line.LINE4)
         line3 = Line(c, d, Line.LINE1)
@@ -1343,6 +1213,7 @@ class Arrow(Symbol):
         line7 = Line(g, a, Line.LINE4)
 
         self._repr = dict()
+        # TODO more or less optimal order for horizontal arrow pointing to the right, what with the other ones?
         self._repr.update(line1.repr)
         self._repr.update(line3.repr)
         self._repr.update(line4.repr)
@@ -1431,7 +1302,6 @@ class Row(Symbol):
             str = "i"
         else:
             str = "d"
-
         str += "{0}:{1}".format(ROW, self.row)
         return str
 
