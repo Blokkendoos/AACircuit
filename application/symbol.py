@@ -627,8 +627,8 @@ class MagLine(Line):
                 f_ori = HORIZONTAL
 
         # TODO Move this to view (by means of another call-back?)
-        # msg = _("Start: D[{0}] char:{1} ori:{2}".format(i, f_terminal, f_ori))
-        # pub.sendMessage('STATUS_MESSAGE', msg=msg)
+        msg = _("Start: D[{0}] char:{1} ori:{2}".format(i, f_terminal, f_ori))
+        pub.sendMessage('STATUS_MESSAGE', msg=msg)
 
         # the orientation of the second line
         if f_ori == HORIZONTAL:
@@ -648,9 +648,9 @@ class MagLine(Line):
                 self._repr[endpos] = m_terminal
                 break
 
-        # TODO Move this to view
-        # msg = _("End: D[{0}] char:{1} ori:{2}".format(i, m_terminal, m_ori))
-        # pub.sendMessage('STATUS_MESSAGE', msg=msg)
+        # TODO Move this to view?
+        msg = _("End: D[{0}] char:{1} ori:{2}".format(i, m_terminal, m_ori))
+        pub.sendMessage('STATUS_MESSAGE', msg=msg)
 
         self._corner_line(f_ori)
 
