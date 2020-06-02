@@ -20,14 +20,11 @@ class InputFileChooser():
                                                 Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
 
         dialog.set_default_size(640, 480)
-
         self.add_filters(dialog)
-
         response = dialog.run()
         if response == Gtk.ResponseType.OK:
             self.filename = dialog.get_filename()
             self.action()
-
         dialog.destroy()
 
     def action(self):
@@ -53,9 +50,7 @@ class InputFileChooser():
 class OutputFileChooser():
 
     def __init__(self, filename=_("Untitled_schema.aac")):
-
         self.filename = filename
-
         dialog = Gtk.FileChooserDialog(title=_("Save as"),
                                        action=Gtk.FileChooserAction.SAVE,
                                        buttons=(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
@@ -64,15 +59,11 @@ class OutputFileChooser():
         dialog.set_default_size(640, 480)
         dialog.props.do_overwrite_confirmation = True
         dialog.set_current_name(self.filename)
-
         self.add_filters(dialog)
-
         response = dialog.run()
-
         if response == Gtk.ResponseType.OK:
             self.filename = dialog.get_filename()
             self.action()
-
         dialog.destroy()
 
     def action(self):
@@ -174,13 +165,10 @@ class PrintOperation(object):
         self.printop.connect('end-print', self.on_end_print)
 
     def run(self, parent=None):
-
         result = self.printop.run(Gtk.PrintOperationAction.PRINT_DIALOG,
                                   parent)
-
         if result == Gtk.PrintOperationResult.ERROR:
             print(self.printop.get_error())
-
         elif result == Gtk.PrintOperationResult.APPLY:
             self.settings = self.printop.get_print_settings()
 

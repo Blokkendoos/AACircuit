@@ -52,9 +52,7 @@ class Grid(object):
             for c in r:
                 line += c
             content += (line + "\n")
-
         content += _("(created by AACircuit.py © 2020 JvO)")
-
         return content
 
     def copy_to_clipboard(self):
@@ -70,7 +68,6 @@ class Grid(object):
         ASCII lines, terminated by CR, are interpreted as rows.
         """
         print("Deprecated method")
-
         grid = []
         first_line = True
         content = xerox.paste().splitlines()
@@ -78,7 +75,6 @@ class Grid(object):
             dict = []
             for char in line:
                 dict.append(char)
-
             # the first line determines the number of columns in the new grid
             if first_line:
                 first_line = False
@@ -88,9 +84,7 @@ class Grid(object):
                     dict.append(" ")
             elif len(dict) < row_length:
                 dict = dict[:row_length]
-
             grid.append(dict)
-
         self._grid = grid
 
     def load_and_paste_from_clipboard(self):
@@ -142,21 +136,16 @@ class Grid(object):
         :returns the content of the given rectangle
         """
         print("Obsolete method: ", self.rect.__name__)
-
         content = []
-
         c_start, r_start, c_end, r_end = self.rect_to_rc(rect)
-
         # truncate
         if r_end >= self.nr_rows:
             r_end = self.nr_rows
         if c_end >= self.nr_cols:
             r_end = self.nr_cols
-
         # TODO Padd content?
         for r in range(r_start, r_end):
             content.append(self._grid[r][c_start:c_end])
-
         return content
 
     def erase_rect(self, rect):
@@ -185,14 +174,11 @@ class Grid(object):
         :param content: 2D array
         """
         print("Obsolete method: ", self.fill_rect.__name__)
-
         if len(content) == 0:
             return
-
         c_start, r_start = pos.xy
         x_max = self.nr_cols
         y_max = self.nr_rows
-
         y = r_start
         for row in content:
             x = c_start

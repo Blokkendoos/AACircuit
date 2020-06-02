@@ -1173,7 +1173,6 @@ class Arrow(Symbol):
         h2 = h / 2
         h3 = h / 3
         my = (startpos.y + endpos.y) / 2
-
         a = Pos(startpos.x, startpos.y - h3)
         b = Pos(startpos.x, endpos.y + h3)
         c = Pos(endpos.x - h2, endpos.y + h3)
@@ -1193,7 +1192,6 @@ class Arrow(Symbol):
         w2 = w / 2
         w3 = w / 3
         mx = (startpos.x + endpos.x) / 2
-
         a = Pos(endpos.x - w3, startpos.y)
         b = Pos(startpos.x + w3, startpos.y)
         c = Pos(startpos.x + w3, endpos.y + w2)
@@ -1211,7 +1209,6 @@ class Arrow(Symbol):
         line5 = DirLine(e, f)
         line6 = Line(f, g, Line.LINE1)
         line7 = Line(g, a, Line.LINE4)
-
         self._repr = dict()
         # TODO more or less optimal order for horizontal arrow pointing to the right, what with the other ones?
         self._repr.update(line1.repr)
@@ -1263,7 +1260,6 @@ class Column(Symbol):
             str = "i"
         else:
             str = "d"
-
         str += "{0}:{1}".format(COL, self.col)
         return str
 

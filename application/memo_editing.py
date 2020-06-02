@@ -73,10 +73,8 @@ class MemoEditingDialog(Gtk.Dialog):
         self.show_all()
 
     def init_scrolled_window(self, builder):
-
         # FIXME the scrollbars (hadjustment) get set correctly only after having scrolled to the end of the text (in the textview)
         self.memo_tv = builder.get_object('memo_textview')
-
         self.text_buffer = self.memo_tv.get_buffer()
         self.text_buffer.set_text(self._text)
 
@@ -87,16 +85,13 @@ class MemoEditingDialog(Gtk.Dialog):
         self.memo_tv.scroll_to_mark(mark, 0.0, True, 0, 0)
 
         tt = self.text_buffer.get_tag_table()
-
         self.tag_editable = Gtk.TextTag()
         self.tag_editable.set_property('foreground', '#000000')
         tt.add(self.tag_editable)
-
         # locked text is shown in light gray
         self.tag_locked = Gtk.TextTag()
         self.tag_locked.set_property('foreground', '#7f7f7f')
         tt.add(self.tag_locked)
-
         self.tag_match = Gtk.TextTag()
         self.tag_match.set_property('background', 'yellow')
         tt.add(self.tag_match)
@@ -105,7 +100,6 @@ class MemoEditingDialog(Gtk.Dialog):
         editable = self._memo_editable
         self.memo_tv.set_editable(editable)
         self.memo_tv.set_cursor_visible(editable)
-
         bounds = self.text_buffer.get_bounds()
         if bounds:
             start, end = bounds

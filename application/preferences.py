@@ -53,7 +53,6 @@ class Preferences(object):
     def __init__(self, filename='aacircuit.ini'):
         self._filename = filename
         self.read_preferences()
-
         pub.subscribe(self.on_save_preferences, 'SAVE_PREFERENCES')
 
     def has_value(self, name):
@@ -61,7 +60,6 @@ class Preferences(object):
         try:
             value = self.values[name]  # noqa F841
             return True
-
         except KeyError:
             return False
 
@@ -76,10 +74,8 @@ class Preferences(object):
         Use the class dictionary instead: value = Preferences.values['name']
         """
         print("Deprecated method: ", self.get_value.__name__)
-
         try:
             return self.values[name]
-
         except KeyError:
             print("Unknown preference name", name)
             raise KeyError
@@ -93,13 +89,10 @@ class Preferences(object):
             file = open(self._filename, 'r')
             str = file.read()
             file.close()
-
             Preferences.values = json.loads(str)
-
             msg = _("Preferences have been read from: %s" % self._filename)
             # pub.sendMessage('STATUS_MESSAGE', msg=msg)
             print(msg)
-
         except IOError:
             msg = _("Preferences file not found: %s, default preferences are being used" % self._filename)
             # pub.sendMessage('STATUS_MESSAGE', msg=msg)
@@ -108,15 +101,11 @@ class Preferences(object):
     def on_save_preferences(self):
         try:
             fout = open(self._filename, 'w')
-
             str = json.dumps(Preferences.values)
-
             fout.write(str)
             fout.close()
-
             msg = _("Preferences have been saved in: %s" % self._filename)
             pub.sendMessage('STATUS_MESSAGE', msg=msg)
-
         except IOError:
             msg = _("Unable to open file for writing: %s" % self._filename)
             pub.sendMessage('STATUS_MESSAGE', msg=msg)
@@ -165,7 +154,6 @@ class PreferencesDialog(Gtk.Dialog):
 
         https://eeperry.wordpress.com/2013/01/05/pygtk-new-style-python-class-using-builder/
         """
-
         try:
             # https://askubuntu.com/questions/140552/how-to-make-glade-load-translations-from-opt
             # For this particular case the locale module needs to be used instead of gettext.
@@ -173,19 +161,15 @@ class PreferencesDialog(Gtk.Dialog):
             # in a way that the C library can read, but locale does (by calling libc).
             locale.bindtextdomain('aacircuit', get_path_to_data('locale/'))
             locale.textdomain('aacircuit')
-
             builder = Gtk.Builder()
             # https://stackoverflow.com/questions/24320502/how-to-translate-pygtk-glade-gtk-builder-application
             builder.set_translation_domain('aacircuit')
             builder.add_from_file(get_path_to_data('preferences_dialog.glade'))
-
         except IOError:
             print(_("Failed to load XML GUI file preferences_dialog.glade"))
             sys.exit(1)
-
         new_object = builder.get_object('preferences')
         new_object.finish_initializing(builder)
-
         return new_object
 
     def finish_initializing(self, builder):
@@ -199,16 +183,12 @@ class PreferencesDialog(Gtk.Dialog):
         # Add any other initialization here
 
         self.entries = dict()
-
         frame = builder.get_object('grid')
         self.init_grid_prefs(frame)
-
         frame = builder.get_object('lines')
         self.init_lines_prefs(frame)
-
         frame = builder.get_object('magic_line')
         self.init_magic_line_prefs(frame)
-
         self.show_all()
 
     def entry_string(self, container, row, label_txt, name):
@@ -220,7 +200,6 @@ class PreferencesDialog(Gtk.Dialog):
         value = str(Preferences.values[name])
         entry.set_text(value)
         container.attach(entry, 1, row, 1, 1)
-
         self.entries[name] = PreferenceSetting('str', entry)
 
     def entry_dimension(self, container, row, label_txt, name):
@@ -231,9 +210,7 @@ class PreferencesDialog(Gtk.Dialog):
         entry = NumberEntry()
         value = str(Preferences.values[name])
         entry.set_text(value)
-
         container.attach(entry, 1, row, 1, 1)
-
         self.entries[name] = PreferenceSetting('dim', entry)
 
     def entry_font(self, container, row, label_txt, name):
@@ -245,7 +222,6 @@ class PreferencesDialog(Gtk.Dialog):
         value = str(Preferences.values[name])
         entry.set_font_name(value)
         container.attach(entry, 1, row, 1, 1)
-
         self.entries[name] = PreferenceSetting('font', entry)
 
     def entry_bool(self, container, row, label_txt, name):
@@ -257,7 +233,6 @@ class PreferencesDialog(Gtk.Dialog):
         value = Preferences.values[name]
         entry.set_active(value)
         container.attach(entry, 1, row, 1, 1)
-
         self.entries[name] = PreferenceSetting('bool', entry)
 
     def init_grid_prefs(self, frame):
@@ -265,7 +240,6 @@ class PreferencesDialog(Gtk.Dialog):
         grid.set_row_spacing(5)
         grid.set_column_spacing(5)
         frame.add(grid)
-
         row = 0
         self.entry_dimension(grid, row, _("Number of rows"), 'DEFAULT_ROWS')
         row += 1
@@ -289,7 +263,6 @@ class PreferencesDialog(Gtk.Dialog):
         grid.set_row_spacing(5)
         grid.set_column_spacing(5)
         frame.add(grid)
-
         row = 0
         self.entry_string(grid, row, _("Horizontal line"), 'LINE_HOR')
         row += 1
@@ -310,7 +283,6 @@ class PreferencesDialog(Gtk.Dialog):
         grid.set_row_spacing(5)
         grid.set_column_spacing(5)
         frame.add(grid)
-
         row = 0
         self.entry_string(grid, row, _("Crossing char"), 'CROSSING')
         row += 1
@@ -320,19 +292,13 @@ class PreferencesDialog(Gtk.Dialog):
 
     def on_ok_clicked(self, item):
         for key, setting in self.entries.items():
-
             if setting.type == 'str':
                 value = setting.entry.get_text()
-
             elif setting.type == 'dim':
                 value = int(setting.entry.get_text())
-
             elif setting.type == 'bool':
                 value = setting.entry.get_active()
-
             elif setting.type == 'font':
                 value = setting.entry.get_font_name()
-
             Preferences.values[key] = value
-
         pub.sendMessage('SAVE_PREFERENCES')

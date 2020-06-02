@@ -111,7 +111,6 @@ class MainWindow(Gtk.Window):
         self.menu_paste = builder.get_object('paste')
         self.menu_undo = builder.get_object('undo')
         self.menu_redo = builder.get_object('redo')
-
         self.menu_copy.set_sensitive(False)
         self.menu_cut.set_sensitive(False)
         self.menu_paste.set_sensitive(False)
@@ -121,7 +120,6 @@ class MainWindow(Gtk.Window):
         # symbol menu
         self.menu_rotate = builder.get_object('rotate_symbol')
         self.menu_mirror = builder.get_object('mirror_symbol')
-
         self.menu_rotate.set_sensitive(False)
         self.menu_mirror.set_sensitive(False)
 
@@ -140,11 +138,9 @@ class MainWindow(Gtk.Window):
         # self.start_timer()
 
         self._undo_stack_empty = True
-
         pub.subscribe(self.on_pointer_moved, 'POINTER_MOVED')
         pub.subscribe(self.on_message, 'STATUS_MESSAGE')
         pub.subscribe(self.on_orientation_changed, 'ORIENTATION_CHANGED')
-
         pub.subscribe(self.on_file_opened, 'FILE_OPENED')
         pub.subscribe(self.on_nothing_selected, 'NOTHING_SELECTED')
         pub.subscribe(self.on_symbol_selected, 'SYMBOL_SELECTED')
@@ -268,7 +264,6 @@ class MainWindow(Gtk.Window):
             name = Gtk.Buildable.get_name(button)
             btn = int(name[-1])
             self.custom_cursor(btn)
-
             # disable the other cursor buttons
             for btn in self.btn_cur:
                 if Gtk.Buildable.get_name(btn) != Gtk.Buildable.get_name(button):
@@ -294,12 +289,10 @@ class MainWindow(Gtk.Window):
         # https://bytes.com/topic/python/answers/873799-how-click-close-window-dont-close-gtk-window
         builder = Gtk.Builder()
         builder.add_from_file(get_path_to_data('confirmation_dialog.glade'))
-
         builder.connect_signals(self)
         confirm = builder.get_object('confirm')
         result = confirm.run()
         confirm.destroy()
-
         if result == Gtk.ResponseType.YES:
             return True
         else:
@@ -367,10 +360,8 @@ class MainWindow(Gtk.Window):
     def on_menu_edit(self, item):
         # cut|copy|paste
         name = Gtk.Buildable.get_name(item)
-
         # get the rectangle (ul and br have been set in drag begin/end)
         ul, br = self.grid_view.drag_rect
-
         pub.sendMessage(name.upper(), rect=(ul, br))
 
     def on_menu_symbol(self, item):

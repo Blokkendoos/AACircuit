@@ -70,14 +70,12 @@ class MagicLineSettings(object):
 
     def settings_to_str(self):
         str = ""
-
         for lmd in self.LMD:
             lmd_dict = dict()
             lmd_dict['pattern'] = lmd.pattern
             lmd_dict['ori'] = lmd.ori
             lmd_dict['char'] = lmd.char
             str += json.dumps(lmd_dict) + '\n'
-
         return str
 
     def load_settings_from_str(self, str):
@@ -164,7 +162,6 @@ class MagicLineSettingsDialog(Gtk.Dialog):
 
         new_object = builder.get_object('magic_line_settings')
         new_object.finish_initializing(builder)
-
         return new_object
 
     def finish_initializing(self, builder):
@@ -179,12 +176,10 @@ class MagicLineSettingsDialog(Gtk.Dialog):
 
         self.matrix_nr = 0
         self.lmd = copy.deepcopy(MagicLineSettings.LMD)
-
         self.init_matrix_view(builder)
         self.init_start_orientation(builder)
         self.init_start_character(builder)
         self.update_line_matching_data()
-
         self.show_all()
 
     def init_start_orientation(self, builder):
@@ -233,7 +228,6 @@ class MagicLineSettingsDialog(Gtk.Dialog):
             self.matrix_nr -= 1
         else:
             self.matrix_nr = len(self.lmd) - 1
-
         self.update_line_matching_data()
         pub.sendMessage('MATCHING_DATA_CHANGED', mnr=self.matrix_nr)
 
@@ -243,7 +237,6 @@ class MagicLineSettingsDialog(Gtk.Dialog):
             model = item.get_model()
             ori, description = model[tree_iter][:2]
             # print("Selected: ori=%d, descr=%s" % (ori, description))
-
             lmd = self.lmd[self.matrix_nr]
             lmd_new = LineMatchingData(lmd.pattern, ori, lmd.char)
             self.lmd[self.matrix_nr] = lmd_new
@@ -273,38 +266,28 @@ class MatrixView(Gtk.DrawingArea):
 
     def __init__(self, lmd, mnr=0):
         super(MatrixView, self).__init__()
-
         self._surface = None
         self._hover_pos = Pos(0, 0)
-
         self.set_can_focus(True)
         self.set_focus_on_click(True)
-
         self.connect('draw', self.on_draw)
         self.connect('configure-event', self.on_configure)
-
         self.add_events(Gdk.EventMask.BUTTON_PRESS_MASK)
         self.connect('button-press-event', self.on_button_press)
-
         # https://stackoverflow.com/questions/44098084/how-do-i-handle-keyboard-events-in-gtk3
         self.add_events(Gdk.EventMask.KEY_PRESS_MASK)
         self.connect('key-press-event', self.on_key_press)
-
         self.add_events(Gdk.EventMask.POINTER_MOTION_MASK)
         self.connect('motion-notify-event', self.on_hover)
-
         self._cursor_on = True
         self._hover_pos = Pos(0, 0)
-
         # line matching data
         self._lmd = lmd
         self._matrix_nr = mnr
         self.set_line_matching_data()
-
         # https://developer.gnome.org/gtk3/stable/GtkWidget.html#gtk-widget-add-tick-callback
         self.start_time = time.time()
         self.cursor_callback = self.add_tick_callback(self.toggle_cursor)
-
         pub.subscribe(self.on_matching_data_changed, 'MATCHING_DATA_CHANGED')
 
     def init_surface(self, area):
@@ -313,7 +296,6 @@ class MatrixView(Gtk.DrawingArea):
             # destroy previous buffer
             self._surface.finish()
             self._surface = None
-
         # create a new buffer
         self._surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, area.get_allocated_width(), area.get_allocated_height())
 
@@ -327,22 +309,17 @@ class MatrixView(Gtk.DrawingArea):
         """Calculate the upper left coordinate where the matrix will be drawn."""
         grid_w = Preferences.values['GRIDSIZE_W']
         grid_h = Preferences.values['GRIDSIZE_H']
-
         x_offset = round((self._surface.get_width() - 3 * grid_w) / 2)
         y_offset = round((self._surface.get_height() - 3 * grid_h) / 2)
-
         self._offset = Pos(x_offset, y_offset)
         self._offset.snap_to_grid()
 
     def on_configure(self, area, event, data=None):
         self.init_surface(self)
         self.calc_offset()
-
         context = cairo.Context(self._surface)
-
         self.do_drawing(context)
         self._surface.flush()
-
         return False
 
     def on_matching_data_changed(self, mnr):
@@ -353,6 +330,7 @@ class MatrixView(Gtk.DrawingArea):
         return True
 
     def on_key_press(self, widget, event):
+
         # TODO Will this work in other locale too?
         def filter_non_printable(ascii):
             char = ''
@@ -382,7 +360,6 @@ class MatrixView(Gtk.DrawingArea):
                 self._hover_pos += Pos(2, -1).view_xy()
 
         value = event.keyval
-
         grid_pos = self._hover_pos - self._offset
         grid_pos.snap_to_grid()
         grid_pos = grid_pos.grid_cr()
@@ -392,32 +369,24 @@ class MatrixView(Gtk.DrawingArea):
         shift = event.state & Gdk.ModifierType.SHIFT_MASK
         if shift:
             return True
-
         if value == Gdk.KEY_Left or value == Gdk.KEY_BackSpace:
             previous_char()
-
         elif value == Gdk.KEY_Right:
             next_char()
-
         elif value == Gdk.KEY_Up:
             self._hover_pos -= Pos(0, 1).view_xy()
-
         elif value == Gdk.KEY_Down:
             self._hover_pos += Pos(0, 1).view_xy()
-
         elif value & 255 != 13:  # enter
-
             if valid_index(grid_pos):
                 str = filter_non_printable(value)
                 self._matrix[grid_pos.y][grid_pos.x] = str
                 next_char()
-
         return True
 
     def on_hover(self, widget, event):
         if not self.has_focus():
             self.grab_focus()
-
         self._hover_pos = Pos(event.x, event.y)
         self._hover_pos.snap_to_grid()
         self.queue_resize()
@@ -438,7 +407,6 @@ class MatrixView(Gtk.DrawingArea):
     def draw_gridlines(self, ctx):
         grid_w = Preferences.values['GRIDSIZE_W']
         grid_h = Preferences.values['GRIDSIZE_H']
-
         offset = self._offset
 
         # draw a background
@@ -482,16 +450,11 @@ class MatrixView(Gtk.DrawingArea):
     def draw_content(self, ctx):
         if self._matrix is None:
             return
-
         grid_w = Preferences.values['GRIDSIZE_W']
         grid_h = Preferences.values['GRIDSIZE_H']
-
         offset = self._offset
-
         ctx.set_source_rgb(0.1, 0.1, 0.1)
-
         use_pango_font = Preferences.values['PANGO_FONT']
-
         if use_pango_font:
             # https://sites.google.com/site/randomcodecollections/home/python-gtk-3-pango-cairo-example
             # https://developer.gnome.org/pango/stable/pango-Cairo-Rendering.html
@@ -501,13 +464,10 @@ class MatrixView(Gtk.DrawingArea):
         else:
             ctx.set_font_size(Preferences.values['FONTSIZE'])
             ctx.select_font_face("monospace", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
-
         y = offset.y
         for r in self._matrix:
-
             x = offset.x
             for c in r:
-
                 if use_pango_font:
                     ctx.move_to(x, y)
                     layout.set_text(str(c), -1)
@@ -516,41 +476,30 @@ class MatrixView(Gtk.DrawingArea):
                     # the Cairo text glyph origin is its left-bottom corner
                     ctx.move_to(x, y + Preferences.values['FONTSIZE'])
                     ctx.show_text(str(c))
-
                 x += grid_w
-
             y += grid_h
 
     def draw_cursor(self, ctx):
         if not self.has_focus():
             return
-
         ctx.save()
-
         ctx.set_line_width(1.5)
         ctx.set_line_join(cairo.LINE_JOIN_ROUND)
-
         if self._cursor_on:
             ctx.set_source_rgb(0.75, 0.75, 0.75)
         else:
             ctx.set_source_rgb(0.5, 0.5, 0.5)
-
         x = self._hover_pos.x
         y = self._hover_pos.y
-
         ctx.rectangle(x, y, Preferences.values['GRIDSIZE_W'], Preferences.values['GRIDSIZE_H'])
         ctx.stroke()
-
         ctx.restore()
 
     def toggle_cursor(self, widget, frame_clock, user_data=None):
         now = time.time()
         elapsed = now - self.start_time
-
         if elapsed > 0.5:
             self.start_time = now
             self._cursor_on = not self._cursor_on
-
         self.queue_resize()
-
         return GLib.SOURCE_CONTINUE
