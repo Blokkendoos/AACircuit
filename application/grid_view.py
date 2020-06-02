@@ -144,17 +144,14 @@ class GridView(Gtk.DrawingArea):
     @property
     def drag_rect(self):
         """Return the selected rectangle (upper-left and bottom-right) position."""
-
         if self._drag_startpos <= self._drag_endpos:
             ul = self._drag_startpos
             br = self._drag_endpos
         else:
             ul = self._drag_endpos
             br = self._drag_startpos
-
         ul = ul.grid_cr()
         br = br.grid_cr()
-
         return ul, br
 
     def init_surface(self, area):
@@ -163,7 +160,6 @@ class GridView(Gtk.DrawingArea):
             # destroy previous buffer
             self.surface.finish()
             self.surface = None
-
         # create a new buffer
         self.surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, area.get_allocated_width(), area.get_allocated_height())
 
@@ -201,13 +197,10 @@ class GridView(Gtk.DrawingArea):
 
     def on_draw_page(self, parms):
         operation, print_ctx, page_num = parms
-
         w = print_ctx.get_width()
         h = print_ctx.get_height()
         # print("width: {} height:{})".format(w, h))
-
         ctx = print_ctx.get_cairo_context()
-
         # self.draw_border(ctx, w, h)
         ctx.scale(0.5, 0.5)
         self.draw_content(ctx)
@@ -218,16 +211,12 @@ class GridView(Gtk.DrawingArea):
         # h = self.get_allocated_height()
         # FIXME Set Portrait or Landscape dimensions based upon prefs or printer settings
         w, h = (560, 784)
-
         surface = cairo.PDFSurface(filename, w, h)
         ctx = cairo.Context(surface)
-
         # self.draw_border(ctx, w, h)
         ctx.scale(0.5, 0.5)
         self.draw_content(ctx)
-
         surface.finish()
-
         msg = _("PDF Exported to {}").format(filename)
         pub.sendMessage('STATUS_MESSAGE', msg=msg)
 
@@ -336,12 +325,10 @@ class GridView(Gtk.DrawingArea):
                     self._selection.item in (DRAW_RECT, ARROW, LINE, MAG_LINE, DIR_LINE):
                 self._selection.state = IDLE
                 return True
-
             # exit selection mode
             elif self._selection.item == OBJECT:
                 self._selection.state = SELECTING
                 return True
-
             elif self._selection.item in (RECT, ERASER):
                 self._selection.state = IDLE
                 return True
@@ -350,7 +337,6 @@ class GridView(Gtk.DrawingArea):
                 self._selection.item in (CHARACTER, COMPONENT, OBJECTS, TEXT_BLOCK):
             pub.sendMessage('ROTATE_SYMBOL')
             return True
-
         if value & 255 == ord('m') and \
                 self._selection.item in (COMPONENT, OBJECTS, TEXT_BLOCK):
             pub.sendMessage('MIRROR_SYMBOL')
@@ -361,14 +347,11 @@ class GridView(Gtk.DrawingArea):
         if value == Gdk.KEY_Left or value == Gdk.KEY_BackSpace:
             if len(self._text) > 0:
                 self._text = self._text[:-1]
-
         elif value & 255 == 13:  # enter
             self._text += '\n'
-
         else:
             str = filter_non_printable(value)
             self._text += str
-
         return True
 
     # DRAWING
@@ -382,25 +365,19 @@ class GridView(Gtk.DrawingArea):
     def draw_border(self, ctx, w, h):
         """draw a border at 1% of the page-size."""
         ctx.save()
-
         ctx.set_source_rgb(0.75, 0.75, 0.75)
         ctx.set_line_width(0.25)
-
         ctx.rectangle(w*0.01, h*0.01, w*0.99, h*0.99)  # noqa E226
         ctx.stroke()
-
         ctx.restore()
 
     def draw_background(self, ctx):
         """Draw a background with the size of the grid."""
-
         ctx.set_source_rgb(0.95, 0.95, 0.85)
         ctx.set_line_width(0.5)
         ctx.set_tolerance(0.1)
         ctx.set_line_join(cairo.LINE_JOIN_ROUND)
-
         x_max, y_max = self.max_pos_grid.xy
-
         ctx.new_path()
         ctx.rectangle(0, 0, x_max, y_max)
         ctx.fill()
@@ -424,7 +401,6 @@ class GridView(Gtk.DrawingArea):
             ctx.line_to(x_max, y)
             ctx.stroke()
             y += y_incr
-
         # vertical lines
         x = 0
         while x <= x_max:
@@ -437,11 +413,8 @@ class GridView(Gtk.DrawingArea):
     def draw_content(self, ctx):
         if self._grid is None:
             return
-
         ctx.set_source_rgb(0.1, 0.1, 0.1)
-
         use_pango_font = Preferences.values['PANGO_FONT']
-
         if use_pango_font:
             # https://sites.google.com/site/randomcodecollections/home/python-gtk-3-pango-cairo-example
             # https://developer.gnome.org/pango/stable/pango-Cairo-Rendering.html
@@ -451,13 +424,10 @@ class GridView(Gtk.DrawingArea):
         else:
             ctx.set_font_size(Preferences.values['FONTSIZE'])
             ctx.select_font_face("monospace", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
-
         y = 0
         for r in self._grid.grid:
-
             x = 0
             for c in r:
-
                 if use_pango_font:
                     ctx.move_to(x, y)
                     layout.set_text(str(c), -1)
@@ -466,9 +436,7 @@ class GridView(Gtk.DrawingArea):
                     # the Cairo text glyph origin is its left-bottom corner
                     ctx.move_to(x, y + Preferences.values['FONTSIZE'])
                     ctx.show_text(str(c))
-
                 x += Preferences.values['GRIDSIZE_W']
-
             y += Preferences.values['GRIDSIZE_H']
             # no reference to surface dimension, to allow to be run from (nose) test (w/o GUI)
             # if y >= self.surface.get_height():
@@ -476,24 +444,18 @@ class GridView(Gtk.DrawingArea):
 
     def draw_selection(self, ctx):
         ctx.save()
-
         if self._selection.state == IDLE:
-
             if self._selection.item == RECT:
                 self.mark_all_objects(ctx)
-
         elif self._selection.state == SELECTING:
             self.draw_selecting_state(ctx)
-
         elif self._selection.state == SELECTED:
             self.draw_selected_state(ctx)
-
         ctx.restore()
 
     def draw_selected_state(self, ctx):
         if self._selection.item in (CHARACTER, COMPONENT):
             self._symbol.draw(ctx, self._hover_pos)
-
         elif self._selection.item in (OBJECT, RECT):
             # draw the selection rectangle
             self._selection.startpos = self._drag_startpos
@@ -501,7 +463,6 @@ class GridView(Gtk.DrawingArea):
             self._selection.maxpos = self.max_pos_grid
             self._selection.draw(ctx)
             self.mark_all_objects(ctx)
-
         elif self._selection.item == OBJECTS:
             self.mark_all_objects(ctx)
             self.draw_selected_objects(ctx)
@@ -510,13 +471,11 @@ class GridView(Gtk.DrawingArea):
         if self._selection.item == OBJECT:
             self.mark_all_objects(ctx)
             self.draw_cursor(ctx)
-
         elif self._selection.item in (TEXT, TEXT_BLOCK):
             self.draw_cursor(ctx)
             self._symbol.startpos = self._hover_pos.grid_cr()
             self._symbol.text = self._text
             self._symbol.draw(ctx)
-
         else:
             ctx.set_source_rgb(0.5, 0.5, 0.75)
             ctx.set_line_join(cairo.LINE_JOIN_ROUND)
@@ -531,32 +490,25 @@ class GridView(Gtk.DrawingArea):
             if self._selection.item == RECT:
                 self.mark_all_objects(ctx)
                 self._selection.draw(ctx)
-
             elif self._selection.item in (MAG_LINE, LINE, DIR_LINE, DRAW_RECT, ARROW):
                 self._symbol.startpos = self._selection.startpos.grid_cr()
                 self._symbol.endpos = self._selection.endpos.grid_cr()
                 self._symbol.draw(ctx)
-
             elif self._selection.item:
                 # draw it, if we have any valid (not None) selection
                 self._selection.draw(ctx)
 
     def draw_cursor(self, ctx):
         ctx.save()
-
         ctx.set_line_width(1.5)
         ctx.set_line_join(cairo.LINE_JOIN_ROUND)
-
         if self._cursor_on:
             ctx.set_source_rgb(0.75, 0.75, 0.75)
         else:
             ctx.set_source_rgb(0.5, 0.5, 0.5)
-
         x, y = self._hover_pos.xy  # TODO meelopen met de tekst (blijft nu aan 't begin staan)
-
         ctx.rectangle(x, y, Preferences.values['GRIDSIZE_W'], Preferences.values['GRIDSIZE_H'])
         ctx.stroke()
-
         ctx.restore()
 
     def enable_cursor_callback(self, enable):
@@ -580,55 +532,40 @@ class GridView(Gtk.DrawingArea):
     def mark_all_objects(self, ctx):
         """Mark all objects on the grid canvas."""
         ctx.save()
-
         for ref in self._objects:
-
             if ref.symbol.has_pickpoint:
-
                 if (self._show_symbol_pickpoints and ref.symbol.is_symbol) or \
                         (self._show_line_pickpoints and ref.symbol.is_line) or \
                         (self._show_text_pickpoints and ref.symbol.is_text):
                     ctx.set_source_rgb(1, 0, 0)
                     ctx.select_font_face("monospace", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
-
                     # FIXME the pickpoint of a mostleft position (x=0) will not show as it falls of the grid
                     pos = ref.symbol.pickpoint_pos.view_xy()
-
                     # the text glyph origin is its left-bottom corner
                     y_xbase = pos.y + Preferences.values['FONTSIZE']
                     ctx.move_to(pos.x, y_xbase)
                     ctx.show_text(MARK_CHAR)  # mark the upper-left corner
-
         ctx.restore()
 
     def draw_selected_objects(self, ctx):
         """Draw multiple objects selection."""
         ctx.save()
-
         for ref in self._objects:
-
             ctx.set_source_rgb(1, 0, 0)
             ctx.select_font_face("monospace", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
-
             # offset between the current position and the ul position of the original selection rectangle
             offset = self._hover_pos - ref.startpos.view_xy()
-
             pos = ref.symbol.startpos.view_xy() + offset
             ref.symbol.draw(ctx, pos)
-
         ctx.restore()
 
     def on_button_press(self, widget, event):
-
         pos = self.calc_position(event.x, event.y)
         pub.sendMessage('POINTER_MOVED', pos=pos.grid_cr())
-
         if not Preferences.values['SELECTION_DRAG'] \
                 and self._selection.item in (DRAW_RECT, ARROW, ERASER, RECT, LINE, MAG_LINE, DIR_LINE):
-
             if self._selection.state == IDLE:
                 self.on_drag_begin(None, event.x, event.y)
-
             elif self._selection.state == SELECTING:
                 offset = Pos(event.x, event.y) - self._drag_startpos
                 self.on_drag_end(None, offset.x, offset.y)
@@ -638,13 +575,11 @@ class GridView(Gtk.DrawingArea):
 
         elif self._selection.state == SELECTED:
             self.selected_state(event)
-
         widget.queue_resize()
 
     def selected_state(self, event):
         pos = self._hover_pos
         pos = pos.grid_cr()
-
         if self._selection.item in (CHARACTER, COMPONENT, OBJECTS):
             # https://stackoverflow.com/questions/6616270/right-click-menu-context-menu-using-pygtk
             button = event.button
@@ -679,18 +614,14 @@ class GridView(Gtk.DrawingArea):
 
         elif self._selection.item == OBJECT:
             self._selection.state = SELECTED
-
             # select the object within the cursor rect
             ul = pos
             br = ul + Pos(Preferences.values['GRIDSIZE_W'], Preferences.values['GRIDSIZE_H'])
-
             self._drag_startpos = ul
             self._drag_endpos = br
-
             self._selection.startpos = ul
             self._selection.endpos = br
             self._selection.maxpos = self.max_pos_grid
-
             pub.sendMessage('SELECTION_CHANGED', selected=True)
 
     def calc_position(self, x, y):
@@ -704,16 +635,12 @@ class GridView(Gtk.DrawingArea):
             pass
         else:
             return
-
         pos = self.calc_position(x_start, y_start)
-
         self._drag_dir = None
         self._drag_startpos = pos
         self._drag_currentpos = pos
-
         self._drag_prevpos = []
         self._drag_prevpos.append(pos)
-
         self._selection.state = SELECTING
 
     def on_drag_end(self, widget, x_offset, y_offset):
@@ -721,14 +648,11 @@ class GridView(Gtk.DrawingArea):
             pass
         else:
             return
-
         offset = self.calc_position(x_offset, y_offset)
         self._drag_endpos = self._drag_startpos + offset
-
         # position to grid (col, row) coordinates
         startpos = self._drag_startpos.grid_cr()
         endpos = self._drag_endpos.grid_cr()
-
         self._selection.state = SELECTED
 
         if self._selection.item == DRAW_RECT:
@@ -762,9 +686,7 @@ class GridView(Gtk.DrawingArea):
             pass
         else:
             return
-
         offset = self.calc_position(x_offset, y_offset)
-
         pos = self._drag_startpos + offset
         pos.snap_to_grid()
 
@@ -789,7 +711,6 @@ class GridView(Gtk.DrawingArea):
     def pointer_dir_avg(self):
         """Return the pointer direction in relation to the previous position."""
         (x, y) = self._drag_currentpos.xy
-
         length = len(self._drag_prevpos)
         assert length > 0
 
@@ -817,10 +738,8 @@ class GridView(Gtk.DrawingArea):
     def on_hover(self, widget, event):
         if not self.has_focus():
             self.grab_focus()
-
         width = Preferences.values['GRIDSIZE_W']
         height = Preferences.values['GRIDSIZE_H']
-
         self._hover_pos = self.calc_position(event.x, event.y)
         delta = self._hover_previous_pos - self._hover_pos
         if abs(delta.x) > width / 2 or abs(delta.y) > height / 2:
