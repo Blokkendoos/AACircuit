@@ -1289,18 +1289,13 @@ class Arrow(Symbol):
             self._repr_vert()
 
     def _repr_hor(self):
-        ul = self._startpos
-        ur = Pos(self._endpos.x, self._startpos.y)
-        bl = Pos(self._startpos.x, self._endpos.y)
-        br = self._endpos
-
-        startpos = ul
-        endpos = br
+        startpos = self._startpos
+        endpos = self._endpos
 
         h = startpos.y - endpos.y
         if h == 0:
             h = 3
-        h = h + h % 3
+        h = h - h % 3
         h2 = h / 2
         h3 = h / 3
         my = (startpos.y + endpos.y) / 2
@@ -1312,23 +1307,17 @@ class Arrow(Symbol):
         d = Pos(endpos.x - h2, endpos.y)
         e = Pos(endpos.x, my)
         f = Pos(endpos.x - h2, startpos.y)
-        # close loop
         g = Pos(endpos.x - h2, startpos.y - h3)
         self._repr_poly(a, b, c, d, e, f, g)
 
     def _repr_vert(self):
-        ul = self._startpos
-        ur = Pos(self._endpos.x, self._startpos.y)
-        bl = Pos(self._startpos.x, self._endpos.y)
-        br = self._endpos
+        startpos = self._startpos
+        endpos = self._endpos
 
-        startpos = ul
-        endpos = br
-
-        w = br.x - ul.x
+        w = endpos.x - startpos.x
         if w == 0:
             w = 3
-        w = w + w % 3
+        w = w - w % 3
         w2 = w / 2
         w3 = w / 3
         mx = (startpos.x + endpos.x) / 2
@@ -1340,29 +1329,27 @@ class Arrow(Symbol):
         d = Pos(startpos.x, endpos.y + w2)
         e = Pos(mx, endpos.y)
         f = Pos(endpos.x, endpos.y + w2)
-        # close loop
         g = Pos(endpos.x - w3, endpos.y + w2)
         self._repr_poly(a, b, c, d, e, f, g)
 
     def _repr_poly(self, a, b, c, d, e, f, g):
 
-        line1 = Line(a, b, Line.LINE1)
-        line2 = Line(b, c, Line.LINE1)
+        line1 = Line(a, b, Line.LINE4)
+        line2 = Line(b, c, Line.LINE4)
         line3 = Line(c, d, Line.LINE1)
         line4 = DirLine(d, e)
         line5 = DirLine(e, f)
         line6 = Line(f, g, Line.LINE1)
-        line7 = Line(g, a, Line.LINE1)
+        line7 = Line(g, a, Line.LINE4)
 
         self._repr = dict()
-
         self._repr.update(line1.repr)
         self._repr.update(line3.repr)
-        self._repr.update(line2.repr)
         self._repr.update(line4.repr)
-        self._repr.update(line5.repr)
         self._repr.update(line6.repr)
+        self._repr.update(line5.repr)
         self._repr.update(line7.repr)
+        self._repr.update(line2.repr)
 
     def copy(self):
         startpos = copy.deepcopy(self._startpos)
