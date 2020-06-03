@@ -716,7 +716,7 @@ class MagLine(Line):
 
 
 class MagLineOld(MagLine):
-    """Alte MagLine, wegen abwärtscompatibilität noch vorhanden."""
+    """Alte MagLine, wegen abwaertscompatibilitaet noch vorhanden."""
 
     def __init__(self, startpos, endpos, cell_callback=None, type=Line.MLINE_LEGACY):
         super(MagLineOld, self).__init__(startpos=startpos, endpos=endpos, cell_callback=cell_callback, type=type)
@@ -726,11 +726,9 @@ class MagLineOld(MagLine):
 
     def paste(self, grid):
         super(MagLineOld, self).paste(grid)
-        # FIXME pubsub from within represenation() does not work (statusbar not updated)
         if self._se_count > 0:
             msg = self._status_msg
             pub.sendMessage('STATUS_MESSAGE', msg=msg)
-            # print(msg)
 
     def _representation(self):
         se_status = ""
@@ -804,7 +802,7 @@ class MagLineOld(MagLine):
                 if self.cell(Pos(x1, y1 + 1)) == line_vert:
                     start_char = upper_corner
             se_count += 1
-            se_status = _("S:oVu |; l/r=space")
+            se_status = _("S:topVbottom {}; l/r=space").format(line_vert)
 
         # oben .
         if self.cell(Pos(x1, y1 - 1)) == upper_corner \
@@ -816,7 +814,7 @@ class MagLineOld(MagLine):
             elif ydiv == 0:
                 set_rechts_links()
             se_count += 1
-            se_status = _("S:o{}; l/r/u=space".format(lower_corner))
+            se_status = _("S:top {}; l/r/b=space").format(lower_corner)
 
         # unten '
         if self.cell(Pos(x1, y1 + 1)) == lower_corner \
@@ -828,7 +826,7 @@ class MagLineOld(MagLine):
             elif ydiv == 0:
                 set_rechts_links()
             se_count += 1
-            se_status = _("S:u{}; l/r/0=space".format(lower_corner))
+            se_status = _("S:bottom {}; l/r/t=space").format(lower_corner)
 
         # oben -
         if self.cell(Pos(x1, y1 - 1)) == line_hor \
@@ -840,7 +838,7 @@ class MagLineOld(MagLine):
             elif ydiv == 0:
                 set_rechts_links()
             se_count += 1
-            se_status = _("S:o{}; l/r/u=space".format(line_hor))
+            se_status = _("S:top {}; l/r/b=space").format(line_hor)
 
         # unten -
         if self.cell(Pos(x1, y1 + 1)) == line_hor \
@@ -852,7 +850,7 @@ class MagLineOld(MagLine):
             elif ydiv == 0:
                 set_rechts_links()
             se_count += 1
-            se_status = _("S:u{}; l/r/u=space".format(line_hor))
+            se_status = _("S:bottom {}; l/r=space").format(line_hor)
 
         # l/r = -, o/u frei
         if (self.cell(Pos(x1 - 1, y1)) == line_hor or self.cell(Pos(x1 + 1, y1)) == line_hor) \
@@ -866,7 +864,7 @@ class MagLineOld(MagLine):
                 elif y2 < y1:
                     start_char = lower_corner
             se_count += 1
-            se_status = _("S:lVr {}, oVu=space".format(line_hor))
+            se_status = _("S:leftVright {}, topVbottom=space").format(line_hor)
 
         # links und rechts -, oben kein |
         if self.cell(Pos(x1 - 1, y1)) == line_hor \
@@ -875,7 +873,7 @@ class MagLineOld(MagLine):
             start_ori = VERTICAL
             start_char = connect_char
             se_count += 1
-            se_status = _("S:links und rechts {}; oben kein {}".format(line_hor, line_vert))
+            se_status = _("S:left and right {}; top none {}").format(line_hor, line_vert)
 
         # oben und unten |, links kein -
         if self.cell(Pos(x1, y1 - 1)) == line_vert \
@@ -884,21 +882,21 @@ class MagLineOld(MagLine):
             start_ori = HORIZONTAL
             start_char = connect_char
             se_count += 1
-            se_status = _("S:oben und unten {}; links kein".format(line_vert, line_hor))
+            se_status = _("S:top and bottom {}; left none").format(line_vert, line_hor)
 
         # links oder rechts o
         if self.cell(Pos(x1 - 1, y1)) == connect_char \
                 or self.cell(Pos(x1 + 1, y1)) == connect_char:
             set_rechts_links()
             se_count += 1
-            se_status = _("S:lVr={};".format(connect_char))
+            se_status = _("S:leftVright {};").format(connect_char)
 
         # oben oder unten o
         if self.cell(Pos(x1, y1 - 1)) == connect_char \
                 or self.cell(Pos(x1, y1 + 1)) == connect_char:
             set_oben_unten()
             se_count += 1
-            se_status = _("S:oVu={};".format(connect_char))
+            se_status = _("S:topVbottom {};".format(connect_char))
 
         # generell, wenn startc noch # ist
         if start_char == '#':
@@ -960,7 +958,7 @@ class MagLineOld(MagLine):
                 else:
                     end_char = line_vert
             se_count += 1
-            se_status = _("E:o/u")
+            se_status = _("E:top/bottom")
 
         # von links oder rechts
         if (self.cell(Pos(x2 - 1, y2)) == line_hor or self.cell(Pos(x2 + 1, y2)) == line_hor) \
@@ -983,7 +981,7 @@ class MagLineOld(MagLine):
                 else:
                     end_char = line_hor
             se_count += 1
-            se_status = _("E:l/r")
+            se_status = _("E:left/right")
 
         # links und rechts -
         if self.cell(Pos(x2 - 1, y2)) == line_hor \
@@ -991,7 +989,7 @@ class MagLineOld(MagLine):
             if (start_ori == VERTICAL and x1 == x2) or (start_ori == HORIZONTAL and y1 != y2):
                 end_char = connect_char
             se_count += 1
-            se_status = _("E:links und rechts {}".format(line_hor))
+            se_status = _("E:left and right {}").format(line_hor)
 
         # links oder rechts - unten |
         if (self.cell(Pos(x2 - 1, y2)) == line_hor or self.cell(Pos(x2 + 1, y2)) == line_hor) \
@@ -999,7 +997,7 @@ class MagLineOld(MagLine):
                 and self.cell(Pos(x2, y2 + 1)) == line_vert:
             end_char = connect_char
             se_count += 1
-            se_status = _("E: l{0}/{1} u={2}".format(upper_corner, lower_corner, line_vert))
+            se_status = _("E: l{0}/r{1} bottom={2}").format(upper_corner, lower_corner, line_vert)
 
         # generell, wenn endc noch # ist
         if end_char == '#':
