@@ -7,24 +7,20 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-23 15:46+0200\n"
-"PO-Revision-Date: 2020-06-03 10:44+0200\n"
+"POT-Creation-Date: 2020-06-03 21:13+0200\n"
+"PO-Revision-Date: 2020-06-03 21:18+0200\n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-06-02 16:54+0200\n"
-"PO-Revision-Date: 2020-06-02 16:55+0200\n"
+"POT-Creation-Date: 2020-06-03 21:06+0200\n"
+"PO-Revision-Date: 2020-06-03 21:13+0200\n"
 "Language: nl\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "X-Generator: Poedit 2.3\n"
-
-#: ../application/__init__.py:66
-msgid "Resistor"
-msgstr "Weerstand"
 
 #: application/aacircuit.glade:198
 msgid "_File"
@@ -382,6 +378,10 @@ msgstr "Aantal geladen bibliotheken: {0}"
 msgid "Description"
 msgstr "Omschrijving"
 
+#: ../application/__init__.py:66
+msgid "Resistor"
+msgstr "Weerstand"
+
 #: ../application/confirmation_dialog.glade:10
 msgid "Really close the program?"
 msgstr "Programma sluiten?"
@@ -627,7 +627,7 @@ msgstr "Lettergrootte"
 
 #: ../application/preferences.py:291
 msgid "Use Pango font"
-msgstr "Gebruik Pango letters"
+msgstr "Gebruik Pango lettertypen"
 
 #: ../application/preferences.py:293
 msgid "Font"
@@ -689,9 +689,85 @@ msgstr "Lijnen"
 msgid "Magic line"
 msgstr ""
 
-#: ../application/controller.py:1065
-msgid "skipped linenr: "
-msgstr "regelnummer: {} overgeslagen"
+#: ../application/symbol.py:74
+#, python-brace-format
+msgid "Class: {0} id: {1} ori: {2} startpos: {3}"
+msgstr ""
+
+#: ../application/symbol.py:631
+#, python-brace-format
+msgid "Start: M[{0}] char:{1} ori:{2} / "
+msgstr "Start: M[{0}] char:{1} ori:{2} /"
+
+#: ../application/symbol.py:650
+#, python-brace-format
+msgid "End: M[{0}] char:{1} ori:{2}"
+msgstr "Einde: M[{0}] char:{1} ori:{2}"
+
+#: ../application/symbol.py:790
+msgid "S:all free"
+msgstr "S:rondom vrij"
+
+#: ../application/symbol.py:805
+msgid "S:topVbottom {}; l/r=space"
+msgstr "S:bovenVonder {}; l/r=spatie"
+
+#: ../application/symbol.py:817 ../application/symbol.py:841
+msgid "S:top {}; l/r/b=space"
+msgstr "S:top {}; l/r/o=spatie"
+
+#: ../application/symbol.py:829
+msgid "S:bottom {}; l/r/t=space"
+msgstr "S:onder {}; l/r/b=spatie"
+
+#: ../application/symbol.py:853
+msgid "S:bottom {}; l/r=space"
+msgstr "S:onder {}; l/r=spatie"
+
+#: ../application/symbol.py:867
+msgid "S:leftVright {}, topVbottom=space"
+msgstr "S:linksVrecht {}; bovenVonder=spatie"
+
+#: ../application/symbol.py:876
+msgid "S:left and right {}; top none {}"
+msgstr "S:links en rechts {}; boven niets {}"
+
+#: ../application/symbol.py:885
+msgid "S:top and bottom {}; left none"
+msgstr "S:boven en onder {}; links niets"
+
+#: ../application/symbol.py:892
+msgid "S:leftVright {};"
+msgstr "S:lnksVrechts {};"
+
+#: ../application/symbol.py:899
+msgid "S:topVbottom {};"
+msgstr "S:bovenVonder {};"
+
+#: ../application/symbol.py:944
+msgid "E:all free"
+msgstr "E:rondom vrij"
+
+#: ../application/symbol.py:961
+msgid "E:top/bottom"
+msgstr "E:boven/onder"
+
+#: ../application/symbol.py:984
+msgid "E:left/right"
+msgstr "E:links/rechts"
+
+#: ../application/symbol.py:992
+msgid "E:left and right {}"
+msgstr "E:links en rechts {}"
+
+#: ../application/symbol.py:1000
+#, python-brace-format
+msgid "E: l{0}/r{1} bottom={2}"
+msgstr "E: l{0}/r{1} onder={2}"
+
+#: ../application/symbol.py:805
+msgid "S:topVbottom {} |; l/r=space"
+msgstr "S:bovenVonder {} |; l/r=spatie"
 
 #: ../application/preferences.py:306
 msgid "Horizontal line char"
