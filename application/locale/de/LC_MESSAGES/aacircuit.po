@@ -1,6 +1,5 @@
-# #-#-#-#-#  aacircuit.pot (PACKAGE VERSION)  #-#-#-#-#
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# AACircuit.po
+# Copyright (C) 2020 Johan van Oostrum
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
@@ -8,22 +7,24 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-23 15:46+0200\n"
+"PO-Revision-Date: 2020-06-03 10:44+0200\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-02 16:54+0200\n"
 "PO-Revision-Date: 2020-06-02 16:55+0200\n"
 "Language: de\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Project-Id-Version: AACircuit\n"
-"POT-Creation-Date: \n"
-"PO-Revision-Date: \n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Language: de\n"
-"X-Generator: Poedit 2.3\n"
 "Last-Translator: \n"
 "Language-Team: \n"
+"X-Generator: Poedit 2.3\n"
+
+#: ../application/__init__.py:66
+msgid "Resistor"
+msgstr "R-Widerstand"
 
 #: application/aacircuit.glade:198
 msgid "_File"
@@ -372,10 +373,6 @@ msgstr "Anzahl Bibliotheken geladen: {0}"
 msgid "Description"
 msgstr "Umschreibung"
 
-#: ../application/__init__.py:66
-msgid "Resistor"
-msgstr "R-Widerstand"
-
 #: ../application/confirmation_dialog.glade:10
 msgid "Really close the program?"
 msgstr "Tatsächlich Programm beënden?"
@@ -513,7 +510,7 @@ msgstr "Speichern"
 
 #: ../application/magic_line_dialog.glade:101
 msgid "decision matrix"
-msgstr "Entscheidngsmatrize"
+msgstr "Entscheidungsmatrize"
 
 #: ../application/magic_line_dialog.glade:123
 msgid "start direction"
