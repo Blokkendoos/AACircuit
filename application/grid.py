@@ -7,7 +7,7 @@ AACircuit
 
 import xerox
 
-from application import _
+from locale import gettext as _
 from application import CELL_DEFAULT, CELL_EMPTY, CELL_NEW, CELL_ERASE
 
 
