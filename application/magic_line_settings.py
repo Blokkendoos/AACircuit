@@ -45,7 +45,6 @@ class MagicLineSettings(object):
             file = open(self._filename, 'r')
             self.load_settings_from_str(file.read())
             file.close()
-
             msg = _("Magic_line settings have been read from: %s" % self._filename)
             print(msg)
 
@@ -60,7 +59,6 @@ class MagicLineSettings(object):
             fout = open(self._filename, 'w')
             fout.write(self.settings_to_str())
             fout.close()
-
             msg = _("Magic line settings have been saved in: %s" % self._filename)
             pub.sendMessage('STATUS_MESSAGE', msg=msg)
 
@@ -150,7 +148,6 @@ class MagicLineSettingsDialog(Gtk.Dialog):
             # in a way that the C library can read, but locale does (by calling libc).
             locale.bindtextdomain('aacircuit', get_path_to_data('locale/'))
             locale.textdomain('aacircuit')
-
             builder = Gtk.Builder()
             # https://stackoverflow.com/questions/24320502/how-to-translate-pygtk-glade-gtk-builder-application
             builder.set_translation_domain('aacircuit')
@@ -175,6 +172,8 @@ class MagicLineSettingsDialog(Gtk.Dialog):
         # Add any other initialization here
 
         self.matrix_nr = 0
+        self.matrix_frame = builder.get_object('matrix_frame')
+        self.matrix_title = self.matrix_frame.get_label()
         self.lmd = copy.deepcopy(MagicLineSettings.LMD)
         self.init_matrix_view(builder)
         self.init_start_orientation(builder)
@@ -188,10 +187,8 @@ class MagicLineSettingsDialog(Gtk.Dialog):
         ori_store.append([0, _("Horizontal")])
         ori_store.append([1, _("Vertical")])
         ori_store.append([2, _("Longest first")])
-
         # https://python-gtk-3-tutorial.readthedocs.io/en/latest/combobox.html
         combobox = builder.get_object('start_direction')
-
         # https://stackoverflow.com/questions/9983469/gtk3-combobox-shows-parent-items-from-a-treestore
         cell = Gtk.CellRendererText()
         combobox.pack_start(cell, True)
@@ -210,20 +207,20 @@ class MagicLineSettingsDialog(Gtk.Dialog):
         lmd = self.lmd[self.matrix_nr]
         self._start_character.set_text(lmd.char)
         self._start_ori_combo.set_active(lmd.ori)
+        self.matrix_frame.set_label(self.matrix_title + "[{}]".format(self.matrix_nr))
 
     def init_matrix_view(self, builder):
         view = builder.get_object('matrix_viewport')
         self.matrix_view = MatrixView(self.lmd, self.matrix_nr)
         view.add(self.matrix_view)
 
-    def on_previous_matrix(self, item):
+    def on_next_matrix(self, item):
         self.matrix_nr += 1
         self.matrix_nr %= len(self.lmd)
-
         self.update_line_matching_data()
         pub.sendMessage('MATCHING_DATA_CHANGED', mnr=self.matrix_nr)
 
-    def on_next_matrix(self, item):
+    def on_previous_matrix(self, item):
         if self.matrix_nr > 0:
             self.matrix_nr -= 1
         else:
@@ -408,17 +405,14 @@ class MatrixView(Gtk.DrawingArea):
         grid_w = Preferences.values['GRIDSIZE_W']
         grid_h = Preferences.values['GRIDSIZE_H']
         offset = self._offset
-
         # draw a background
         ctx.set_source_rgb(0.95, 0.95, 0.85)
         ctx.set_line_width(0.5)
         ctx.set_tolerance(0.1)
         ctx.set_line_join(cairo.LINE_JOIN_ROUND)
-
         ctx.new_path()
         ctx.rectangle(offset.x, offset.y, 3 * grid_w, 3 * grid_h)
         ctx.fill()
-
         # draw the gridlines
         # TODO use CSS for uniform colors?
         ctx.set_source_rgb(0.75, 0.75, 0.75)
