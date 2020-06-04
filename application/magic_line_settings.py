@@ -246,6 +246,15 @@ class MagicLineSettingsDialog(Gtk.Dialog):
             self.lmd[self.matrix_nr] = lmd_new
 
     def on_create_new_matrix(self, item):
+        self.lmd.append(LineMatchingData(
+            [['x', 'x', 'x'],
+             ['x', 'x', 'x'],
+             ['x', 'x', 'x']], HORIZONTAL, '-'))
+        self.matrix_nr = len(self.lmd) - 1
+        self.update_line_matching_data()
+        pub.sendMessage('MATCHING_DATA_CHANGED', mnr=self.matrix_nr)
+
+    def on_delete_matrix(self, item):
         print("Not yet implemented")
 
     def on_save_clicked(self, item):
@@ -356,17 +365,13 @@ class MatrixView(Gtk.DrawingArea):
             elif grid_pos.y > 0:
                 self._hover_pos += Pos(2, -1).view_xy()
 
-        value = event.keyval
         grid_pos = self._hover_pos - self._offset
         grid_pos.snap_to_grid()
         grid_pos = grid_pos.grid_cr()
-
-        # shift = (event.state & Gdk.ModifierType.SHIFT_MASK)
-        # modifiers = Gdk.Accelerator.get_default_mod_mask()
-        shift = event.state & Gdk.ModifierType.SHIFT_MASK
-        if shift:
-            return True
-        if value == Gdk.KEY_Left or value == Gdk.KEY_BackSpace:
+        value = event.keyval
+        if value in (Gdk.KEY_Shift_L, Gdk.KEY_Shift_R):
+            pass
+        elif value == Gdk.KEY_Left or value == Gdk.KEY_BackSpace:
             previous_char()
         elif value == Gdk.KEY_Right:
             next_char()
