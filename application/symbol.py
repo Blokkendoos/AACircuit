@@ -570,12 +570,12 @@ class MagLine(Line):
         super(MagLine, self).__init__(startpos=startpos, endpos=endpos, type=type)
         self._representation()
 
-    def _line_match(self, idx, search_dir, pos):
+    def _line_match(self, idx, ori, pos):
         """
         Match a character in the grid against a Magic Line pattern.
 
         :param idx: number of the line matching pattern to be used
-        :param search_dir: search direction
+        :param ori: orientation of the line to be drawn
         :param pos: character position (col, row) coordinates
 
         :return result: True if a match was found, otherwise False
@@ -587,7 +587,7 @@ class MagLine(Line):
         result = True
         m_ori = None
         m_char = None
-        if pos > Pos(0, 0) and (search_dir is None or search_dir == lmd.ori):
+        if pos > Pos(0, 0) and (ori is None or ori == lmd.ori):
             for j, row in enumerate(lmd.pattern):
                 for i, char in enumerate(row):
                     if char != 'x':
@@ -628,7 +628,7 @@ class MagLine(Line):
                 f_ori = VERTICAL
             else:
                 f_ori = HORIZONTAL
-        msg = _("Start: M[{0}] char:{1} ori:{2} / ".format(i, f_terminal, MagLine.ori_desc[f_ori]))
+        msg = _("Start: M[{0}] char:{1} ori:{2} / ").format(i, f_terminal, MagLine.ori_desc[f_ori])
 
         # the orientation of the second line
         if f_ori == HORIZONTAL:
@@ -647,7 +647,7 @@ class MagLine(Line):
                 # the end-terminal of the second line
                 self._repr[endpos] = m_terminal
                 break
-        msg += _("End: M[{0}] char:{1} ori:{2}".format(i, m_terminal, MagLine.ori_desc[m_ori]))
+        msg += _("End: M[{0}] char:{1} ori:{2}").format(i, m_terminal, MagLine.ori_desc[m_ori])
         pub.sendMessage('STATUS_MESSAGE', msg=msg)
         self._corner_line(f_ori)
 
@@ -896,7 +896,7 @@ class MagLineOld(MagLine):
                 or self.cell(Pos(x1, y1 + 1)) == connect_char:
             set_oben_unten()
             se_count += 1
-            se_status = _("S:topVbottom {};".format(connect_char))
+            se_status = _("S:topVbottom {};").format(connect_char)
 
         # generell, wenn startc noch # ist
         if start_char == '#':
