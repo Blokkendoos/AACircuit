@@ -17,4 +17,6 @@ tmp/
 # py2app
 build/
 dist/
+
+gettext/
  
