@@ -7,15 +7,24 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-06-03 21:13+0200\n"
-"PO-Revision-Date: 2020-06-03 21:18+0200\n"
+"POT-Creation-Date: 2020-05-23 15:46+0200\n"
+"PO-Revision-Date: 2020-06-05 13:44+0200\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-06-03 21:13+0200\n"
+"PO-Revision-Date: 2020-06-03 21:18+0200\n"
+"Language: de\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "X-Generator: Poedit 2.3\n"
+
+#: ../application/__init__.py:66
+msgid "Resistor"
+msgstr "R-Widerstand"
 
 #: application/aacircuit.glade:198
 msgid "_File"
@@ -364,10 +373,6 @@ msgstr "Anzahl Bibliotheken geladen: {0}"
 msgid "Description"
 msgstr "Umschreibung"
 
-#: ../application/__init__.py:66
-msgid "Resistor"
-msgstr "R-Widerstand"
-
 #: ../application/confirmation_dialog.glade:10
 msgid "Really close the program?"
 msgstr "Tatsächlich Programm beënden?"
@@ -391,6 +396,10 @@ msgstr "{0} Bibliotheke geladen, Total zahl der Symbole: {1}"
 msgid "Untitled.pdf"
 msgstr "Namlos.pdf"
 
+#: ../application/file.py:117
+msgid "Untitled_schema.txt"
+msgstr "Namlos.txt"
+
 #: ../application/controller.py:230
 msgid "Finished printing"
 msgstr "Drucken beendet"
@@ -408,20 +417,22 @@ msgstr "Datei: {} läßt sich nicht öffnen zum lesen, fehler({}): {}"
 msgid "Selecting rectangle..."
 msgstr "Selektiere Rechtecke"
 
-#: ../application/controller.py:535
-#, python-format
-msgid "Schema has been saved in: %s"
-msgstr "Schaltplan gespeichert unter: %s"
+#: ../application/controller.py:574
+msgid "Schema has been saved in: {}"
+msgstr "Schaltplan gespeichert unter: {}"
+
+#: ../application/controller.py:579
+msgid "Unable to open file for writing: {}"
+msgstr "Datei {} läßt sich nicht öffnen zum schreiben"
+
+#: ../application/controller.py:590
+msgid "ASCII Schema has been saved in: {}"
+msgstr "ASCII Schaltplan gespeichert unter: {}"
 
 #: application/controller.py:183
 #, python-format
 msgid "Unable to open file for writing: %s"
 msgstr "Datei %s läßt sich nicht öffnen zum schreiben"
-
-#: ../application/controller.py:557
-#, python-format
-msgid "ASCII Schema has been saved in: %s"
-msgstr "ASCII Schaltplan gespeichert unter: %s"
 
 #: ../application/controller.py:656
 #, python-brace-format
@@ -469,10 +480,6 @@ msgstr "Speichern unter"
 msgid "PDF files"
 msgstr "PDF Dateien"
 
-#: ../application/file.py:117
-msgid "Untitled_schema.txt"
-msgstr "Namlos.txt"
-
 #: ../application/grid.py:20
 #, python-brace-format
 msgid "number of rows: {0} columns: {1}\n"
@@ -518,6 +525,10 @@ msgstr "start Zeichen"
 #: ../application/magic_line_dialog.glade:221
 msgid "Create new"
 msgstr "Neue Matrize"
+
+#: ../application/magic_line_dialog.glade:248
+msgid "Delete"
+msgstr "Lösschen"
 
 #: ../application/magic_line_settings.py:54
 #, python-format
@@ -753,6 +764,16 @@ msgstr "E:links und rechts {}"
 #, python-brace-format
 msgid "E: l{0}/r{1} bottom={2}"
 msgstr "E: l{0}/r{1} unten={2}"
+
+#: ../application/controller.py:535
+#, python-format
+msgid "Schema has been saved in: %s"
+msgstr "Schaltplan gespeichert unter: %s"
+
+#: ../application/controller.py:557
+#, python-format
+msgid "ASCII Schema has been saved in: %s"
+msgstr "ASCII Schaltplan gespeichert unter: %s"
 
 #: ../application/symbol.py:805
 msgid "S:topVbottom {} |; l/r=space"
