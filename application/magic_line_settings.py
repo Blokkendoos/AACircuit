@@ -171,9 +171,10 @@ class MagicLineSettingsDialog(Gtk.Dialog):
 
         # Add any other initialization here
 
-        self.matrix_nr = 0
         self.matrix_frame = builder.get_object('matrix_frame')
         self.matrix_title = self.matrix_frame.get_label()
+
+        self.matrix_nr = 0
         self.lmd = copy.deepcopy(MagicLineSettings.LMD)
         self.init_matrix_view(builder)
         self.init_start_orientation(builder)
@@ -208,17 +209,17 @@ class MagicLineSettingsDialog(Gtk.Dialog):
         self._start_character.set_text(lmd.char)
         self._start_ori_combo.set_active(lmd.ori)
         self.matrix_frame.set_label(self.matrix_title + "[{}]".format(self.matrix_nr))
+        pub.sendMessage('MATCHING_DATA_CHANGED', lmd=lmd)
 
     def init_matrix_view(self, builder):
         view = builder.get_object('matrix_viewport')
-        self.matrix_view = MatrixView(self.lmd, self.matrix_nr)
+        self.matrix_view = MatrixView(self.lmd[self.matrix_nr])
         view.add(self.matrix_view)
 
     def on_next_matrix(self, item):
         self.matrix_nr += 1
         self.matrix_nr %= len(self.lmd)
         self.update_line_matching_data()
-        pub.sendMessage('MATCHING_DATA_CHANGED', mnr=self.matrix_nr)
 
     def on_previous_matrix(self, item):
         if self.matrix_nr > 0:
@@ -226,7 +227,6 @@ class MagicLineSettingsDialog(Gtk.Dialog):
         else:
             self.matrix_nr = len(self.lmd) - 1
         self.update_line_matching_data()
-        pub.sendMessage('MATCHING_DATA_CHANGED', mnr=self.matrix_nr)
 
     def on_start_direction_changed(self, item):
         tree_iter = item.get_active_iter()
@@ -252,10 +252,10 @@ class MagicLineSettingsDialog(Gtk.Dialog):
              ['x', 'x', 'x']], HORIZONTAL, '-'))
         self.matrix_nr = len(self.lmd) - 1
         self.update_line_matching_data()
-        pub.sendMessage('MATCHING_DATA_CHANGED', mnr=self.matrix_nr)
 
     def on_delete_matrix(self, item):
         print("Not yet implemented")
+        self.matrix_view.init_line_matching_data(self.lmd, self.matrix_nr)
 
     def on_save_clicked(self, item):
         MagicLineSettings.LMD = self.lmd
@@ -264,13 +264,15 @@ class MagicLineSettingsDialog(Gtk.Dialog):
     def on_restore_defaults_clicked(self, item):
         pub.sendMessage('RESTORE_DEFAULT_MAGIC_LINE_SETTINGS')
         self.lmd = copy.deepcopy(MagicLineSettings.LMD)
+        # adjust index in case any matrices had been added
+        if self.matrix_nr > (len(self.lmd) - 1):
+            self.matrix_nr = len(self.lmd) - 1
         self.update_line_matching_data()
-        pub.sendMessage('MATCHING_DATA_CHANGED', mnr=self.matrix_nr)
 
 
 class MatrixView(Gtk.DrawingArea):
 
-    def __init__(self, lmd, mnr=0):
+    def __init__(self, lmd):
         super(MatrixView, self).__init__()
         self._surface = None
         self._hover_pos = Pos(0, 0)
@@ -287,10 +289,7 @@ class MatrixView(Gtk.DrawingArea):
         self.connect('motion-notify-event', self.on_hover)
         self._cursor_on = True
         self._hover_pos = Pos(0, 0)
-        # line matching data
-        self._lmd = lmd
-        self._matrix_nr = mnr
-        self.set_line_matching_data()
+        self.init_line_matching_data(lmd)
         # https://developer.gnome.org/gtk3/stable/GtkWidget.html#gtk-widget-add-tick-callback
         self.start_time = time.time()
         self.cursor_callback = self.add_tick_callback(self.toggle_cursor)
@@ -305,11 +304,8 @@ class MatrixView(Gtk.DrawingArea):
         # create a new buffer
         self._surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, area.get_allocated_width(), area.get_allocated_height())
 
-    def set_line_matching_data(self):
-        lmd = self._lmd[self._matrix_nr]
-        self._matrix = lmd.pattern
-        self._start_char = lmd.char
-        self._start_ori = lmd.ori
+    def init_line_matching_data(self, lmd):
+        self.on_matching_data_changed(lmd)
 
     def calc_offset(self):
         """Calculate the upper left coordinate where the matrix will be drawn."""
@@ -328,9 +324,10 @@ class MatrixView(Gtk.DrawingArea):
         self._surface.flush()
         return False
 
-    def on_matching_data_changed(self, mnr):
-        self._matrix_nr = mnr
-        self.set_line_matching_data()
+    def on_matching_data_changed(self, lmd):
+        self._matrix = lmd.pattern
+        self._start_char = lmd.char
+        self._start_ori = lmd.ori
 
     def on_button_press(self, button, event):
         return True
