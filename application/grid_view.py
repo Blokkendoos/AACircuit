@@ -198,8 +198,8 @@ class GridView(Gtk.DrawingArea):
 
     def on_draw_page(self, parms):
         operation, print_ctx, page_num = parms
-        w = print_ctx.get_width()
-        h = print_ctx.get_height()
+        # w = print_ctx.get_width()
+        # h = print_ctx.get_height()
         # print("width: {} height:{})".format(w, h))
         ctx = print_ctx.get_cairo_context()
         # self.draw_border(ctx, w, h)
