@@ -35,6 +35,7 @@ class Controller(object):
         self.ml_settings = MagicLineSettings()
         self.gui = MainWindow()
         self.components = ComponentLibrary()
+        self.filename = None
 
         self.init_stack()
         self.init_grid()
@@ -234,11 +235,21 @@ class Controller(object):
         self._import_legacy = True
         dialog = InputFileChooser()  # noqa: F841
 
-    def on_export_as_pdf(self, filename=_("Untitled.pdf")):
+    def on_export_as_pdf(self, filename=None):
+        if filename is None:
+            if self.filename is None:
+                filename = _("Untitled.pdf")
+            else:
+                filename = os.path.splitext(os.path.basename(self.filename))[0] + '.pdf'
         dialog = OutputFilePDF(filename)  # noqa: F841
 
-    def on_export_as_ascii(self):
-        dialog = OutputFileAscii()  # noqa: F841
+    def on_export_as_ascii(self, filename=None):
+        if filename is None:
+            if self.filename is None:
+                filename = _("Untitled_schema.txt")
+            else:
+                filename = os.path.splitext(os.path.basename(self.filename))[0] + '.txt'
+        dialog = OutputFileAscii(filename)  # noqa: F841
 
     def on_end_print(self):
         msg = _("Finished printing")
@@ -560,12 +571,12 @@ class Controller(object):
             fout.write(str)
             fout.close()
             self.filename = filename
-            msg = _("Schema has been saved in: %s" % self.filename)
+            msg = _("Schema has been saved in: {}").format(filename)
             pub.sendMessage('STATUS_MESSAGE', msg=msg)
             return True
 
         except IOError:
-            msg = _("Unable to open file for writing: %s" % filename)
+            msg = _("Unable to open file for writing: {}").format(filename)
             pub.sendMessage('STATUS_MESSAGE', msg=msg, type=ERROR)
             return False
 
@@ -576,7 +587,7 @@ class Controller(object):
             fout.write(str)
             fout.close()
             self.filename = filename
-            msg = _("ASCII Schema has been saved in: %s" % self.filename)
+            msg = _("ASCII Schema has been saved in: {}").format(filename)
             pub.sendMessage('STATUS_MESSAGE', msg=msg)
             return True
 

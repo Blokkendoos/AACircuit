@@ -104,8 +104,8 @@ class OutputFilePDF(OutputFileChooser):
 
 class OutputFileAscii(OutputFileChooser):
 
-    def __init__(self):
-        super(OutputFileAscii, self).__init__(filename=_("Untitled_schema.txt"))
+    def __init__(self, filename):
+        super(OutputFileAscii, self).__init__(filename=filename)
 
     def action(self):
         pub.sendMessage('WRITE_TO_ASCII_FILE', filename=self.filename)
