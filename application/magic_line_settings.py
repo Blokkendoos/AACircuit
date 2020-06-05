@@ -205,6 +205,9 @@ class MagicLineSettingsDialog(Gtk.Dialog):
         self._start_character.connect('changed', self.on_start_character_changed)
 
     def update_line_matching_data(self):
+        # adjust index in case any matrices had been added or deleted
+        if self.matrix_nr > (len(self.lmd) - 1):
+            self.matrix_nr = len(self.lmd) - 1
         lmd = self.lmd[self.matrix_nr]
         self._start_character.set_text(lmd.char)
         self._start_ori_combo.set_active(lmd.ori)
@@ -254,8 +257,8 @@ class MagicLineSettingsDialog(Gtk.Dialog):
         self.update_line_matching_data()
 
     def on_delete_matrix(self, item):
-        print("Not yet implemented")
-        self.matrix_view.init_line_matching_data(self.lmd, self.matrix_nr)
+        del self.lmd[self.matrix_nr]
+        self.update_line_matching_data()
 
     def on_save_clicked(self, item):
         MagicLineSettings.LMD = self.lmd
@@ -264,9 +267,6 @@ class MagicLineSettingsDialog(Gtk.Dialog):
     def on_restore_defaults_clicked(self, item):
         pub.sendMessage('RESTORE_DEFAULT_MAGIC_LINE_SETTINGS')
         self.lmd = copy.deepcopy(MagicLineSettings.LMD)
-        # adjust index in case any matrices had been added
-        if self.matrix_nr > (len(self.lmd) - 1):
-            self.matrix_nr = len(self.lmd) - 1
         self.update_line_matching_data()
 
 
