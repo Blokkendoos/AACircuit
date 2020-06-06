@@ -574,6 +574,8 @@ class Controller(object):
             self.filename = filename
             msg = _("Schema has been saved in: {}").format(filename)
             pub.sendMessage('STATUS_MESSAGE', msg=msg)
+            # in case we have saved a new file, we now have an opened file
+            pub.sendMessage('FILE_OPENED')
             return True
 
         except IOError:
