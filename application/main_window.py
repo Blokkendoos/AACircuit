@@ -142,6 +142,7 @@ class MainWindow(Gtk.Window):
         pub.subscribe(self.on_message, 'STATUS_MESSAGE')
         pub.subscribe(self.on_orientation_changed, 'ORIENTATION_CHANGED')
         pub.subscribe(self.on_file_opened, 'FILE_OPENED')
+        pub.subscribe(self.on_new_file, 'NEW_FILE')
         pub.subscribe(self.on_nothing_selected, 'NOTHING_SELECTED')
         pub.subscribe(self.on_symbol_selected, 'SYMBOL_SELECTED')
         pub.subscribe(self.on_selection_changed, 'SELECTION_CHANGED')
@@ -356,6 +357,9 @@ class MainWindow(Gtk.Window):
     def on_file_opened(self):
         # enable File menu 'save' when a file has been opened
         self.menu_save.set_sensitive(True)
+
+    def on_new_file(self):
+        self.menu_save.set_sensitive(False)
 
     def on_menu_edit(self, item):
         # cut|copy|paste

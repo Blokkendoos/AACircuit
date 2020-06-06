@@ -218,6 +218,7 @@ class Controller(object):
     def on_new(self):
         self.init_grid()
         self.init_stack()
+        self.filename = None
         pub.sendMessage('NOTHING_SELECTED')
 
     def on_open(self):
