@@ -344,8 +344,7 @@ class MainWindow(Gtk.Window):
         display = self.get_root_window().get_display()
         pb = self.cursor[btn - 1]
         # the cursor hot-spot is at the center of the (16x16) cursor image
-        cursor = Gdk.Cursor.new_from_pixbuf(display, pb, 8, 15)
-
+        cursor = Gdk.Cursor.new_from_pixbuf(display, pb, 8, 8)
         self.grid_view.get_window().set_cursor(cursor)
 
     # MENU handling
