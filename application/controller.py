@@ -323,6 +323,9 @@ class Controller(object):
         self.latest_action += action
         pub.sendMessage('UNDO_CHANGED', undo=True)
         pub.sendMessage('OBJECTS_SELECTED', objects=self.selected_objects)
+        if len(self.selected_objects) > 0:
+            first_obj = self.selected_objects[0]
+            pub.sendMessage('ORIENTATION_CHANGED', ori=first_obj.symbol.ori_as_str)
 
     def on_copy(self, rect):
         """Select all symbols that are located within the selection rectangle."""
