@@ -216,7 +216,6 @@ class Symbol(object):
         """Return the grid with the next (90 degrees clockwise rotated) orientation for this symbol."""
         self._ori += 1
         self._ori %= 4
-
         return self.grid
 
     def draw(self, ctx, pos=None):
@@ -1133,9 +1132,9 @@ class Rect(Symbol):
 
 class Arrow(Symbol):
 
-    def __init__(self, startpos, endpos):
+    def __init__(self, startpos, endpos, mirrored=None):
         grid = {"N": ['?']}
-        super(Arrow, self).__init__(grid=grid, startpos=startpos, endpos=endpos)
+        super(Arrow, self).__init__(grid=grid, mirrored=mirrored, startpos=startpos, endpos=endpos)
         self._is_symbol = False
         self._is_line = True
         self._representation()
@@ -1149,14 +1148,18 @@ class Arrow(Symbol):
             return VERTICAL
 
     def _representation(self):
-        if self._direction() == HORIZONTAL:
-            self._repr_hor()
+        if self.mirrored == 0:
+            startpos = self._startpos
+            endpos = self._endpos
         else:
-            self._repr_vert()
+            startpos = self._endpos
+            endpos = self._startpos
+        if self._direction() == HORIZONTAL:
+            self._repr_hor(startpos, endpos)
+        else:
+            self._repr_vert(startpos, endpos)
 
-    def _repr_hor(self):
-        startpos = self._startpos
-        endpos = self._endpos
+    def _repr_hor(self,startpos, endpos):
         h = startpos.y - endpos.y
         if h == 0:
             h = 3
@@ -1174,9 +1177,7 @@ class Arrow(Symbol):
         self._repr_poly(a, b, c, d, e, f, g)
         self._pickpoint = c
 
-    def _repr_vert(self):
-        startpos = self._startpos
-        endpos = self._endpos
+    def _repr_vert(self, startpos, endpos):
         w = endpos.x - startpos.x
         if w == 0:
             w = 3
@@ -1216,13 +1217,17 @@ class Arrow(Symbol):
     def pickpoint_pos(self):
         return self._pickpoint
 
+    def rotate(self):
+        # for the arrows we stretch the definition of 'mirror' and 'rotate' a little bit
+        self._mirrored = 1 - self._mirrored
+
     def copy(self):
         startpos = copy.deepcopy(self._startpos)
         endpos = copy.deepcopy(self._endpos)
-        return Arrow(startpos, endpos)
+        return Arrow(startpos, endpos, self._mirrored)
 
     def memo(self):
-        str = "{0}:{1},{2}".format(ARROW, self._startpos, self._endpos)
+        str = "{0}:{1},{2},{3}".format(ARROW, self._mirrored, self._startpos, self._endpos)
         return str
 
 
