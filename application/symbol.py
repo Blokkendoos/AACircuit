@@ -1161,27 +1161,34 @@ class Arrow(Symbol):
 
     def _repr_hor(self,startpos, endpos):
         h = startpos.y - endpos.y
-        if h == 0:
-            h = 3
-        h = h - h % 3
+        if h < 0:
+            # http://python-history.blogspot.com/2010/08/why-pythons-integer-division-floors.html
+            r = (h * -1) % 3
+            h += r
+        else:
+            h -= h % 3
         h2 = h / 2
         h3 = h / 3
+        # print("h:", h, "h2:", h2, "h3:", h3)
         my = (startpos.y + endpos.y) / 2
         a = Pos(startpos.x, startpos.y - h3)
         b = Pos(startpos.x, endpos.y + h3)
-        c = Pos(endpos.x - h2, endpos.y + h3)
-        d = Pos(endpos.x - h2, endpos.y)
+        c = Pos(startpos.x + h2, endpos.y + h3)
+        d = Pos(startpos.x + h2, endpos.y)
         e = Pos(endpos.x, my)
-        f = Pos(endpos.x - h2, startpos.y)
-        g = Pos(endpos.x - h2, startpos.y - h3)
+        f = Pos(startpos.x + h2, startpos.y)
+        g = Pos(startpos.x + h2, startpos.y - h3)
         self._repr_poly(a, b, c, d, e, f, g)
         self._pickpoint = c
 
     def _repr_vert(self, startpos, endpos):
         w = endpos.x - startpos.x
-        if w == 0:
-            w = 3
-        w = w - w % 3
+        if w < 0:
+            # http://python-history.blogspot.com/2010/08/why-pythons-integer-division-floors.html
+            r = (w * -1) % 3
+            w += r
+        else:
+            w -= w % 3
         w2 = w / 2
         w3 = w / 3
         mx = (startpos.x + endpos.x) / 2
