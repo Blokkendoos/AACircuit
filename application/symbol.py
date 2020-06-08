@@ -103,10 +103,6 @@ class Symbol(object):
         return self._is_line
 
     @property
-    def pickpoint_type(self):
-        return ''
-
-    @property
     def has_pickpoint(self):
         return self._has_pickpoint
 
@@ -1176,6 +1172,7 @@ class Arrow(Symbol):
         f = Pos(endpos.x - h2, startpos.y)
         g = Pos(endpos.x - h2, startpos.y - h3)
         self._repr_poly(a, b, c, d, e, f, g)
+        self._pickpoint = c
 
     def _repr_vert(self):
         startpos = self._startpos
@@ -1195,6 +1192,7 @@ class Arrow(Symbol):
         f = Pos(endpos.x, endpos.y + w2)
         g = Pos(endpos.x - w3, endpos.y + w2)
         self._repr_poly(a, b, c, d, e, f, g)
+        self._pickpoint = c
 
     def _repr_poly(self, a, b, c, d, e, f, g):
         line1 = Line(a, b, Line.LINE4)
@@ -1213,6 +1211,10 @@ class Arrow(Symbol):
         self._repr.update(line5.repr)
         self._repr.update(line7.repr)
         self._repr.update(line2.repr)
+
+    @property
+    def pickpoint_pos(self):
+        return self._pickpoint
 
     def copy(self):
         startpos = copy.deepcopy(self._startpos)
