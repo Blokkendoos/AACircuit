@@ -466,8 +466,8 @@ class Controller(object):
         symbol = Rect(startpos, endpos)
         self.paste_symbol(symbol)
 
-    def on_paste_arrow(self, startpos, endpos, mirrored=None):
-        symbol = Arrow(startpos, endpos, mirrored)
+    def on_paste_arrow(self, startpos, endpos):
+        symbol = Arrow(startpos, endpos)
         self.paste_symbol(symbol)
 
     # clipboard
@@ -716,12 +716,11 @@ class Controller(object):
                 self.on_paste_rect(startpos, endpos)
 
             elif type == ARROW:
-                mirrored = int(m.group(2))
-                x, y = m.group(3, 4)
+                x, y = m.group(2, 3)
                 startpos = Pos(x, y)
-                x, y = m.group(5, 6)
+                x, y = m.group(4, 5)
                 endpos = Pos(x, y)
-                self.on_paste_arrow(startpos, endpos, mirrored)
+                self.on_paste_arrow(startpos, endpos)
             else:
                 skip = 1
             return skip
