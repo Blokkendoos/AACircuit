@@ -8,6 +8,7 @@ import json
 import locale
 from pubsub import pub
 from pathlib import Path
+from collections import OrderedDict
 
 from locale import gettext as _
 from application import ERROR
@@ -43,11 +44,11 @@ class ComponentLibrary(object):
             if check.is_file():
                 self._libraries.append(user_lib)
 
-        self._dict = {}
+        self._components = {}
         for lib in self._libraries:
             try:
                 f = open(get_path_to_data('components/' + lib), "r")
-                self._dict.update(json.load(f))
+                self._components.update(json.load(f))
                 f.close()
             except IOError as e:
                 msg = _("Failed to load component library {0} due to I/O error {1}: {2}").format(lib, e.errno, e.strerror)
@@ -55,22 +56,24 @@ class ComponentLibrary(object):
                 print(msg)
 
         # check component id's
-        if len(self._dict) > 0:
+        if len(self._components) > 0:
             ids = set()
-            for label, symbol in self._dict.items():
+            for label, symbol in self._components.items():
                 id = symbol['id']
                 if id in ids:
                     msg = _("Symbol: {} has duplicate id: {} !").format(label, id)
                     pub.sendMessage('STATUS_MESSAGE', msg=msg, type=ERROR)
                 else:
                     ids.add(id)
+        # order by id
+        self._components = OrderedDict(sorted(self._components.items(), key=lambda t: t[1]['id']))
 
         self._key = None
         self._dir = None
 
-    # TODO not a property, unless you make up a better name (than dict())
-    def get_dict(self):
-        return self._dict
+    @property
+    def components(self):
+        return self._components
 
     def get_id(self, key):
         """
@@ -83,7 +86,7 @@ class ComponentLibrary(object):
             # single character id is its (decimal) ASCII value
             id = ord(key)
         else:
-            id = self._dict[key]['id']
+            id = self._components[key]['id']
 
         return id
 
@@ -100,7 +103,7 @@ class ComponentLibrary(object):
             # the single character grid is simply the character itself
             grid = [[key]]
         else:
-            grid = self._dict[key]['grid']
+            grid = self._components[key]['grid']
 
         return grid
 
@@ -125,7 +128,7 @@ class ComponentLibrary(object):
         :returns the symbol
         """
         found = None
-        for label, symbol in self._dict.items():
+        for label, symbol in self._components.items():
             if symbol['id'] == id:
                 found = symbol['id']
                 grid = symbol['grid']
@@ -137,7 +140,7 @@ class ComponentLibrary(object):
             return Symbol()
 
     def nr_components(self):
-        return len(self._dict)
+        return len(self._components)
 
     def nr_libraries(self):
         return len(self._libraries)

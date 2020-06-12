@@ -34,7 +34,7 @@ class Controller(object):
         self.prefs = Preferences()
         self.ml_settings = MagicLineSettings()
         self.gui = MainWindow()
-        self.components = ComponentLibrary()
+        self.complib = ComponentLibrary()
         self.filename = None
 
         self.init_stack()
@@ -43,12 +43,12 @@ class Controller(object):
         # True: read original (Delphi/Pascal) AACircuit file
         self._import_legacy = False
 
-        all_components = [key for key in self.components.get_dict()]
-        if self.components.nr_libraries() == 1:
-            msg = _("One library loaded, total number of components: {0}").format(self.components.nr_components())
+        all_components = [key for key in self.complib.components]
+        if self.complib.nr_libraries() == 1:
+            msg = _("One library loaded, total number of components: {0}").format(self.complib.nr_components())
         else:
-            msg = _("{0} libraries loaded, total number of components: {1}").format(self.components.nr_libraries(),
-                                                                                    self.components.nr_components())
+            msg = _("{0} libraries loaded, total number of components: {1}").format(self.complib.nr_libraries(),
+                                                                                    self.complib.nr_components())
         pub.sendMessage('STATUS_MESSAGE', msg=msg)
         pub.sendMessage('ALL_COMPONENTS', list=all_components)
 
@@ -389,7 +389,7 @@ class Controller(object):
         pub.sendMessage('CHARACTER_SELECTED', char=symbol)
 
     def on_component_changed(self, label):
-        symbol = self.components.get_symbol(label)
+        symbol = self.complib.get_symbol(label)
         self.selected_objects = []
         self.add_selected_object(symbol)
         pub.sendMessage('STATUS_MESSAGE', msg='')
@@ -668,7 +668,7 @@ class Controller(object):
                 mirrored = int(m.group(4))
                 x, y = m.group(5, 6)
                 pos = Pos(x, y)
-                symbol = self.components.get_symbol_byid(id)
+                symbol = self.complib.get_symbol_byid(id)
                 symbol.ori = orientation
                 symbol.mirrored = mirrored
                 self.selected_objects = []
@@ -801,7 +801,7 @@ class Controller(object):
                 mirrored = int(m.group(4))
                 x, y = m.group(5, 6)
                 pos = Pos(x, y)
-                symbol = self.components.get_symbol_byid(id)
+                symbol = self.complib.get_symbol_byid(id)
                 symbol.ori = orientation
                 symbol.mirrored = mirrored
                 self.selected_objects = []
@@ -899,7 +899,7 @@ class Controller(object):
                 mirrored = 1
             else:
                 mirrored = 0
-            symbol = self.components.get_symbol_byid(id)
+            symbol = self.complib.get_symbol_byid(id)
             symbol.ori = orientation
             symbol.mirrored = mirrored
             self.selected_objects = []
