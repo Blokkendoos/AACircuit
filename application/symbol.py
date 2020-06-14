@@ -1155,6 +1155,21 @@ class Arrow(Symbol):
             self._repr_vert()
 
     def _repr_hor(self):
+        """
+        Horizontal arrow representation:
+
+             d  E
+             \
+        b----c\
+        |      /e
+        a----g/
+             /
+        S    f
+
+        S: start position
+        E: end position
+        a-g: arrow vertices
+        """
         startpos = self._startpos
         endpos = self._endpos
         h = startpos.y - endpos.y
@@ -1175,6 +1190,22 @@ class Arrow(Symbol):
         self._pickpoint = c
 
     def _repr_vert(self):
+        """
+        Vertical arrow representation:
+
+             e
+             \  E
+            / \
+           /   \
+         d/-c g-\f
+            | |
+            | |
+          S b-a
+
+        S: start position
+        E: end position
+        a-g: arrow vertices
+        """
         startpos = self._startpos
         endpos = self._endpos
         w = endpos.x - startpos.x
