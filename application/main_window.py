@@ -376,18 +376,24 @@ class MainWindow(Gtk.Window):
         builder.add_from_file(get_path_to_data('about_dialog.glade'))
         builder.connect_signals(self)
         about = builder.get_object('about')
+        about.set_transient_for(self)
+        about.set_modal(True)
         about.run()
-        about.hide()
+        about.destroy()
 
     def on_menu_preferences(self, item):
         dialog = PreferencesDialog()
+        dialog.set_transient_for(self)
+        dialog.set_modal(True)
         dialog.run()
-        dialog.hide()
+        dialog.destroy()
 
     def on_menu_magic_line_settings(self, item):
         dialog = MagicLineSettingsDialog()
+        dialog.set_transient_for(self)
+        dialog.set_modal(True)
         dialog.run()
-        dialog.hide()
+        dialog.destroy()
 
     def on_menu_edit_memo(self, item):
         pub.sendMessage('EDIT_MEMO')
