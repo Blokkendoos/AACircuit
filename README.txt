@@ -33,13 +33,14 @@ Draw electronic circuits with ASCII characters.
     e          |               |              |                         
     r          '---------------o--------------o---o GND                 
                                                                         
-                                                                        
-This is a pythonized version of the original (Borland Delphi) AACircuit (by Andreas Weber).
+
+This is a pythonized version of (Borland Delphi) AACircuit (by Andreas Weber).
 A kind of reverse engineered version, where the idea and GUI layout are taken from the original.
 
 For the ASCII representation, use copy or "Save ASCII". Use a monospaced font in your document, news- or mailclient!
 
-Library: every symbol has to be created for each of the four directions.
+Component library: User components are read from optional file components/user_component_x.json (x=1..5)
+Every symbol has to be created for all four directions (N/E/S/W).
 
 
 Usage
@@ -47,9 +48,12 @@ Usage
 Download the zip-file, unzip, go to the AACircuit directory and run: python aacircuit.py
 
 
-+++ THIS IS NOT A FINISHED APPLICATION +++
-
-!!! WORK IN PROGRESS !!!
-
+Dependencies
+============
+Python3
+xerox
+pypubsub
+bresenham
+Gtk+ 3
 
 Original: https://github.com/Andy1978/AACircuit

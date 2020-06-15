@@ -6,19 +6,6 @@ AACircuit.py
 
 usage: python aacircuit.py
 For debugging the Gtk (style) UI: export GTK_DEBUG=interactive; python aacircuit.py
-
-Dependencies:
-Python 3
-Gtk 3
-bresenham
-cairo
-gettext
-json
-numpy
-pickle
-pubsub
-xerox
-
 """
 
 from application.controller import Controller
