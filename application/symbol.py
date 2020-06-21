@@ -1194,7 +1194,7 @@ class Arrow(Symbol):
         Vertical arrow representation:
 
              e
-             \  E
+             \\  E
             / \
            /   \
          d/-c g-\f
