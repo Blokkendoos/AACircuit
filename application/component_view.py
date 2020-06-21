@@ -13,8 +13,6 @@ from gi.repository import Gtk  # noqa: E402
 
 class ComponentView():
 
-    columns = [_('Description')]
-
     def __init__(self, builder):
         scrolled_window = builder.get_object('component_window')
         # scrolled_window.set_size_request(200, 100)
@@ -22,11 +20,10 @@ class ComponentView():
         # scrolled_window.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
 
         self.listmodel = builder.get_object('liststore1')
-
         view = builder.get_object('treeview1')
-
         view.get_selection().connect('changed', self.on_changed)
 
+        self.columns = [_('Description')]
         for i, column in enumerate(self.columns):
             # cellrenderer to render the text
             cell = Gtk.CellRendererText()
