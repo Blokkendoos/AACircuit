@@ -10,7 +10,7 @@ from pubsub import pub
 from pathlib import Path
 from collections import OrderedDict
 
-from locale import gettext as _
+from application import gettext as _
 from application import ERROR
 from application import get_path_to_data
 from application.symbol import Symbol

@@ -8,7 +8,7 @@ import locale
 import json
 import collections
 from pubsub import pub
-from locale import gettext as _
+from application import gettext as _
 from application import get_path_to_data
 
 import gi

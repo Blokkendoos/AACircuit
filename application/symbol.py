@@ -10,7 +10,7 @@ from pubsub import pub
 from bresenham import bresenham
 from math import pi, radians, atan
 
-from locale import gettext as _
+from application import gettext as _
 from application.preferences import Preferences
 from application.magic_line_settings import MagicLineSettings
 from application.pos import Pos

@@ -9,7 +9,7 @@ from pubsub import pub
 from threading import Timer
 
 import locale
-from locale import gettext as _
+from application import gettext as _
 
 from application import get_path_to_data
 from application import ERROR, INFO

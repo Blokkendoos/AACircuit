@@ -8,15 +8,15 @@ import locale
 import sys
 from os import path
 
+
 # set local language, if supported
 try:
-    loc = locale.getdefaultlocale()
-    lang = loc[0]
-    local_lang = gettext.translation('aacircuit', localedir='locale', languages=[lang])
+    lang, encoding = locale.getdefaultlocale()
+    local_lang = gettext.translation('aacircuit', localedir='application/locale', languages=[lang])
     local_lang.install()
-    _ = local_lang.gettext
-except Exception as e:  # noqa F841
-    _ = gettext.gettext
+    gettext = local_lang.gettext
+except Exception:
+    gettext = locale.gettext
 
 
 def get_path_to_data(file_path):

@@ -5,7 +5,7 @@ AACircuit
 
 import sys
 import locale
-from locale import gettext as _
+from application import gettext as _
 from pubsub import pub
 from application import get_path_to_data
 

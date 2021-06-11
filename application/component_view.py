@@ -4,7 +4,7 @@ AACircuit
 """
 
 from pubsub import pub
-from locale import gettext as _
+from application import gettext as _
 
 import gi
 gi.require_version('Gtk', '3.0')
