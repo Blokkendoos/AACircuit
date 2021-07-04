@@ -9,21 +9,23 @@ import sys
 from os import path
 
 
-# set local language, if supported
-try:
-    lang, encoding = locale.getdefaultlocale()
-    local_lang = gettext.translation('aacircuit', localedir='application/locale', languages=[lang])
-    local_lang.install()
-    gettext = local_lang.gettext
-except Exception:
-    gettext = locale.gettext
-
-
 def get_path_to_data(file_path):
     # when run from within a bundle (created w pyinstaller)
     bundle_dir = getattr(sys, '_MEIPASS', path.abspath(path.dirname(__file__)))
     path_to_dat = path.join(bundle_dir, file_path)
     return path_to_dat
+
+
+# set local language, if supported
+try:
+    lang, encoding = locale.getdefaultlocale()
+    local_lang = gettext.translation('aacircuit', localedir='application/locale/flap', languages=[lang])
+    local_lang.install()
+    gettext = local_lang.gettext
+except Exception:
+    gettext.bindtextdomain('aacircuit', get_path_to_data('locale/'))
+    gettext.textdomain('aacircuit')
+    gettext = gettext.gettext
 
 
 # message levels (css style name too)
