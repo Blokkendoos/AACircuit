@@ -19,7 +19,7 @@ def get_path_to_data(file_path):
 # set local language, if supported
 try:
     lang, encoding = locale.getdefaultlocale()
-    local_lang = gettext.translation('aacircuit', localedir='application/locale/flap', languages=[lang])
+    local_lang = gettext.translation('aacircuit', localedir='application/locale', languages=[lang])
     local_lang.install()
     gettext = local_lang.gettext
 except Exception:
