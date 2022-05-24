@@ -7,7 +7,8 @@ AACircuit
 
 import xerox
 
-from locale import gettext as _
+#from locale import gettext as _
+import gettext
 from application import CELL_DEFAULT, CELL_EMPTY, CELL_NEW, CELL_ERASE
 
 
@@ -46,6 +47,7 @@ class Grid(object):
     # clipboard
 
     def content_as_str(self):
+        _ = gettext.gettext
         content = ""
         for r in self._grid:
             line = ""

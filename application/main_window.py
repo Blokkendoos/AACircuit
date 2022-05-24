@@ -9,7 +9,7 @@ from pubsub import pub
 from threading import Timer
 
 import locale
-from application import gettext as _
+import gettext
 
 from application import get_path_to_data
 from application import ERROR, INFO
@@ -43,8 +43,10 @@ class MainWindow(Gtk.Window):
             # For this particular case the locale module needs to be used instead of gettext.
             # Python's gettext module is pure python, it doesn't actually set the text domain
             # in a way that the C library can read, but locale does (by calling libc).
-            locale.bindtextdomain('aacircuit', get_path_to_data('locale/'))
-            locale.textdomain('aacircuit')
+ #           locale.bindtextdomain('aacircuit', get_path_to_data('locale/'))
+ #           locale.textdomain('aacircuit')
+            gettext.bindtextdomain('aacircuit', get_path_to_data('locale/'))
+            gettext.textdomain('aacircuit')
 
             builder = Gtk.Builder()
             # https://stackoverflow.com/questions/24320502/how-to-translate-pygtk-glade-gtk-builder-application
@@ -280,6 +282,7 @@ class MainWindow(Gtk.Window):
         return not self.on_close_clicked()
 
     def on_close_clicked(self, item=None):
+        _ = gettext.gettext
         if self._undo_stack_empty or self.show_confirmation_dlg():
             print(_("Closing application"))
             Gtk.main_quit()
