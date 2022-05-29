@@ -7,7 +7,7 @@ import cairo
 import time
 from pubsub import pub
 
-import gettext as _
+from gettext import gettext as _
 from application import HORIZONTAL, VERTICAL
 from application import IDLE, SELECTING, SELECTED
 from application import CHARACTER, COMPONENT, LINE, MAG_LINE, DIR_LINE, OBJECT, OBJECTS, COL, ROW, RECT, DRAW_RECT, ERASER, ARROW
