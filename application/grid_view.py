@@ -7,7 +7,6 @@ import cairo
 import time
 from pubsub import pub
 
-#from locale import gettext as _
 import gettext as _
 from application import HORIZONTAL, VERTICAL
 from application import IDLE, SELECTING, SELECTED
