@@ -9,7 +9,7 @@ from pubsub import pub
 from threading import Timer
 
 import locale
-from application import gettext as _
+from gettext import gettext as _
 
 from application import get_path_to_data
 from application import ERROR, INFO
@@ -39,12 +39,8 @@ class MainWindow(Gtk.Window):
         https://eeperry.wordpress.com/2013/01/05/pygtk-new-style-python-class-using-builder/
         """
         try:
-            # https://askubuntu.com/questions/140552/how-to-make-glade-load-translations-from-opt
-            # For this particular case the locale module needs to be used instead of gettext.
-            # Python's gettext module is pure python, it doesn't actually set the text domain
-            # in a way that the C library can read, but locale does (by calling libc).
-            locale.bindtextdomain('aacircuit', get_path_to_data('locale/'))
-            locale.textdomain('aacircuit')
+            gettext.bindtextdomain('aacircuit', get_path_to_data('locale/'))
+            gettext.textdomain('aacircuit')
 
             builder = Gtk.Builder()
             # https://stackoverflow.com/questions/24320502/how-to-translate-pygtk-glade-gtk-builder-application
