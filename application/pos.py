@@ -47,7 +47,7 @@ class Pos(object):
         return hash((self._x, self._y))
 
     def __ne__(self, other):
-        return not(self == other)
+        return not (self == other)
 
     @property
     def x(self):

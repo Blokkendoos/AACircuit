@@ -8,7 +8,6 @@ import time
 from pubsub import pub
 from threading import Timer
 
-import locale
 import gettext
 
 from application import get_path_to_data
@@ -48,6 +47,7 @@ class MainWindow(Gtk.Window):
             builder.add_from_file(get_path_to_data('aacircuit.glade'))
 
         except IOError:
+            _ = gettext.gettext
             print(_("Failed to load XML GUI file aacircuit.glade"))
             sys.exit(1)
 
