@@ -53,7 +53,7 @@ class Pos(object):
     def x(self):
         return self._x
 
-    @ x.setter
+    @x.setter
     def x(self, value):
         self._x = value
 
@@ -61,7 +61,7 @@ class Pos(object):
     def y(self):
         return self._y
 
-    @ y.setter
+    @y.setter
     def y(self, value):
         self._y = value
 
