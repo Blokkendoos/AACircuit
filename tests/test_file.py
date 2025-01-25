@@ -50,10 +50,6 @@ class FileTest(unittest.TestCase):
         filename = 'tmp/741.aac'
         self.assertTrue(c.on_write_to_file(filename))
 
-        # for (visual) verification only
-        filename = 'tmp/741_legacy.pdf'
-        c.on_export_as_pdf(filename)
-
         filename = 'tmp/741_legacy.txt'
         self.assertTrue(c.on_write_to_ascii_file(filename))
 
@@ -79,4 +75,16 @@ class FileTest(unittest.TestCase):
         # With the disadvantage of not being able to check the outcome here.
         # Instead, visually check the existence and content of the PDF file.
         filename = 'tmp/test_all.pdf'
+        c.on_export_as_pdf(filename)
+
+    def test_import_aacircuit_export_pdf(self):
+
+        c = Controller()
+        c.legacy = True
+
+        filename = 'tests/files/original_741.aac'
+        self.assertTrue(c.on_read_from_file(filename))
+
+        # for (visual) verification only
+        filename = 'tmp/741_legacy.pdf'
         c.on_export_as_pdf(filename)
