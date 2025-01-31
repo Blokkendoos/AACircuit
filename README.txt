@@ -52,6 +52,7 @@ Dependencies
 ============
 Python3
 xerox
+platformdirs
 pypubsub
 bresenham
 Gtk+ 3
@@ -63,6 +64,6 @@ use pacman if prefer to list full architecture
 package explicitly (e.g. i686, x86_64 on msys2)
 
 pacboy -S gtk3 python-pywin32 python-gobject
-pip install xerox pypubsub bresenham
+pip install xerox platformdirs pypubsub bresenham
 
 Original: https://github.com/Andy1978/AACircuit

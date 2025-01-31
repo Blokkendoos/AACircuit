@@ -7,6 +7,9 @@ import gettext
 import locale
 import sys
 from os import path
+from pathlib import Path
+
+from platformdirs import user_config_dir
 
 
 def get_path_to_data(file_path):
@@ -14,6 +17,17 @@ def get_path_to_data(file_path):
     bundle_dir = getattr(sys, '_MEIPASS', path.abspath(path.dirname(__file__)))
     path_to_dat = path.join(bundle_dir, file_path)
     return path_to_dat
+
+
+def get_path_to_prefs():
+    name = 'aacircuit'
+    prefs_file = Path(name + '.ini')
+    # for backward compatibility
+    if prefs_file.exists():
+        return prefs_file
+    prefs_dir = Path(user_config_dir(name))
+    prefs_dir.mkdir(parents=True, exist_ok=True)
+    return prefs_dir.joinpath(prefs_file)
 
 
 # set local language, if supported
