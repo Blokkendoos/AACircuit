@@ -9,7 +9,7 @@ import json
 import collections
 from pubsub import pub
 from application import gettext as _
-from application import get_path_to_data
+from application import get_path_to_data, get_path_to_prefs
 
 import gi
 gi.require_version('Gtk', '3.0')
@@ -50,7 +50,7 @@ class Preferences(object):
     values['TERMINAL4'] = "'"
     values['TERMINAL4_VERT'] = "."
 
-    def __init__(self, filename='aacircuit.ini'):
+    def __init__(self, filename=get_path_to_prefs()):
         self._filename = filename
         self.read_preferences()
         pub.subscribe(self.on_save_preferences, 'SAVE_PREFERENCES')
