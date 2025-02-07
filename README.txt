@@ -51,7 +51,7 @@ Download the zip-file, unzip, go to the AACircuit directory and run: python aaci
 Dependencies
 ============
 Python3
-xerox
+pyclip
 platformdirs
 pypubsub
 bresenham
@@ -64,6 +64,6 @@ use pacman if prefer to list full architecture
 package explicitly (e.g. i686, x86_64 on msys2)
 
 pacboy -S gtk3 python-pywin32 python-gobject
-pip install xerox platformdirs pypubsub bresenham
+pip install pyclip platformdirs pypubsub bresenham
 
 Original: https://github.com/Andy1978/AACircuit

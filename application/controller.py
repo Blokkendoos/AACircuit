@@ -6,7 +6,7 @@ AACircuit.py
 import os
 import re
 import json
-import xerox
+import pyclip
 import collections
 from pubsub import pub
 
@@ -477,7 +477,7 @@ class Controller(object):
         Copy the content of the grid to the clipboard.
         The rows are copied as ASCII lines, terminated by CR.
         """
-        xerox.copy(self.grid.content_as_str())
+        pyclip.copy(self.grid.content_as_str())
 
     def on_paste_grid(self):
         """
@@ -487,7 +487,10 @@ class Controller(object):
         selected = []
         pos = Pos(0, 0)
         relative_pos = Pos(0, 0)
-        content = xerox.paste().splitlines()
+        try:
+            content = pyclip.paste(text=True).splitlines()
+        except Exception:
+            content = []
         for line in content:
             symbol = Text(relative_pos, line)
             selection = SelectedObjects(startpos=pos, symbol=symbol)
