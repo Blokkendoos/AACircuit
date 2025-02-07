@@ -1,11 +1,9 @@
-# -*- coding: UTF-8 -*-
+# -*- coding: utf-8 -*-
 
 """
 AACircuit
 2020-03-02 JvO
 """
-
-import xerox
 
 from gettext import gettext as _
 from application import CELL_DEFAULT, CELL_EMPTY, CELL_NEW, CELL_ERASE
@@ -43,8 +41,6 @@ class Grid(object):
             column.append(r[col])
         return column
 
-    # clipboard
-
     def content_as_str(self):
         content = ""
         for r in self._grid:
@@ -54,41 +50,6 @@ class Grid(object):
             content += (line + "\n")
         content += _("(created by AACircuit.py © 2020 JvO)")
         return content
-
-    def copy_to_clipboard(self):
-        """
-        Copy the content of the grid to the clipboard.
-        The rows are copied as ASCII lines, terminated by CR.
-        """
-        xerox.copy(self.content_as_str())
-
-    def paste_from_clipboard(self):
-        """
-        Copy the content of the clipboard to the grid.
-        ASCII lines, terminated by CR, are interpreted as rows.
-        """
-        print("Deprecated method")
-        grid = []
-        first_line = True
-        content = xerox.paste().splitlines()
-        for line in content:
-            dict = []
-            for char in line:
-                dict.append(char)
-            # the first line determines the number of columns in the new grid
-            if first_line:
-                first_line = False
-                row_length = len(dict)
-            elif len(dict) < row_length:
-                for i in range(len(dict), row_length):
-                    dict.append(" ")
-            elif len(dict) < row_length:
-                dict = dict[:row_length]
-            grid.append(dict)
-        self._grid = grid
-
-    def load_and_paste_from_clipboard(self):
-        print("Not yet implemented")
 
     # grid manipulation
 

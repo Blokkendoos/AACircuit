@@ -473,7 +473,11 @@ class Controller(object):
     # clipboard
 
     def on_copy_grid(self):
-        self.grid.copy_to_clipboard()
+        """
+        Copy the content of the grid to the clipboard.
+        The rows are copied as ASCII lines, terminated by CR.
+        """
+        xerox.copy(self.grid.content_as_str())
 
     def on_paste_grid(self):
         """
