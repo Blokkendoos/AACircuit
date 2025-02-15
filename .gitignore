@@ -15,7 +15,8 @@ docs/
 # unittest output
 tmp/
 
-# py2app
+# pip
+aacircuit.egg-info/
 build/
 dist/
 
